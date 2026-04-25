@@ -17,6 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { portalApi, type QuoteRow } from "@/lib/portal-api";
+import { YapeQR } from "@/components/yape-qr";
 
 const STATUS_BADGE: Record<string, string> = {
   enviada: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
@@ -98,18 +99,20 @@ export default function ClientQuotesPage() {
         className="rounded-md border border-primary/40 bg-primary/10 px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-3"
         data-testid="banner-yape"
       >
-        <div>
+        <div className="flex-1 min-w-[220px]">
           <div className="font-medium text-foreground">
             Pago de cotizaciones
           </div>
           <div className="text-xs text-muted-foreground">
             Aceptá la cotización y depositá el monto por Yape al titular Miguel
-            Montero. Avisanos por el chat de JARVIS para activar tus módulos.
+            Angel Montero Garcia. Avisanos por el chat de JARVIS para activar
+            tus módulos.
+          </div>
+          <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+            Yape · 991 740 590
           </div>
         </div>
-        <div className="font-mono text-base font-semibold text-foreground">
-          Yape · 991 740 590
-        </div>
+        <YapeQR size={88} />
       </div>
 
       {quotes.length === 0 ? (

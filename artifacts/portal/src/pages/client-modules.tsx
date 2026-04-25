@@ -38,6 +38,7 @@ import {
   type ClientModuleRow,
   type CreateQuoteResult,
 } from "@/lib/portal-api";
+import { YapeQR } from "@/components/yape-qr";
 
 const STATUS_BADGE: Record<string, { label: string; className: string; icon: typeof Clock }> = {
   activo: {
@@ -319,18 +320,19 @@ export default function ClientModulesPage() {
         className="rounded-md border border-primary/40 bg-primary/10 px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-3"
         data-testid="banner-yape"
       >
-        <div>
+        <div className="flex-1 min-w-[220px]">
           <div className="font-medium text-foreground">
             Para activar módulos pagos depositá por Yape
           </div>
           <div className="text-xs text-muted-foreground">
-            Titular: Miguel Montero · Después de pagar avisanos por el chat de
-            JARVIS y activamos tu módulo en minutos.
+            Titular: Miguel Angel Montero Garcia · Después de pagar avisanos por
+            el chat de JARVIS y activamos tu módulo en minutos.
+          </div>
+          <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+            Yape · 991 740 590
           </div>
         </div>
-        <div className="font-mono text-base font-semibold text-foreground">
-          Yape · 991 740 590
-        </div>
+        <YapeQR size={88} />
       </div>
 
       {(() => {
@@ -744,9 +746,9 @@ export default function ClientModulesPage() {
             <DialogDescription>
               {createdQuoteAccepted ? (
                 <>
-                  Solicitud creada. Pronto un asesor de AXYNTRAX te contactará
-                  para activar los módulos. Pago vía Yape · Miguel Montero ·
-                  991 740 590.
+                  Solicitud creada. Pagá ahora con Yape (escaneá el QR o usá el
+                  número 991 740 590) y avisanos por el chat de JARVIS para
+                  activar los módulos en minutos.
                 </>
               ) : (
                 <>
@@ -760,6 +762,14 @@ export default function ClientModulesPage() {
               )}
             </DialogDescription>
           </DialogHeader>
+          {createdQuoteAccepted && (
+            <div className="flex flex-col items-center gap-2 py-2">
+              <YapeQR size={140} showCaption={false} />
+              <p className="text-xs text-muted-foreground">
+                Yape · Miguel Angel Montero Garcia · 991 740 590
+              </p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             {createdQuote && (
               <a

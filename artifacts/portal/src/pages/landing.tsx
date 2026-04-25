@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { portalApi, type CatalogModule } from "@/lib/portal-api";
 import { SalesBotWidget } from "@/components/sales-bot-widget";
+import { YapeQR } from "@/components/yape-qr";
 import { useAuth } from "@/lib/auth-context";
 
 function fmtPrice(n: string, c: string) {
@@ -158,15 +159,19 @@ export default function LandingPage() {
         id="catalogo"
         className="max-w-6xl mx-auto px-6 py-12 space-y-8"
       >
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Catálogo de módulos
-          </h2>
-          <p className="text-muted-foreground text-sm mt-1">
-            Demos sin precio se descargan gratis por 30 días. Los pagos los
-            cotiza JARVIS y te llegan por correo en PDF. Reservá depositando
-            por Yape al 991 740 590 (Miguel Montero).
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex-1 min-w-[260px]">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Catálogo de módulos
+            </h2>
+            <p className="text-muted-foreground text-sm mt-1">
+              Demos sin precio se descargan gratis por 30 días. Los pagos los
+              cotiza JARVIS y te llegan por correo en PDF. Reservá depositando
+              por Yape al 991 740 590 (Miguel Angel Montero Garcia) — escaneá
+              el QR para pagar al instante.
+            </p>
+          </div>
+          <YapeQR size={104} />
         </div>
 
         {error && (
