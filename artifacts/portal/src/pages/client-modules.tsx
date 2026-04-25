@@ -43,10 +43,17 @@ const STATUS_BADGE: Record<string, { label: string; className: string; icon: typ
     className: "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
     icon: XCircle,
   },
+  vencido: {
+    label: "Vencida",
+    className: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+    icon: XCircle,
+  },
 };
 
-function fmtPrice(n: string, c: string) {
-  return `${c} ${Number(n).toFixed(2)}`;
+function daysUntil(iso: string | null): number | null {
+  if (!iso) return null;
+  const ms = new Date(iso).getTime() - Date.now();
+  return Math.ceil(ms / (24 * 60 * 60 * 1000));
 }
 
 export default function ClientModulesPage() {
@@ -151,6 +158,12 @@ export default function ClientModulesPage() {
   const clientCompany =
     session?.kind === "client" ? session.client.company : null;
 
+  const expiringSoon = mine.filter((r) => {
+    if (r.status !== "activo") return false;
+    const d = daysUntil(r.expiresAt);
+    return d !== null && d <= 3 && d >= 0;
+  });
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
       <div>
@@ -164,6 +177,37 @@ export default function ClientModulesPage() {
         </p>
       </div>
 
+      {expiringSoon.length > 0 ? (
+        <div
+          className="rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex gap-3"
+          data-testid="banner-expiring-soon"
+        >
+          <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <div className="font-medium">
+              {expiringSoon.length === 1
+                ? "Tenés 1 demo por vencer"
+                : `Tenés ${expiringSoon.length} demos por vencer`}
+            </div>
+            <ul className="list-disc list-inside text-xs space-y-0.5">
+              {expiringSoon.map((r) => {
+                const d = daysUntil(r.expiresAt);
+                return (
+                  <li key={r.id}>
+                    {r.moduleName} —{" "}
+                    {d === 0
+                      ? "vence hoy"
+                      : d === 1
+                        ? "vence mañana"
+                        : `quedan ${d} días`}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
       <section className="space-y-3">
         <h2 className="text-lg font-medium">Mis módulos</h2>
         {mine.length === 0 ? (
@@ -171,8 +215,8 @@ export default function ClientModulesPage() {
             <CardContent className="py-8 flex items-center gap-3 text-muted-foreground">
               <Info className="h-5 w-5" />
               <span>
-                Todavía no tenés módulos activos. Explorá el catálogo abajo y
-                solicitá los que necesités.
+                Todavía no tenés demos activas. Explorá el catálogo abajo y
+                solicitá los módulos que querés probar.
               </span>
             </CardContent>
           </Card>
@@ -181,6 +225,19 @@ export default function ClientModulesPage() {
             {mine.map((row) => {
               const cfg = STATUS_BADGE[row.status] ?? STATUS_BADGE.pendiente;
               const Icon = cfg.icon;
+              const days = daysUntil(row.expiresAt);
+              const isActive = row.status === "activo";
+              const isWarning = isActive && days !== null && days <= 3 && days >= 0;
+              const countdownLabel =
+                days === null
+                  ? null
+                  : days < 0
+                    ? "Demo vencida"
+                    : days === 0
+                      ? "Vence hoy"
+                      : days === 1
+                        ? "Vence mañana"
+                        : `Te quedan ${days} días`;
               return (
                 <Card key={row.id} data-testid={`my-module-${row.id}`}>
                   <CardHeader className="pb-3">
@@ -189,8 +246,8 @@ export default function ClientModulesPage() {
                         <CardTitle className="text-base">
                           {row.moduleName}
                         </CardTitle>
-                        <CardDescription>
-                          {row.moduleIndustry} · {fmtPrice(row.monthlyPrice, row.currency)} / mes
+                        <CardDescription className="capitalize">
+                          {row.moduleIndustry} · Demo gratuita
                         </CardDescription>
                       </div>
                       <Badge variant="outline" className={cfg.className}>
@@ -202,7 +259,7 @@ export default function ClientModulesPage() {
                   <CardContent className="text-xs text-muted-foreground space-y-2">
                     {row.activatedAt && (
                       <div>
-                        Activado: {new Date(row.activatedAt).toLocaleDateString("es-PE")}
+                        Activada: {new Date(row.activatedAt).toLocaleDateString("es-PE")}
                       </div>
                     )}
                     {row.expiresAt && (
@@ -210,6 +267,24 @@ export default function ClientModulesPage() {
                         Vence: {new Date(row.expiresAt).toLocaleDateString("es-PE")}
                       </div>
                     )}
+                    {countdownLabel && isActive ? (
+                      <div
+                        className={
+                          isWarning
+                            ? "flex items-center gap-1 font-medium text-amber-300"
+                            : "flex items-center gap-1 text-emerald-300"
+                        }
+                        data-testid={`countdown-${row.id}`}
+                      >
+                        {isWarning ? (
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                        ) : (
+                          <Clock className="h-3.5 w-3.5" />
+                        )}
+                        {countdownLabel}
+                        {isWarning ? " — te avisaremos cuando expire" : ""}
+                      </div>
+                    ) : null}
                     {row.notes && <div>Notas: {row.notes}</div>}
                     {row.status === "activo" && row.licenseKey ? (
                       <div className="pt-2 border-t border-border/60 space-y-1">
@@ -269,7 +344,7 @@ export default function ClientModulesPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{m.name}</CardTitle>
                   <CardDescription className="capitalize">
-                    {m.industry} · {fmtPrice(m.monthlyPrice, m.currency)} / mes
+                    {m.industry} · Demo gratuita · 30 días
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -288,7 +363,7 @@ export default function ClientModulesPage() {
                     {busyId === m.id ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : null}
-                    {blocked ? "Ya solicitado" : "Solicitar activación"}
+                    {blocked ? "Ya solicitado" : "Solicitar demo gratuita"}
                   </Button>
                 </CardContent>
               </Card>

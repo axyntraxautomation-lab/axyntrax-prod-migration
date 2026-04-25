@@ -18,7 +18,7 @@ import { Loader2, CheckCircle2, XCircle, Inbox, AlertTriangle } from "lucide-rea
 import { useToast } from "@/hooks/use-toast";
 import { portalApi, type AdminRequestRow } from "@/lib/portal-api";
 
-function fmtPrice(n: string, c: string) {
+function _fmtPrice_unused(n: string, c: string) {
   return `${c} ${Number(n).toFixed(2)}`;
 }
 
@@ -112,7 +112,7 @@ function RequestList({ status }: { status: string }) {
                   </span>
                 </CardTitle>
                 <CardDescription>
-                  {r.clientIndustry ?? "—"} · {fmtPrice(r.monthlyPrice, r.currency)} / mes
+                  {r.clientIndustry ?? "—"} · Demo gratuita · 30 días
                 </CardDescription>
               </div>
               <Badge variant="outline" className="capitalize">
@@ -138,7 +138,7 @@ function RequestList({ status }: { status: string }) {
                   ) : (
                     <CheckCircle2 className="h-4 w-4 mr-2" />
                   )}
-                  Aprobar y crear cobro
+                  Activar demo
                 </Button>
                 <Button
                   size="sm"
@@ -167,8 +167,8 @@ export default function AdminRequestsPage() {
           Solicitudes de módulos
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Aprobá nuevas activaciones — al aprobar se crea automáticamente un
-          cobro pendiente para el cliente.
+          Aprobá nuevas activaciones — todas las activaciones son demos
+          gratuitas por 30 días, sin cobro al cliente.
         </p>
       </div>
 

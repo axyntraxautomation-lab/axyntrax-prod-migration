@@ -383,12 +383,29 @@ router.get("/portal/auth/me", requirePortalAuth, async (req, res): Promise<void>
 // Client endpoints
 // =========================
 
+async function expireOverdueClientModules(clientId: number): Promise<void> {
+  await db
+    .update(clientModulesTable)
+    .set({ status: "vencido" })
+    .where(
+      and(
+        eq(clientModulesTable.clientId, clientId),
+        eq(clientModulesTable.status, "activo"),
+        sql`${clientModulesTable.expiresAt} is not null`,
+        sql`${clientModulesTable.expiresAt} < now()`,
+      ),
+    );
+}
+
 router.get(
   "/portal/me/modules",
   requirePortalAuth,
   requirePortalClient,
   async (req, res): Promise<void> => {
     if (!req.portal || req.portal.kind !== "client") return;
+
+    await expireOverdueClientModules(req.portal.sub);
+
     const rows = await db
       .select({
         id: clientModulesTable.id,
@@ -462,6 +479,10 @@ router.post(
     }
     const clientId = req.portal.sub;
     const { moduleId, notes } = parsed.data;
+
+    // Normalize: cualquier demo activa vencida pasa a "vencido" antes
+    // del check de bloqueo, así una demo expirada no impide pedir otra.
+    await expireOverdueClientModules(clientId);
 
     try {
       const inserted = await db.transaction(async (tx) => {
@@ -603,15 +624,18 @@ router.post(
           .limit(1);
         if (!mod || mod.active !== 1) throw new Error("Módulo inactivo");
 
+        // Demo gratuita: el módulo se activa sin venta. Mantenemos un
+        // registro en `payments` con monto 0 + método "demo" + estado
+        // "exonerado" para conservar trazabilidad sin reflejarlo como cobro.
         const [payment] = await tx
           .insert(paymentsTable)
           .values({
             clientId: row.clientId,
-            amount: mod.monthlyPrice,
+            amount: "0.00",
             currency: mod.currency,
-            method: "manual",
-            status: "pendiente",
-            description: `Activación módulo ${mod.name}`,
+            method: "demo",
+            status: "exonerado",
+            description: `Activación demo módulo ${mod.name}`,
           })
           .returning();
 

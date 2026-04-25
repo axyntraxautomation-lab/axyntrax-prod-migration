@@ -11,7 +11,7 @@ import { Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { portalApi, type CatalogModule } from "@/lib/portal-api";
 
-function fmtPrice(n: string, c: string) {
+function _fmtPrice_unused(n: string, c: string) {
   return `${c} ${Number(n).toFixed(2)}`;
 }
 
@@ -87,7 +87,7 @@ export default function AdminCatalogPage() {
                     )}
                   </div>
                   <CardDescription>
-                    {fmtPrice(m.monthlyPrice, m.currency)} / mes
+                    Demo gratuita · 30 días
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">

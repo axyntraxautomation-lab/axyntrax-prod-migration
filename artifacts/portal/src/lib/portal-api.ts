@@ -35,6 +35,8 @@ export type CatalogModule = {
   monthlyPrice: string;
   currency: string;
   active: number;
+  // Días de duración por demo (default backend = 30).
+  demoDurationDays?: number;
 };
 
 export type ClientModuleRow = {
