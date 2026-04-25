@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Loader2, ShieldCheck, ShieldAlert, Wallet } from "lucide-react";
 
-const API_BASE = `${import.meta.env.BASE_URL}api`;
+const API_BASE = "/api";
 
 interface LoginErrorPayload {
   error?: string;

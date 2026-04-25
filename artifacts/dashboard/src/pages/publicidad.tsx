@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Megaphone, RefreshCw, Sparkles, Trash2 } from "lucide-react";
 
-const API_BASE = `${import.meta.env.BASE_URL}api`;
+const API_BASE = "/api";
 
 interface JarvisAd {
   id: number;

@@ -1,6 +1,6 @@
 kind = "web"
-previewPath = "/"
-title = "AXYNTRAX Dashboard"
+previewPath = "/jarvis/"
+title = "JARVIS · IA AXYNTRAX"
 version = "1.0.0"
 id = "artifacts/dashboard"
 router = "path"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/" ]
+paths = [ "/jarvis/" ]
 localPort = 23183
 
 [services.development]
@@ -28,4 +28,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "23183"
-BASE_PATH = "/"
+BASE_PATH = "/jarvis/"
