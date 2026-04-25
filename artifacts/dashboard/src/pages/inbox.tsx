@@ -9,6 +9,8 @@ import {
   useSyncGmail,
   useListUsers,
   useListClients,
+  getListConversationsQueryKey,
+  getGetConversationQueryKey,
   type Conversation,
   type Message,
 } from "@workspace/api-client-react";
@@ -114,12 +116,19 @@ export default function Inbox() {
   }, [channel, status]);
 
   const conversationsQuery = useListConversations(params, {
-    query: { refetchInterval: 15000 },
+    query: {
+      queryKey: getListConversationsQueryKey(params),
+      refetchInterval: 15000,
+    },
   });
   const usersQuery = useListUsers();
   const clientsQuery = useListClients();
   const detailQuery = useGetConversation(selectedId ?? 0, {
-    query: { enabled: !!selectedId, refetchInterval: 10000 },
+    query: {
+      queryKey: getGetConversationQueryKey(selectedId ?? 0),
+      enabled: !!selectedId,
+      refetchInterval: 10000,
+    },
   });
 
   const replyMutation = useReplyConversation();

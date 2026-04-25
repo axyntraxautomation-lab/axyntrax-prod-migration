@@ -19,25 +19,49 @@ import type {
 import type {
   ActivityItem,
   AiChatRequest,
+  AnalyticsOverview,
   AssignConversationRequest,
+  AuditEntry,
   AuthSession,
+  CeciliaDraftRequest,
+  CeciliaDraftResult,
+  CeciliaTriageRequest,
+  CeciliaTriageResult,
   Client,
   ClientCreate,
   ClientUpdate,
   Conversation,
   ConversationDetail,
+  CulqiChargeRequest,
   DashboardKpis,
+  DeleteGmailTemplate200,
   ErrorResponse,
+  Finance,
+  FinanceCreate,
+  FinanceSummary,
+  GetVapidPublicKey200,
   GmailSyncResult,
+  GmailTemplate,
+  GmailTemplateCreate,
   HealthStatus,
   License,
   LicenseCreate,
   LinkClientRequest,
+  ListAuditLogParams,
   ListConversationsParams,
+  ListFinancesParams,
+  ListPaymentsParams,
   LoginRequest,
   Message,
+  Payment,
+  PaymentCreate,
+  PushSubscribeRequest,
   ReplyConversationRequest,
+  SendTestPush200,
   SetStatusRequest,
+  SubscribePush200,
+  SunatComprobanteRequest,
+  SunatComprobanteResponse,
   TwofaDisableRequest,
   TwofaEnableRequest,
   TwofaSetupResponse,
@@ -2102,6 +2126,1524 @@ export function useGetRecentActivity<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetRecentActivityQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Lista movimientos financieros
+ */
+export const getListFinancesUrl = (params?: ListFinancesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/finances?${stringifiedParams}`
+    : `/api/finances`;
+};
+
+export const listFinances = async (
+  params?: ListFinancesParams,
+  options?: RequestInit,
+): Promise<Finance[]> => {
+  return customFetch<Finance[]>(getListFinancesUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListFinancesQueryKey = (params?: ListFinancesParams) => {
+  return [`/api/finances`, ...(params ? [params] : [])] as const;
+};
+
+export const getListFinancesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listFinances>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListFinancesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listFinances>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListFinancesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listFinances>>> = ({
+    signal,
+  }) => listFinances(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listFinances>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListFinancesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listFinances>>
+>;
+export type ListFinancesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Lista movimientos financieros
+ */
+
+export function useListFinances<
+  TData = Awaited<ReturnType<typeof listFinances>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListFinancesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listFinances>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListFinancesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Crea un movimiento financiero
+ */
+export const getCreateFinanceUrl = () => {
+  return `/api/finances`;
+};
+
+export const createFinance = async (
+  financeCreate: FinanceCreate,
+  options?: RequestInit,
+): Promise<Finance> => {
+  return customFetch<Finance>(getCreateFinanceUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(financeCreate),
+  });
+};
+
+export const getCreateFinanceMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createFinance>>,
+    TError,
+    { data: BodyType<FinanceCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createFinance>>,
+  TError,
+  { data: BodyType<FinanceCreate> },
+  TContext
+> => {
+  const mutationKey = ["createFinance"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createFinance>>,
+    { data: BodyType<FinanceCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createFinance(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateFinanceMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createFinance>>
+>;
+export type CreateFinanceMutationBody = BodyType<FinanceCreate>;
+export type CreateFinanceMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Crea un movimiento financiero
+ */
+export const useCreateFinance = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createFinance>>,
+    TError,
+    { data: BodyType<FinanceCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createFinance>>,
+  TError,
+  { data: BodyType<FinanceCreate> },
+  TContext
+> => {
+  return useMutation(getCreateFinanceMutationOptions(options));
+};
+
+export const getDeleteFinanceUrl = (id: number) => {
+  return `/api/finances/${id}`;
+};
+
+export const deleteFinance = async (
+  id: number,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteFinanceUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteFinanceMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteFinance>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteFinance>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteFinance"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteFinance>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteFinance(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteFinanceMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteFinance>>
+>;
+
+export type DeleteFinanceMutationError = ErrorType<unknown>;
+
+export const useDeleteFinance = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteFinance>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteFinance>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteFinanceMutationOptions(options));
+};
+
+/**
+ * @summary Resumen ingresos/egresos del mes en curso
+ */
+export const getGetFinanceSummaryUrl = () => {
+  return `/api/finances/summary`;
+};
+
+export const getFinanceSummary = async (
+  options?: RequestInit,
+): Promise<FinanceSummary> => {
+  return customFetch<FinanceSummary>(getGetFinanceSummaryUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetFinanceSummaryQueryKey = () => {
+  return [`/api/finances/summary`] as const;
+};
+
+export const getGetFinanceSummaryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFinanceSummary>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getFinanceSummary>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetFinanceSummaryQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getFinanceSummary>>
+  > = ({ signal }) => getFinanceSummary({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFinanceSummary>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetFinanceSummaryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFinanceSummary>>
+>;
+export type GetFinanceSummaryQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Resumen ingresos/egresos del mes en curso
+ */
+
+export function useGetFinanceSummary<
+  TData = Awaited<ReturnType<typeof getFinanceSummary>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getFinanceSummary>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetFinanceSummaryQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Lista pagos
+ */
+export const getListPaymentsUrl = (params?: ListPaymentsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/payments?${stringifiedParams}`
+    : `/api/payments`;
+};
+
+export const listPayments = async (
+  params?: ListPaymentsParams,
+  options?: RequestInit,
+): Promise<Payment[]> => {
+  return customFetch<Payment[]>(getListPaymentsUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListPaymentsQueryKey = (params?: ListPaymentsParams) => {
+  return [`/api/payments`, ...(params ? [params] : [])] as const;
+};
+
+export const getListPaymentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPayments>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListPaymentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listPayments>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListPaymentsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listPayments>>> = ({
+    signal,
+  }) => listPayments(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPayments>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPaymentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPayments>>
+>;
+export type ListPaymentsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Lista pagos
+ */
+
+export function useListPayments<
+  TData = Awaited<ReturnType<typeof listPayments>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListPaymentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listPayments>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPaymentsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Registra un pago manual
+ */
+export const getCreatePaymentUrl = () => {
+  return `/api/payments`;
+};
+
+export const createPayment = async (
+  paymentCreate: PaymentCreate,
+  options?: RequestInit,
+): Promise<Payment> => {
+  return customFetch<Payment>(getCreatePaymentUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(paymentCreate),
+  });
+};
+
+export const getCreatePaymentMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPayment>>,
+    TError,
+    { data: BodyType<PaymentCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createPayment>>,
+  TError,
+  { data: BodyType<PaymentCreate> },
+  TContext
+> => {
+  const mutationKey = ["createPayment"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createPayment>>,
+    { data: BodyType<PaymentCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createPayment(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreatePaymentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createPayment>>
+>;
+export type CreatePaymentMutationBody = BodyType<PaymentCreate>;
+export type CreatePaymentMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Registra un pago manual
+ */
+export const useCreatePayment = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPayment>>,
+    TError,
+    { data: BodyType<PaymentCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createPayment>>,
+  TError,
+  { data: BodyType<PaymentCreate> },
+  TContext
+> => {
+  return useMutation(getCreatePaymentMutationOptions(options));
+};
+
+/**
+ * @summary Genera un cargo en Culqi (modo stub si CULQI_SECRET_KEY no existe)
+ */
+export const getCulqiChargeUrl = () => {
+  return `/api/payments/culqi/charge`;
+};
+
+export const culqiCharge = async (
+  culqiChargeRequest: CulqiChargeRequest,
+  options?: RequestInit,
+): Promise<Payment> => {
+  return customFetch<Payment>(getCulqiChargeUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(culqiChargeRequest),
+  });
+};
+
+export const getCulqiChargeMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof culqiCharge>>,
+    TError,
+    { data: BodyType<CulqiChargeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof culqiCharge>>,
+  TError,
+  { data: BodyType<CulqiChargeRequest> },
+  TContext
+> => {
+  const mutationKey = ["culqiCharge"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof culqiCharge>>,
+    { data: BodyType<CulqiChargeRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return culqiCharge(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CulqiChargeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof culqiCharge>>
+>;
+export type CulqiChargeMutationBody = BodyType<CulqiChargeRequest>;
+export type CulqiChargeMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Genera un cargo en Culqi (modo stub si CULQI_SECRET_KEY no existe)
+ */
+export const useCulqiCharge = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof culqiCharge>>,
+    TError,
+    { data: BodyType<CulqiChargeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof culqiCharge>>,
+  TError,
+  { data: BodyType<CulqiChargeRequest> },
+  TContext
+> => {
+  return useMutation(getCulqiChargeMutationOptions(options));
+};
+
+/**
+ * @summary Genera el XML UBL 2.1 (boleta/factura) del pago
+ */
+export const getGenerateSunatComprobanteUrl = (id: number) => {
+  return `/api/payments/${id}/sunat-comprobante`;
+};
+
+export const generateSunatComprobante = async (
+  id: number,
+  sunatComprobanteRequest: SunatComprobanteRequest,
+  options?: RequestInit,
+): Promise<SunatComprobanteResponse> => {
+  return customFetch<SunatComprobanteResponse>(
+    getGenerateSunatComprobanteUrl(id),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(sunatComprobanteRequest),
+    },
+  );
+};
+
+export const getGenerateSunatComprobanteMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateSunatComprobante>>,
+    TError,
+    { id: number; data: BodyType<SunatComprobanteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof generateSunatComprobante>>,
+  TError,
+  { id: number; data: BodyType<SunatComprobanteRequest> },
+  TContext
+> => {
+  const mutationKey = ["generateSunatComprobante"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof generateSunatComprobante>>,
+    { id: number; data: BodyType<SunatComprobanteRequest> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return generateSunatComprobante(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GenerateSunatComprobanteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof generateSunatComprobante>>
+>;
+export type GenerateSunatComprobanteMutationBody =
+  BodyType<SunatComprobanteRequest>;
+export type GenerateSunatComprobanteMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Genera el XML UBL 2.1 (boleta/factura) del pago
+ */
+export const useGenerateSunatComprobante = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateSunatComprobante>>,
+    TError,
+    { id: number; data: BodyType<SunatComprobanteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof generateSunatComprobante>>,
+  TError,
+  { id: number; data: BodyType<SunatComprobanteRequest> },
+  TContext
+> => {
+  return useMutation(getGenerateSunatComprobanteMutationOptions(options));
+};
+
+/**
+ * @summary Cecilia clasifica una conversación Gmail y propone respuesta
+ */
+export const getCeciliaTriageUrl = () => {
+  return `/api/gmail/cecilia/triage`;
+};
+
+export const ceciliaTriage = async (
+  ceciliaTriageRequest: CeciliaTriageRequest,
+  options?: RequestInit,
+): Promise<CeciliaTriageResult> => {
+  return customFetch<CeciliaTriageResult>(getCeciliaTriageUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ceciliaTriageRequest),
+  });
+};
+
+export const getCeciliaTriageMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ceciliaTriage>>,
+    TError,
+    { data: BodyType<CeciliaTriageRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof ceciliaTriage>>,
+  TError,
+  { data: BodyType<CeciliaTriageRequest> },
+  TContext
+> => {
+  const mutationKey = ["ceciliaTriage"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof ceciliaTriage>>,
+    { data: BodyType<CeciliaTriageRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return ceciliaTriage(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CeciliaTriageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof ceciliaTriage>>
+>;
+export type CeciliaTriageMutationBody = BodyType<CeciliaTriageRequest>;
+export type CeciliaTriageMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Cecilia clasifica una conversación Gmail y propone respuesta
+ */
+export const useCeciliaTriage = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ceciliaTriage>>,
+    TError,
+    { data: BodyType<CeciliaTriageRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof ceciliaTriage>>,
+  TError,
+  { data: BodyType<CeciliaTriageRequest> },
+  TContext
+> => {
+  return useMutation(getCeciliaTriageMutationOptions(options));
+};
+
+/**
+ * @summary Cecilia redacta un borrador de respuesta
+ */
+export const getCeciliaDraftReplyUrl = () => {
+  return `/api/gmail/cecilia/draft-reply`;
+};
+
+export const ceciliaDraftReply = async (
+  ceciliaDraftRequest: CeciliaDraftRequest,
+  options?: RequestInit,
+): Promise<CeciliaDraftResult> => {
+  return customFetch<CeciliaDraftResult>(getCeciliaDraftReplyUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ceciliaDraftRequest),
+  });
+};
+
+export const getCeciliaDraftReplyMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ceciliaDraftReply>>,
+    TError,
+    { data: BodyType<CeciliaDraftRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof ceciliaDraftReply>>,
+  TError,
+  { data: BodyType<CeciliaDraftRequest> },
+  TContext
+> => {
+  const mutationKey = ["ceciliaDraftReply"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof ceciliaDraftReply>>,
+    { data: BodyType<CeciliaDraftRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return ceciliaDraftReply(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CeciliaDraftReplyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof ceciliaDraftReply>>
+>;
+export type CeciliaDraftReplyMutationBody = BodyType<CeciliaDraftRequest>;
+export type CeciliaDraftReplyMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Cecilia redacta un borrador de respuesta
+ */
+export const useCeciliaDraftReply = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ceciliaDraftReply>>,
+    TError,
+    { data: BodyType<CeciliaDraftRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof ceciliaDraftReply>>,
+  TError,
+  { data: BodyType<CeciliaDraftRequest> },
+  TContext
+> => {
+  return useMutation(getCeciliaDraftReplyMutationOptions(options));
+};
+
+/**
+ * @summary Listar plantillas de respuesta
+ */
+export const getListGmailTemplatesUrl = () => {
+  return `/api/gmail/cecilia/templates`;
+};
+
+export const listGmailTemplates = async (
+  options?: RequestInit,
+): Promise<GmailTemplate[]> => {
+  return customFetch<GmailTemplate[]>(getListGmailTemplatesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListGmailTemplatesQueryKey = () => {
+  return [`/api/gmail/cecilia/templates`] as const;
+};
+
+export const getListGmailTemplatesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listGmailTemplates>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listGmailTemplates>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListGmailTemplatesQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listGmailTemplates>>
+  > = ({ signal }) => listGmailTemplates({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listGmailTemplates>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListGmailTemplatesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listGmailTemplates>>
+>;
+export type ListGmailTemplatesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Listar plantillas de respuesta
+ */
+
+export function useListGmailTemplates<
+  TData = Awaited<ReturnType<typeof listGmailTemplates>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listGmailTemplates>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListGmailTemplatesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Crear plantilla
+ */
+export const getCreateGmailTemplateUrl = () => {
+  return `/api/gmail/cecilia/templates`;
+};
+
+export const createGmailTemplate = async (
+  gmailTemplateCreate: GmailTemplateCreate,
+  options?: RequestInit,
+): Promise<GmailTemplate> => {
+  return customFetch<GmailTemplate>(getCreateGmailTemplateUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(gmailTemplateCreate),
+  });
+};
+
+export const getCreateGmailTemplateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createGmailTemplate>>,
+    TError,
+    { data: BodyType<GmailTemplateCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createGmailTemplate>>,
+  TError,
+  { data: BodyType<GmailTemplateCreate> },
+  TContext
+> => {
+  const mutationKey = ["createGmailTemplate"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createGmailTemplate>>,
+    { data: BodyType<GmailTemplateCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createGmailTemplate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateGmailTemplateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createGmailTemplate>>
+>;
+export type CreateGmailTemplateMutationBody = BodyType<GmailTemplateCreate>;
+export type CreateGmailTemplateMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Crear plantilla
+ */
+export const useCreateGmailTemplate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createGmailTemplate>>,
+    TError,
+    { data: BodyType<GmailTemplateCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createGmailTemplate>>,
+  TError,
+  { data: BodyType<GmailTemplateCreate> },
+  TContext
+> => {
+  return useMutation(getCreateGmailTemplateMutationOptions(options));
+};
+
+/**
+ * @summary Eliminar plantilla
+ */
+export const getDeleteGmailTemplateUrl = (id: number) => {
+  return `/api/gmail/cecilia/templates/${id}`;
+};
+
+export const deleteGmailTemplate = async (
+  id: number,
+  options?: RequestInit,
+): Promise<DeleteGmailTemplate200> => {
+  return customFetch<DeleteGmailTemplate200>(getDeleteGmailTemplateUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteGmailTemplateMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteGmailTemplate>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteGmailTemplate>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteGmailTemplate"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteGmailTemplate>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteGmailTemplate(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteGmailTemplateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteGmailTemplate>>
+>;
+
+export type DeleteGmailTemplateMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Eliminar plantilla
+ */
+export const useDeleteGmailTemplate = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteGmailTemplate>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteGmailTemplate>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteGmailTemplateMutationOptions(options));
+};
+
+/**
+ * @summary Métricas globales de los últimos 30 días
+ */
+export const getGetAnalyticsOverviewUrl = () => {
+  return `/api/analytics/overview`;
+};
+
+export const getAnalyticsOverview = async (
+  options?: RequestInit,
+): Promise<AnalyticsOverview> => {
+  return customFetch<AnalyticsOverview>(getGetAnalyticsOverviewUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAnalyticsOverviewQueryKey = () => {
+  return [`/api/analytics/overview`] as const;
+};
+
+export const getGetAnalyticsOverviewQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAnalyticsOverview>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAnalyticsOverview>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAnalyticsOverviewQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAnalyticsOverview>>
+  > = ({ signal }) => getAnalyticsOverview({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAnalyticsOverview>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAnalyticsOverviewQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAnalyticsOverview>>
+>;
+export type GetAnalyticsOverviewQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Métricas globales de los últimos 30 días
+ */
+
+export function useGetAnalyticsOverview<
+  TData = Awaited<ReturnType<typeof getAnalyticsOverview>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAnalyticsOverview>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAnalyticsOverviewQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Devuelve la clave pública VAPID para suscripción push
+ */
+export const getGetVapidPublicKeyUrl = () => {
+  return `/api/push/vapid-key`;
+};
+
+export const getVapidPublicKey = async (
+  options?: RequestInit,
+): Promise<GetVapidPublicKey200> => {
+  return customFetch<GetVapidPublicKey200>(getGetVapidPublicKeyUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetVapidPublicKeyQueryKey = () => {
+  return [`/api/push/vapid-key`] as const;
+};
+
+export const getGetVapidPublicKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getVapidPublicKey>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getVapidPublicKey>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetVapidPublicKeyQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getVapidPublicKey>>
+  > = ({ signal }) => getVapidPublicKey({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getVapidPublicKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetVapidPublicKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getVapidPublicKey>>
+>;
+export type GetVapidPublicKeyQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Devuelve la clave pública VAPID para suscripción push
+ */
+
+export function useGetVapidPublicKey<
+  TData = Awaited<ReturnType<typeof getVapidPublicKey>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getVapidPublicKey>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetVapidPublicKeyQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Registra una suscripción Web Push
+ */
+export const getSubscribePushUrl = () => {
+  return `/api/push/subscribe`;
+};
+
+export const subscribePush = async (
+  pushSubscribeRequest: PushSubscribeRequest,
+  options?: RequestInit,
+): Promise<SubscribePush200> => {
+  return customFetch<SubscribePush200>(getSubscribePushUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(pushSubscribeRequest),
+  });
+};
+
+export const getSubscribePushMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof subscribePush>>,
+    TError,
+    { data: BodyType<PushSubscribeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof subscribePush>>,
+  TError,
+  { data: BodyType<PushSubscribeRequest> },
+  TContext
+> => {
+  const mutationKey = ["subscribePush"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof subscribePush>>,
+    { data: BodyType<PushSubscribeRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return subscribePush(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubscribePushMutationResult = NonNullable<
+  Awaited<ReturnType<typeof subscribePush>>
+>;
+export type SubscribePushMutationBody = BodyType<PushSubscribeRequest>;
+export type SubscribePushMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Registra una suscripción Web Push
+ */
+export const useSubscribePush = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof subscribePush>>,
+    TError,
+    { data: BodyType<PushSubscribeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof subscribePush>>,
+  TError,
+  { data: BodyType<PushSubscribeRequest> },
+  TContext
+> => {
+  return useMutation(getSubscribePushMutationOptions(options));
+};
+
+/**
+ * @summary Envía notificación push de prueba al usuario actual
+ */
+export const getSendTestPushUrl = () => {
+  return `/api/push/test`;
+};
+
+export const sendTestPush = async (
+  options?: RequestInit,
+): Promise<SendTestPush200> => {
+  return customFetch<SendTestPush200>(getSendTestPushUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getSendTestPushMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof sendTestPush>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof sendTestPush>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["sendTestPush"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof sendTestPush>>,
+    void
+  > = () => {
+    return sendTestPush(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SendTestPushMutationResult = NonNullable<
+  Awaited<ReturnType<typeof sendTestPush>>
+>;
+
+export type SendTestPushMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Envía notificación push de prueba al usuario actual
+ */
+export const useSendTestPush = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof sendTestPush>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof sendTestPush>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getSendTestPushMutationOptions(options));
+};
+
+/**
+ * @summary Lista los últimos eventos del audit log (admin)
+ */
+export const getListAuditLogUrl = (params?: ListAuditLogParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/admin/audit?${stringifiedParams}`
+    : `/api/admin/audit`;
+};
+
+export const listAuditLog = async (
+  params?: ListAuditLogParams,
+  options?: RequestInit,
+): Promise<AuditEntry[]> => {
+  return customFetch<AuditEntry[]>(getListAuditLogUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListAuditLogQueryKey = (params?: ListAuditLogParams) => {
+  return [`/api/admin/audit`, ...(params ? [params] : [])] as const;
+};
+
+export const getListAuditLogQueryOptions = <
+  TData = Awaited<ReturnType<typeof listAuditLog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAuditLogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listAuditLog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListAuditLogQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listAuditLog>>> = ({
+    signal,
+  }) => listAuditLog(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listAuditLog>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListAuditLogQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listAuditLog>>
+>;
+export type ListAuditLogQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Lista los últimos eventos del audit log (admin)
+ */
+
+export function useListAuditLog<
+  TData = Awaited<ReturnType<typeof listAuditLog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAuditLogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listAuditLog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListAuditLogQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

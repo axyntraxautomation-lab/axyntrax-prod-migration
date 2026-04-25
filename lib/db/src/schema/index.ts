@@ -8,3 +8,6 @@ export * from "./payments";
 export * from "./finances";
 export * from "./emails";
 export * from "./aiLogs";
+export * from "./audit";
+export * from "./pushSubscriptions";
+export * from "./gmailTemplates";

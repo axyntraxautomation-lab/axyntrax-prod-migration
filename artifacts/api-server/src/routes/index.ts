@@ -10,6 +10,12 @@ import aiRouter from "./ai";
 import conversationsRouter from "./conversations";
 import webhooksRouter from "./webhooks";
 import gmailRouter from "./gmail";
+import financesRouter from "./finances";
+import paymentsRouter from "./payments";
+import ceciliaRouter from "./cecilia";
+import analyticsRouter from "./analytics";
+import pushRouter from "./push";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -24,5 +30,11 @@ router.use(aiRouter);
 router.use(conversationsRouter);
 router.use(webhooksRouter);
 router.use(gmailRouter);
+router.use(financesRouter);
+router.use(paymentsRouter);
+router.use(ceciliaRouter);
+router.use(analyticsRouter);
+router.use(pushRouter);
+router.use(adminRouter);
 
 export default router;

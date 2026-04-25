@@ -362,9 +362,398 @@ export interface ActivityItem {
   timestamp: string;
 }
 
+export type FinanceType = (typeof FinanceType)[keyof typeof FinanceType];
+
+export const FinanceType = {
+  ingreso: "ingreso",
+  egreso: "egreso",
+} as const;
+
+export interface Finance {
+  id: number;
+  type: FinanceType;
+  amount: number;
+  currency: string;
+  /** @nullable */
+  category?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  paymentId?: number | null;
+  date: string;
+  createdAt: string;
+}
+
+export type FinanceCreateType =
+  (typeof FinanceCreateType)[keyof typeof FinanceCreateType];
+
+export const FinanceCreateType = {
+  ingreso: "ingreso",
+  egreso: "egreso",
+} as const;
+
+export interface FinanceCreate {
+  type: FinanceCreateType;
+  amount: number;
+  /** @nullable */
+  currency?: string | null;
+  /** @nullable */
+  category?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  date?: string | null;
+}
+
+export interface FinanceSummary {
+  ingresoMes: number;
+  egresoMes: number;
+  balanceMes: number;
+  mrrActivo: number;
+  pagosPendientes: number;
+  pagosExitososMes: number;
+}
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export const PaymentStatus = {
+  pendiente: "pendiente",
+  procesando: "procesando",
+  exitoso: "exitoso",
+  fallido: "fallido",
+  reembolsado: "reembolsado",
+} as const;
+
+export interface Payment {
+  id: number;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  licenseId?: number | null;
+  amount: number;
+  currency: string;
+  method: string;
+  status: PaymentStatus;
+  /** @nullable */
+  reference?: string | null;
+  /** @nullable */
+  externalId?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  /** @nullable */
+  paidAt?: string | null;
+  createdAt: string;
+}
+
+export interface PaymentCreate {
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  licenseId?: number | null;
+  amount: number;
+  /** @nullable */
+  currency?: string | null;
+  /** @nullable */
+  method?: string | null;
+  /** @nullable */
+  status?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface CulqiChargeRequest {
+  amount: number;
+  /** @nullable */
+  currency?: string | null;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  licenseId?: number | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  culqiToken?: string | null;
+}
+
+export type SunatComprobanteRequestTipo =
+  (typeof SunatComprobanteRequestTipo)[keyof typeof SunatComprobanteRequestTipo];
+
+export const SunatComprobanteRequestTipo = {
+  boleta: "boleta",
+  factura: "factura",
+} as const;
+
+export interface SunatComprobanteRequest {
+  tipo: SunatComprobanteRequestTipo;
+  /** @nullable */
+  rucCliente?: string | null;
+  /** @nullable */
+  razonSocial?: string | null;
+}
+
+export type SunatComprobanteResponseTipo =
+  (typeof SunatComprobanteResponseTipo)[keyof typeof SunatComprobanteResponseTipo];
+
+export const SunatComprobanteResponseTipo = {
+  boleta: "boleta",
+  factura: "factura",
+} as const;
+
+export interface SunatComprobanteResponse {
+  serie: string;
+  correlativo: number;
+  tipo: SunatComprobanteResponseTipo;
+  xml: string;
+  sentToSunat: boolean;
+  /** @nullable */
+  sunatNote?: string | null;
+}
+
+export interface CeciliaTriageRequest {
+  conversationId: number;
+}
+
+export type CeciliaTriageResultCategory =
+  (typeof CeciliaTriageResultCategory)[keyof typeof CeciliaTriageResultCategory];
+
+export const CeciliaTriageResultCategory = {
+  lead: "lead",
+  soporte: "soporte",
+  factura: "factura",
+  personal: "personal",
+  spam: "spam",
+  otro: "otro",
+} as const;
+
+export type CeciliaTriageResultPriority =
+  (typeof CeciliaTriageResultPriority)[keyof typeof CeciliaTriageResultPriority];
+
+export const CeciliaTriageResultPriority = {
+  alta: "alta",
+  media: "media",
+  baja: "baja",
+} as const;
+
+export type CeciliaTriageResultLanguage =
+  (typeof CeciliaTriageResultLanguage)[keyof typeof CeciliaTriageResultLanguage];
+
+export const CeciliaTriageResultLanguage = {
+  es: "es",
+  en: "en",
+} as const;
+
+export interface CeciliaTriageResult {
+  category: CeciliaTriageResultCategory;
+  priority: CeciliaTriageResultPriority;
+  summary: string;
+  suggestedReply: string;
+  language: CeciliaTriageResultLanguage;
+}
+
+/**
+ * @nullable
+ */
+export type CeciliaDraftRequestTone =
+  | (typeof CeciliaDraftRequestTone)[keyof typeof CeciliaDraftRequestTone]
+  | null;
+
+export const CeciliaDraftRequestTone = {
+  formal: "formal",
+  cordial: "cordial",
+  directo: "directo",
+} as const;
+
+export interface CeciliaDraftRequest {
+  conversationId: number;
+  /** @nullable */
+  intent?: string | null;
+  /** @nullable */
+  tone?: CeciliaDraftRequestTone;
+}
+
+export interface CeciliaDraftResult {
+  reply: string;
+}
+
+export interface GmailTemplate {
+  id: number;
+  /** @nullable */
+  ownerId?: number | null;
+  name: string;
+  category: string;
+  /** @nullable */
+  subject?: string | null;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GmailTemplateCreate {
+  name: string;
+  category?: string;
+  /** @nullable */
+  subject?: string | null;
+  body: string;
+}
+
+export type AnalyticsOverviewRange = {
+  from: string;
+  to: string;
+};
+
+export type AnalyticsOverviewConversationsByChannelItem = {
+  channel: string;
+  count: number;
+};
+
+export type AnalyticsOverviewConversationsByStatusItem = {
+  status: string;
+  count: number;
+};
+
+export type AnalyticsOverviewMessagesByDayItem = {
+  day: string;
+  count: number;
+  inbound: number;
+  outbound: number;
+};
+
+export type AnalyticsOverviewAiStatsItem = {
+  source: string;
+  event: string;
+  count: number;
+};
+
+export type AnalyticsOverviewFinanceByDayItem = {
+  day: string;
+  ingreso: number;
+  egreso: number;
+};
+
+export type AnalyticsOverviewPaymentStatsItem = {
+  status: string;
+  count: number;
+  total: number;
+};
+
+export type AnalyticsOverviewResponseTimesByChannelItem = {
+  channel: string;
+  avgMinutes: number;
+  samples: number;
+};
+
+export type AnalyticsOverviewRecentAiActivityItem = {
+  id: number;
+  source: string;
+  event: string;
+  /** @nullable */
+  message?: string | null;
+  createdAt: string;
+};
+
+export interface AnalyticsOverview {
+  range: AnalyticsOverviewRange;
+  conversationsByChannel: AnalyticsOverviewConversationsByChannelItem[];
+  conversationsByStatus: AnalyticsOverviewConversationsByStatusItem[];
+  messagesByDay: AnalyticsOverviewMessagesByDayItem[];
+  aiStats: AnalyticsOverviewAiStatsItem[];
+  financeByDay: AnalyticsOverviewFinanceByDayItem[];
+  paymentStats: AnalyticsOverviewPaymentStatsItem[];
+  responseTimesByChannel: AnalyticsOverviewResponseTimesByChannelItem[];
+  recentAiActivity: AnalyticsOverviewRecentAiActivityItem[];
+}
+
+export type PushSubscribeRequestKeys = {
+  p256dh: string;
+  auth: string;
+};
+
+export interface PushSubscribeRequest {
+  endpoint: string;
+  keys: PushSubscribeRequestKeys;
+}
+
+/**
+ * @nullable
+ */
+export type AuditEntryMeta = { [key: string]: unknown } | null;
+
+export interface AuditEntry {
+  id: number;
+  /** @nullable */
+  userId?: number | null;
+  action: string;
+  /** @nullable */
+  entityType?: string | null;
+  /** @nullable */
+  entityId?: string | null;
+  /** @nullable */
+  ip?: string | null;
+  /** @nullable */
+  userAgent?: string | null;
+  /** @nullable */
+  meta?: AuditEntryMeta;
+  createdAt: string;
+}
+
 export type ListConversationsParams = {
   channel?: string;
   status?: string;
   assignedAgentId?: number;
+  limit?: number;
+};
+
+export type ListFinancesParams = {
+  type?: ListFinancesType;
+  from?: string;
+  to?: string;
+};
+
+export type ListFinancesType =
+  (typeof ListFinancesType)[keyof typeof ListFinancesType];
+
+export const ListFinancesType = {
+  ingreso: "ingreso",
+  egreso: "egreso",
+} as const;
+
+export type ListPaymentsParams = {
+  status?: string;
+  clientId?: number;
+};
+
+export type DeleteGmailTemplate200 = {
+  ok: boolean;
+};
+
+export type GetVapidPublicKey200 = {
+  publicKey: string;
+};
+
+export type SubscribePush200 = {
+  ok: boolean;
+  id: number;
+  updated: boolean;
+};
+
+export type SendTestPush200 = {
+  sent: number;
+  removed: number;
+};
+
+export type ListAuditLogParams = {
+  /**
+   * @maximum 500
+   */
   limit?: number;
 };

@@ -26,6 +26,10 @@ tags:
     description: AXYN CORE AI chat (Claude + Gemini)
   - name: inbox
     description: Unified omnichannel inbox (Web · Facebook · Instagram · WhatsApp · Gmail)
+  - name: finance
+    description: Finanzas — movimientos, pagos, Culqi y comprobantes SUNAT
+  - name: axia
+    description: AXIA — asistente financiero (IA)
 paths:
   /healthz:
     get:
@@ -502,6 +506,337 @@ paths:
                 items:
                   $ref: "#/components/schemas/ActivityItem"
 
+  /finances:
+    get:
+      operationId: listFinances
+      tags: [finance]
+      summary: Lista movimientos financieros
+      parameters:
+        - in: query
+          name: type
+          schema: { type: string, enum: [ingreso, egreso] }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: Movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Finance"
+    post:
+      operationId: createFinance
+      tags: [finance]
+      summary: Crea un movimiento financiero
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinanceCreate"
+      responses:
+        "201":
+          description: Movimiento creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Finance"
+
+  /finances/{id}:
+    delete:
+      operationId: deleteFinance
+      tags: [finance]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Eliminado
+
+  /finances/summary:
+    get:
+      operationId: getFinanceSummary
+      tags: [finance]
+      summary: Resumen ingresos/egresos del mes en curso
+      responses:
+        "200":
+          description: Resumen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSummary"
+
+  /payments:
+    get:
+      operationId: listPayments
+      tags: [finance]
+      summary: Lista pagos
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: clientId
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Pagos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+    post:
+      operationId: createPayment
+      tags: [finance]
+      summary: Registra un pago manual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCreate"
+      responses:
+        "201":
+          description: Pago creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /payments/culqi/charge:
+    post:
+      operationId: culqiCharge
+      tags: [finance]
+      summary: Genera un cargo en Culqi (modo stub si CULQI_SECRET_KEY no existe)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CulqiChargeRequest"
+      responses:
+        "201":
+          description: Cargo creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /payments/{id}/sunat-comprobante:
+    post:
+      operationId: generateSunatComprobante
+      tags: [finance]
+      summary: Genera el XML UBL 2.1 (boleta/factura) del pago
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SunatComprobanteRequest"
+      responses:
+        "200":
+          description: Comprobante generado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SunatComprobanteResponse"
+
+  /gmail/cecilia/triage:
+    post:
+      operationId: ceciliaTriage
+      summary: Cecilia clasifica una conversación Gmail y propone respuesta
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CeciliaTriageRequest"
+      responses:
+        "200":
+          description: Triage completado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CeciliaTriageResult"
+
+  /gmail/cecilia/draft-reply:
+    post:
+      operationId: ceciliaDraftReply
+      summary: Cecilia redacta un borrador de respuesta
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CeciliaDraftRequest"
+      responses:
+        "200":
+          description: Borrador generado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CeciliaDraftResult"
+
+  /gmail/cecilia/templates:
+    get:
+      operationId: listGmailTemplates
+      summary: Listar plantillas de respuesta
+      tags: [cecilia]
+      responses:
+        "200":
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GmailTemplate"
+    post:
+      operationId: createGmailTemplate
+      summary: Crear plantilla
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GmailTemplateCreate"
+      responses:
+        "201":
+          description: Creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailTemplate"
+
+  /gmail/cecilia/templates/{id}:
+    delete:
+      operationId: deleteGmailTemplate
+      summary: Eliminar plantilla
+      tags: [cecilia]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Eliminada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                required: [ok]
+
+  /analytics/overview:
+    get:
+      operationId: getAnalyticsOverview
+      summary: Métricas globales de los últimos 30 días
+      tags: [analytics]
+      responses:
+        "200":
+          description: Overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsOverview"
+
+  /push/vapid-key:
+    get:
+      operationId: getVapidPublicKey
+      summary: Devuelve la clave pública VAPID para suscripción push
+      tags: [push]
+      responses:
+        "200":
+          description: Clave pública
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  publicKey: { type: string }
+                required: [publicKey]
+
+  /push/subscribe:
+    post:
+      operationId: subscribePush
+      summary: Registra una suscripción Web Push
+      tags: [push]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushSubscribeRequest"
+      responses:
+        "200":
+          description: Suscripción registrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  id: { type: integer }
+                  updated: { type: boolean }
+                required: [ok, id, updated]
+
+  /push/test:
+    post:
+      operationId: sendTestPush
+      summary: Envía notificación push de prueba al usuario actual
+      tags: [push]
+      responses:
+        "200":
+          description: Resultado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent: { type: integer }
+                  removed: { type: integer }
+                required: [sent, removed]
+
+  /admin/audit:
+    get:
+      operationId: listAuditLog
+      summary: Lista los últimos eventos del audit log (admin)
+      tags: [admin]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, default: 100, maximum: 500 }
+      responses:
+        "200":
+          description: Eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditEntry"
+
 components:
   schemas:
     HealthStatus:
@@ -921,3 +1256,288 @@ components:
           type: string
           format: date-time
       required: [id, type, title, timestamp]
+
+    Finance:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [ingreso, egreso] }
+        amount: { type: number }
+        currency: { type: string }
+        category: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        paymentId: { type: ["integer", "null"] }
+        date: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+      required: [id, type, amount, currency, date, createdAt]
+
+    FinanceCreate:
+      type: object
+      properties:
+        type: { type: string, enum: [ingreso, egreso] }
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        category: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        date: { type: ["string", "null"], format: date-time }
+      required: [type, amount]
+
+    FinanceSummary:
+      type: object
+      properties:
+        ingresoMes: { type: number }
+        egresoMes: { type: number }
+        balanceMes: { type: number }
+        mrrActivo: { type: number }
+        pagosPendientes: { type: integer }
+        pagosExitososMes: { type: integer }
+      required:
+        - ingresoMes
+        - egresoMes
+        - balanceMes
+        - mrrActivo
+        - pagosPendientes
+        - pagosExitososMes
+
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        amount: { type: number }
+        currency: { type: string }
+        method: { type: string }
+        status: { type: string, enum: [pendiente, procesando, exitoso, fallido, reembolsado] }
+        reference: { type: ["string", "null"] }
+        externalId: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+        paidAt: { type: ["string", "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+      required: [id, amount, currency, method, status, createdAt]
+
+    PaymentCreate:
+      type: object
+      properties:
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        method: { type: ["string", "null"] }
+        status: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+      required: [amount]
+
+    CulqiChargeRequest:
+      type: object
+      properties:
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        description: { type: ["string", "null"] }
+        email: { type: ["string", "null"] }
+        culqiToken: { type: ["string", "null"] }
+      required: [amount]
+
+    SunatComprobanteRequest:
+      type: object
+      properties:
+        tipo: { type: string, enum: [boleta, factura] }
+        rucCliente: { type: ["string", "null"] }
+        razonSocial: { type: ["string", "null"] }
+      required: [tipo]
+
+    SunatComprobanteResponse:
+      type: object
+      properties:
+        serie: { type: string }
+        correlativo: { type: integer }
+        tipo: { type: string, enum: [boleta, factura] }
+        xml: { type: string }
+        sentToSunat: { type: boolean }
+        sunatNote: { type: ["string", "null"] }
+      required: [serie, correlativo, tipo, xml, sentToSunat]
+
+    CeciliaTriageRequest:
+      type: object
+      properties:
+        conversationId: { type: integer }
+      required: [conversationId]
+
+    CeciliaTriageResult:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [lead, soporte, factura, personal, spam, otro]
+        priority:
+          type: string
+          enum: [alta, media, baja]
+        summary: { type: string }
+        suggestedReply: { type: string }
+        language:
+          type: string
+          enum: [es, en]
+      required: [category, priority, summary, suggestedReply, language]
+
+    CeciliaDraftRequest:
+      type: object
+      properties:
+        conversationId: { type: integer }
+        intent: { type: ["string", "null"] }
+        tone:
+          type: ["string", "null"]
+          enum: [formal, cordial, directo, null]
+      required: [conversationId]
+
+    CeciliaDraftResult:
+      type: object
+      properties:
+        reply: { type: string }
+      required: [reply]
+
+    GmailTemplate:
+      type: object
+      properties:
+        id: { type: integer }
+        ownerId: { type: ["integer", "null"] }
+        name: { type: string }
+        category: { type: string }
+        subject: { type: ["string", "null"] }
+        body: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, name, category, body, createdAt, updatedAt]
+
+    GmailTemplateCreate:
+      type: object
+      properties:
+        name: { type: string }
+        category: { type: string }
+        subject: { type: ["string", "null"] }
+        body: { type: string }
+      required: [name, body]
+
+    AnalyticsOverview:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from: { type: string, format: date-time }
+            to: { type: string, format: date-time }
+          required: [from, to]
+        conversationsByChannel:
+          type: array
+          items:
+            type: object
+            properties:
+              channel: { type: string }
+              count: { type: integer }
+            required: [channel, count]
+        conversationsByStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              count: { type: integer }
+            required: [status, count]
+        messagesByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              day: { type: string }
+              count: { type: integer }
+              inbound: { type: integer }
+              outbound: { type: integer }
+            required: [day, count, inbound, outbound]
+        aiStats:
+          type: array
+          items:
+            type: object
+            properties:
+              source: { type: string }
+              event: { type: string }
+              count: { type: integer }
+            required: [source, event, count]
+        financeByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              day: { type: string }
+              ingreso: { type: number }
+              egreso: { type: number }
+            required: [day, ingreso, egreso]
+        paymentStats:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              count: { type: integer }
+              total: { type: number }
+            required: [status, count, total]
+        responseTimesByChannel:
+          type: array
+          items:
+            type: object
+            properties:
+              channel: { type: string }
+              avgMinutes: { type: number }
+              samples: { type: integer }
+            required: [channel, avgMinutes, samples]
+        recentAiActivity:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              source: { type: string }
+              event: { type: string }
+              message: { type: ["string", "null"] }
+              createdAt: { type: string, format: date-time }
+            required: [id, source, event, createdAt]
+      required:
+        - range
+        - conversationsByChannel
+        - conversationsByStatus
+        - messagesByDay
+        - aiStats
+        - financeByDay
+        - paymentStats
+        - responseTimesByChannel
+        - recentAiActivity
+
+    PushSubscribeRequest:
+      type: object
+      properties:
+        endpoint: { type: string }
+        keys:
+          type: object
+          properties:
+            p256dh: { type: string }
+            auth: { type: string }
+          required: [p256dh, auth]
+      required: [endpoint, keys]
+
+    AuditEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        userId: { type: ["integer", "null"] }
+        action: { type: string }
+        entityType: { type: ["string", "null"] }
+        entityId: { type: ["string", "null"] }
+        ip: { type: ["string", "null"] }
+        userAgent: { type: ["string", "null"] }
+        meta: { type: ["object", "null"], additionalProperties: true }
+        createdAt: { type: string, format: date-time }
+      required: [id, action, createdAt]

@@ -155,6 +155,14 @@ seeded once when the table is empty (development convenience).
 | `WHATSAPP_VERIFY_TOKEN`     | Verify token for WhatsApp Cloud API webhook (falls back to META_VERIFY_TOKEN). |
 | `WHATSAPP_APP_SECRET`       | HMAC secret for WhatsApp Cloud API (falls back to META_APP_SECRET).    |
 
+## FASE 5-8 (FINAL)
+
+- **FASE 5 — Cecilia (Gmail AI)**: `routes/cecilia.ts` con triage, draft-reply y CRUD de plantillas (owner-scoped). Usa Gemini `gemini-2.5-flash` con `responseMimeType: application/json` para clasificación. Prompts en español, sin emojis.
+- **FASE 6 — Analytics avanzados**: `routes/analytics.ts` expone `/api/analytics/overview` con conversaciones por canal/estado, mensajes por día, finanzas por día (30 d), uso de IA y tiempos de respuesta. Página `analytics.tsx` reescrita con Recharts.
+- **FASE 7 — PWA + Push**: `public/manifest.webmanifest`, `public/sw.js`, hook `use-push.ts`, `routes/push.ts` y `lib/push.ts`. VAPID se autogenera en `app_settings` la primera vez. Tarjeta de activación en `settings.tsx`.
+- **FASE 8 — Seguridad**: helmet + rate-limit (general 600 req/15 min, auth 20 req/15 min), `lib/audit.ts`, tabla `audit_log`, endpoints admin `/api/admin/backup` (export JSON) y `/api/admin/audit` (sólo `requireRole('admin')`).
+- **OpenAPI**: paths definidos sin `/api/` (orval añade `baseUrl: /api`); operaciones nuevas siguen la convención `operationId` + `${operationId}Response` evitando colisiones (`CeciliaTriageResult`, `CeciliaDraftResult`).
+
 ## See also
 
 - `pnpm-workspace` skill for monorepo conventions.

@@ -556,3 +556,340 @@ export const GetRecentActivityResponseItem = zod.object({
 export const GetRecentActivityResponse = zod.array(
   GetRecentActivityResponseItem,
 );
+
+/**
+ * @summary Lista movimientos financieros
+ */
+export const ListFinancesQueryParams = zod.object({
+  type: zod.enum(["ingreso", "egreso"]).optional(),
+  from: zod.date().optional(),
+  to: zod.date().optional(),
+});
+
+export const ListFinancesResponseItem = zod.object({
+  id: zod.number(),
+  type: zod.enum(["ingreso", "egreso"]),
+  amount: zod.number(),
+  currency: zod.string(),
+  category: zod.string().nullish(),
+  description: zod.string().nullish(),
+  clientId: zod.number().nullish(),
+  paymentId: zod.number().nullish(),
+  date: zod.coerce.date(),
+  createdAt: zod.coerce.date(),
+});
+export const ListFinancesResponse = zod.array(ListFinancesResponseItem);
+
+/**
+ * @summary Crea un movimiento financiero
+ */
+export const CreateFinanceBody = zod.object({
+  type: zod.enum(["ingreso", "egreso"]),
+  amount: zod.number(),
+  currency: zod.string().nullish(),
+  category: zod.string().nullish(),
+  description: zod.string().nullish(),
+  clientId: zod.number().nullish(),
+  date: zod.coerce.date().nullish(),
+});
+
+export const DeleteFinanceParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+/**
+ * @summary Resumen ingresos/egresos del mes en curso
+ */
+export const GetFinanceSummaryResponse = zod.object({
+  ingresoMes: zod.number(),
+  egresoMes: zod.number(),
+  balanceMes: zod.number(),
+  mrrActivo: zod.number(),
+  pagosPendientes: zod.number(),
+  pagosExitososMes: zod.number(),
+});
+
+/**
+ * @summary Lista pagos
+ */
+export const ListPaymentsQueryParams = zod.object({
+  status: zod.coerce.string().optional(),
+  clientId: zod.coerce.number().optional(),
+});
+
+export const ListPaymentsResponseItem = zod.object({
+  id: zod.number(),
+  clientId: zod.number().nullish(),
+  licenseId: zod.number().nullish(),
+  amount: zod.number(),
+  currency: zod.string(),
+  method: zod.string(),
+  status: zod.enum([
+    "pendiente",
+    "procesando",
+    "exitoso",
+    "fallido",
+    "reembolsado",
+  ]),
+  reference: zod.string().nullish(),
+  externalId: zod.string().nullish(),
+  description: zod.string().nullish(),
+  notes: zod.string().nullish(),
+  paidAt: zod.coerce.date().nullish(),
+  createdAt: zod.coerce.date(),
+});
+export const ListPaymentsResponse = zod.array(ListPaymentsResponseItem);
+
+/**
+ * @summary Registra un pago manual
+ */
+export const CreatePaymentBody = zod.object({
+  clientId: zod.number().nullish(),
+  licenseId: zod.number().nullish(),
+  amount: zod.number(),
+  currency: zod.string().nullish(),
+  method: zod.string().nullish(),
+  status: zod.string().nullish(),
+  description: zod.string().nullish(),
+  notes: zod.string().nullish(),
+});
+
+/**
+ * @summary Genera un cargo en Culqi (modo stub si CULQI_SECRET_KEY no existe)
+ */
+export const CulqiChargeBody = zod.object({
+  amount: zod.number(),
+  currency: zod.string().nullish(),
+  clientId: zod.number().nullish(),
+  licenseId: zod.number().nullish(),
+  description: zod.string().nullish(),
+  email: zod.string().nullish(),
+  culqiToken: zod.string().nullish(),
+});
+
+/**
+ * @summary Genera el XML UBL 2.1 (boleta/factura) del pago
+ */
+export const GenerateSunatComprobanteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GenerateSunatComprobanteBody = zod.object({
+  tipo: zod.enum(["boleta", "factura"]),
+  rucCliente: zod.string().nullish(),
+  razonSocial: zod.string().nullish(),
+});
+
+export const GenerateSunatComprobanteResponse = zod.object({
+  serie: zod.string(),
+  correlativo: zod.number(),
+  tipo: zod.enum(["boleta", "factura"]),
+  xml: zod.string(),
+  sentToSunat: zod.boolean(),
+  sunatNote: zod.string().nullish(),
+});
+
+/**
+ * @summary Cecilia clasifica una conversación Gmail y propone respuesta
+ */
+export const CeciliaTriageBody = zod.object({
+  conversationId: zod.number(),
+});
+
+export const CeciliaTriageResponse = zod.object({
+  category: zod.enum([
+    "lead",
+    "soporte",
+    "factura",
+    "personal",
+    "spam",
+    "otro",
+  ]),
+  priority: zod.enum(["alta", "media", "baja"]),
+  summary: zod.string(),
+  suggestedReply: zod.string(),
+  language: zod.enum(["es", "en"]),
+});
+
+/**
+ * @summary Cecilia redacta un borrador de respuesta
+ */
+export const CeciliaDraftReplyBody = zod.object({
+  conversationId: zod.number(),
+  intent: zod.string().nullish(),
+  tone: zod
+    .union([
+      zod.literal("formal"),
+      zod.literal("cordial"),
+      zod.literal("directo"),
+      zod.literal(null),
+    ])
+    .nullish(),
+});
+
+export const CeciliaDraftReplyResponse = zod.object({
+  reply: zod.string(),
+});
+
+/**
+ * @summary Listar plantillas de respuesta
+ */
+export const ListGmailTemplatesResponseItem = zod.object({
+  id: zod.number(),
+  ownerId: zod.number().nullish(),
+  name: zod.string(),
+  category: zod.string(),
+  subject: zod.string().nullish(),
+  body: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const ListGmailTemplatesResponse = zod.array(
+  ListGmailTemplatesResponseItem,
+);
+
+/**
+ * @summary Crear plantilla
+ */
+export const CreateGmailTemplateBody = zod.object({
+  name: zod.string(),
+  category: zod.string().optional(),
+  subject: zod.string().nullish(),
+  body: zod.string(),
+});
+
+/**
+ * @summary Eliminar plantilla
+ */
+export const DeleteGmailTemplateParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteGmailTemplateResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
+ * @summary Métricas globales de los últimos 30 días
+ */
+export const GetAnalyticsOverviewResponse = zod.object({
+  range: zod.object({
+    from: zod.coerce.date(),
+    to: zod.coerce.date(),
+  }),
+  conversationsByChannel: zod.array(
+    zod.object({
+      channel: zod.string(),
+      count: zod.number(),
+    }),
+  ),
+  conversationsByStatus: zod.array(
+    zod.object({
+      status: zod.string(),
+      count: zod.number(),
+    }),
+  ),
+  messagesByDay: zod.array(
+    zod.object({
+      day: zod.string(),
+      count: zod.number(),
+      inbound: zod.number(),
+      outbound: zod.number(),
+    }),
+  ),
+  aiStats: zod.array(
+    zod.object({
+      source: zod.string(),
+      event: zod.string(),
+      count: zod.number(),
+    }),
+  ),
+  financeByDay: zod.array(
+    zod.object({
+      day: zod.string(),
+      ingreso: zod.number(),
+      egreso: zod.number(),
+    }),
+  ),
+  paymentStats: zod.array(
+    zod.object({
+      status: zod.string(),
+      count: zod.number(),
+      total: zod.number(),
+    }),
+  ),
+  responseTimesByChannel: zod.array(
+    zod.object({
+      channel: zod.string(),
+      avgMinutes: zod.number(),
+      samples: zod.number(),
+    }),
+  ),
+  recentAiActivity: zod.array(
+    zod.object({
+      id: zod.number(),
+      source: zod.string(),
+      event: zod.string(),
+      message: zod.string().nullish(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
+ * @summary Devuelve la clave pública VAPID para suscripción push
+ */
+export const GetVapidPublicKeyResponse = zod.object({
+  publicKey: zod.string(),
+});
+
+/**
+ * @summary Registra una suscripción Web Push
+ */
+export const SubscribePushBody = zod.object({
+  endpoint: zod.string(),
+  keys: zod.object({
+    p256dh: zod.string(),
+    auth: zod.string(),
+  }),
+});
+
+export const SubscribePushResponse = zod.object({
+  ok: zod.boolean(),
+  id: zod.number(),
+  updated: zod.boolean(),
+});
+
+/**
+ * @summary Envía notificación push de prueba al usuario actual
+ */
+export const SendTestPushResponse = zod.object({
+  sent: zod.number(),
+  removed: zod.number(),
+});
+
+/**
+ * @summary Lista los últimos eventos del audit log (admin)
+ */
+export const listAuditLogQueryLimitDefault = 100;
+export const listAuditLogQueryLimitMax = 500;
+
+export const ListAuditLogQueryParams = zod.object({
+  limit: zod.coerce
+    .number()
+    .max(listAuditLogQueryLimitMax)
+    .default(listAuditLogQueryLimitDefault),
+});
+
+export const ListAuditLogResponseItem = zod.object({
+  id: zod.number(),
+  userId: zod.number().nullish(),
+  action: zod.string(),
+  entityType: zod.string().nullish(),
+  entityId: zod.string().nullish(),
+  ip: zod.string().nullish(),
+  userAgent: zod.string().nullish(),
+  meta: zod.record(zod.string(), zod.unknown()).nullish(),
+  createdAt: zod.coerce.date(),
+});
+export const ListAuditLogResponse = zod.array(ListAuditLogResponseItem);

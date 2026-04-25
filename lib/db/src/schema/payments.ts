@@ -23,8 +23,12 @@ export const paymentsTable = pgTable("payments", {
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 8 }).notNull().default("PEN"),
   method: varchar("method", { length: 32 }).notNull().default("culqi"),
+  status: varchar("status", { length: 32 }).notNull().default("pendiente"),
   reference: varchar("reference", { length: 128 }),
+  externalId: varchar("external_id", { length: 128 }),
+  description: text("description"),
   notes: text("notes"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

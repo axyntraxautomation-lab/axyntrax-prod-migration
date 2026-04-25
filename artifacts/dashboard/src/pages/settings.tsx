@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Shield, ShieldCheck, Users } from "lucide-react";
+import { Bell, BellOff, Loader2, LogOut, Shield, ShieldCheck, Users } from "lucide-react";
 import { TwofaCard } from "@/components/twofa-card";
+import { usePushNotifications } from "@/hooks/use-push";
 
 function initials(name: string) {
   return name
@@ -152,6 +153,9 @@ export default function Settings() {
 
       <TwofaCard enabled={!!user?.twofaEnabled} />
 
+      <PushNotificationsCard />
+
+
       <Card className="border-dashed">
         <CardContent className="py-6 text-sm text-muted-foreground">
           <p className="mb-2 font-medium text-foreground flex items-center gap-2">
@@ -167,5 +171,59 @@ export default function Settings() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function PushNotificationsCard() {
+  const push = usePushNotifications();
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Bell className="h-5 w-5 text-primary" />
+          Notificaciones push
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {!push.supported ? (
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <BellOff className="h-4 w-4" />
+            Tu navegador no soporta notificaciones push.
+          </p>
+        ) : push.subscribed ? (
+          <p className="text-sm text-emerald-500">
+            Push activado en este dispositivo. Recibirás alertas en tiempo real.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground">
+              Recibí avisos de mensajes nuevos, pagos y eventos de Cecilia
+              incluso con la pestaña cerrada.
+            </p>
+            <Button
+              onClick={push.enable}
+              disabled={push.loading}
+              data-testid="button-enable-push"
+            >
+              {push.loading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Bell className="h-4 w-4 mr-2" />
+              )}
+              Activar notificaciones
+            </Button>
+            {push.permission === "denied" && (
+              <p className="text-xs text-amber-500">
+                Las notificaciones están bloqueadas a nivel de navegador.
+                Habilítalas en la configuración del sitio para continuar.
+              </p>
+            )}
+          </>
+        )}
+        {push.error && (
+          <p className="text-xs text-red-500">Error: {push.error}</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
