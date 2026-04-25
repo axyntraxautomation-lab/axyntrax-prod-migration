@@ -16,12 +16,21 @@ function requireSessionSecret(): string {
 const SECRET: string = requireSessionSecret();
 const TOKEN_TTL = "30d";
 const COOKIE_NAME = "axyn_session";
+const PORTAL_COOKIE_NAME = "axyn_portal";
 
 export type AuthUser = {
   id: number;
   name: string;
   email: string;
   role: string;
+};
+
+export type PortalClient = {
+  id: number;
+  name: string;
+  company: string | null;
+  industry: string | null;
+  licenseId: number;
 };
 
 export async function hashPassword(plain: string): Promise<string> {
@@ -82,13 +91,132 @@ export function getTokenFromRequest(req: Request): string | null {
   return null;
 }
 
+export function signPortalToken(payload: {
+  kind: "client" | "admin";
+  sub: number;
+  name: string;
+  licenseId?: number;
+  role?: string;
+}): string {
+  return jwt.sign(payload, SECRET, { expiresIn: TOKEN_TTL });
+}
+
+export type PortalToken =
+  | {
+      kind: "client";
+      sub: number;
+      name: string;
+      licenseId: number;
+    }
+  | {
+      kind: "admin";
+      sub: number;
+      name: string;
+      role: string;
+    };
+
+export function verifyPortalToken(token: string): PortalToken | null {
+  try {
+    const decoded = jwt.verify(token, SECRET) as jwt.JwtPayload &
+      Partial<PortalToken>;
+    if (decoded.kind === "client" && typeof decoded.licenseId === "number") {
+      return {
+        kind: "client",
+        sub: Number(decoded.sub),
+        name: String(decoded.name ?? ""),
+        licenseId: decoded.licenseId,
+      };
+    }
+    if (decoded.kind === "admin" && typeof decoded.role === "string") {
+      return {
+        kind: "admin",
+        sub: Number(decoded.sub),
+        name: String(decoded.name ?? ""),
+        role: decoded.role,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function setPortalCookie(res: Response, token: string): void {
+  res.cookie(PORTAL_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
+}
+
+export function clearPortalCookie(res: Response): void {
+  res.clearCookie(PORTAL_COOKIE_NAME, { path: "/" });
+}
+
+function getPortalToken(req: Request): string | null {
+  const cookieToken = (req as Request & { cookies?: Record<string, string> })
+    .cookies?.[PORTAL_COOKIE_NAME];
+  if (cookieToken) return cookieToken;
+  const authHeader = req.headers["x-portal-authorization"];
+  if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
+    return authHeader.slice(7);
+  }
+  return null;
+}
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: AuthUser;
+      portal?: PortalToken;
     }
   }
+}
+
+export function requirePortalAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  const token = getPortalToken(req);
+  if (!token) {
+    res.status(401).json({ error: "No autenticado" });
+    return;
+  }
+  const decoded = verifyPortalToken(token);
+  if (!decoded) {
+    res.status(401).json({ error: "Sesión inválida o expirada" });
+    return;
+  }
+  req.portal = decoded;
+  next();
+}
+
+export function requirePortalClient(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  if (!req.portal || req.portal.kind !== "client") {
+    res.status(403).json({ error: "Acceso solo para clientes" });
+    return;
+  }
+  next();
+}
+
+export function requirePortalAdmin(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  if (!req.portal || req.portal.kind !== "admin" || req.portal.role !== "admin") {
+    res.status(403).json({ error: "Acceso solo para administradores" });
+    return;
+  }
+  next();
 }
 
 export async function requireAuth(

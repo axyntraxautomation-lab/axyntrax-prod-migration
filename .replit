@@ -28,3 +28,6 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 180000
+
+[workflows]
+runButton = "Project"
