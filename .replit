@@ -1,5 +1,6 @@
 run = "node server/index.js"
 entrypoint = "server/index.js"
+modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
@@ -8,3 +9,10 @@ packages = ["nodejs_20"]
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[agent]
+expertMode = true

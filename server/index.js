@@ -1,4 +1,6 @@
-require('dotenv').config();
+cat .replit
+  curl -v "https://social-media-answerer.replit.app/api/whatsapp?hub.mode=subscribe&hub.verify_token=axyntrax2026&hub.challenge=SUCCESS"
+    require('dotenv').config();
 const express = require('express');
 const app = express();
 app.use('/api/whatsapp', express.raw({ type: 'application/json' }), require('./routes/whatsapp'));

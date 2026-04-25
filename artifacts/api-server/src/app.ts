@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import webhooksRouter from "./routes/webhooks";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -39,6 +40,19 @@ app.use(
   }),
 );
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/whatsapp", (req, res, next) => {
+  req.url = "/webhooks/whatsapp" + (req.url === "/" ? "" : req.url);
+  webhooksRouter(req, res, next);
+});
+app.use("/facebook", (req, res, next) => {
+  req.url = "/webhooks/meta" + (req.url === "/" ? "" : req.url);
+  webhooksRouter(req, res, next);
+});
+app.use("/instagram", (req, res, next) => {
+  req.url = "/webhooks/meta" + (req.url === "/" ? "" : req.url);
+  webhooksRouter(req, res, next);
+});
 
 app.use("/api", router);
 
