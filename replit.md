@@ -12,7 +12,7 @@ with the AXYNTRAX logo throughout.
 | ------ | -------------------------------------------------------------------- | ------------- |
 | FASE 1 | Schema + auth + base UI + CRM/KeyGen + analytics                     | **Done**      |
 | FASE 2 | 2FA, AES-256 of sensitive fields, AXYN CORE (Claude+Gemini) live     | **Done**      |
-| FASE 3 | Omnichannel inbox webhooks (FB / IG / WA / Web / Gmail)              | Pending       |
+| FASE 3 | Omnichannel inbox webhooks (FB / IG / WA / Web / Gmail)              | **Done**      |
 | FASE 4 | Finanzas: Culqi + SUNAT integration, AXIA assistant                  | Pending       |
 | FASE 5 | Gmail automation (Cecilia), email orchestration                      | Pending       |
 | FASE 6 | Advanced analytics + dashboards                                      | Pending       |
@@ -77,6 +77,43 @@ with the AXYNTRAX logo throughout.
   length), model, chunk count, response length, latency, abort flag, and
   error message — no plaintext prompt content.
 
+### Omnichannel inbox (FASE 3)
+
+- **Schema**: `conversationsTable` is one row per `(channel, externalId)` thread
+  with `assignedAgentId`, `status`, `unreadCount`, `lastMessageAt`,
+  `lastMessagePreview`, `subject`, `contactName`, `contactHandle`. Each
+  `messagesTable` row is `inbound | outbound | system` with optional
+  `externalMessageId` and unique-per-conversation index for idempotent replays.
+- **Routes**: `GET /api/conversations` (filters: channel, status,
+  assignedAgentId), `GET /api/conversations/:id` (returns
+  `{conversation, messages}`, also resets `unreadCount`), `POST
+  /api/conversations/:id/messages` (agent reply), `/assign`, `/status`,
+  `/link-client`. All require auth.
+- **Webhook receivers** (`/api/webhooks/*`):
+  - `web` — bearer-token public ingress for site forms; body
+    `{externalId, name, email, subject, content}`. Bearer:
+    `Authorization: Bearer $WEB_FORM_TOKEN`.
+  - `meta` — Facebook Messenger + Instagram DM. `GET` does Meta
+    `hub.challenge` verification against `META_VERIFY_TOKEN`. `POST`
+    requires `x-hub-signature-256` HMAC-SHA256 over the raw body using
+    `META_APP_SECRET`. Normalises `entry[].messaging[]` and `entry[].changes[]`.
+  - `whatsapp` — same scheme as Meta, env vars
+    `WHATSAPP_VERIFY_TOKEN` / `WHATSAPP_APP_SECRET` (fall back to the Meta
+    pair if unset).
+- **Gmail**: handled via the Replit Google Mail integration. The granted
+  scopes are `gmail.send` + `gmail.labels` only, so:
+  - **Outbound replies on `channel = "gmail"` conversations are sent
+    via `users.messages.send`** (RFC 822, base64url) — message stored
+    with `status = "delivered"` and `externalMessageId = "gmail-msg:<id>"`.
+  - **Inbound polling is NOT possible** with the current connector scopes.
+    `POST /api/inbox/gmail/sync` returns HTTP 503 with a clear explanation;
+    receiving Gmail requires either a custom OAuth client with
+    `gmail.readonly`/`gmail.modify` or Gmail Push (Pub/Sub).
+- **Frontend**: `/inbox` is a two-pane list+detail layout with channel and
+  status filters, search, agent timeline (`inbound | outbound | system`),
+  reply box (Cmd/Ctrl+Enter to send), assign-to-agent, status change, and
+  link-to-CRM. List auto-refreshes every 15 s; open thread every 10 s.
+
 ### Bootstrap
 
 The first admin (`axyntraxautomation@gmail.com`) is seeded automatically only
@@ -85,7 +122,7 @@ seeded once when the table is empty (development convenience).
 
 ### Routes
 
-- API: `/api/auth/*`, `/api/users`, `/api/clients[/:id]`, `/api/licenses[/:id]`, `/api/dashboard/*`
+- API: `/api/auth/*`, `/api/users`, `/api/clients[/:id]`, `/api/licenses[/:id]`, `/api/dashboard/*`, `/api/conversations[/:id/{messages,assign,status,link-client}]`, `/api/webhooks/{web,meta,whatsapp}`, `/api/inbox/gmail/sync`
 - Web: `/login`, `/`, `/inbox`, `/crm`, `/crm/:id`, `/keygen`, `/finanzas`, `/email`, `/analytics`, `/axyn-core`, `/settings`
 
 ## Branding
@@ -112,6 +149,11 @@ seeded once when the table is empty (development convenience).
 | `ADMIN_BOOTSTRAP_PASSWORD`  | One-time admin seed password (unset after first run; rotate password). |
 | `ANTHROPIC_API_KEY`         | Auto-provisioned by the Replit Anthropic integration.                  |
 | `GEMINI_API_KEY`            | Auto-provisioned by the Replit Gemini integration.                     |
+| `WEB_FORM_TOKEN`            | Bearer required by `POST /api/webhooks/web`. Auto-generated on FASE 3 setup. |
+| `META_VERIFY_TOKEN`         | Token Meta calls back with on `GET /webhooks/meta?hub.verify_token=…`. |
+| `META_APP_SECRET`           | App secret used to verify `x-hub-signature-256` from Meta.             |
+| `WHATSAPP_VERIFY_TOKEN`     | Verify token for WhatsApp Cloud API webhook (falls back to META_VERIFY_TOKEN). |
+| `WHATSAPP_APP_SECRET`       | HMAC secret for WhatsApp Cloud API (falls back to META_APP_SECRET).    |
 
 ## See also
 

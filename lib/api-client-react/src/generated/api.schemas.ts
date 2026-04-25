@@ -43,6 +43,101 @@ export interface AuthSession {
   requiresTwofa?: boolean | null;
 }
 
+export interface Conversation {
+  id: number;
+  /** @nullable */
+  clientId?: number | null;
+  /** @nullable */
+  assignedAgentId?: number | null;
+  channel: string;
+  /** @nullable */
+  externalId?: string | null;
+  /** @nullable */
+  contactName?: string | null;
+  /** @nullable */
+  contactHandle?: string | null;
+  /** @nullable */
+  subject?: string | null;
+  /** @nullable */
+  label?: string | null;
+  status: string;
+  unreadCount: number;
+  lastMessageAt: string;
+  /** @nullable */
+  lastMessagePreview?: string | null;
+  createdAt: string;
+}
+
+export type MessageDirection =
+  (typeof MessageDirection)[keyof typeof MessageDirection];
+
+export const MessageDirection = {
+  inbound: "inbound",
+  outbound: "outbound",
+  system: "system",
+} as const;
+
+export interface Message {
+  id: number;
+  conversationId: number;
+  direction: MessageDirection;
+  /** @nullable */
+  senderUserId?: number | null;
+  /** @nullable */
+  senderName?: string | null;
+  /** @nullable */
+  externalMessageId?: string | null;
+  content: string;
+  /** @nullable */
+  mediaUrl?: string | null;
+  status: string;
+  /** @nullable */
+  errorMessage?: string | null;
+  sentAt: string;
+}
+
+export interface ConversationDetail {
+  conversation: Conversation;
+  messages: Message[];
+}
+
+export interface ReplyConversationRequest {
+  /** @minLength 1 */
+  content: string;
+}
+
+export interface AssignConversationRequest {
+  /** @nullable */
+  agentId: number | null;
+}
+
+export type SetStatusRequestStatus =
+  (typeof SetStatusRequestStatus)[keyof typeof SetStatusRequestStatus];
+
+export const SetStatusRequestStatus = {
+  nuevo: "nuevo",
+  en_curso: "en_curso",
+  esperando: "esperando",
+  resuelto: "resuelto",
+  archivado: "archivado",
+} as const;
+
+export interface SetStatusRequest {
+  status: SetStatusRequestStatus;
+}
+
+export interface LinkClientRequest {
+  /** @nullable */
+  clientId: number | null;
+}
+
+export interface GmailSyncResult {
+  fetched: number;
+  upsertedConversations: number;
+  insertedMessages: number;
+  skipped: number;
+}
+
 export interface TwofaSetupResponse {
   secret: string;
   otpauthUrl: string;
@@ -266,3 +361,10 @@ export interface ActivityItem {
   channel?: Channel | null;
   timestamp: string;
 }
+
+export type ListConversationsParams = {
+  channel?: string;
+  status?: string;
+  assignedAgentId?: number;
+  limit?: number;
+};

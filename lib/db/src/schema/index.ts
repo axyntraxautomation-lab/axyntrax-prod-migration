@@ -3,6 +3,7 @@ export * from "./sessions";
 export * from "./clients";
 export * from "./licenses";
 export * from "./conversations";
+export * from "./messages";
 export * from "./payments";
 export * from "./finances";
 export * from "./emails";

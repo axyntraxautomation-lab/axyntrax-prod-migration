@@ -24,6 +24,8 @@ tags:
     description: Two-factor authentication (TOTP)
   - name: ai
     description: AXYN CORE AI chat (Claude + Gemini)
+  - name: inbox
+    description: Unified omnichannel inbox (Web · Facebook · Instagram · WhatsApp · Gmail)
 paths:
   /healthz:
     get:
@@ -324,6 +326,167 @@ paths:
               schema:
                 $ref: "#/components/schemas/DashboardKpis"
 
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [inbox]
+      summary: List conversations across all channels
+      parameters:
+        - in: query
+          name: channel
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: assignedAgentId
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 100 }
+      responses:
+        "200":
+          description: Conversation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [inbox]
+      summary: Get a conversation with all its messages
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Conversation detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/messages:
+    post:
+      operationId: replyConversation
+      tags: [inbox]
+      summary: Send an outbound agent reply on a conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyConversationRequest"
+      responses:
+        "201":
+          description: Message stored (and dispatched if provider connected)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /conversations/{id}/assign:
+    post:
+      operationId: assignConversation
+      tags: [inbox]
+      summary: Assign conversation to an agent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignConversationRequest"
+      responses:
+        "200":
+          description: Assigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/status:
+    post:
+      operationId: setConversationStatus
+      tags: [inbox]
+      summary: Change conversation status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetStatusRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/link-client:
+    post:
+      operationId: linkConversationClient
+      tags: [inbox]
+      summary: Attach (or detach) a CRM client to the conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkClientRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /inbox/gmail/sync:
+    post:
+      operationId: syncGmail
+      tags: [inbox]
+      summary: Pull recent Gmail messages into the unified inbox
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailSyncResult"
+
   /dashboard/recent-activity:
     get:
       operationId: getRecentActivity
@@ -396,6 +559,96 @@ components:
         requiresTwofa:
           type: ["boolean", "null"]
       required: [user]
+
+    Conversation:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: ["integer", "null"] }
+        assignedAgentId: { type: ["integer", "null"] }
+        channel: { type: string }
+        externalId: { type: ["string", "null"] }
+        contactName: { type: ["string", "null"] }
+        contactHandle: { type: ["string", "null"] }
+        subject: { type: ["string", "null"] }
+        label: { type: ["string", "null"] }
+        status: { type: string }
+        unreadCount: { type: integer }
+        lastMessageAt: { type: string, format: date-time }
+        lastMessagePreview: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+      required:
+        [
+          id,
+          channel,
+          status,
+          unreadCount,
+          lastMessageAt,
+          createdAt,
+        ]
+
+    Message:
+      type: object
+      properties:
+        id: { type: integer }
+        conversationId: { type: integer }
+        direction: { type: string, enum: [inbound, outbound, system] }
+        senderUserId: { type: ["integer", "null"] }
+        senderName: { type: ["string", "null"] }
+        externalMessageId: { type: ["string", "null"] }
+        content: { type: string }
+        mediaUrl: { type: ["string", "null"] }
+        status: { type: string }
+        errorMessage: { type: ["string", "null"] }
+        sentAt: { type: string, format: date-time }
+      required: [id, conversationId, direction, content, status, sentAt]
+
+    ConversationDetail:
+      type: object
+      properties:
+        conversation:
+          $ref: "#/components/schemas/Conversation"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+      required: [conversation, messages]
+
+    ReplyConversationRequest:
+      type: object
+      properties:
+        content: { type: string, minLength: 1 }
+      required: [content]
+
+    AssignConversationRequest:
+      type: object
+      properties:
+        agentId: { type: ["integer", "null"] }
+      required: [agentId]
+
+    SetStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [nuevo, en_curso, esperando, resuelto, archivado]
+      required: [status]
+
+    LinkClientRequest:
+      type: object
+      properties:
+        clientId: { type: ["integer", "null"] }
+      required: [clientId]
+
+    GmailSyncResult:
+      type: object
+      properties:
+        fetched: { type: integer }
+        upsertedConversations: { type: integer }
+        insertedMessages: { type: integer }
+        skipped: { type: integer }
+      required:
+        [fetched, upsertedConversations, insertedMessages, skipped]
 
     TwofaSetupResponse:
       type: object

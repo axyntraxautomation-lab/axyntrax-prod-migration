@@ -360,6 +360,184 @@ export const GetDashboardKpisResponse = zod.object({
 });
 
 /**
+ * @summary List conversations across all channels
+ */
+export const listConversationsQueryLimitDefault = 100;
+
+export const ListConversationsQueryParams = zod.object({
+  channel: zod.coerce.string().optional(),
+  status: zod.coerce.string().optional(),
+  assignedAgentId: zod.coerce.number().optional(),
+  limit: zod.coerce.number().default(listConversationsQueryLimitDefault),
+});
+
+export const ListConversationsResponseItem = zod.object({
+  id: zod.number(),
+  clientId: zod.number().nullish(),
+  assignedAgentId: zod.number().nullish(),
+  channel: zod.string(),
+  externalId: zod.string().nullish(),
+  contactName: zod.string().nullish(),
+  contactHandle: zod.string().nullish(),
+  subject: zod.string().nullish(),
+  label: zod.string().nullish(),
+  status: zod.string(),
+  unreadCount: zod.number(),
+  lastMessageAt: zod.coerce.date(),
+  lastMessagePreview: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+});
+export const ListConversationsResponse = zod.array(
+  ListConversationsResponseItem,
+);
+
+/**
+ * @summary Get a conversation with all its messages
+ */
+export const GetConversationParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetConversationResponse = zod.object({
+  conversation: zod.object({
+    id: zod.number(),
+    clientId: zod.number().nullish(),
+    assignedAgentId: zod.number().nullish(),
+    channel: zod.string(),
+    externalId: zod.string().nullish(),
+    contactName: zod.string().nullish(),
+    contactHandle: zod.string().nullish(),
+    subject: zod.string().nullish(),
+    label: zod.string().nullish(),
+    status: zod.string(),
+    unreadCount: zod.number(),
+    lastMessageAt: zod.coerce.date(),
+    lastMessagePreview: zod.string().nullish(),
+    createdAt: zod.coerce.date(),
+  }),
+  messages: zod.array(
+    zod.object({
+      id: zod.number(),
+      conversationId: zod.number(),
+      direction: zod.enum(["inbound", "outbound", "system"]),
+      senderUserId: zod.number().nullish(),
+      senderName: zod.string().nullish(),
+      externalMessageId: zod.string().nullish(),
+      content: zod.string(),
+      mediaUrl: zod.string().nullish(),
+      status: zod.string(),
+      errorMessage: zod.string().nullish(),
+      sentAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
+ * @summary Send an outbound agent reply on a conversation
+ */
+export const ReplyConversationParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ReplyConversationBody = zod.object({
+  content: zod.string().min(1),
+});
+
+/**
+ * @summary Assign conversation to an agent
+ */
+export const AssignConversationParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AssignConversationBody = zod.object({
+  agentId: zod.number().nullable(),
+});
+
+export const AssignConversationResponse = zod.object({
+  id: zod.number(),
+  clientId: zod.number().nullish(),
+  assignedAgentId: zod.number().nullish(),
+  channel: zod.string(),
+  externalId: zod.string().nullish(),
+  contactName: zod.string().nullish(),
+  contactHandle: zod.string().nullish(),
+  subject: zod.string().nullish(),
+  label: zod.string().nullish(),
+  status: zod.string(),
+  unreadCount: zod.number(),
+  lastMessageAt: zod.coerce.date(),
+  lastMessagePreview: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Change conversation status
+ */
+export const SetConversationStatusParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const SetConversationStatusBody = zod.object({
+  status: zod.enum(["nuevo", "en_curso", "esperando", "resuelto", "archivado"]),
+});
+
+export const SetConversationStatusResponse = zod.object({
+  id: zod.number(),
+  clientId: zod.number().nullish(),
+  assignedAgentId: zod.number().nullish(),
+  channel: zod.string(),
+  externalId: zod.string().nullish(),
+  contactName: zod.string().nullish(),
+  contactHandle: zod.string().nullish(),
+  subject: zod.string().nullish(),
+  label: zod.string().nullish(),
+  status: zod.string(),
+  unreadCount: zod.number(),
+  lastMessageAt: zod.coerce.date(),
+  lastMessagePreview: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Attach (or detach) a CRM client to the conversation
+ */
+export const LinkConversationClientParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const LinkConversationClientBody = zod.object({
+  clientId: zod.number().nullable(),
+});
+
+export const LinkConversationClientResponse = zod.object({
+  id: zod.number(),
+  clientId: zod.number().nullish(),
+  assignedAgentId: zod.number().nullish(),
+  channel: zod.string(),
+  externalId: zod.string().nullish(),
+  contactName: zod.string().nullish(),
+  contactHandle: zod.string().nullish(),
+  subject: zod.string().nullish(),
+  label: zod.string().nullish(),
+  status: zod.string(),
+  unreadCount: zod.number(),
+  lastMessageAt: zod.coerce.date(),
+  lastMessagePreview: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Pull recent Gmail messages into the unified inbox
+ */
+export const SyncGmailResponse = zod.object({
+  fetched: zod.number(),
+  upsertedConversations: zod.number(),
+  insertedMessages: zod.number(),
+  skipped: zod.number(),
+});
+
+/**
  * @summary Recent activity feed across the system
  */
 export const GetRecentActivityResponseItem = zod.object({
