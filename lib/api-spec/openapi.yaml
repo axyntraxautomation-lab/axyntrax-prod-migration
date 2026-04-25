@@ -3,20 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AXYNTRAX Dashboard Supremo — API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: clients
+    description: CRM — clients & prospects
+  - name: licenses
+    description: License management (KeyGen)
+  - name: dashboard
+    description: Dashboard KPIs and summaries
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,228 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout the current session
+      responses:
+        "204":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get the currently authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List clients
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /licenses:
+    get:
+      operationId: listLicenses
+      tags: [licenses]
+      summary: List licenses
+      responses:
+        "200":
+          description: List of licenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/License"
+    post:
+      operationId: createLicense
+      tags: [licenses]
+      summary: Generate a new license key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicenseCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/License"
+
+  /dashboard/kpis:
+    get:
+      operationId: getDashboardKpis
+      tags: [dashboard]
+      summary: Get dashboard KPIs
+      responses:
+        "200":
+          description: KPIs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardKpis"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Recent activity feed across the system
+      responses:
+        "200":
+          description: Activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +262,270 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    UserRole:
+      type: string
+      enum: [admin, supervisor, agente]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, role, createdAt]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthSession:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+      required: [user]
+
+    ClientStage:
+      type: string
+      enum: [prospecto, demo_activa, negociacion, cliente, renovacion]
+
+    Channel:
+      type: string
+      enum: [web, facebook, instagram, whatsapp, email, otro]
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          $ref: "#/components/schemas/Channel"
+        stage:
+          $ref: "#/components/schemas/ClientStage"
+        score:
+          type: integer
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, channel, stage, score, createdAt]
+
+    ClientCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          $ref: "#/components/schemas/Channel"
+        stage:
+          $ref: "#/components/schemas/ClientStage"
+        score:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required: [name, channel]
+
+    ClientUpdate:
+      type: object
+      properties:
+        name:
+          type: ["string", "null"]
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          oneOf:
+            - $ref: "#/components/schemas/Channel"
+            - type: "null"
+        stage:
+          oneOf:
+            - $ref: "#/components/schemas/ClientStage"
+            - type: "null"
+        score:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+
+    LicenseType:
+      type: string
+      enum: [demo, plan_3m, plan_6m, plan_12m, plan_24m, addon]
+
+    LicenseStatus:
+      type: string
+      enum: [activa, vencida, cancelada, pendiente]
+
+    License:
+      type: object
+      properties:
+        id:
+          type: integer
+        clientId:
+          type: integer
+        clientName:
+          type: ["string", "null"]
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/LicenseType"
+        module:
+          type: ["string", "null"]
+        status:
+          $ref: "#/components/schemas/LicenseStatus"
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        amount:
+          type: ["number", "null"]
+        currency:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, clientId, key, type, status, startDate, endDate, createdAt]
+
+    LicenseCreate:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        type:
+          $ref: "#/components/schemas/LicenseType"
+        module:
+          type: ["string", "null"]
+        amount:
+          type: ["number", "null"]
+        currency:
+          type: ["string", "null"]
+      required: [clientId, type]
+
+    DashboardKpis:
+      type: object
+      properties:
+        leadsToday:
+          type: integer
+        salesMonth:
+          type: number
+        activeDemos:
+          type: integer
+        activeLicenses:
+          type: integer
+        expiringLicenses:
+          type: integer
+        totalClients:
+          type: integer
+        mrr:
+          type: number
+        conversionsByChannel:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelMetric"
+        botStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BotStatus"
+      required:
+        - leadsToday
+        - salesMonth
+        - activeDemos
+        - activeLicenses
+        - expiringLicenses
+        - totalClients
+        - mrr
+        - conversionsByChannel
+        - botStatuses
+
+    ChannelMetric:
+      type: object
+      properties:
+        channel:
+          $ref: "#/components/schemas/Channel"
+        leads:
+          type: integer
+        conversions:
+          type: integer
+      required: [channel, leads, conversions]
+
+    BotStatus:
+      type: object
+      properties:
+        name:
+          type: string
+        channel:
+          $ref: "#/components/schemas/Channel"
+        status:
+          type: string
+          enum: [online, offline, error]
+        lastSeen:
+          type: string
+          format: date-time
+      required: [name, channel, status, lastSeen]
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [lead, message, payment, license, alert]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        channel:
+          oneOf:
+            - $ref: "#/components/schemas/Channel"
+            - type: "null"
+        timestamp:
+          type: string
+          format: date-time
+      required: [id, type, title, timestamp]
