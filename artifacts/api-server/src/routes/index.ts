@@ -17,6 +17,7 @@ import analyticsRouter from "./analytics";
 import pushRouter from "./push";
 import adminRouter from "./admin";
 import modulesRouter from "./modules";
+import portalRouter from "./portal";
 
 const router: IRouter = Router();
 
@@ -38,5 +39,6 @@ router.use(analyticsRouter);
 router.use(pushRouter);
 router.use(adminRouter);
 router.use(modulesRouter);
+router.use(portalRouter);
 
 export default router;

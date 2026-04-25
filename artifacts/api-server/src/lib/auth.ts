@@ -176,11 +176,11 @@ declare global {
   }
 }
 
-export function requirePortalAuth(
+export async function requirePortalAuth(
   req: Request,
   res: Response,
   next: NextFunction,
-): void {
+): Promise<void> {
   const token = getPortalToken(req);
   if (!token) {
     res.status(401).json({ error: "No autenticado" });
@@ -188,9 +188,50 @@ export function requirePortalAuth(
   }
   const decoded = verifyPortalToken(token);
   if (!decoded) {
+    clearPortalCookie(res);
     res.status(401).json({ error: "Sesión inválida o expirada" });
     return;
   }
+
+  // Re-validate against DB on every request to honor revocations / expiries.
+  if (decoded.kind === "admin") {
+    const { db, usersTable } = await import("@workspace/db");
+    const { eq } = await import("drizzle-orm");
+    const [user] = await db
+      .select({ id: usersTable.id, role: usersTable.role })
+      .from(usersTable)
+      .where(eq(usersTable.id, decoded.sub))
+      .limit(1);
+    if (!user || user.role !== "admin") {
+      clearPortalCookie(res);
+      res.status(401).json({ error: "Sesión inválida" });
+      return;
+    }
+  } else {
+    const { db, licensesTable } = await import("@workspace/db");
+    const { eq } = await import("drizzle-orm");
+    const [license] = await db
+      .select({
+        id: licensesTable.id,
+        clientId: licensesTable.clientId,
+        status: licensesTable.status,
+        endDate: licensesTable.endDate,
+      })
+      .from(licensesTable)
+      .where(eq(licensesTable.id, decoded.licenseId))
+      .limit(1);
+    if (
+      !license ||
+      license.clientId !== decoded.sub ||
+      license.status !== "activa" ||
+      (license.endDate && new Date(license.endDate) < new Date())
+    ) {
+      clearPortalCookie(res);
+      res.status(401).json({ error: "Licencia no válida" });
+      return;
+    }
+  }
+
   req.portal = decoded;
   next();
 }

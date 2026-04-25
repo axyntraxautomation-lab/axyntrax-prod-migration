@@ -28,7 +28,6 @@ const navItems = [
   { href: "/keygen", label: "KeyGen", icon: Key },
   { href: "/finanzas", label: "Finanzas", icon: Wallet },
   { href: "/email", label: "Email", icon: Mail },
-  { href: "/modulos", label: "Módulos", icon: Package },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
