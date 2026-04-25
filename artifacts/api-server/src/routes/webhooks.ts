@@ -1,6 +1,14 @@
 import { Router, type IRouter, type Request } from "express";
+import { and, desc, eq } from "drizzle-orm";
+import { db, messagesTable } from "@workspace/db";
 import { ingestInbound, verifyMetaSignature } from "../lib/inbox";
 import { logger } from "../lib/logger";
+import {
+  sendWhatsappText,
+  whatsappBusinessPhoneNumberId,
+  whatsappOutboundReady,
+} from "../lib/whatsapp";
+import { runJarvisText } from "./sales-bot";
 
 function getRawBody(req: Request): Buffer {
   const raw = (req as unknown as { rawBody?: Buffer }).rawBody;
@@ -135,6 +143,102 @@ router.post("/webhooks/meta", async (req, res) => {
   res.sendStatus(200);
 });
 
+// ---- JARVIS auto-reply for inbound WhatsApp --------------------------------
+
+const HISTORY_LIMIT = 8;
+
+async function jarvisAutoReplyWhatsapp(args: {
+  conversationId: number;
+  wa: string;
+  contactName: string | null;
+  inboundText: string;
+}): Promise<void> {
+  if (!whatsappOutboundReady()) {
+    logger.warn(
+      { wa: args.wa },
+      "WhatsApp inbound received but outbound not configured; skipping auto-reply",
+    );
+    return;
+  }
+  try {
+    const recent = await db
+      .select({
+        direction: messagesTable.direction,
+        content: messagesTable.content,
+        sentAt: messagesTable.sentAt,
+      })
+      .from(messagesTable)
+      .where(eq(messagesTable.conversationId, args.conversationId))
+      .orderBy(desc(messagesTable.sentAt))
+      .limit(HISTORY_LIMIT + 1);
+
+    const ordered = recent.reverse();
+    const history = ordered
+      .filter(
+        (m) =>
+          (m.direction === "inbound" || m.direction === "outbound") &&
+          m.content !== args.inboundText,
+      )
+      .map((m) => ({
+        role: m.direction === "outbound" ? ("assistant" as const) : ("user" as const),
+        content: m.content,
+      }));
+
+    const reply = await runJarvisText(
+      args.inboundText,
+      history,
+      "whatsapp",
+      args.contactName ? `${args.contactName} (wa:${args.wa})` : `wa:${args.wa}`,
+    );
+
+    const send = await sendWhatsappText(args.wa, reply);
+    await db.insert(messagesTable).values({
+      conversationId: args.conversationId,
+      direction: "outbound",
+      senderName: "JARVIS",
+      content: reply,
+      status: send.ok ? "sent" : "failed",
+      errorMessage: send.ok ? null : `whatsapp_${send.status}`,
+      externalMessageId: send.externalMessageId,
+    });
+  } catch (err) {
+    logger.warn({ err, wa: args.wa }, "JARVIS WhatsApp auto-reply failed");
+  }
+}
+
+/** Reconcile Meta delivery status callbacks against our outbound messages. */
+async function applyWhatsappStatusUpdate(s: unknown): Promise<void> {
+  if (!s || typeof s !== "object") return;
+  const obj = s as { id?: unknown; status?: unknown; errors?: unknown };
+  const id = typeof obj.id === "string" ? obj.id : null;
+  const status = typeof obj.status === "string" ? obj.status : null;
+  if (!id || !status) return;
+  const errMsg = Array.isArray(obj.errors)
+    ? (obj.errors[0] as { title?: unknown; message?: unknown } | undefined)
+    : undefined;
+  const errorMessage =
+    status === "failed" && errMsg
+      ? String(
+          (errMsg.message as string | undefined) ??
+            (errMsg.title as string | undefined) ??
+            "failed",
+        )
+      : null;
+  try {
+    await db
+      .update(messagesTable)
+      .set({ status, errorMessage })
+      .where(
+        and(
+          eq(messagesTable.externalMessageId, id),
+          eq(messagesTable.direction, "outbound"),
+        ),
+      );
+  } catch (err) {
+    logger.warn({ err, id, status }, "WhatsApp status reconcile failed");
+  }
+}
+
 // ---- WhatsApp Cloud API ----------------------------------------------------
 
 router.get("/webhooks/whatsapp", (req, res) => {
@@ -177,21 +281,30 @@ router.post("/webhooks/whatsapp", async (req, res) => {
           for (const ct of contacts) {
             if (ct?.wa_id) contactByWaId.set(ct.wa_id, ct);
           }
+          // Outbound delivery status callbacks from Meta (sent/delivered/read/failed).
+          const statuses = Array.isArray(v?.statuses) ? v.statuses : [];
+          for (const s of statuses) {
+            void applyWhatsappStatusUpdate(s);
+          }
+          const businessPhoneId = whatsappBusinessPhoneNumberId();
           for (const m of messages) {
             const wa = m?.from;
             if (!wa) continue;
-            const text =
-              m?.text?.body ??
-              (m?.type === "image"
+            // Defensive: ignore events that look like our own outbound (echo).
+            if (businessPhoneId && wa === businessPhoneId) continue;
+            const isText = typeof m?.text?.body === "string";
+            const text = isText
+              ? m.text.body
+              : m?.type === "image"
                 ? "[imagen recibida]"
                 : m?.type === "audio"
                   ? "[audio recibido]"
                   : m?.type === "document"
                     ? "[documento recibido]"
-                    : null);
+                    : null;
             if (!text) continue;
             const contact = contactByWaId.get(wa);
-            await ingestInbound({
+            const ingest = await ingestInbound({
               channel: "whatsapp",
               externalConversationId: `whatsapp:${wa}`,
               externalMessageId: m?.id ?? null,
@@ -203,6 +316,20 @@ router.post("/webhooks/whatsapp", async (req, res) => {
                 ? new Date(Number(m.timestamp) * 1000)
                 : undefined,
             });
+            // Only auto-reply when:
+            //   - it's a text message (don't try to answer images/audio yet)
+            //   - Meta provided a stable message id (so retries dedupe in inbox)
+            //   - ingestInbound actually inserted the inbound row (avoids
+            //     replying twice if Meta retries a previously-seen id).
+            if (isText && typeof m?.id === "string" && ingest.message) {
+              // Fire-and-forget so Meta gets a fast 200.
+              void jarvisAutoReplyWhatsapp({
+                conversationId: ingest.conversation.id,
+                wa,
+                contactName: contact?.profile?.name ?? null,
+                inboundText: text,
+              });
+            }
           }
         }
       }

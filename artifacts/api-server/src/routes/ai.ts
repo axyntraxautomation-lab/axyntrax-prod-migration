@@ -13,10 +13,14 @@ import { anthropic } from "@workspace/integrations-anthropic-ai";
 import { ai as gemini } from "@workspace/integrations-gemini-ai";
 import { requireAuth } from "../lib/auth";
 import { logger } from "../lib/logger";
+import { buildJarvisKnowledge } from "../lib/jarvis-knowledge";
 
 const router: IRouter = Router();
 
-const SYSTEM_PROMPT = `Eres AXYN CORE, el asistente de inteligencia artificial empresarial de AXYNTRAX AUTOMATION (Arequipa, Perú), fundada por Miguel Montero. Tu propósito es asistir al equipo en automatización, ventas, soporte al cliente, generación de leads, gestión CRM, redacción de propuestas comerciales y operaciones del negocio. Respondes siempre en español neutral profesional, sin emojis. Eres directo, conciso y orientado a la acción. Cuando convenga, propones próximos pasos concretos.`;
+const SYSTEM_PROMPT_BASE = `Eres AXYN CORE / JARVIS, la inteligencia artificial principal de AXYNTRAX AUTOMATION. Coordinás ventas, soporte, operaciones, publicidad, finanzas y administración del negocio. Atendés al equipo interno desde el dashboard JARVIS.
+Tu propósito: asistir en automatización, ventas, soporte al cliente, generación de leads, gestión CRM, redacción de propuestas comerciales y operaciones del negocio.
+Tono: español neutral profesional, sin emojis, directo, conciso, orientado a la acción. Cuando convenga, propones próximos pasos concretos.
+Conocés todo el negocio (empresa, fundador, contacto, modelo híbrido, catálogo de módulos vigente, industrias, canales activos). Si te preguntan por precios o módulos, respondé con el catálogo de abajo. Si te piden recomendar para una industria, filtrá por industria. Para cobranzas y depósitos, mencioná Yape 991 740 590 a nombre de Miguel Angel Montero Garcia.`;
 
 const AXIA_SYSTEM_PROMPT = `Eres AXIA, el asistente financiero IA de AXYNTRAX AUTOMATION (Arequipa, Perú). Tu trabajo: analizar ingresos, egresos, flujo de caja, MRR, ARR, churn de licencias, riesgo de morosidad y proyecciones. Recibes en cada turno un resumen JSON del estado financiero actual del negocio (ingresoMes, egresoMes, balanceMes, mrrActivo, pagosPendientes, pagosExitososMes, últimas operaciones). Respondes siempre en español profesional sin emojis, en montos PEN salvo que el usuario indique otra moneda. Da recomendaciones accionables y números concretos.`;
 
@@ -61,6 +65,15 @@ router.post("/ai/chat", requireAuth, async (req, res): Promise<void> => {
   let chunkCount = 0;
 
   try {
+    let knowledgeBlock = "";
+    try {
+      knowledgeBlock = await buildJarvisKnowledge();
+    } catch (err) {
+      logger.warn({ err }, "Failed to load JARVIS knowledge for /ai/chat");
+    }
+    const SYSTEM_PROMPT = knowledgeBlock
+      ? `${SYSTEM_PROMPT_BASE}\n\nCONOCIMIENTO DEL NEGOCIO:\n${knowledgeBlock}`
+      : SYSTEM_PROMPT_BASE;
     if (provider === "gemini") {
       const stream = await gemini.models.generateContentStream({
         model: "gemini-2.5-flash",
