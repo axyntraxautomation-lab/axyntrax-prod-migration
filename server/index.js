@@ -1,25 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-
-app.use(express.json({
-  verify: (req, res, buf) => {
-    req.rawBody = buf.toString('utf8');
-  }
-}));
+app.use('/api/whatsapp', express.raw({ type: 'application/json' }), require('./routes/whatsapp'));
+app.use('/api/facebook', express.raw({ type: 'application/json' }), require('./routes/facebook'));
+app.use('/api/instagram', express.raw({ type: 'application/json' }), require('./routes/instagram'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use('/api/whatsapp', require('./routes/whatsapp'));
-app.use('/api/facebook', require('./routes/facebook'));
-app.use('/api/instagram', require('./routes/instagram'));
-
-app.get('/', (req, res) => {
-  res.json({ app: 'AXYNTRAX CECILIA v3', status: 'ONLINE', ts: new Date().toISOString() });
-});
-
+app.get('/', (req, res) => res.json({ app: 'AXYNTRAX CECILIA v3', status: 'ONLINE', rawBody: 'express.raw ACTIVO', verify_token: process.env.META_VERIFY_TOKEN, secrets: { META_ACCESS_TOKEN: !!process.env.META_ACCESS_TOKEN, META_VERIFY_TOKEN: !!process.env.META_VERIFY_TOKEN, META_APP_SECRET: !!process.env.META_APP_SECRET, WHATSAPP_PHONE_NUMBER_ID: !!process.env.WHATSAPP_PHONE_NUMBER_ID, GEMINI_API_KEY: !!process.env.GEMINI_API_KEY } }));
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log('AXYNTRAX CECILIA PORT=' + PORT);
-  console.log('rawBody fix: ACTIVO');
-});
+app.listen(PORT, '0.0.0.0', () => { console.log('AXYNTRAX CECILIA PORT=' + PORT); console.log('rawBody: express.raw OPCION A'); });
 module.exports = app;
