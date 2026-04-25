@@ -12,3 +12,4 @@ export * from "./audit";
 export * from "./pushSubscriptions";
 export * from "./gmailTemplates";
 export * from "./modules";
+export * from "./quotes";

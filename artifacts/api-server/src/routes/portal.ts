@@ -435,6 +435,16 @@ router.get(
   },
 );
 
+// Public catalog (no auth) for the landing page.
+router.get("/portal/public/catalog", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select()
+    .from(modulesCatalogTable)
+    .where(eq(modulesCatalogTable.active, 1))
+    .orderBy(modulesCatalogTable.industry, modulesCatalogTable.name);
+  res.json(rows);
+});
+
 router.get(
   "/portal/catalog",
   requirePortalAuth,

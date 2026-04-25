@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Loader2, LogIn, UserPlus, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,21 @@ export default function Login() {
   const { toast } = useToast();
   const { setSession } = useAuth();
 
-  const [tab, setTab] = useState<"cliente" | "registro" | "admin">("cliente");
+  const initialTab: "cliente" | "registro" | "admin" = (() => {
+    if (typeof window === "undefined") return "cliente";
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t === "register" || t === "registro") return "registro";
+    if (t === "admin") return "admin";
+    return "cliente";
+  })();
+  const [tab, setTab] = useState<"cliente" | "registro" | "admin">(initialTab);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t === "register" || t === "registro") setTab("registro");
+    else if (t === "admin") setTab("admin");
+  }, []);
 
   // Cliente login
   const [clientEmail, setClientEmail] = useState("");

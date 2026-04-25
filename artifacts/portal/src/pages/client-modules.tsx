@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "wouter";
 import {
   Card,
   CardContent,
@@ -10,6 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Loader2,
   CheckCircle2,
   Clock,
@@ -18,6 +27,8 @@ import {
   AlertTriangle,
   Copy,
   Check,
+  FileDown,
+  FileText,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
@@ -25,6 +36,7 @@ import {
   portalApi,
   type CatalogModule,
   type ClientModuleRow,
+  type CreateQuoteResult,
 } from "@/lib/portal-api";
 
 const STATUS_BADGE: Record<string, { label: string; className: string; icon: typeof Clock }> = {
@@ -133,6 +145,55 @@ export default function ClientModulesPage() {
       m.industry.toLowerCase().includes(filter.toLowerCase()) ||
       m.slug.toLowerCase().includes(filter.toLowerCase()),
   );
+
+  const paid = filtered.filter((m) => Number(m.monthlyPrice) > 0);
+  const free = filtered.filter((m) => Number(m.monthlyPrice) === 0);
+
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [creatingQuote, setCreatingQuote] = useState(false);
+  const [createdQuote, setCreatedQuote] = useState<CreateQuoteResult | null>(
+    null,
+  );
+
+  const selectedModules = useMemo(
+    () => paid.filter((m) => selectedIds.has(m.id)),
+    [paid, selectedIds],
+  );
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const createQuote = async () => {
+    if (selectedModules.length === 0) return;
+    setCreatingQuote(true);
+    try {
+      const r = await portalApi.createQuote(selectedModules.map((m) => m.id));
+      setCreatedQuote(r);
+      setQuoteOpen(false);
+      setSelectedIds(new Set());
+      toast({
+        title: "Cotización generada",
+        description: r.emailSent
+          ? "Te enviamos el PDF al correo."
+          : "PDF listo para descargar (no se pudo enviar el correo).",
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "No se pudo cotizar",
+        description: err instanceof Error ? err.message : "Error",
+      });
+    } finally {
+      setCreatingQuote(false);
+    }
+  };
 
   const requestModule = async (id: number) => {
     setBusyId(id);
@@ -336,41 +397,209 @@ export default function ClientModulesPage() {
             data-testid="input-filter-catalog"
           />
         </div>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((m) => {
-            const blocked = blockedIds.has(m.id);
-            return (
-              <Card key={m.id} data-testid={`catalog-${m.slug}`}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{m.name}</CardTitle>
-                  <CardDescription className="capitalize">
-                    {m.industry} · Demo gratuita · 30 días
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {m.description && (
-                    <p className="text-sm text-muted-foreground">
-                      {m.description}
-                    </p>
-                  )}
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    disabled={blocked || busyId === m.id}
-                    onClick={() => requestModule(m.id)}
-                    data-testid={`button-request-${m.slug}`}
-                  >
-                    {busyId === m.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    {blocked ? "Ya solicitado" : "Solicitar demo gratuita"}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+
+        {paid.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Módulos por suscripción
+              </h3>
+              {selectedIds.size > 0 && (
+                <Button
+                  size="sm"
+                  onClick={() => setQuoteOpen(true)}
+                  data-testid="button-open-quote"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Pedir cotización ({selectedIds.size})
+                </Button>
+              )}
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {paid.map((m) => {
+                const blocked = blockedIds.has(m.id);
+                const checked = selectedIds.has(m.id);
+                return (
+                  <Card key={m.id} data-testid={`catalog-${m.slug}`}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <CardTitle className="text-base">{m.name}</CardTitle>
+                          <CardDescription className="capitalize">
+                            {m.industry}
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
+                        >
+                          Cotizable
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {m.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {m.description}
+                        </p>
+                      )}
+                      <div className="text-sm text-cyan-300 tabular-nums">
+                        Desde {m.currency} {Number(m.monthlyPrice).toFixed(2)} / mes
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={checked ? "secondary" : "default"}
+                        className="w-full"
+                        disabled={blocked}
+                        onClick={() => toggleSelect(m.id)}
+                        data-testid={`button-quote-${m.slug}`}
+                      >
+                        {blocked
+                          ? "Ya tenés este módulo"
+                          : checked
+                            ? "Quitar de la cotización"
+                            : "Agregar a cotización"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {free.length > 0 && (
+          <div className="space-y-3 pt-2">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              Demos gratuitas (30 días)
+            </h3>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {free.map((m) => {
+                const blocked = blockedIds.has(m.id);
+                return (
+                  <Card key={m.id} data-testid={`catalog-${m.slug}`}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <CardTitle className="text-base">{m.name}</CardTitle>
+                          <CardDescription className="capitalize">
+                            {m.industry} · Demo gratuita · 30 días
+                          </CardDescription>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                        >
+                          Demo gratis
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {m.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {m.description}
+                        </p>
+                      )}
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        disabled={blocked || busyId === m.id}
+                        onClick={() => requestModule(m.id)}
+                        data-testid={`button-request-${m.slug}`}
+                      >
+                        {busyId === m.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : null}
+                        {blocked ? "Ya solicitado" : "Solicitar demo gratuita"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </section>
+
+      <Dialog open={quoteOpen} onOpenChange={setQuoteOpen}>
+        <DialogContent data-testid="dialog-quote">
+          <DialogHeader>
+            <DialogTitle>Pedir cotización</DialogTitle>
+            <DialogDescription>
+              Cecilia generará una cotización formal con IGV (18%) y te
+              enviará el PDF al correo registrado.
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="text-sm space-y-1 max-h-56 overflow-auto">
+            {selectedModules.map((m) => (
+              <li key={m.id} className="flex justify-between gap-3">
+                <span>{m.name}</span>
+                <span className="tabular-nums text-muted-foreground">
+                  {m.currency} {Number(m.monthlyPrice).toFixed(2)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setQuoteOpen(false)}
+              disabled={creatingQuote}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={createQuote}
+              disabled={creatingQuote || selectedModules.length === 0}
+              data-testid="button-confirm-quote"
+            >
+              {creatingQuote ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : null}
+              Generar cotización
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!createdQuote}
+        onOpenChange={(o) => !o && setCreatedQuote(null)}
+      >
+        <DialogContent data-testid="dialog-quote-created">
+          <DialogHeader>
+            <DialogTitle>Cotización lista</DialogTitle>
+            <DialogDescription>
+              Total mensual {createdQuote?.currency}{" "}
+              {createdQuote ? Number(createdQuote.total).toFixed(2) : ""}{" "}
+              (incluye IGV).
+              {createdQuote?.emailSent
+                ? " Te enviamos el PDF al correo."
+                : " No pudimos enviar el correo, igual podés descargar el PDF acá."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-wrap gap-2">
+            {createdQuote && (
+              <a
+                href={portalApi.quotePdfUrl(createdQuote.id)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button
+                  variant="outline"
+                  data-testid="button-download-created-pdf"
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Descargar PDF
+                </Button>
+              </a>
+            )}
+            <Link href="/mis-cotizaciones">
+              <Button data-testid="button-go-quotes">Ver mis cotizaciones</Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

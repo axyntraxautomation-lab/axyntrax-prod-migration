@@ -18,6 +18,8 @@ import pushRouter from "./push";
 import adminRouter from "./admin";
 import modulesRouter from "./modules";
 import portalRouter from "./portal";
+import quotesRouter from "./quotes";
+import salesBotRouter from "./sales-bot";
 
 const router: IRouter = Router();
 
@@ -40,5 +42,7 @@ router.use(pushRouter);
 router.use(adminRouter);
 router.use(modulesRouter);
 router.use(portalRouter);
+router.use(quotesRouter);
+router.use(salesBotRouter);
 
 export default router;

@@ -11,12 +11,14 @@ export function PortalHeader() {
   const navItems = isAdmin
     ? [
         { href: "/admin", label: "Solicitudes" },
+        { href: "/admin/cotizaciones", label: "Cotizaciones" },
         { href: "/admin/clientes", label: "Clientes" },
         { href: "/admin/catalogo", label: "Catálogo" },
       ]
     : [
         { href: "/mis-modulos", label: "Mis módulos" },
         { href: "/catalogo", label: "Catálogo" },
+        { href: "/mis-cotizaciones", label: "Mis cotizaciones" },
       ];
 
   const displayName = isAdmin

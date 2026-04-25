@@ -77,6 +77,70 @@ export type AdminRequestRow = {
   currency: string;
 };
 
+export type QuoteItemRow = {
+  id: number;
+  quoteId: number;
+  moduleId: number;
+  moduleName: string;
+  qty: number;
+  unitPrice: string;
+  lineTotal: string;
+};
+
+export type QuoteRow = {
+  id: number;
+  clientId: number;
+  status: string;
+  currency: string;
+  subtotal: string;
+  igv: string;
+  total: string;
+  validUntil: string;
+  pdfPath: string | null;
+  notes: string | null;
+  emailSentAt: string | null;
+  acceptedAt: string | null;
+  rejectedAt: string | null;
+  createdAt: string;
+  items: QuoteItemRow[];
+};
+
+export type AdminQuoteRow = {
+  id: number;
+  status: string;
+  currency: string;
+  subtotal: string;
+  igv: string;
+  total: string;
+  validUntil: string;
+  createdAt: string;
+  emailSentAt: string | null;
+  acceptedAt: string | null;
+  clientId: number;
+  clientFirstName: string | null;
+  clientLastName: string | null;
+  clientEmail: string | null;
+  clientPhone: string | null;
+};
+
+export type CreateQuoteResult = {
+  id: number;
+  status: string;
+  currency: string;
+  subtotal: number;
+  igv: number;
+  total: number;
+  validUntil: string;
+  emailSent: boolean;
+  pdfUrl: string;
+};
+
+export type SalesBotReply = {
+  reply: string;
+  recommendedModuleSlugs?: string[];
+  ctaQuote?: boolean;
+};
+
 export type AdminClientRow = {
   id: number;
   name: string;
@@ -205,4 +269,37 @@ export const portalApi = {
       method: "POST",
     }),
   adminClients: () => request<AdminClientRow[]>("/portal/admin/clients"),
+
+  // Quotes
+  createQuote: (moduleIds: number[], notes?: string) =>
+    request<CreateQuoteResult>("/portal/quotes", {
+      method: "POST",
+      body: JSON.stringify({ moduleIds, notes }),
+    }),
+  myQuotes: () => request<QuoteRow[]>("/portal/quotes"),
+  acceptQuote: (id: number) =>
+    request<{ quote: QuoteRow; createdRequests: number[]; skipped: number }>(
+      `/portal/quotes/${id}/accept`,
+      { method: "POST" },
+    ),
+  quotePdfUrl: (id: number) => `${API_BASE}/portal/quotes/${id}/pdf`,
+  adminQuotes: () => request<AdminQuoteRow[]>("/portal/admin/quotes"),
+
+  // Sales bots
+  publicSalesBot: (
+    message: string,
+    history: { role: "user" | "assistant"; content: string }[],
+  ) =>
+    request<SalesBotReply>("/portal/public/sales-bot", {
+      method: "POST",
+      body: JSON.stringify({ message, history }),
+    }),
+  quoteBot: (
+    message: string,
+    history: { role: "user" | "assistant"; content: string }[],
+  ) =>
+    request<SalesBotReply>("/portal/quote-bot", {
+      method: "POST",
+      body: JSON.stringify({ message, history }),
+    }),
 };

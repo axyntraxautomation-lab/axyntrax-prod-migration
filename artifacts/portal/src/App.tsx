@@ -6,10 +6,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
+import LandingPage from "@/pages/landing";
 import ClientModulesPage from "@/pages/client-modules";
+import ClientQuotesPage from "@/pages/client-quotes";
 import AdminRequestsPage from "@/pages/admin-requests";
 import AdminClientsPage from "@/pages/admin-clients";
 import AdminCatalogPage from "@/pages/admin-catalog";
+import AdminQuotesPage from "@/pages/admin-quotes";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { PortalHeader } from "@/components/portal-header";
 
@@ -61,32 +64,10 @@ function Protected({
   );
 }
 
-function HomeRedirect() {
-  const { session, loading } = useAuth();
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (loading) return;
-    if (!session) {
-      setLocation("/login");
-    } else if (session.kind === "admin") {
-      setLocation("/admin");
-    } else {
-      setLocation("/mis-modulos");
-    }
-  }, [loading, session, setLocation]);
-
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background">
-      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-    </div>
-  );
-}
-
 function PortalRouter() {
   return (
     <Switch>
-      <Route path="/" component={HomeRedirect} />
+      <Route path="/" component={LandingPage} />
       <Route path="/login" component={Login} />
       <Route
         path="/mis-modulos"
@@ -95,6 +76,10 @@ function PortalRouter() {
       <Route
         path="/catalogo"
         component={() => <Protected component={ClientModulesPage} role="client" />}
+      />
+      <Route
+        path="/mis-cotizaciones"
+        component={() => <Protected component={ClientQuotesPage} role="client" />}
       />
       <Route
         path="/admin"
@@ -107,6 +92,10 @@ function PortalRouter() {
       <Route
         path="/admin/catalogo"
         component={() => <Protected component={AdminCatalogPage} role="admin" />}
+      />
+      <Route
+        path="/admin/cotizaciones"
+        component={() => <Protected component={AdminQuotesPage} role="admin" />}
       />
       <Route component={NotFound} />
     </Switch>

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 import esbuildPluginPino from "esbuild-plugin-pino";
-import { rm } from "node:fs/promises";
+import { rm, cp, mkdir } from "node:fs/promises";
 
 // Plugins (e.g. 'esbuild-plugin-pino') may use `require` to resolve dependencies
 globalThis.require = createRequire(import.meta.url);
@@ -118,6 +118,20 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     `,
     },
   });
+
+  // pdfkit reads its built-in font AFM files from a sibling `data/` dir at
+  // runtime via fs.readFileSync. esbuild does not bundle these, so copy them
+  // next to dist/index.mjs.
+  try {
+    const req = createRequire(import.meta.url);
+    const pdfkitPkg = req.resolve("pdfkit/package.json");
+    const pdfkitDataDir = path.join(path.dirname(pdfkitPkg), "js", "data");
+    const targetDataDir = path.join(distDir, "data");
+    await mkdir(targetDataDir, { recursive: true });
+    await cp(pdfkitDataDir, targetDataDir, { recursive: true });
+  } catch (err) {
+    console.warn("[build] pdfkit data copy skipped:", err?.message ?? err);
+  }
 }
 
 buildAll().catch((err) => {
