@@ -83,6 +83,8 @@ export default function ClientModulesPage() {
   const [createdQuote, setCreatedQuote] = useState<CreateQuoteResult | null>(
     null,
   );
+  const [createdQuoteAccepted, setCreatedQuoteAccepted] = useState(false);
+  const [acceptingCreated, setAcceptingCreated] = useState(false);
   const [supportFor, setSupportFor] = useState<ClientModuleRow | null>(null);
   const [supportHistory, setSupportHistory] = useState<
     { role: "user" | "assistant"; content: string }[]
@@ -725,18 +727,37 @@ export default function ClientModulesPage() {
 
       <Dialog
         open={!!createdQuote}
-        onOpenChange={(o) => !o && setCreatedQuote(null)}
+        onOpenChange={(o) => {
+          if (!o) {
+            setCreatedQuote(null);
+            setCreatedQuoteAccepted(false);
+          }
+        }}
       >
         <DialogContent data-testid="dialog-quote-created">
           <DialogHeader>
-            <DialogTitle>Cotización lista</DialogTitle>
+            <DialogTitle>
+              {createdQuoteAccepted
+                ? "Cotización aceptada"
+                : "Cotización lista"}
+            </DialogTitle>
             <DialogDescription>
-              Total mensual {createdQuote?.currency}{" "}
-              {createdQuote ? Number(createdQuote.total).toFixed(2) : ""}{" "}
-              (incluye IGV).
-              {createdQuote?.emailSent
-                ? " Te enviamos el PDF al correo."
-                : " No pudimos enviar el correo, igual podés descargar el PDF acá."}
+              {createdQuoteAccepted ? (
+                <>
+                  Solicitud creada. Pronto un asesor de AXYNTRAX te contactará
+                  para activar los módulos. Pago vía Yape · Miguel Montero ·
+                  991 740 590.
+                </>
+              ) : (
+                <>
+                  Total mensual {createdQuote?.currency}{" "}
+                  {createdQuote ? Number(createdQuote.total).toFixed(2) : ""}{" "}
+                  (incluye IGV).
+                  {createdQuote?.emailSent
+                    ? " Te enviamos el PDF al correo."
+                    : " No pudimos enviar el correo, igual podés descargar el PDF acá."}
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-wrap gap-2">
@@ -755,8 +776,49 @@ export default function ClientModulesPage() {
                 </Button>
               </a>
             )}
+            {createdQuote && !createdQuoteAccepted && (
+              <Button
+                data-testid="button-accept-created-quote"
+                disabled={acceptingCreated}
+                onClick={async () => {
+                  if (!createdQuote) return;
+                  setAcceptingCreated(true);
+                  try {
+                    await portalApi.acceptQuote(createdQuote.id);
+                    setCreatedQuoteAccepted(true);
+                    await reload();
+                    toast({
+                      title: "Cotización aceptada",
+                      description:
+                        "Generamos las solicitudes pendientes en tus módulos.",
+                    });
+                  } catch (err) {
+                    toast({
+                      variant: "destructive",
+                      title: "No se pudo aceptar",
+                      description:
+                        err instanceof Error ? err.message : "Intentá de nuevo",
+                    });
+                  } finally {
+                    setAcceptingCreated(false);
+                  }
+                }}
+              >
+                {acceptingCreated ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                )}
+                Aceptar cotización
+              </Button>
+            )}
             <Link href="/mis-cotizaciones">
-              <Button data-testid="button-go-quotes">Ver mis cotizaciones</Button>
+              <Button
+                variant={createdQuoteAccepted ? "default" : "ghost"}
+                data-testid="button-go-quotes"
+              >
+                Ver mis cotizaciones
+              </Button>
             </Link>
           </div>
         </DialogContent>

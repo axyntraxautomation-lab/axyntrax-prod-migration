@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { randomBytes } from "node:crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
+import rateLimit from "express-rate-limit";
 import { authenticator } from "otplib";
 import {
   db,
@@ -29,6 +30,23 @@ import {
 } from "../lib/security";
 
 const router: IRouter = Router();
+
+// Rate limiters dedicados para auth pública del portal (anti-abuso por IP).
+// Estos se suman a `handleFailedLogin` (anti-credential-stuffing por IP+identidad).
+const portalRegisterLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Demasiados registros desde tu IP, esperá unos minutos." },
+});
+const portalLoginLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 20,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Demasiados intentos de login, esperá unos minutos." },
+});
 
 // Phone: 7-20 digits, optionally a leading "+". Spaces / dashes are stripped.
 const PHONE_RE = /^\+?\d{7,20}$/;
@@ -97,7 +115,7 @@ const RegisterBody = z.object({
     }),
 });
 
-router.post("/portal/auth/register", async (req, res): Promise<void> => {
+router.post("/portal/auth/register", portalRegisterLimiter, async (req, res): Promise<void> => {
   const parsed = RegisterBody.safeParse(req.body);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
@@ -197,7 +215,7 @@ router.post("/portal/auth/register", async (req, res): Promise<void> => {
   });
 });
 
-router.post("/portal/auth/login", async (req, res): Promise<void> => {
+router.post("/portal/auth/login", portalLoginLimiter, async (req, res): Promise<void> => {
   const parsed = LoginBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Datos inválidos" });
