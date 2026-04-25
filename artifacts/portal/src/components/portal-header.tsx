@@ -26,10 +26,13 @@ export function PortalHeader() {
       : "";
 
   const subtitle = isAdmin
-    ? "Administración"
+    ? session.user.email
     : session?.kind === "client"
-      ? session.client.company ?? "Cliente"
+      ? session.client.email ?? "Cliente"
       : "";
+
+  const tertiary =
+    session?.kind === "client" ? session.client.phone ?? "" : "";
 
   return (
     <header className="border-b border-border bg-card">
@@ -69,9 +72,30 @@ export function PortalHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
-            <div className="text-sm font-medium">{displayName}</div>
-            <div className="text-xs text-muted-foreground">{subtitle}</div>
+          <div
+            className="text-right hidden sm:block"
+            data-testid="header-user-info"
+          >
+            <div
+              className="text-sm font-medium leading-tight"
+              data-testid="header-user-name"
+            >
+              {displayName}
+            </div>
+            <div
+              className="text-xs text-muted-foreground leading-tight"
+              data-testid="header-user-email"
+            >
+              {subtitle}
+            </div>
+            {tertiary ? (
+              <div
+                className="text-xs text-muted-foreground leading-tight"
+                data-testid="header-user-phone"
+              >
+                {tertiary}
+              </div>
+            ) : null}
           </div>
           <Button
             variant="outline"

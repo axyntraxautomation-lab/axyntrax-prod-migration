@@ -1,18 +1,17 @@
+export type ClientPublic = {
+  id: number;
+  name: string;
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  industry: string | null;
+  email: string | null;
+  phone: string | null;
+};
+
 export type ClientSession = {
   kind: "client";
-  client: {
-    id: number;
-    name: string;
-    company: string | null;
-    industry: string | null;
-    email: string | null;
-  };
-  license: {
-    id: number;
-    type: string;
-    status?: string;
-    endDate: string | null;
-  };
+  client: ClientPublic;
 };
 
 export type AdminSession = {
@@ -42,6 +41,7 @@ export type ClientModuleRow = {
   id: number;
   moduleId: number;
   status: string;
+  licenseKey: string | null;
   notes: string | null;
   requestedAt: string;
   activatedAt: string | null;
@@ -60,10 +60,13 @@ export type AdminRequestRow = {
   clientId: number;
   moduleId: number;
   status: string;
+  licenseKey: string | null;
   notes: string | null;
   requestedAt: string;
   activatedAt: string | null;
   clientName: string;
+  clientEmail: string | null;
+  clientPhone: string | null;
   clientCompany: string | null;
   clientIndustry: string | null;
   moduleSlug: string;
@@ -82,15 +85,25 @@ export type AdminClientRow = {
   pendingModules: number;
 };
 
+export type RegisterPayload = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+};
+
 const API_BASE = "/api";
 
 export class PortalApiError extends Error {
   status: number;
   data: unknown;
-  constructor(message: string, status: number, data: unknown) {
+  field?: string;
+  constructor(message: string, status: number, data: unknown, field?: string) {
     super(message);
     this.status = status;
     this.data = data;
+    this.field = field;
   }
 }
 
@@ -124,28 +137,35 @@ async function request<T>(
     }
   }
   if (!res.ok) {
-    const msg =
-      typeof body === "object" && body && "error" in body
-        ? String((body as { error: unknown }).error)
-        : `HTTP ${res.status}`;
-    // Trigger global session clear on auth failures from any non-login request.
-    if (res.status === 401 && !path.startsWith("/portal/auth/login")) {
+    const obj = (typeof body === "object" && body) as Record<string, unknown> | false;
+    const msg = obj && "error" in obj ? String(obj.error) : `HTTP ${res.status}`;
+    const field = obj && typeof obj.field === "string" ? obj.field : undefined;
+    if (
+      res.status === 401 &&
+      !path.startsWith("/portal/auth/login") &&
+      !path.startsWith("/portal/auth/register")
+    ) {
       try {
         unauthorizedHandler?.();
       } catch {
         // ignore
       }
     }
-    throw new PortalApiError(msg, res.status, body);
+    throw new PortalApiError(msg, res.status, body, field);
   }
   return body as T;
 }
 
 export const portalApi = {
-  loginLicense: (key: string) =>
+  register: (payload: RegisterPayload) =>
+    request<ClientSession>("/portal/auth/register", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  loginClient: (email: string, password: string) =>
     request<PortalSession>("/portal/auth/login", {
       method: "POST",
-      body: JSON.stringify({ mode: "license", key }),
+      body: JSON.stringify({ mode: "client", email, password }),
     }),
   loginAdmin: (email: string, password: string, twofaCode?: string) =>
     request<PortalSession>("/portal/auth/login", {

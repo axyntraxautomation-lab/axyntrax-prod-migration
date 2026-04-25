@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { randomBytes } from "node:crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { authenticator } from "otplib";
@@ -6,7 +7,6 @@ import {
   db,
   usersTable,
   clientsTable,
-  licensesTable,
   modulesCatalogTable,
   clientModulesTable,
   paymentsTable,
@@ -19,14 +19,54 @@ import {
   requirePortalClient,
   requirePortalAdmin,
   verifyPassword,
+  hashPassword,
 } from "../lib/auth";
 import { audit } from "../lib/audit";
 
 const router: IRouter = Router();
 
-const LoginLicenseBody = z.object({
-  mode: z.literal("license"),
-  key: z.string().trim().min(8).max(128),
+// Phone: 7-20 digits, optionally a leading "+". Spaces / dashes are stripped.
+const PHONE_RE = /^\+?\d{7,20}$/;
+
+function normalizePhone(raw: string): string {
+  return raw.replace(/[\s\-().]/g, "");
+}
+
+function generateLicenseKey(slug: string): string {
+  const cleaned = slug
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "")
+    .slice(0, 8) || "MOD";
+  const rand = randomBytes(6).toString("hex").toUpperCase();
+  return `AXYN-${cleaned}-${rand}`;
+}
+
+function publicClient(c: {
+  id: number;
+  name: string;
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  industry: string | null;
+  email: string | null;
+  phone: string | null;
+}) {
+  return {
+    id: c.id,
+    name: c.name,
+    firstName: c.firstName,
+    lastName: c.lastName,
+    company: c.company,
+    industry: c.industry,
+    email: c.email,
+    phone: c.phone,
+  };
+}
+
+const LoginClientBody = z.object({
+  mode: z.literal("client"),
+  email: z.string().trim().email(),
+  password: z.string().min(1),
 });
 const LoginAdminBody = z.object({
   mode: z.literal("admin"),
@@ -34,7 +74,123 @@ const LoginAdminBody = z.object({
   password: z.string().min(1),
   twofaCode: z.string().trim().min(4).max(10).optional(),
 });
-const LoginBody = z.discriminatedUnion("mode", [LoginLicenseBody, LoginAdminBody]);
+const LoginBody = z.discriminatedUnion("mode", [LoginClientBody, LoginAdminBody]);
+
+const RegisterBody = z.object({
+  email: z.string().trim().email().max(255),
+  password: z.string().min(8).max(128),
+  firstName: z.string().trim().min(2).max(120),
+  lastName: z.string().trim().min(2).max(120),
+  phone: z
+    .string()
+    .trim()
+    .min(7)
+    .max(40)
+    .transform((v) => normalizePhone(v))
+    .refine((v) => PHONE_RE.test(v), {
+      message: "Número de celular inválido",
+    }),
+});
+
+router.post("/portal/auth/register", async (req, res): Promise<void> => {
+  const parsed = RegisterBody.safeParse(req.body);
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    res.status(400).json({
+      error: first?.message ?? "Datos inválidos",
+      field: first?.path?.join("."),
+    });
+    return;
+  }
+  const { email, password, firstName, lastName, phone } = parsed.data;
+  const normalizedEmail = email.toLowerCase();
+  const passwordHash = await hashPassword(password);
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  // Look up by case-insensitive email (matches the unique index).
+  const [existing] = await db
+    .select()
+    .from(clientsTable)
+    .where(sql`lower(${clientsTable.email}) = ${normalizedEmail}`)
+    .limit(1);
+
+  let client: typeof clientsTable.$inferSelect;
+  let claimed = false;
+
+  if (existing) {
+    if (existing.passwordHash) {
+      // Already a real account — block.
+      res.status(409).json({
+        error: "Ya existe una cuenta con ese correo",
+        field: "email",
+      });
+      return;
+    }
+    // Legacy CRM contact (no password yet) → claim the account.
+    const [updated] = await db
+      .update(clientsTable)
+      .set({
+        name: fullName,
+        firstName,
+        lastName,
+        email: normalizedEmail,
+        phone,
+        passwordHash,
+        channel: existing.channel ?? "portal",
+      })
+      .where(eq(clientsTable.id, existing.id))
+      .returning();
+    client = updated;
+    claimed = true;
+  } else {
+    try {
+      const [created] = await db
+        .insert(clientsTable)
+        .values({
+          name: fullName,
+          firstName,
+          lastName,
+          email: normalizedEmail,
+          phone,
+          passwordHash,
+          channel: "portal",
+          stage: "prospecto",
+        })
+        .returning();
+      client = created;
+    } catch (err) {
+      // Race-condition fallback: unique index hit between SELECT and INSERT.
+      const code = (err as { code?: string }).code;
+      if (code === "23505") {
+        res.status(409).json({
+          error: "Ya existe una cuenta con ese correo",
+          field: "email",
+        });
+        return;
+      }
+      throw err;
+    }
+  }
+
+  const token = signPortalToken({
+    kind: "client",
+    sub: client.id,
+    name: client.name,
+  });
+  setPortalCookie(res, token);
+
+  await audit(req, {
+    action: claimed ? "portal.register.claim" : "portal.register",
+    entityType: "client",
+    entityId: client.id,
+  });
+
+  res.status(201).json({
+    kind: "client",
+    client: publicClient(client),
+    claimed,
+  });
+});
 
 router.post("/portal/auth/login", async (req, res): Promise<void> => {
   const parsed = LoginBody.safeParse(req.body);
@@ -43,54 +199,32 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
-  if (parsed.data.mode === "license") {
-    const key = parsed.data.key.trim();
-    const [license] = await db
-      .select()
-      .from(licensesTable)
-      .where(eq(licensesTable.key, key))
-      .limit(1);
-
-    if (!license) {
-      await audit(req, {
-        action: "portal.login.fail",
-        entityType: "license",
-        meta: { reason: "not_found" },
-      });
-      res.status(401).json({ error: "Licencia no encontrada" });
-      return;
-    }
-
-    if (license.status !== "activa") {
-      await audit(req, {
-        action: "portal.login.fail",
-        entityType: "license",
-        entityId: license.id,
-        meta: { reason: `status:${license.status}` },
-      });
-      res.status(401).json({ error: `Licencia ${license.status}` });
-      return;
-    }
-
-    if (license.endDate && new Date(license.endDate) < new Date()) {
-      await audit(req, {
-        action: "portal.login.fail",
-        entityType: "license",
-        entityId: license.id,
-        meta: { reason: "expired" },
-      });
-      res.status(401).json({ error: "Licencia expirada" });
-      return;
-    }
-
+  if (parsed.data.mode === "client") {
+    const email = parsed.data.email.toLowerCase();
     const [client] = await db
       .select()
       .from(clientsTable)
-      .where(eq(clientsTable.id, license.clientId))
+      .where(eq(clientsTable.email, email))
       .limit(1);
 
-    if (!client) {
-      res.status(401).json({ error: "Cliente no encontrado" });
+    if (!client || !client.passwordHash) {
+      await audit(req, {
+        action: "portal.login.fail",
+        entityType: "client",
+        meta: { reason: "not_found" },
+      });
+      res.status(401).json({ error: "Credenciales inválidas" });
+      return;
+    }
+    const ok = await verifyPassword(parsed.data.password, client.passwordHash);
+    if (!ok) {
+      await audit(req, {
+        action: "portal.login.fail",
+        entityType: "client",
+        entityId: client.id,
+        meta: { reason: "bad_password" },
+      });
+      res.status(401).json({ error: "Credenciales inválidas" });
       return;
     }
 
@@ -98,7 +232,6 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
       kind: "client",
       sub: client.id,
       name: client.name,
-      licenseId: license.id,
     });
     setPortalCookie(res, token);
 
@@ -106,23 +239,11 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
       action: "portal.login.client",
       entityType: "client",
       entityId: client.id,
-      meta: { licenseId: license.id },
     });
 
     res.json({
       kind: "client",
-      client: {
-        id: client.id,
-        name: client.name,
-        company: client.company,
-        industry: client.industry,
-        email: client.email,
-      },
-      license: {
-        id: license.id,
-        type: license.type,
-        endDate: license.endDate,
-      },
+      client: publicClient(client),
     });
     return;
   }
@@ -225,31 +346,14 @@ router.get("/portal/auth/me", requirePortalAuth, async (req, res): Promise<void>
       .from(clientsTable)
       .where(eq(clientsTable.id, req.portal.sub))
       .limit(1);
-    const [license] = await db
-      .select()
-      .from(licensesTable)
-      .where(eq(licensesTable.id, req.portal.licenseId))
-      .limit(1);
-    if (!client || !license) {
+    if (!client) {
       clearPortalCookie(res);
       res.status(401).json({ error: "Sesión inválida" });
       return;
     }
     res.json({
       kind: "client",
-      client: {
-        id: client.id,
-        name: client.name,
-        company: client.company,
-        industry: client.industry,
-        email: client.email,
-      },
-      license: {
-        id: license.id,
-        type: license.type,
-        status: license.status,
-        endDate: license.endDate,
-      },
+      client: publicClient(client),
     });
     return;
   }
@@ -290,6 +394,7 @@ router.get(
         id: clientModulesTable.id,
         moduleId: clientModulesTable.moduleId,
         status: clientModulesTable.status,
+        licenseKey: clientModulesTable.licenseKey,
         notes: clientModulesTable.notes,
         requestedAt: clientModulesTable.requestedAt,
         activatedAt: clientModulesTable.activatedAt,
@@ -441,10 +546,13 @@ router.get(
         clientId: clientModulesTable.clientId,
         moduleId: clientModulesTable.moduleId,
         status: clientModulesTable.status,
+        licenseKey: clientModulesTable.licenseKey,
         notes: clientModulesTable.notes,
         requestedAt: clientModulesTable.requestedAt,
         activatedAt: clientModulesTable.activatedAt,
         clientName: clientsTable.name,
+        clientEmail: clientsTable.email,
+        clientPhone: clientsTable.phone,
         clientCompany: clientsTable.company,
         clientIndustry: clientsTable.industry,
         moduleSlug: modulesCatalogTable.slug,
@@ -509,17 +617,42 @@ router.post(
 
         const now = new Date();
         const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        const [updated] = await tx
-          .update(clientModulesTable)
-          .set({
-            status: "activo",
-            approvedById: adminId,
-            paymentId: payment.id,
-            activatedAt: now,
-            expiresAt,
-          })
-          .where(eq(clientModulesTable.id, id))
-          .returning();
+
+        // Retry license key generation on the (very rare) unique collision.
+        let updated: typeof row | undefined;
+        let lastErr: unknown;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const licenseKey =
+            row.licenseKey ?? generateLicenseKey(mod.slug);
+          try {
+            [updated] = await tx
+              .update(clientModulesTable)
+              .set({
+                status: "activo",
+                approvedById: adminId,
+                paymentId: payment.id,
+                activatedAt: now,
+                expiresAt,
+                licenseKey,
+              })
+              .where(eq(clientModulesTable.id, id))
+              .returning();
+            lastErr = null;
+            break;
+          } catch (err) {
+            lastErr = err;
+            const code = (err as { code?: string }).code;
+            // 23505 = unique_violation — try a fresh key, but only when the
+            // request didn't already have one assigned.
+            if (code === "23505" && !row.licenseKey) {
+              continue;
+            }
+            throw err;
+          }
+        }
+        if (!updated) {
+          throw lastErr ?? new Error("No se pudo emitir la clave de licencia");
+        }
         return { row: updated, payment };
       });
 

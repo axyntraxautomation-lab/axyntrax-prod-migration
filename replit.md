@@ -38,7 +38,12 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
 - **Cecilia Suite:** Industry-specific modules managed via `modulesCatalogTable` and `clientModulesTable`. Admin approval creates payment entries. Uses Gemini `gemini-2.5-flash` for classification in Gmail automation.
 - **Analytics:** Provides an overview of conversations by channel/status, messages per day, financial data, AI usage, and response times, visualized with Recharts.
 - **Security:** Implements helmet for HTTP headers, rate limiting (general and auth-specific), and audit logging (`lib/audit.ts`, `audit_log` table) with admin endpoints for backup and audit review.
-- **Public Portal:** A separate web artifact (`artifacts/portal`) for client module activation and a lightweight admin section, featuring dual login (license key for clients, email/password for admins with 2FA), cookie isolation, and re-validation of auth on every request.
+- **Public Portal:** A separate web artifact (`artifacts/portal`) for client module activation and a lightweight admin section.
+    - **Client accounts:** Self-service registration with email + password + first/last name + phone (`POST /portal/auth/register`). Bcrypt-hashed passwords stored on `clients.passwordHash`. Login via `POST /portal/auth/login` with `mode:"client"`.
+    - **Admin login:** Email + password with optional TOTP 2FA enforcement (`mode:"admin"`).
+    - **Per-module licenses:** Activation is per `clientModulesTable` row. On admin approval, the server generates a unique key (`AXYN-<MODULE>-<HEX12>`) stored in `clientModulesTable.licenseKey` (uniqueIndex). Clients see and copy their key from "Mis módulos". The legacy `licensesTable` is kept only for internal/manual payment tracking.
+    - **Session security:** HttpOnly `axyn_portal` cookie, JWT signed with `SESSION_SECRET`. `requirePortalAuth` re-validates the user/admin on every request and clears the cookie on revocation.
+    - **Header:** Top-right shows the logged-in client's name, email and phone (or admin name + email).
 
 ## External Dependencies
 

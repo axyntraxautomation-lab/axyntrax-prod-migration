@@ -25,14 +25,6 @@ export type AuthUser = {
   role: string;
 };
 
-export type PortalClient = {
-  id: number;
-  name: string;
-  company: string | null;
-  industry: string | null;
-  licenseId: number;
-};
-
 export async function hashPassword(plain: string): Promise<string> {
   return bcrypt.hash(plain, 10);
 }
@@ -95,7 +87,6 @@ export function signPortalToken(payload: {
   kind: "client" | "admin";
   sub: number;
   name: string;
-  licenseId?: number;
   role?: string;
 }): string {
   return jwt.sign(payload, SECRET, { expiresIn: TOKEN_TTL });
@@ -106,7 +97,6 @@ export type PortalToken =
       kind: "client";
       sub: number;
       name: string;
-      licenseId: number;
     }
   | {
       kind: "admin";
@@ -118,13 +108,12 @@ export type PortalToken =
 export function verifyPortalToken(token: string): PortalToken | null {
   try {
     const decoded = jwt.verify(token, SECRET) as jwt.JwtPayload &
-      Partial<PortalToken>;
-    if (decoded.kind === "client" && typeof decoded.licenseId === "number") {
+      Partial<PortalToken> & { role?: string };
+    if (decoded.kind === "client") {
       return {
         kind: "client",
         sub: Number(decoded.sub),
         name: String(decoded.name ?? ""),
-        licenseId: decoded.licenseId,
       };
     }
     if (decoded.kind === "admin" && typeof decoded.role === "string") {
@@ -208,26 +197,19 @@ export async function requirePortalAuth(
       return;
     }
   } else {
-    const { db, licensesTable } = await import("@workspace/db");
+    const { db, clientsTable } = await import("@workspace/db");
     const { eq } = await import("drizzle-orm");
-    const [license] = await db
+    const [client] = await db
       .select({
-        id: licensesTable.id,
-        clientId: licensesTable.clientId,
-        status: licensesTable.status,
-        endDate: licensesTable.endDate,
+        id: clientsTable.id,
+        passwordHash: clientsTable.passwordHash,
       })
-      .from(licensesTable)
-      .where(eq(licensesTable.id, decoded.licenseId))
+      .from(clientsTable)
+      .where(eq(clientsTable.id, decoded.sub))
       .limit(1);
-    if (
-      !license ||
-      license.clientId !== decoded.sub ||
-      license.status !== "activa" ||
-      (license.endDate && new Date(license.endDate) < new Date())
-    ) {
+    if (!client || !client.passwordHash) {
       clearPortalCookie(res);
-      res.status(401).json({ error: "Licencia no válida" });
+      res.status(401).json({ error: "Cuenta no encontrada" });
       return;
     }
   }

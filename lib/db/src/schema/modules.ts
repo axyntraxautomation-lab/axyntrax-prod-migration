@@ -46,32 +46,39 @@ export const modulesCatalogTable = pgTable(
   }),
 );
 
-export const clientModulesTable = pgTable("client_modules", {
-  id: serial("id").primaryKey(),
-  clientId: integer("client_id")
-    .notNull()
-    .references(() => clientsTable.id, { onDelete: "cascade" }),
-  moduleId: integer("module_id")
-    .notNull()
-    .references(() => modulesCatalogTable.id, { onDelete: "restrict" }),
-  status: varchar("status", { length: 24 }).notNull().default("pendiente"),
-  requestedById: integer("requested_by_id").references(() => usersTable.id, {
-    onDelete: "set null",
+export const clientModulesTable = pgTable(
+  "client_modules",
+  {
+    id: serial("id").primaryKey(),
+    clientId: integer("client_id")
+      .notNull()
+      .references(() => clientsTable.id, { onDelete: "cascade" }),
+    moduleId: integer("module_id")
+      .notNull()
+      .references(() => modulesCatalogTable.id, { onDelete: "restrict" }),
+    status: varchar("status", { length: 24 }).notNull().default("pendiente"),
+    licenseKey: varchar("license_key", { length: 64 }),
+    requestedById: integer("requested_by_id").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    approvedById: integer("approved_by_id").references(() => usersTable.id, {
+      onDelete: "set null",
+    }),
+    paymentId: integer("payment_id").references(() => paymentsTable.id, {
+      onDelete: "set null",
+    }),
+    notes: text("notes"),
+    requestedAt: timestamp("requested_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    activatedAt: timestamp("activated_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  },
+  (t) => ({
+    licenseKeyIdx: uniqueIndex("client_modules_license_key_idx").on(t.licenseKey),
   }),
-  approvedById: integer("approved_by_id").references(() => usersTable.id, {
-    onDelete: "set null",
-  }),
-  paymentId: integer("payment_id").references(() => paymentsTable.id, {
-    onDelete: "set null",
-  }),
-  notes: text("notes"),
-  requestedAt: timestamp("requested_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  activatedAt: timestamp("activated_at", { withTimezone: true }),
-  expiresAt: timestamp("expires_at", { withTimezone: true }),
-  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
-});
+);
 
 export const insertModuleCatalogSchema = createInsertSchema(
   modulesCatalogTable,

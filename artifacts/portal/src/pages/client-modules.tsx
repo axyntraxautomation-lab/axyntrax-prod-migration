@@ -9,7 +9,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, CheckCircle2, Clock, XCircle, Info, AlertTriangle } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Info,
+  AlertTriangle,
+  Copy,
+  Check,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import {
@@ -48,6 +57,25 @@ export default function ClientModulesPage() {
   const [busyId, setBusyId] = useState<number | null>(null);
   const [filter, setFilter] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const copyKey = async (id: number, key: string) => {
+    try {
+      await navigator.clipboard.writeText(key);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1800);
+      toast({
+        title: "Clave copiada",
+        description: "Pegala donde necesités activar el módulo.",
+      });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "No se pudo copiar",
+        description: "Copiá manualmente la clave del módulo.",
+      });
+    }
+  };
 
   const reload = async () => {
     setLoadError(null);
@@ -171,7 +199,7 @@ export default function ClientModulesPage() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="text-xs text-muted-foreground space-y-1">
+                  <CardContent className="text-xs text-muted-foreground space-y-2">
                     {row.activatedAt && (
                       <div>
                         Activado: {new Date(row.activatedAt).toLocaleDateString("es-PE")}
@@ -183,6 +211,37 @@ export default function ClientModulesPage() {
                       </div>
                     )}
                     {row.notes && <div>Notas: {row.notes}</div>}
+                    {row.status === "activo" && row.licenseKey ? (
+                      <div className="pt-2 border-t border-border/60 space-y-1">
+                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground/80">
+                          Clave de licencia
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <code
+                            className="flex-1 truncate font-mono text-xs bg-muted/50 px-2 py-1 rounded text-foreground"
+                            data-testid={`license-key-${row.id}`}
+                          >
+                            {row.licenseKey}
+                          </code>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyKey(row.id, row.licenseKey!)}
+                            data-testid={`button-copy-key-${row.id}`}
+                          >
+                            {copiedId === row.id ? (
+                              <Check className="h-3.5 w-3.5" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">
+                          Usá esta clave para descargar y activar el módulo.
+                        </p>
+                      </div>
+                    ) : null}
                   </CardContent>
                 </Card>
               );
