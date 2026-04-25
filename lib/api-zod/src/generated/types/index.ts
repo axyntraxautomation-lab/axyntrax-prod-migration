@@ -8,6 +8,10 @@
 
 export * from "./activityItem";
 export * from "./activityItemType";
+export * from "./aiChatMessage";
+export * from "./aiChatMessageRole";
+export * from "./aiChatRequest";
+export * from "./aiChatRequestProvider";
 export * from "./authSession";
 export * from "./botStatus";
 export * from "./botStatusStatus";
@@ -25,5 +29,8 @@ export * from "./licenseCreate";
 export * from "./licenseStatus";
 export * from "./licenseType";
 export * from "./loginRequest";
+export * from "./twofaDisableRequest";
+export * from "./twofaEnableRequest";
+export * from "./twofaSetupResponse";
 export * from "./user";
 export * from "./userRole";

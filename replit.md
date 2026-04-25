@@ -11,7 +11,7 @@ with the AXYNTRAX logo throughout.
 | Phase  | Focus                                                                | Status        |
 | ------ | -------------------------------------------------------------------- | ------------- |
 | FASE 1 | Schema + auth + base UI + CRM/KeyGen + analytics                     | **Done**      |
-| FASE 2 | 2FA, AES-256 of sensitive fields, AXYN CORE (Claude+Gemini) live     | Pending       |
+| FASE 2 | 2FA, AES-256 of sensitive fields, AXYN CORE (Claude+Gemini) live     | **Done**      |
 | FASE 3 | Omnichannel inbox webhooks (FB / IG / WA / Web / Gmail)              | Pending       |
 | FASE 4 | Finanzas: Culqi + SUNAT integration, AXIA assistant                  | Pending       |
 | FASE 5 | Gmail automation (Cecilia), email orchestration                      | Pending       |
@@ -51,6 +51,31 @@ with the AXYNTRAX logo throughout.
 - `requireRole(...allowed)` enforces RBAC (e.g. `/users` is `admin | supervisor`).
 - `SESSION_SECRET` is **mandatory** at startup — server refuses to boot without it.
 - Frontend cookie auth: `customFetch` defaults to `credentials: "include"`.
+- **2FA (TOTP / RFC 6238, SHA1, 30 s, 6 digits)** via `otplib`. Setup endpoint
+  returns a base32 secret + QR data URL; enable confirms a code; login with a
+  2FA-enabled account responds `401 { requiresTwofa: true }` on first POST and
+  expects `twofaCode` on retry. Frontend pivots to a one-time-code form.
+
+### Field-level encryption
+
+- AES-256-GCM helper (`lib/crypto.ts`): random 12-byte IV per write, 16-byte
+  GCM auth tag, payload stored as `enc::<base64(iv+tag+ciphertext)>`.
+- Key is derived from `ENCRYPTION_KEY` (preferred) or, with a startup warning,
+  from `SESSION_SECRET`. Hardcoded fallback removed; missing key throws.
+- Encrypted columns: `clients.phone`, `clients.notes`, `licenses.key`. Read
+  paths in `routes/clients.ts` and `routes/licenses.ts` decrypt transparently;
+  unencrypted legacy values pass through.
+
+### AXYN CORE chat (`/api/ai/chat`)
+
+- SSE endpoint streaming Claude Sonnet 4.6 (Anthropic) and Gemini 2.5 Flash
+  (Google) via the Replit AI integrations proxy (no API keys handled).
+- Provider switch in the UI; system prompt establishes the AXYNTRAX persona.
+- Aborts: client disconnect (`req.on('close')`) cancels upstream provider
+  stream; frontend sends `AbortController.signal` and exposes a Stop button.
+- Audit: `ai_logs` rows store **hashed** prompt (16-char SHA-256 prefix +
+  length), model, chunk count, response length, latency, abort flag, and
+  error message — no plaintext prompt content.
 
 ### Bootstrap
 
@@ -83,7 +108,10 @@ seeded once when the table is empty (development convenience).
 | --------------------------- | ---------------------------------------------------------------------- |
 | `DATABASE_URL`              | Replit-provisioned PostgreSQL                                          |
 | `SESSION_SECRET`            | JWT signing secret. **Server refuses to start without it.**            |
+| `ENCRYPTION_KEY`            | AES-256-GCM data key (recommended; falls back to SESSION_SECRET).      |
 | `ADMIN_BOOTSTRAP_PASSWORD`  | One-time admin seed password (unset after first run; rotate password). |
+| `ANTHROPIC_API_KEY`         | Auto-provisioned by the Replit Anthropic integration.                  |
+| `GEMINI_API_KEY`            | Auto-provisioned by the Replit Gemini integration.                     |
 
 ## See also
 

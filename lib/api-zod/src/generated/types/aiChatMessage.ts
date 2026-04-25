@@ -5,10 +5,9 @@
  * AXYNTRAX Dashboard Supremo — API
  * OpenAPI spec version: 0.1.0
  */
+import type { AiChatMessageRole } from "./aiChatMessageRole";
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-  /** @nullable */
-  twofaCode?: string | null;
+export interface AiChatMessage {
+  role: AiChatMessageRole;
+  content: string;
 }

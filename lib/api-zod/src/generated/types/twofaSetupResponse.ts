@@ -6,9 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-  /** @nullable */
-  twofaCode?: string | null;
+export interface TwofaSetupResponse {
+  secret: string;
+  otpauthUrl: string;
+  qrCodeDataUrl: string;
 }

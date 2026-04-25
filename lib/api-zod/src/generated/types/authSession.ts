@@ -9,4 +9,6 @@ import type { User } from "./user";
 
 export interface AuthSession {
   user: User;
+  /** @nullable */
+  requiresTwofa?: boolean | null;
 }

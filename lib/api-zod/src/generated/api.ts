@@ -20,6 +20,7 @@ export const HealthCheckResponse = zod.object({
 export const LoginBody = zod.object({
   email: zod.string(),
   password: zod.string(),
+  twofaCode: zod.string().nullish(),
 });
 
 export const LoginResponse = zod.object({
@@ -28,8 +29,10 @@ export const LoginResponse = zod.object({
     name: zod.string(),
     email: zod.string(),
     role: zod.enum(["admin", "supervisor", "agente"]),
+    twofaEnabled: zod.boolean(),
     createdAt: zod.coerce.date(),
   }),
+  requiresTwofa: zod.boolean().nullish(),
 });
 
 /**
@@ -40,7 +43,63 @@ export const GetCurrentUserResponse = zod.object({
   name: zod.string(),
   email: zod.string(),
   role: zod.enum(["admin", "supervisor", "agente"]),
+  twofaEnabled: zod.boolean(),
   createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Generate a new TOTP secret and provisioning QR
+ */
+export const SetupTwofaResponse = zod.object({
+  secret: zod.string(),
+  otpauthUrl: zod.string(),
+  qrCodeDataUrl: zod.string(),
+});
+
+/**
+ * @summary Verify code and enable 2FA for the current user
+ */
+export const EnableTwofaBody = zod.object({
+  secret: zod.string(),
+  code: zod.string(),
+});
+
+export const EnableTwofaResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  role: zod.enum(["admin", "supervisor", "agente"]),
+  twofaEnabled: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Disable 2FA for the current user (requires current code)
+ */
+export const DisableTwofaBody = zod.object({
+  code: zod.string(),
+});
+
+export const DisableTwofaResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  role: zod.enum(["admin", "supervisor", "agente"]),
+  twofaEnabled: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Stream a chat completion from Claude or Gemini (SSE)
+ */
+export const AiChatBody = zod.object({
+  messages: zod.array(
+    zod.object({
+      role: zod.enum(["user", "assistant", "system"]),
+      content: zod.string(),
+    }),
+  ),
+  provider: zod.enum(["claude", "gemini"]).optional(),
 });
 
 /**
@@ -51,6 +110,7 @@ export const ListUsersResponseItem = zod.object({
   name: zod.string(),
   email: zod.string(),
   role: zod.enum(["admin", "supervisor", "agente"]),
+  twofaEnabled: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
 export const ListUsersResponse = zod.array(ListUsersResponseItem);

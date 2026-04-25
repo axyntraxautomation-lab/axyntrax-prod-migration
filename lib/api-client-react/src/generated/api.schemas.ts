@@ -26,16 +26,63 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  twofaEnabled: boolean;
   createdAt: string;
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
+  /** @nullable */
+  twofaCode?: string | null;
 }
 
 export interface AuthSession {
   user: User;
+  /** @nullable */
+  requiresTwofa?: boolean | null;
+}
+
+export interface TwofaSetupResponse {
+  secret: string;
+  otpauthUrl: string;
+  qrCodeDataUrl: string;
+}
+
+export interface TwofaEnableRequest {
+  secret: string;
+  code: string;
+}
+
+export interface TwofaDisableRequest {
+  code: string;
+}
+
+export type AiChatMessageRole =
+  (typeof AiChatMessageRole)[keyof typeof AiChatMessageRole];
+
+export const AiChatMessageRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export interface AiChatMessage {
+  role: AiChatMessageRole;
+  content: string;
+}
+
+export type AiChatRequestProvider =
+  (typeof AiChatRequestProvider)[keyof typeof AiChatRequestProvider];
+
+export const AiChatRequestProvider = {
+  claude: "claude",
+  gemini: "gemini",
+} as const;
+
+export interface AiChatRequest {
+  messages: AiChatMessage[];
+  provider?: AiChatRequestProvider;
 }
 
 export type ClientStage = (typeof ClientStage)[keyof typeof ClientStage];

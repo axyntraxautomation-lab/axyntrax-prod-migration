@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Shield, Users } from "lucide-react";
+import { LogOut, Shield, ShieldCheck, Users } from "lucide-react";
+import { TwofaCard } from "@/components/twofa-card";
 
 function initials(name: string) {
   return name
@@ -149,15 +150,19 @@ export default function Settings() {
         </CardContent>
       </Card>
 
+      <TwofaCard enabled={!!user?.twofaEnabled} />
+
       <Card className="border-dashed">
         <CardContent className="py-6 text-sm text-muted-foreground">
-          <p className="mb-2 font-medium text-foreground">
-            Próximas configuraciones
+          <p className="mb-2 font-medium text-foreground flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Seguridad activa en esta fase
           </p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Activar 2FA (segunda fase de seguridad)</li>
-            <li>Conectores: Facebook · Instagram · WhatsApp · Gmail</li>
-            <li>Claves API: Claude Sonnet · Gemini · Culqi · SUNAT</li>
+            <li>Sesión JWT en cookie HttpOnly (30 días, sameSite lax)</li>
+            <li>Verificación 2FA TOTP por usuario (RFC 6238, 30s)</li>
+            <li>Cifrado AES-256-GCM de teléfonos, notas y claves de licencia</li>
+            <li>Contraseñas con bcrypt + control de acceso por roles</li>
           </ul>
         </CardContent>
       </Card>

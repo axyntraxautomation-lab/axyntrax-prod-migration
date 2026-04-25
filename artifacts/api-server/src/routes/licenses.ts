@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { db, clientsTable, licensesTable } from "@workspace/db";
 import { ListLicensesResponse, CreateLicenseBody } from "@workspace/api-zod";
 import { requireAuth } from "../lib/auth";
+import { decryptField, encryptField } from "../lib/crypto";
 
 const router: IRouter = Router();
 
@@ -43,6 +44,7 @@ router.get("/licenses", requireAuth, async (_req, res): Promise<void> => {
 
   const mapped = rows.map((r) => ({
     ...r,
+    key: decryptField(r.key) ?? r.key,
     amount: r.amount == null ? null : Number(r.amount),
   }));
   res.json(ListLicensesResponse.parse(mapped));
@@ -70,11 +72,12 @@ router.post("/licenses", requireAuth, async (req, res): Promise<void> => {
   const end = new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
   const prefix = client.name.split(" ")[0]?.slice(0, 6) || "CLI";
 
+  const plainKey = generateKey(prefix);
   const [lic] = await db
     .insert(licensesTable)
     .values({
       clientId: parsed.data.clientId,
-      key: generateKey(prefix),
+      key: encryptField(plainKey) ?? plainKey,
       type: parsed.data.type,
       module: parsed.data.module ?? null,
       status: "activa",
@@ -90,7 +93,7 @@ router.post("/licenses", requireAuth, async (req, res): Promise<void> => {
     id: lic.id,
     clientId: lic.clientId,
     clientName: client.name,
-    key: lic.key,
+    key: plainKey,
     type: lic.type,
     module: lic.module,
     status: lic.status,

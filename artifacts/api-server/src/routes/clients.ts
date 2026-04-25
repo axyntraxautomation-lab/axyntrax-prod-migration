@@ -12,15 +12,26 @@ import {
   DeleteClientParams,
 } from "@workspace/api-zod";
 import { requireAuth } from "../lib/auth";
+import { decryptField, encryptField } from "../lib/crypto";
 
 const router: IRouter = Router();
+
+type ClientRow = typeof clientsTable.$inferSelect;
+
+function decryptClient(c: ClientRow): ClientRow {
+  return {
+    ...c,
+    phone: decryptField(c.phone),
+    notes: decryptField(c.notes),
+  };
+}
 
 router.get("/clients", requireAuth, async (_req, res): Promise<void> => {
   const clients = await db
     .select()
     .from(clientsTable)
     .orderBy(desc(clientsTable.createdAt));
-  res.json(ListClientsResponse.parse(clients));
+  res.json(ListClientsResponse.parse(clients.map(decryptClient)));
 });
 
 router.post("/clients", requireAuth, async (req, res): Promise<void> => {
@@ -29,16 +40,18 @@ router.post("/clients", requireAuth, async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { score, ...rest } = parsed.data;
+  const { score, phone, notes, ...rest } = parsed.data;
   const [client] = await db
     .insert(clientsTable)
     .values({
       ...rest,
+      phone: encryptField(phone ?? null),
+      notes: encryptField(notes ?? null),
       score: score ?? 0,
       stage: parsed.data.stage ?? "prospecto",
     })
     .returning();
-  res.status(201).json(GetClientResponse.parse(client));
+  res.status(201).json(GetClientResponse.parse(decryptClient(client)));
 });
 
 router.get("/clients/:id", requireAuth, async (req, res): Promise<void> => {
@@ -55,7 +68,7 @@ router.get("/clients/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Cliente no encontrado" });
     return;
   }
-  res.json(GetClientResponse.parse(client));
+  res.json(GetClientResponse.parse(decryptClient(client)));
 });
 
 router.patch("/clients/:id", requireAuth, async (req, res): Promise<void> => {
@@ -71,7 +84,12 @@ router.patch("/clients/:id", requireAuth, async (req, res): Promise<void> => {
   }
   const updates: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(parsed.data)) {
-    if (v !== undefined && v !== null) updates[k] = v;
+    if (v === undefined) continue;
+    if (k === "phone" || k === "notes") {
+      updates[k] = encryptField(v as string | null);
+    } else if (v !== null) {
+      updates[k] = v;
+    }
   }
   if (Object.keys(updates).length === 0) {
     res.status(400).json({ error: "Sin campos a actualizar" });
@@ -86,7 +104,7 @@ router.patch("/clients/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Cliente no encontrado" });
     return;
   }
-  res.json(UpdateClientResponse.parse(client));
+  res.json(UpdateClientResponse.parse(decryptClient(client)));
 });
 
 router.delete("/clients/:id", requireAuth, async (req, res): Promise<void> => {

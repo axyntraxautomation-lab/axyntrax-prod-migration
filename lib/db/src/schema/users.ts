@@ -9,6 +9,7 @@ export const usersTable = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: varchar("role", { length: 32 }).notNull().default("agente"),
   twofaSecret: text("twofa_secret"),
+  twofaEnabled: text("twofa_enabled").notNull().default("false"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()

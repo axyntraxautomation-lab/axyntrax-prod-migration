@@ -20,6 +20,10 @@ tags:
     description: License management (KeyGen)
   - name: dashboard
     description: Dashboard KPIs and summaries
+  - name: twofa
+    description: Two-factor authentication (TOTP)
+  - name: ai
+    description: AXYN CORE AI chat (Claude + Gemini)
 paths:
   /healthz:
     get:
@@ -86,6 +90,86 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/2fa/setup:
+    post:
+      operationId: setupTwofa
+      tags: [twofa]
+      summary: Generate a new TOTP secret and provisioning QR
+      responses:
+        "200":
+          description: Provisioning data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwofaSetupResponse"
+
+  /auth/2fa/enable:
+    post:
+      operationId: enableTwofa
+      tags: [twofa]
+      summary: Verify code and enable 2FA for the current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwofaEnableRequest"
+      responses:
+        "200":
+          description: Enabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/2fa/disable:
+    post:
+      operationId: disableTwofa
+      tags: [twofa]
+      summary: Disable 2FA for the current user (requires current code)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwofaDisableRequest"
+      responses:
+        "200":
+          description: Disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: Stream a chat completion from Claude or Gemini (SSE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatRequest"
+      responses:
+        "200":
+          description: SSE stream of assistant response chunks
+          content:
+            text/event-stream: {}
 
   /users:
     get:
@@ -286,10 +370,12 @@ components:
           type: string
         role:
           $ref: "#/components/schemas/UserRole"
+        twofaEnabled:
+          type: boolean
         createdAt:
           type: string
           format: date-time
-      required: [id, name, email, role, createdAt]
+      required: [id, name, email, role, twofaEnabled, createdAt]
 
     LoginRequest:
       type: object
@@ -298,6 +384,8 @@ components:
           type: string
         password:
           type: string
+        twofaCode:
+          type: ["string", "null"]
       required: [email, password]
 
     AuthSession:
@@ -305,7 +393,58 @@ components:
       properties:
         user:
           $ref: "#/components/schemas/User"
+        requiresTwofa:
+          type: ["boolean", "null"]
       required: [user]
+
+    TwofaSetupResponse:
+      type: object
+      properties:
+        secret:
+          type: string
+        otpauthUrl:
+          type: string
+        qrCodeDataUrl:
+          type: string
+      required: [secret, otpauthUrl, qrCodeDataUrl]
+
+    TwofaEnableRequest:
+      type: object
+      properties:
+        secret:
+          type: string
+        code:
+          type: string
+      required: [secret, code]
+
+    TwofaDisableRequest:
+      type: object
+      properties:
+        code:
+          type: string
+      required: [code]
+
+    AiChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+      required: [role, content]
+
+    AiChatRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiChatMessage"
+        provider:
+          type: string
+          enum: [claude, gemini]
+      required: [messages]
 
     ClientStage:
       type: string

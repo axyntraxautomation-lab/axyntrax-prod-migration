@@ -12,5 +12,6 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  twofaEnabled: boolean;
   createdAt: Date;
 }

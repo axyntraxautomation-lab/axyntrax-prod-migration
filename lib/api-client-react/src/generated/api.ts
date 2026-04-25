@@ -18,6 +18,7 @@ import type {
 
 import type {
   ActivityItem,
+  AiChatRequest,
   AuthSession,
   Client,
   ClientCreate,
@@ -28,6 +29,9 @@ import type {
   License,
   LicenseCreate,
   LoginRequest,
+  TwofaDisableRequest,
+  TwofaEnableRequest,
+  TwofaSetupResponse,
   User,
 } from "./api.schemas";
 
@@ -352,6 +356,345 @@ export function useGetCurrentUser<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Generate a new TOTP secret and provisioning QR
+ */
+export const getSetupTwofaUrl = () => {
+  return `/api/auth/2fa/setup`;
+};
+
+export const setupTwofa = async (
+  options?: RequestInit,
+): Promise<TwofaSetupResponse> => {
+  return customFetch<TwofaSetupResponse>(getSetupTwofaUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getSetupTwofaMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setupTwofa>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof setupTwofa>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["setupTwofa"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof setupTwofa>>,
+    void
+  > = () => {
+    return setupTwofa(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SetupTwofaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof setupTwofa>>
+>;
+
+export type SetupTwofaMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Generate a new TOTP secret and provisioning QR
+ */
+export const useSetupTwofa = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setupTwofa>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof setupTwofa>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getSetupTwofaMutationOptions(options));
+};
+
+/**
+ * @summary Verify code and enable 2FA for the current user
+ */
+export const getEnableTwofaUrl = () => {
+  return `/api/auth/2fa/enable`;
+};
+
+export const enableTwofa = async (
+  twofaEnableRequest: TwofaEnableRequest,
+  options?: RequestInit,
+): Promise<User> => {
+  return customFetch<User>(getEnableTwofaUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(twofaEnableRequest),
+  });
+};
+
+export const getEnableTwofaMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof enableTwofa>>,
+    TError,
+    { data: BodyType<TwofaEnableRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof enableTwofa>>,
+  TError,
+  { data: BodyType<TwofaEnableRequest> },
+  TContext
+> => {
+  const mutationKey = ["enableTwofa"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof enableTwofa>>,
+    { data: BodyType<TwofaEnableRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return enableTwofa(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type EnableTwofaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof enableTwofa>>
+>;
+export type EnableTwofaMutationBody = BodyType<TwofaEnableRequest>;
+export type EnableTwofaMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Verify code and enable 2FA for the current user
+ */
+export const useEnableTwofa = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof enableTwofa>>,
+    TError,
+    { data: BodyType<TwofaEnableRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof enableTwofa>>,
+  TError,
+  { data: BodyType<TwofaEnableRequest> },
+  TContext
+> => {
+  return useMutation(getEnableTwofaMutationOptions(options));
+};
+
+/**
+ * @summary Disable 2FA for the current user (requires current code)
+ */
+export const getDisableTwofaUrl = () => {
+  return `/api/auth/2fa/disable`;
+};
+
+export const disableTwofa = async (
+  twofaDisableRequest: TwofaDisableRequest,
+  options?: RequestInit,
+): Promise<User> => {
+  return customFetch<User>(getDisableTwofaUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(twofaDisableRequest),
+  });
+};
+
+export const getDisableTwofaMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disableTwofa>>,
+    TError,
+    { data: BodyType<TwofaDisableRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disableTwofa>>,
+  TError,
+  { data: BodyType<TwofaDisableRequest> },
+  TContext
+> => {
+  const mutationKey = ["disableTwofa"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disableTwofa>>,
+    { data: BodyType<TwofaDisableRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return disableTwofa(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DisableTwofaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disableTwofa>>
+>;
+export type DisableTwofaMutationBody = BodyType<TwofaDisableRequest>;
+export type DisableTwofaMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Disable 2FA for the current user (requires current code)
+ */
+export const useDisableTwofa = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disableTwofa>>,
+    TError,
+    { data: BodyType<TwofaDisableRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof disableTwofa>>,
+  TError,
+  { data: BodyType<TwofaDisableRequest> },
+  TContext
+> => {
+  return useMutation(getDisableTwofaMutationOptions(options));
+};
+
+/**
+ * @summary Stream a chat completion from Claude or Gemini (SSE)
+ */
+export const getAiChatUrl = () => {
+  return `/api/ai/chat`;
+};
+
+export const aiChat = async (
+  aiChatRequest: AiChatRequest,
+  options?: RequestInit,
+): Promise<unknown> => {
+  return customFetch<unknown>(getAiChatUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(aiChatRequest),
+  });
+};
+
+export const getAiChatMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof aiChat>>,
+    TError,
+    { data: BodyType<AiChatRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof aiChat>>,
+  TError,
+  { data: BodyType<AiChatRequest> },
+  TContext
+> => {
+  const mutationKey = ["aiChat"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof aiChat>>,
+    { data: BodyType<AiChatRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return aiChat(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AiChatMutationResult = NonNullable<
+  Awaited<ReturnType<typeof aiChat>>
+>;
+export type AiChatMutationBody = BodyType<AiChatRequest>;
+export type AiChatMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Stream a chat completion from Claude or Gemini (SSE)
+ */
+export const useAiChat = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof aiChat>>,
+    TError,
+    { data: BodyType<AiChatRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof aiChat>>,
+  TError,
+  { data: BodyType<AiChatRequest> },
+  TContext
+> => {
+  return useMutation(getAiChatMutationOptions(options));
+};
 
 /**
  * @summary List users

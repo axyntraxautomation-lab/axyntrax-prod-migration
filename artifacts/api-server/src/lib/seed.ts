@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db, usersTable, clientsTable, licensesTable } from "@workspace/db";
 import { hashPassword } from "./auth";
+import { encryptField } from "./crypto";
 import { logger } from "./logger";
 
 const ADMIN_EMAIL = "axyntraxautomation@gmail.com";
@@ -46,44 +47,44 @@ export async function ensureSeedData(): Promise<void> {
             company: "TextilSur SAC",
             industry: "Textil",
             email: "lvargas@textilsur.pe",
-            phone: "+51 987 654 321",
+            phone: encryptField("+51 987 654 321"),
             channel: "whatsapp",
             stage: "demo_activa",
             score: 78,
-            notes: "Interesada en módulo de inventario y CRM.",
+            notes: encryptField("Interesada en módulo de inventario y CRM."),
           },
           {
             name: "Carlos Quispe",
             company: "Granja Andina",
             industry: "Agroindustria",
             email: "carlos@granjaandina.pe",
-            phone: "+51 912 345 678",
+            phone: encryptField("+51 912 345 678"),
             channel: "facebook",
             stage: "negociacion",
             score: 65,
-            notes: "Solicita propuesta plan 12m con AXIA.",
+            notes: encryptField("Solicita propuesta plan 12m con AXIA."),
           },
           {
             name: "Renata Flores",
             company: "Boutique Renata",
             industry: "Retail",
             email: "renata@boutique.pe",
-            phone: "+51 999 111 222",
+            phone: encryptField("+51 999 111 222"),
             channel: "instagram",
             stage: "cliente",
             score: 92,
-            notes: "Cliente activo, módulo finanzas.",
+            notes: encryptField("Cliente activo, módulo finanzas."),
           },
           {
             name: "Iván Soto",
             company: "Soto Logística",
             industry: "Logística",
             email: "ivan@sotolog.pe",
-            phone: "+51 944 222 333",
+            phone: encryptField("+51 944 222 333"),
             channel: "web",
             stage: "prospecto",
             score: 35,
-            notes: "Llegó por la web, agendar demo.",
+            notes: encryptField("Llegó por la web, agendar demo."),
           },
         ])
         .returning();
@@ -96,7 +97,7 @@ export async function ensureSeedData(): Promise<void> {
         await db.insert(licensesTable).values([
           {
             clientId: seeded[2].id,
-            key: "AXYN-RENATA-2026-LIVE",
+            key: encryptField("AXYN-RENATA-2026-LIVE") ?? "AXYN-RENATA-2026-LIVE",
             type: "plan_12m",
             module: "finanzas",
             status: "activa",
@@ -107,7 +108,7 @@ export async function ensureSeedData(): Promise<void> {
           },
           {
             clientId: seeded[0].id,
-            key: "AXYN-DEMO-LUCIA-30D",
+            key: encryptField("AXYN-DEMO-LUCIA-30D") ?? "AXYN-DEMO-LUCIA-30D",
             type: "demo",
             module: "crm",
             status: "activa",
@@ -116,7 +117,7 @@ export async function ensureSeedData(): Promise<void> {
           },
           {
             clientId: seeded[1].id,
-            key: "AXYN-CQUISPE-6M",
+            key: encryptField("AXYN-CQUISPE-6M") ?? "AXYN-CQUISPE-6M",
             type: "plan_6m",
             module: "axia",
             status: "pendiente",

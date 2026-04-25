@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
+import { authenticator } from "otplib";
 import { db, usersTable } from "@workspace/db";
 import {
   LoginBody,
@@ -40,6 +41,30 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
+  const twofaEnabled = user.twofaEnabled === "true" && !!user.twofaSecret;
+
+  if (twofaEnabled) {
+    const code = parsed.data.twofaCode?.trim();
+    if (!code) {
+      res.status(401).json({
+        error: "Se requiere código de verificación 2FA",
+        requiresTwofa: true,
+      });
+      return;
+    }
+    const valid = authenticator.verify({
+      token: code,
+      secret: user.twofaSecret as string,
+    });
+    if (!valid) {
+      res.status(401).json({
+        error: "Código 2FA inválido",
+        requiresTwofa: true,
+      });
+      return;
+    }
+  }
+
   const safeUser = {
     id: user.id,
     name: user.name,
@@ -56,6 +81,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
         name: user.name,
         email: user.email,
         role: user.role,
+        twofaEnabled,
         createdAt: user.createdAt,
       },
     }),
@@ -87,6 +113,7 @@ router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
       name: user.name,
       email: user.email,
       role: user.role,
+      twofaEnabled: user.twofaEnabled === "true",
       createdAt: user.createdAt,
     }),
   );
