@@ -706,6 +706,77 @@ export interface AuditEntry {
   createdAt: string;
 }
 
+export interface ModuleCatalog {
+  id: number;
+  slug: string;
+  name: string;
+  /** @nullable */
+  description?: string | null;
+  industry: string;
+  monthlyPrice: string;
+  currency: string;
+  active: number;
+  createdAt: string;
+}
+
+export interface IndustryInfo {
+  slug: string;
+  label: string;
+  tips: string[];
+}
+
+export interface IndustryPrompt {
+  industry: string;
+  label: string;
+  system: string;
+  tips: string[];
+}
+
+export interface ClientModule {
+  id: number;
+  clientId: number;
+  moduleId: number;
+  status: string;
+  /** @nullable */
+  notes?: string | null;
+  requestedAt: string;
+  /** @nullable */
+  activatedAt?: string | null;
+  /** @nullable */
+  expiresAt?: string | null;
+  /** @nullable */
+  cancelledAt?: string | null;
+  /** @nullable */
+  moduleSlug?: string | null;
+  /** @nullable */
+  moduleName?: string | null;
+  /** @nullable */
+  moduleIndustry?: string | null;
+  /** @nullable */
+  monthlyPrice?: string | null;
+  /** @nullable */
+  currency?: string | null;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  clientCompany?: string | null;
+}
+
+export interface ModuleRequestBody {
+  clientId: number;
+  moduleId: number;
+  notes?: string;
+}
+
+export interface ModuleApproveBody {
+  /**
+   * @minimum 1
+   * @maximum 60
+   */
+  durationMonths?: number;
+  createPayment?: boolean;
+}
+
 export type ListConversationsParams = {
   channel?: string;
   status?: string;
@@ -749,6 +820,10 @@ export type SubscribePush200 = {
 export type SendTestPush200 = {
   sent: number;
   removed: number;
+};
+
+export type ListModulesCatalogParams = {
+  industry?: string;
 };
 
 export type ListAuditLogParams = {

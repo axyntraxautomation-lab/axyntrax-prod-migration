@@ -17,8 +17,20 @@ with the AXYNTRAX logo throughout.
 | FASE 5 | Gmail automation (Cecilia), email orchestration                      | Pending       |
 | FASE 6 | Advanced analytics + dashboards                                      | Pending       |
 | FASE 7 | PWA + push notifications + offline                                   | Pending       |
-| FASE 8 | Hardening, audit logs, deploy + rollout                              | Pending       |
+| FASE 8 | Hardening, audit logs, deploy + rollout                              | **Done**      |
 | Rule   | "Ninguna implementación sin acuerdo consensuado" — confirm each fase | User-enforced |
+
+### Cecilia Suite (modules-by-industry)
+
+Phase-based extension layered inside the dashboard. Each industry (medical,
+legal, dental, veterinary, condo, otro) has its own module catalog. Companies
+(stored in `clientsTable`) request modules; admins approve, which auto-creates
+a pending payment row and sets a 1- or 12-month expiry.
+
+- `lib/db/src/schema/modules.ts` — `modulesCatalogTable` (13 seeded), `clientModulesTable`
+- `artifacts/api-server/src/routes/modules.ts` — catalog, industries, request/approve/cancel
+- `artifacts/api-server/src/lib/industry-prompts.ts` — Cecilia AI tone per industry
+- Dashboard `/modulos` — Catálogo / Por cliente / Solicitudes (admin) tabs
 
 ## Stack
 

@@ -17,6 +17,7 @@ import Email from "@/pages/email";
 import Analytics from "@/pages/analytics";
 import AxynCore from "@/pages/axyn-core";
 import Settings from "@/pages/settings";
+import Modulos from "@/pages/modulos";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient({
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/inbox" component={() => <ProtectedRoute component={Inbox} />} />
       <Route path="/finanzas" component={() => <ProtectedRoute component={Finanzas} />} />
       <Route path="/email" component={() => <ProtectedRoute component={Email} />} />
+      <Route path="/modulos" component={() => <ProtectedRoute component={Modulos} />} />
       <Route path="/analytics" component={() => <ProtectedRoute component={Analytics} />} />
       <Route path="/axyn-core" component={() => <ProtectedRoute component={AxynCore} />} />
       <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />

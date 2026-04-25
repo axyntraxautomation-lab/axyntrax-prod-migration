@@ -29,6 +29,7 @@ import type {
   CeciliaTriageResult,
   Client,
   ClientCreate,
+  ClientModule,
   ClientUpdate,
   Conversation,
   ConversationDetail,
@@ -44,15 +45,21 @@ import type {
   GmailTemplate,
   GmailTemplateCreate,
   HealthStatus,
+  IndustryInfo,
+  IndustryPrompt,
   License,
   LicenseCreate,
   LinkClientRequest,
   ListAuditLogParams,
   ListConversationsParams,
   ListFinancesParams,
+  ListModulesCatalogParams,
   ListPaymentsParams,
   LoginRequest,
   Message,
+  ModuleApproveBody,
+  ModuleCatalog,
+  ModuleRequestBody,
   Payment,
   PaymentCreate,
   PushSubscribeRequest,
@@ -3556,6 +3563,688 @@ export const useSendTestPush = <
   TContext
 > => {
   return useMutation(getSendTestPushMutationOptions(options));
+};
+
+/**
+ * @summary Catálogo de módulos disponibles
+ */
+export const getListModulesCatalogUrl = (params?: ListModulesCatalogParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/modules/catalog?${stringifiedParams}`
+    : `/api/modules/catalog`;
+};
+
+export const listModulesCatalog = async (
+  params?: ListModulesCatalogParams,
+  options?: RequestInit,
+): Promise<ModuleCatalog[]> => {
+  return customFetch<ModuleCatalog[]>(getListModulesCatalogUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListModulesCatalogQueryKey = (
+  params?: ListModulesCatalogParams,
+) => {
+  return [`/api/modules/catalog`, ...(params ? [params] : [])] as const;
+};
+
+export const getListModulesCatalogQueryOptions = <
+  TData = Awaited<ReturnType<typeof listModulesCatalog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListModulesCatalogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listModulesCatalog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListModulesCatalogQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listModulesCatalog>>
+  > = ({ signal }) => listModulesCatalog(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listModulesCatalog>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListModulesCatalogQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listModulesCatalog>>
+>;
+export type ListModulesCatalogQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Catálogo de módulos disponibles
+ */
+
+export function useListModulesCatalog<
+  TData = Awaited<ReturnType<typeof listModulesCatalog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListModulesCatalogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listModulesCatalog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListModulesCatalogQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Lista industrias soportadas
+ */
+export const getListIndustriesUrl = () => {
+  return `/api/modules/industries`;
+};
+
+export const listIndustries = async (
+  options?: RequestInit,
+): Promise<IndustryInfo[]> => {
+  return customFetch<IndustryInfo[]>(getListIndustriesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListIndustriesQueryKey = () => {
+  return [`/api/modules/industries`] as const;
+};
+
+export const getListIndustriesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listIndustries>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listIndustries>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListIndustriesQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listIndustries>>> = ({
+    signal,
+  }) => listIndustries({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listIndustries>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListIndustriesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listIndustries>>
+>;
+export type ListIndustriesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Lista industrias soportadas
+ */
+
+export function useListIndustries<
+  TData = Awaited<ReturnType<typeof listIndustries>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listIndustries>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListIndustriesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Devuelve el prompt IA y tips para una industria
+ */
+export const getGetIndustryPromptUrl = (industry: string) => {
+  return `/api/modules/industry-prompt/${industry}`;
+};
+
+export const getIndustryPrompt = async (
+  industry: string,
+  options?: RequestInit,
+): Promise<IndustryPrompt> => {
+  return customFetch<IndustryPrompt>(getGetIndustryPromptUrl(industry), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetIndustryPromptQueryKey = (industry: string) => {
+  return [`/api/modules/industry-prompt/${industry}`] as const;
+};
+
+export const getGetIndustryPromptQueryOptions = <
+  TData = Awaited<ReturnType<typeof getIndustryPrompt>>,
+  TError = ErrorType<unknown>,
+>(
+  industry: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getIndustryPrompt>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetIndustryPromptQueryKey(industry);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getIndustryPrompt>>
+  > = ({ signal }) =>
+    getIndustryPrompt(industry, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!industry,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getIndustryPrompt>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetIndustryPromptQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getIndustryPrompt>>
+>;
+export type GetIndustryPromptQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Devuelve el prompt IA y tips para una industria
+ */
+
+export function useGetIndustryPrompt<
+  TData = Awaited<ReturnType<typeof getIndustryPrompt>>,
+  TError = ErrorType<unknown>,
+>(
+  industry: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getIndustryPrompt>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetIndustryPromptQueryOptions(industry, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Módulos de un cliente
+ */
+export const getListClientModulesUrl = (clientId: number) => {
+  return `/api/modules/client/${clientId}`;
+};
+
+export const listClientModules = async (
+  clientId: number,
+  options?: RequestInit,
+): Promise<ClientModule[]> => {
+  return customFetch<ClientModule[]>(getListClientModulesUrl(clientId), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListClientModulesQueryKey = (clientId: number) => {
+  return [`/api/modules/client/${clientId}`] as const;
+};
+
+export const getListClientModulesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listClientModules>>,
+  TError = ErrorType<unknown>,
+>(
+  clientId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listClientModules>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListClientModulesQueryKey(clientId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listClientModules>>
+  > = ({ signal }) =>
+    listClientModules(clientId, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!clientId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listClientModules>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListClientModulesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listClientModules>>
+>;
+export type ListClientModulesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Módulos de un cliente
+ */
+
+export function useListClientModules<
+  TData = Awaited<ReturnType<typeof listClientModules>>,
+  TError = ErrorType<unknown>,
+>(
+  clientId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listClientModules>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListClientModulesQueryOptions(clientId, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Solicitudes de módulos pendientes (admin)
+ */
+export const getListModuleRequestsUrl = () => {
+  return `/api/modules/requests`;
+};
+
+export const listModuleRequests = async (
+  options?: RequestInit,
+): Promise<ClientModule[]> => {
+  return customFetch<ClientModule[]>(getListModuleRequestsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListModuleRequestsQueryKey = () => {
+  return [`/api/modules/requests`] as const;
+};
+
+export const getListModuleRequestsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listModuleRequests>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listModuleRequests>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListModuleRequestsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listModuleRequests>>
+  > = ({ signal }) => listModuleRequests({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listModuleRequests>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListModuleRequestsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listModuleRequests>>
+>;
+export type ListModuleRequestsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Solicitudes de módulos pendientes (admin)
+ */
+
+export function useListModuleRequests<
+  TData = Awaited<ReturnType<typeof listModuleRequests>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listModuleRequests>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListModuleRequestsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Solicitar activación de módulo para un cliente
+ */
+export const getRequestModuleUrl = () => {
+  return `/api/modules/request`;
+};
+
+export const requestModule = async (
+  moduleRequestBody: ModuleRequestBody,
+  options?: RequestInit,
+): Promise<ClientModule> => {
+  return customFetch<ClientModule>(getRequestModuleUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(moduleRequestBody),
+  });
+};
+
+export const getRequestModuleMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestModule>>,
+    TError,
+    { data: BodyType<ModuleRequestBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof requestModule>>,
+  TError,
+  { data: BodyType<ModuleRequestBody> },
+  TContext
+> => {
+  const mutationKey = ["requestModule"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof requestModule>>,
+    { data: BodyType<ModuleRequestBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return requestModule(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RequestModuleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof requestModule>>
+>;
+export type RequestModuleMutationBody = BodyType<ModuleRequestBody>;
+export type RequestModuleMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Solicitar activación de módulo para un cliente
+ */
+export const useRequestModule = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestModule>>,
+    TError,
+    { data: BodyType<ModuleRequestBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof requestModule>>,
+  TError,
+  { data: BodyType<ModuleRequestBody> },
+  TContext
+> => {
+  return useMutation(getRequestModuleMutationOptions(options));
+};
+
+/**
+ * @summary Aprobar y activar un módulo (admin)
+ */
+export const getApproveModuleUrl = (id: number) => {
+  return `/api/modules/${id}/approve`;
+};
+
+export const approveModule = async (
+  id: number,
+  moduleApproveBody?: ModuleApproveBody,
+  options?: RequestInit,
+): Promise<ClientModule> => {
+  return customFetch<ClientModule>(getApproveModuleUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(moduleApproveBody),
+  });
+};
+
+export const getApproveModuleMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof approveModule>>,
+    TError,
+    { id: number; data: BodyType<ModuleApproveBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof approveModule>>,
+  TError,
+  { id: number; data: BodyType<ModuleApproveBody> },
+  TContext
+> => {
+  const mutationKey = ["approveModule"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof approveModule>>,
+    { id: number; data: BodyType<ModuleApproveBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return approveModule(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ApproveModuleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof approveModule>>
+>;
+export type ApproveModuleMutationBody = BodyType<ModuleApproveBody>;
+export type ApproveModuleMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Aprobar y activar un módulo (admin)
+ */
+export const useApproveModule = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof approveModule>>,
+    TError,
+    { id: number; data: BodyType<ModuleApproveBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof approveModule>>,
+  TError,
+  { id: number; data: BodyType<ModuleApproveBody> },
+  TContext
+> => {
+  return useMutation(getApproveModuleMutationOptions(options));
+};
+
+/**
+ * @summary Cancelar módulo (admin)
+ */
+export const getCancelModuleUrl = (id: number) => {
+  return `/api/modules/${id}/cancel`;
+};
+
+export const cancelModule = async (
+  id: number,
+  options?: RequestInit,
+): Promise<ClientModule> => {
+  return customFetch<ClientModule>(getCancelModuleUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getCancelModuleMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof cancelModule>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof cancelModule>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["cancelModule"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof cancelModule>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return cancelModule(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CancelModuleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof cancelModule>>
+>;
+
+export type CancelModuleMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Cancelar módulo (admin)
+ */
+export const useCancelModule = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof cancelModule>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof cancelModule>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getCancelModuleMutationOptions(options));
 };
 
 /**

@@ -817,6 +817,155 @@ paths:
                   removed: { type: integer }
                 required: [sent, removed]
 
+  /modules/catalog:
+    get:
+      operationId: listModulesCatalog
+      summary: Catálogo de módulos disponibles
+      tags: [modules]
+      parameters:
+        - in: query
+          name: industry
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Catálogo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModuleCatalog"
+
+  /modules/industries:
+    get:
+      operationId: listIndustries
+      summary: Lista industrias soportadas
+      tags: [modules]
+      responses:
+        "200":
+          description: Industrias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IndustryInfo"
+
+  /modules/industry-prompt/{industry}:
+    get:
+      operationId: getIndustryPrompt
+      summary: Devuelve el prompt IA y tips para una industria
+      tags: [modules]
+      parameters:
+        - in: path
+          name: industry
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndustryPrompt"
+
+  /modules/client/{clientId}:
+    get:
+      operationId: listClientModules
+      summary: Módulos de un cliente
+      tags: [modules]
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Módulos del cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientModule"
+
+  /modules/requests:
+    get:
+      operationId: listModuleRequests
+      summary: Solicitudes de módulos pendientes (admin)
+      tags: [modules]
+      responses:
+        "200":
+          description: Solicitudes pendientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientModule"
+
+  /modules/request:
+    post:
+      operationId: requestModule
+      summary: Solicitar activación de módulo para un cliente
+      tags: [modules]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleRequestBody"
+      responses:
+        "201":
+          description: Solicitud creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
+  /modules/{id}/approve:
+    post:
+      operationId: approveModule
+      summary: Aprobar y activar un módulo (admin)
+      tags: [modules]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleApproveBody"
+      responses:
+        "200":
+          description: Activado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
+  /modules/{id}/cancel:
+    post:
+      operationId: cancelModule
+      summary: Cancelar módulo (admin)
+      tags: [modules]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Cancelado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
   /admin/audit:
     get:
       operationId: listAuditLog
@@ -1541,3 +1690,73 @@ components:
         meta: { type: ["object", "null"], additionalProperties: true }
         createdAt: { type: string, format: date-time }
       required: [id, action, createdAt]
+
+    ModuleCatalog:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        name: { type: string }
+        description: { type: ["string", "null"] }
+        industry: { type: string }
+        monthlyPrice: { type: string }
+        currency: { type: string }
+        active: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [id, slug, name, industry, monthlyPrice, currency, active, createdAt]
+
+    IndustryInfo:
+      type: object
+      properties:
+        slug: { type: string }
+        label: { type: string }
+        tips:
+          type: array
+          items: { type: string }
+      required: [slug, label, tips]
+
+    IndustryPrompt:
+      type: object
+      properties:
+        industry: { type: string }
+        label: { type: string }
+        system: { type: string }
+        tips:
+          type: array
+          items: { type: string }
+      required: [industry, label, system, tips]
+
+    ClientModule:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: integer }
+        moduleId: { type: integer }
+        status: { type: string }
+        notes: { type: ["string", "null"] }
+        requestedAt: { type: string, format: date-time }
+        activatedAt: { type: ["string", "null"], format: date-time }
+        expiresAt: { type: ["string", "null"], format: date-time }
+        cancelledAt: { type: ["string", "null"], format: date-time }
+        moduleSlug: { type: ["string", "null"] }
+        moduleName: { type: ["string", "null"] }
+        moduleIndustry: { type: ["string", "null"] }
+        monthlyPrice: { type: ["string", "null"] }
+        currency: { type: ["string", "null"] }
+        clientName: { type: ["string", "null"] }
+        clientCompany: { type: ["string", "null"] }
+      required: [id, clientId, moduleId, status, requestedAt]
+
+    ModuleRequestBody:
+      type: object
+      properties:
+        clientId: { type: integer }
+        moduleId: { type: integer }
+        notes: { type: string }
+      required: [clientId, moduleId]
+
+    ModuleApproveBody:
+      type: object
+      properties:
+        durationMonths: { type: integer, minimum: 1, maximum: 60, default: 1 }
+        createPayment: { type: boolean, default: true }

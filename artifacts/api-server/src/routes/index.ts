@@ -16,6 +16,7 @@ import ceciliaRouter from "./cecilia";
 import analyticsRouter from "./analytics";
 import pushRouter from "./push";
 import adminRouter from "./admin";
+import modulesRouter from "./modules";
 
 const router: IRouter = Router();
 
@@ -36,5 +37,6 @@ router.use(ceciliaRouter);
 router.use(analyticsRouter);
 router.use(pushRouter);
 router.use(adminRouter);
+router.use(modulesRouter);
 
 export default router;

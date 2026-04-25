@@ -1,5 +1,11 @@
 import { eq } from "drizzle-orm";
-import { db, usersTable, clientsTable, licensesTable } from "@workspace/db";
+import {
+  db,
+  usersTable,
+  clientsTable,
+  licensesTable,
+  modulesCatalogTable,
+} from "@workspace/db";
 import { hashPassword } from "./auth";
 import { encryptField } from "./crypto";
 import { logger } from "./logger";
@@ -130,7 +136,46 @@ export async function ensureSeedData(): Promise<void> {
         logger.info("Seeded sample licenses");
       }
     }
+    await ensureModulesCatalog();
   } catch (err) {
     logger.error({ err }, "Seed failed");
   }
+}
+
+const DEFAULT_MODULES = [
+  // Medical
+  { slug: "med-historia-clinica", industry: "medical", name: "Historia Clínica Electrónica", description: "Gestión de fichas médicas, antecedentes y recetas digitales.", monthlyPrice: "199.00" },
+  { slug: "med-citas", industry: "medical", name: "Agenda Médica con Recordatorios", description: "Reservas online y recordatorios automáticos por WhatsApp.", monthlyPrice: "149.00" },
+  { slug: "med-facturacion", industry: "medical", name: "Facturación SUNAT Salud", description: "Comprobantes electrónicos integrados con tu consultorio.", monthlyPrice: "129.00" },
+  // Legal
+  { slug: "legal-expedientes", industry: "legal", name: "Expedientes y Casos", description: "Gestión de casos, plazos procesales y notificaciones.", monthlyPrice: "199.00" },
+  { slug: "legal-contratos", industry: "legal", name: "Generador de Contratos IA", description: "Plantillas legales y borradores con asistente IA.", monthlyPrice: "179.00" },
+  { slug: "legal-honorarios", industry: "legal", name: "Honorarios y Cobranza", description: "Control de horas, honorarios y cobranza automática.", monthlyPrice: "129.00" },
+  // Dental
+  { slug: "dental-odontograma", industry: "dental", name: "Odontograma Digital", description: "Ficha dental interactiva por paciente.", monthlyPrice: "169.00" },
+  { slug: "dental-citas", industry: "dental", name: "Agenda Dental + Recordatorios", description: "Reservas online y recordatorios de control.", monthlyPrice: "129.00" },
+  // Veterinary
+  { slug: "vet-historial", industry: "veterinary", name: "Historial de Mascotas", description: "Fichas, vacunas y controles por mascota.", monthlyPrice: "149.00" },
+  { slug: "vet-tienda", industry: "veterinary", name: "Tienda y Stock Veterinario", description: "Inventario de productos y ventas POS.", monthlyPrice: "139.00" },
+  // Condo
+  { slug: "condo-cuotas", industry: "condo", name: "Cuotas y Cobranza", description: "Cuotas mensuales y mora automática por unidad.", monthlyPrice: "199.00" },
+  { slug: "condo-reservas", industry: "condo", name: "Reservas de Áreas Comunes", description: "Calendario y reservas de salones, piscina, gimnasio.", monthlyPrice: "99.00" },
+  { slug: "condo-comunicaciones", industry: "condo", name: "Comunicaciones a Residentes", description: "Avisos masivos por WhatsApp y email.", monthlyPrice: "89.00" },
+];
+
+async function ensureModulesCatalog(): Promise<void> {
+  const [first] = await db.select().from(modulesCatalogTable).limit(1);
+  if (first) return;
+  await db.insert(modulesCatalogTable).values(
+    DEFAULT_MODULES.map((m) => ({
+      slug: m.slug,
+      name: m.name,
+      description: m.description,
+      industry: m.industry,
+      monthlyPrice: m.monthlyPrice,
+      currency: "PEN",
+      active: 1,
+    })),
+  );
+  logger.info({ count: DEFAULT_MODULES.length }, "Seeded modules catalog");
 }

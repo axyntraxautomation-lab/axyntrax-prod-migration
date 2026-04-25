@@ -869,6 +869,181 @@ export const SendTestPushResponse = zod.object({
 });
 
 /**
+ * @summary Catálogo de módulos disponibles
+ */
+export const ListModulesCatalogQueryParams = zod.object({
+  industry: zod.coerce.string().optional(),
+});
+
+export const ListModulesCatalogResponseItem = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  name: zod.string(),
+  description: zod.string().nullish(),
+  industry: zod.string(),
+  monthlyPrice: zod.string(),
+  currency: zod.string(),
+  active: zod.number(),
+  createdAt: zod.coerce.date(),
+});
+export const ListModulesCatalogResponse = zod.array(
+  ListModulesCatalogResponseItem,
+);
+
+/**
+ * @summary Lista industrias soportadas
+ */
+export const ListIndustriesResponseItem = zod.object({
+  slug: zod.string(),
+  label: zod.string(),
+  tips: zod.array(zod.string()),
+});
+export const ListIndustriesResponse = zod.array(ListIndustriesResponseItem);
+
+/**
+ * @summary Devuelve el prompt IA y tips para una industria
+ */
+export const GetIndustryPromptParams = zod.object({
+  industry: zod.coerce.string(),
+});
+
+export const GetIndustryPromptResponse = zod.object({
+  industry: zod.string(),
+  label: zod.string(),
+  system: zod.string(),
+  tips: zod.array(zod.string()),
+});
+
+/**
+ * @summary Módulos de un cliente
+ */
+export const ListClientModulesParams = zod.object({
+  clientId: zod.coerce.number(),
+});
+
+export const ListClientModulesResponseItem = zod.object({
+  id: zod.number(),
+  clientId: zod.number(),
+  moduleId: zod.number(),
+  status: zod.string(),
+  notes: zod.string().nullish(),
+  requestedAt: zod.coerce.date(),
+  activatedAt: zod.coerce.date().nullish(),
+  expiresAt: zod.coerce.date().nullish(),
+  cancelledAt: zod.coerce.date().nullish(),
+  moduleSlug: zod.string().nullish(),
+  moduleName: zod.string().nullish(),
+  moduleIndustry: zod.string().nullish(),
+  monthlyPrice: zod.string().nullish(),
+  currency: zod.string().nullish(),
+  clientName: zod.string().nullish(),
+  clientCompany: zod.string().nullish(),
+});
+export const ListClientModulesResponse = zod.array(
+  ListClientModulesResponseItem,
+);
+
+/**
+ * @summary Solicitudes de módulos pendientes (admin)
+ */
+export const ListModuleRequestsResponseItem = zod.object({
+  id: zod.number(),
+  clientId: zod.number(),
+  moduleId: zod.number(),
+  status: zod.string(),
+  notes: zod.string().nullish(),
+  requestedAt: zod.coerce.date(),
+  activatedAt: zod.coerce.date().nullish(),
+  expiresAt: zod.coerce.date().nullish(),
+  cancelledAt: zod.coerce.date().nullish(),
+  moduleSlug: zod.string().nullish(),
+  moduleName: zod.string().nullish(),
+  moduleIndustry: zod.string().nullish(),
+  monthlyPrice: zod.string().nullish(),
+  currency: zod.string().nullish(),
+  clientName: zod.string().nullish(),
+  clientCompany: zod.string().nullish(),
+});
+export const ListModuleRequestsResponse = zod.array(
+  ListModuleRequestsResponseItem,
+);
+
+/**
+ * @summary Solicitar activación de módulo para un cliente
+ */
+export const RequestModuleBody = zod.object({
+  clientId: zod.number(),
+  moduleId: zod.number(),
+  notes: zod.string().optional(),
+});
+
+/**
+ * @summary Aprobar y activar un módulo (admin)
+ */
+export const ApproveModuleParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const approveModuleBodyDurationMonthsDefault = 1;
+export const approveModuleBodyDurationMonthsMax = 60;
+
+export const approveModuleBodyCreatePaymentDefault = true;
+
+export const ApproveModuleBody = zod.object({
+  durationMonths: zod
+    .number()
+    .min(1)
+    .max(approveModuleBodyDurationMonthsMax)
+    .default(approveModuleBodyDurationMonthsDefault),
+  createPayment: zod.boolean().default(approveModuleBodyCreatePaymentDefault),
+});
+
+export const ApproveModuleResponse = zod.object({
+  id: zod.number(),
+  clientId: zod.number(),
+  moduleId: zod.number(),
+  status: zod.string(),
+  notes: zod.string().nullish(),
+  requestedAt: zod.coerce.date(),
+  activatedAt: zod.coerce.date().nullish(),
+  expiresAt: zod.coerce.date().nullish(),
+  cancelledAt: zod.coerce.date().nullish(),
+  moduleSlug: zod.string().nullish(),
+  moduleName: zod.string().nullish(),
+  moduleIndustry: zod.string().nullish(),
+  monthlyPrice: zod.string().nullish(),
+  currency: zod.string().nullish(),
+  clientName: zod.string().nullish(),
+  clientCompany: zod.string().nullish(),
+});
+
+/**
+ * @summary Cancelar módulo (admin)
+ */
+export const CancelModuleParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const CancelModuleResponse = zod.object({
+  id: zod.number(),
+  clientId: zod.number(),
+  moduleId: zod.number(),
+  status: zod.string(),
+  notes: zod.string().nullish(),
+  requestedAt: zod.coerce.date(),
+  activatedAt: zod.coerce.date().nullish(),
+  expiresAt: zod.coerce.date().nullish(),
+  cancelledAt: zod.coerce.date().nullish(),
+  moduleSlug: zod.string().nullish(),
+  moduleName: zod.string().nullish(),
+  moduleIndustry: zod.string().nullish(),
+  monthlyPrice: zod.string().nullish(),
+  currency: zod.string().nullish(),
+  clientName: zod.string().nullish(),
+  clientCompany: zod.string().nullish(),
+});
+
+/**
  * @summary Lista los últimos eventos del audit log (admin)
  */
 export const listAuditLogQueryLimitDefault = 100;
