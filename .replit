@@ -37,5 +37,6 @@ timeoutMs = 180000
 runButton = "Project"
 
 [deployment]
-  deploymentTarget = "autoscale"
-  
+deploymentTarget = "autoscale"
+build = ["pnpm", "install", "--frozen-lockfile"]
+run = ["pnpm", "--filter", "@workspace/api-server", "run", "start"]
