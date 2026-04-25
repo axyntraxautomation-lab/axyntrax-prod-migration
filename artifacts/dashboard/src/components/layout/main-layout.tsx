@@ -12,7 +12,9 @@ import {
   Package,
   Settings, 
   LogOut,
-  Menu
+  Menu,
+  Megaphone,
+  Wallet as WalletIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +31,7 @@ const navItems = [
   { href: "/finanzas", label: "Finanzas", icon: Wallet },
   { href: "/email", label: "Email", icon: Mail },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/publicidad", label: "Publicidad", icon: Megaphone },
 ];
 
 export function MainLayout({ children }: MainLayoutProps) {
@@ -91,16 +94,29 @@ export function MainLayout({ children }: MainLayoutProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0 bg-card border-border">
-              <div className="h-16 flex items-center border-b border-border px-6">
+              <div className="h-16 flex items-center gap-3 border-b border-border px-6">
                 <img src="/axyntrax-logo.jpeg" alt="AXYNTRAX" className="h-8 object-contain" />
+                <span className="font-bold tracking-wide">JARVIS</span>
               </div>
               <NavLinks />
             </SheetContent>
           </Sheet>
         </div>
-        
-        <div className="hidden md:flex items-center">
+
+        <div className="hidden md:flex items-center gap-3">
           <img src="/axyntrax-logo.jpeg" alt="AXYNTRAX" className="h-8 object-contain" />
+          <div className="leading-tight">
+            <div className="font-bold text-base tracking-wide">JARVIS</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              IA AXYNTRAX
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden xl:flex items-center gap-2 ml-6 px-3 py-1.5 rounded-md border border-primary/30 bg-primary/5 text-xs">
+          <WalletIcon className="h-4 w-4 text-primary" />
+          <span className="text-muted-foreground">Depósitos Yape:</span>
+          <span className="font-mono font-semibold text-foreground">991 740 590</span>
         </div>
 
         <div className="ml-auto flex items-center gap-4">
@@ -137,9 +153,14 @@ export function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       {/* Global Footer */}
-      <footer className="fixed bottom-0 z-20 w-full border-t border-border bg-card p-3 text-center text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between px-6">
+      <footer className="fixed bottom-0 z-20 w-full border-t border-border bg-card p-3 text-center text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-1 px-6">
         <div>Miguel Montero — Fundador & CEO · axyntrax-automation.com · +51 991 740 590</div>
-        <div>© 2026 AXYNTRAX AUTOMATION</div>
+        <div className="flex items-center gap-2">
+          <WalletIcon className="h-3.5 w-3.5 text-primary" />
+          <span>Depósitos Yape · Miguel Montero · </span>
+          <span className="font-mono font-semibold text-foreground">991 740 590</span>
+        </div>
+        <div>JARVIS · © 2026 AXYNTRAX AUTOMATION</div>
       </footer>
     </div>
   );

@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
+import QRCode from "qrcode";
 import { authenticator } from "otplib";
 import { db, usersTable } from "@workspace/db";
 import {
@@ -41,10 +42,47 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
-  const twofaEnabled = user.twofaEnabled === "true" && !!user.twofaSecret;
+  // JARVIS exige 2FA SI o SI para todo acceso al dashboard interno.
+  // Si el usuario aún no enroló, generamos secreto pendiente y obligamos
+  // al cliente a completar el setup en el mismo flujo de login.
+  const twofaEnabledFully = user.twofaEnabled === "true" && !!user.twofaSecret;
+  const code = parsed.data.twofaCode?.trim();
 
-  if (twofaEnabled) {
-    const code = parsed.data.twofaCode?.trim();
+  if (!twofaEnabledFully) {
+    let secret = user.twofaSecret as string | null;
+    if (!secret) {
+      secret = authenticator.generateSecret();
+      await db
+        .update(usersTable)
+        .set({ twofaSecret: secret, twofaEnabled: "false" })
+        .where(eq(usersTable.id, user.id));
+    }
+    if (!code) {
+      const otpauth = authenticator.keyuri(user.email, "JARVIS · AXYNTRAX", secret);
+      const qrDataUrl = await QRCode.toDataURL(otpauth);
+      res.status(401).json({
+        error:
+          "JARVIS requiere doble factor obligatorio. Escaneá el QR con tu app autenticadora y enviá el primer código.",
+        requiresTwofaSetup: true,
+        secret,
+        otpauth,
+        qrDataUrl,
+      });
+      return;
+    }
+    const valid = authenticator.verify({ token: code, secret });
+    if (!valid) {
+      res.status(401).json({
+        error: "Código 2FA inválido. Reintentá con el código actual.",
+        requiresTwofaSetup: true,
+      });
+      return;
+    }
+    await db
+      .update(usersTable)
+      .set({ twofaEnabled: "true" })
+      .where(eq(usersTable.id, user.id));
+  } else {
     if (!code) {
       res.status(401).json({
         error: "Se requiere código de verificación 2FA",
@@ -64,6 +102,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
       return;
     }
   }
+  const twofaEnabled = true;
 
   const safeUser = {
     id: user.id,

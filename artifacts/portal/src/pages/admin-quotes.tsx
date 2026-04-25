@@ -49,7 +49,7 @@ export default function AdminQuotesPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Cotizaciones</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Todas las cotizaciones generadas por Cecilia. Cada una se envió por
+          Todas las cotizaciones generadas por JARVIS. Cada una se envió por
           correo al cliente con el PDF adjunto.
         </p>
       </div>

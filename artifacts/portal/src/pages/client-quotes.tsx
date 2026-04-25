@@ -89,15 +89,33 @@ export default function ClientQuotesPage() {
           Mis cotizaciones
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Cotizaciones enviadas por Cecilia. Podés descargar el PDF, aceptar
+          Cotizaciones enviadas por JARVIS. Podés descargar el PDF, aceptar
           para activar los módulos o esperar a que venza la validez.
         </p>
+      </div>
+
+      <div
+        className="rounded-md border border-primary/40 bg-primary/10 px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-3"
+        data-testid="banner-yape"
+      >
+        <div>
+          <div className="font-medium text-foreground">
+            Pago de cotizaciones
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Aceptá la cotización y depositá el monto por Yape al titular Miguel
+            Montero. Avisanos por el chat de JARVIS para activar tus módulos.
+          </div>
+        </div>
+        <div className="font-mono text-base font-semibold text-foreground">
+          Yape · 991 740 590
+        </div>
       </div>
 
       {quotes.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground text-sm">
-            Todavía no tenés cotizaciones. Pedile una a Cecilia desde el
+            Todavía no tenés cotizaciones. Pedile una a JARVIS desde el
             catálogo o desde el chat de la página principal.
           </CardContent>
         </Card>
@@ -170,7 +188,7 @@ export default function ClientQuotesPage() {
                   {expired && (
                     <div className="text-xs text-amber-400 inline-flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
-                      Esta cotización venció. Pedí una nueva a Cecilia.
+                      Esta cotización venció. Pedí una nueva a JARVIS.
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2">

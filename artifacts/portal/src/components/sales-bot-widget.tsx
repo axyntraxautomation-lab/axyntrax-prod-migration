@@ -14,7 +14,7 @@ interface Props {
 const GREETING: Msg = {
   role: "assistant",
   content:
-    "Hola, soy Cecilia, asesora de AXYNTRAX. Contame de tu negocio y te recomiendo módulos de automatización con cotización al instante.",
+    "Hola, soy JARVIS, la IA principal de AXYNTRAX. Contame de tu negocio y te recomiendo módulos de automatización con cotización al instante. Si querés reservar tu módulo, depositá por Yape al 991 740 590 (Miguel Montero).",
 };
 
 export function SalesBotWidget({ scope, initialOpen = false }: Props) {
@@ -73,7 +73,7 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
         data-testid="sales-bot-toggle"
       >
         <MessageCircle className="h-5 w-5" />
-        Cecilia ventas
+        JARVIS ventas
       </button>
     );
   }
@@ -86,10 +86,10 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-cyan-500/10">
         <div>
           <div className="text-sm font-semibold text-cyan-300">
-            Cecilia · Asesora AXYNTRAX
+            JARVIS · IA AXYNTRAX
           </div>
           <div className="text-xs text-muted-foreground">
-            Te cotizo al toque
+            Te cotizo al toque · Yape 991 740 590
           </div>
         </div>
         <button
@@ -121,7 +121,7 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
         ))}
         {loading && (
           <div className="mr-auto inline-flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" /> Cecilia está
+            <Loader2 className="h-3 w-3 animate-spin" /> JARVIS está
             escribiendo...
           </div>
         )}

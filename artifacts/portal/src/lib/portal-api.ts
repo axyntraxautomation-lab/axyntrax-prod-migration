@@ -377,7 +377,7 @@ export const portalApi = {
   licensePdfUrl: (clientModuleId: number) =>
     `${API_BASE}/portal/me/modules/${clientModuleId}/license-pdf`,
 
-  // Module support (Cecilia Soporte por módulo)
+  // Module support (JARVIS Soporte por módulo)
   moduleSupport: (
     clientModuleId: number,
     message: string,

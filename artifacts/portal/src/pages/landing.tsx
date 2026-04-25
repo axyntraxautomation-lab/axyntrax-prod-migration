@@ -107,8 +107,8 @@ export default function LandingPage() {
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
           Módulos listos para medicina, derecho, dental, veterinaria y
-          condominios. Probá demos gratis o pedile a Cecilia, nuestra asesora
-          virtual, una cotización al instante.
+          condominios. Probá demos gratis o pedile a JARVIS, nuestra IA
+          principal, una cotización al instante.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Link href="/login?tab=register">
@@ -129,7 +129,7 @@ export default function LandingPage() {
             <div>
               <div className="font-medium">Cotización con IA</div>
               <div className="text-xs text-muted-foreground">
-                Cecilia analiza tu rubro y arma la propuesta.
+                JARVIS analiza tu rubro y arma la propuesta.
               </div>
             </div>
           </div>
@@ -164,7 +164,8 @@ export default function LandingPage() {
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
             Demos sin precio se descargan gratis por 30 días. Los pagos los
-            cotiza Cecilia y te llegan por correo en PDF.
+            cotiza JARVIS y te llegan por correo en PDF. Reservá depositando
+            por Yape al 991 740 590 (Miguel Montero).
           </p>
         </div>
 

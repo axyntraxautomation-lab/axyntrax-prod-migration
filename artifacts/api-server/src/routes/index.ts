@@ -24,6 +24,7 @@ import securityRouter from "./security";
 import moduleEventsRouter from "./module-events";
 import moduleUpdatesRouter from "./module-updates";
 import moduleSupportRouter from "./module-support";
+import jarvisAdsRouter from "./jarvis-ads";
 
 const router: IRouter = Router();
 
@@ -52,5 +53,6 @@ router.use(securityRouter);
 router.use(moduleEventsRouter);
 router.use(moduleUpdatesRouter);
 router.use(moduleSupportRouter);
+router.use(jarvisAdsRouter);
 
 export default router;

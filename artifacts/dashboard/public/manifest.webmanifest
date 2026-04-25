@@ -1,7 +1,7 @@
 {
-  "name": "AXYNTRAX Dashboard",
-  "short_name": "AXYNTRAX",
-  "description": "Dashboard Supremo de AXYNTRAX AUTOMATION",
+  "name": "JARVIS · AXYNTRAX",
+  "short_name": "JARVIS",
+  "description": "JARVIS, IA principal de AXYNTRAX AUTOMATION",
   "start_url": "/dashboard/",
   "scope": "/dashboard/",
   "display": "standalone",

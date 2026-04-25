@@ -313,6 +313,24 @@ export default function ClientModulesPage() {
         </p>
       </div>
 
+      <div
+        className="rounded-md border border-primary/40 bg-primary/10 px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-3"
+        data-testid="banner-yape"
+      >
+        <div>
+          <div className="font-medium text-foreground">
+            Para activar módulos pagos depositá por Yape
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Titular: Miguel Montero · Después de pagar avisanos por el chat de
+            JARVIS y activamos tu módulo en minutos.
+          </div>
+        </div>
+        <div className="font-mono text-base font-semibold text-foreground">
+          Yape · 991 740 590
+        </div>
+      </div>
+
       {(() => {
         const pending = updates.filter((u) => u.status !== "applied");
         if (pending.length === 0) return null;
@@ -669,7 +687,7 @@ export default function ClientModulesPage() {
           <DialogHeader>
             <DialogTitle>Pedir cotización</DialogTitle>
             <DialogDescription>
-              Cecilia generará una cotización formal con IGV (18%) y te
+              JARVIS generará una cotización formal con IGV (18%) y te
               enviará el PDF al correo registrado.
             </DialogDescription>
           </DialogHeader>
@@ -760,7 +778,7 @@ export default function ClientModulesPage() {
               Soporte IA · {supportFor?.moduleName}
             </DialogTitle>
             <DialogDescription>
-              Cecilia Soporte, ingeniero TI senior, te ayuda en línea con este módulo.
+              JARVIS Soporte, ingeniero TI senior, te ayuda en línea con este módulo.
             </DialogDescription>
           </DialogHeader>
           <div
@@ -788,7 +806,7 @@ export default function ClientModulesPage() {
             )}
             {supportSending ? (
               <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <Loader2 className="h-3 w-3 animate-spin" /> Cecilia está escribiendo...
+                <Loader2 className="h-3 w-3 animate-spin" /> JARVIS está escribiendo...
               </div>
             ) : null}
           </div>
