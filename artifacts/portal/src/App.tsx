@@ -13,6 +13,9 @@ import AdminRequestsPage from "@/pages/admin-requests";
 import AdminClientsPage from "@/pages/admin-clients";
 import AdminCatalogPage from "@/pages/admin-catalog";
 import AdminQuotesPage from "@/pages/admin-quotes";
+import AdminSecurityPage from "@/pages/admin-security";
+import AdminTelemetryPage from "@/pages/admin-telemetry";
+import AdminUpdatesPage from "@/pages/admin-updates";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { PortalHeader } from "@/components/portal-header";
 
@@ -96,6 +99,18 @@ function PortalRouter() {
       <Route
         path="/admin/cotizaciones"
         component={() => <Protected component={AdminQuotesPage} role="admin" />}
+      />
+      <Route
+        path="/admin/seguridad"
+        component={() => <Protected component={AdminSecurityPage} role="admin" />}
+      />
+      <Route
+        path="/admin/telemetria"
+        component={() => <Protected component={AdminTelemetryPage} role="admin" />}
+      />
+      <Route
+        path="/admin/actualizaciones"
+        component={() => <Protected component={AdminUpdatesPage} role="admin" />}
       />
       <Route component={NotFound} />
     </Switch>

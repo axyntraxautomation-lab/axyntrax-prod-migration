@@ -35,6 +35,130 @@ function fmtDate(d: Date): string {
   });
 }
 
+export interface LicensePdfInput {
+  clientModuleId: number;
+  client: { name: string; email?: string | null };
+  moduleName: string;
+  moduleSlug: string;
+  industry: string;
+  licenseKey: string;
+  status: string;
+  activatedAt: Date | null;
+  expiresAt: Date | null;
+}
+
+export async function renderLicensePdf(
+  input: LicensePdfInput,
+): Promise<Buffer> {
+  return await new Promise<Buffer>((resolve, reject) => {
+    const doc = new PDFDocument({ size: "A4", margin: 56 });
+    const chunks: Buffer[] = [];
+    doc.on("data", (c: Buffer) => chunks.push(c));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    // Header band
+    doc.rect(0, 0, doc.page.width, 110).fill(CYAN);
+    doc
+      .fillColor("#ffffff")
+      .fontSize(24)
+      .font("Helvetica-Bold")
+      .text("AXYNTRAX AUTOMATION", 56, 38);
+    doc
+      .fillColor("#e0f7fb")
+      .fontSize(10)
+      .font("Helvetica")
+      .text("Certificado de Licencia de Módulo", 56, 72);
+
+    let y = 150;
+    doc
+      .fillColor(TEXT)
+      .fontSize(18)
+      .font("Helvetica-Bold")
+      .text(input.moduleName, 56, y);
+    y += 26;
+    doc
+      .fillColor(MUTED)
+      .fontSize(10)
+      .font("Helvetica")
+      .text(`Módulo: ${input.moduleSlug} · Rubro: ${input.industry}`, 56, y);
+    y += 30;
+
+    doc
+      .fillColor(TEXT)
+      .fontSize(11)
+      .font("Helvetica-Bold")
+      .text("Titular de la licencia", 56, y);
+    y += 16;
+    doc
+      .font("Helvetica")
+      .fontSize(11)
+      .text(input.client.name, 56, y);
+    y += 14;
+    if (input.client.email) {
+      doc.fillColor(MUTED).text(input.client.email, 56, y);
+      y += 14;
+    }
+    y += 12;
+
+    doc
+      .fillColor(TEXT)
+      .fontSize(11)
+      .font("Helvetica-Bold")
+      .text("Clave de licencia", 56, y);
+    y += 16;
+    doc
+      .rect(56, y, 480, 36)
+      .lineWidth(1)
+      .stroke(CYAN);
+    doc
+      .font("Courier-Bold")
+      .fontSize(14)
+      .fillColor(TEXT)
+      .text(input.licenseKey, 64, y + 10);
+    y += 56;
+
+    doc
+      .fillColor(MUTED)
+      .fontSize(10)
+      .font("Helvetica")
+      .text(`Estado: ${input.status}`, 56, y);
+    y += 14;
+    if (input.activatedAt) {
+      doc.text(`Activado: ${fmtDate(input.activatedAt)}`, 56, y);
+      y += 14;
+    }
+    if (input.expiresAt) {
+      doc.text(`Vence: ${fmtDate(input.expiresAt)}`, 56, y);
+      y += 14;
+    }
+    y += 14;
+
+    doc
+      .fillColor(TEXT)
+      .fontSize(10)
+      .font("Helvetica")
+      .text(
+        "Esta licencia es personal e intransferible. Su uso indebido, copia o distribución a terceros está prohibido y puede dar lugar a la suspensión inmediata del módulo y a las acciones legales correspondientes según la normativa peruana vigente. AXYNTRAX AUTOMATION mantiene el monitoreo remoto y puede aplicar actualizaciones de seguridad sin previo aviso.",
+        56,
+        y,
+        { width: 480, align: "justify" },
+      );
+
+    doc
+      .fillColor(MUTED)
+      .fontSize(9)
+      .text(
+        `Certificado N° ${String(input.clientModuleId).padStart(8, "0")} · Emitido ${fmtDate(new Date())} · AXYNTRAX AUTOMATION · Arequipa, Perú`,
+        56,
+        doc.page.height - 70,
+        { width: 480, align: "center" },
+      );
+
+    doc.end();
+  });
+}
+
 export async function renderQuotePdf(input: QuotePdfInput): Promise<Buffer> {
   return await new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 48 });

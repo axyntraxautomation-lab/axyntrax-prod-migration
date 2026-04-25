@@ -135,6 +135,94 @@ export type CreateQuoteResult = {
   pdfUrl: string;
 };
 
+export type SupportReply = {
+  reply: string;
+  steps?: string[];
+  needsHuman?: boolean;
+};
+
+export type ModuleEventRow = {
+  id: number;
+  clientModuleId: number;
+  clientId: number;
+  moduleId: number;
+  type: string;
+  severity: string;
+  message: string | null;
+  meta: Record<string, unknown> | null;
+  createdAt: string;
+};
+
+export type AdminModuleEventRow = ModuleEventRow & {
+  clientName: string | null;
+  moduleName: string | null;
+  moduleSlug: string | null;
+};
+
+export type ModuleEventSummary = {
+  clientId: number;
+  clientName: string | null;
+  total: number;
+  errors: number;
+  last: string | null;
+};
+
+export type ModuleUpdateRow = {
+  id: number;
+  moduleId: number;
+  version: string;
+  releaseNotes: string;
+  severity: string;
+  createdAt: string;
+  moduleName?: string | null;
+  applied?: number;
+  pending?: number;
+};
+
+export type ClientUpdateRow = {
+  id: number;
+  clientModuleId: number;
+  moduleUpdateId: number;
+  status: string;
+  appliedAt: string | null;
+  notifiedAt: string;
+  moduleName: string;
+  moduleSlug: string;
+  version: string;
+  releaseNotes: string;
+  severity: string;
+};
+
+export type SecurityAlertRow = {
+  id: number;
+  type: string;
+  severity: string;
+  ip: string | null;
+  email: string | null;
+  userAgent?: string | null;
+  path?: string | null;
+  message: string;
+  meta?: Record<string, unknown> | null;
+  createdAt: string;
+  ackBy: number | null;
+  ackAt: string | null;
+};
+
+export type IpBlockRow = {
+  id: number;
+  ip: string;
+  reason: string | null;
+  expiresAt: string;
+  createdAt: string;
+};
+
+export type LockdownState = {
+  active: boolean;
+  reason: string | null;
+  enabledBy: number | null;
+  enabledAt: string | null;
+};
+
 export type SalesBotReply = {
   reply: string;
   recommendedModuleSlugs?: string[];
@@ -284,6 +372,115 @@ export const portalApi = {
     ),
   quotePdfUrl: (id: number) => `${API_BASE}/portal/quotes/${id}/pdf`,
   adminQuotes: () => request<AdminQuoteRow[]>("/portal/admin/quotes"),
+
+  // License PDF
+  licensePdfUrl: (clientModuleId: number) =>
+    `${API_BASE}/portal/me/modules/${clientModuleId}/license-pdf`,
+
+  // Module support (Cecilia Soporte por módulo)
+  moduleSupport: (
+    clientModuleId: number,
+    message: string,
+    history: { role: "user" | "assistant"; content: string }[],
+  ) =>
+    request<SupportReply>(
+      `/portal/me/modules/${clientModuleId}/support`,
+      {
+        method: "POST",
+        body: JSON.stringify({ message, history }),
+      },
+    ),
+
+  // Module events (telemetría cliente)
+  recordModuleEvent: (
+    clientModuleId: number,
+    payload: {
+      type: string;
+      severity?: "info" | "warn" | "error";
+      message?: string;
+      meta?: Record<string, unknown>;
+    },
+  ) =>
+    request<ModuleEventRow>(
+      `/portal/me/modules/${clientModuleId}/events`,
+      { method: "POST", body: JSON.stringify(payload) },
+    ),
+  myModuleEvents: (clientModuleId: number) =>
+    request<ModuleEventRow[]>(
+      `/portal/me/modules/${clientModuleId}/events`,
+    ),
+
+  // Module updates - cliente
+  myUpdates: () => request<ClientUpdateRow[]>("/portal/me/updates"),
+  applyUpdate: (id: number) =>
+    request<ClientUpdateRow>(`/portal/me/updates/${id}/apply`, {
+      method: "POST",
+    }),
+
+  // Admin - seguridad
+  adminAlerts: (status: "open" | "ack" | "all" = "open") => {
+    const qs = status === "open" ? "?open=1" : "";
+    return request<SecurityAlertRow[]>(
+      `/portal/admin/security/alerts${qs}`,
+    ).then((rows) =>
+      status === "ack" ? rows.filter((r) => r.ackBy != null) : rows,
+    );
+  },
+  adminAckAlert: (id: number) =>
+    request<SecurityAlertRow>(
+      `/portal/admin/security/alerts/${id}/ack`,
+      { method: "POST" },
+    ),
+  adminBlocks: () => request<IpBlockRow[]>("/portal/admin/security/blocks"),
+  adminDeleteBlock: (ip: string) =>
+    request<{ ok: true }>(
+      `/portal/admin/security/blocks/${encodeURIComponent(ip)}`,
+      { method: "DELETE" },
+    ),
+  adminGetLockdown: () =>
+    request<LockdownState>("/portal/admin/security/lockdown"),
+  adminSetLockdown: (active: boolean, reason?: string) =>
+    request<LockdownState>("/portal/admin/security/lockdown", {
+      method: "POST",
+      body: JSON.stringify({ active, reason }),
+    }),
+
+  // Admin - telemetría módulos
+  adminModuleEvents: (params?: {
+    clientModuleId?: number;
+    type?: string;
+    severity?: string;
+    limit?: number;
+  }) => {
+    const qs = new URLSearchParams();
+    if (params?.clientModuleId)
+      qs.set("clientModuleId", String(params.clientModuleId));
+    if (params?.type) qs.set("type", params.type);
+    if (params?.severity) qs.set("severity", params.severity);
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const q = qs.toString();
+    return request<AdminModuleEventRow[]>(
+      `/portal/admin/module-events${q ? `?${q}` : ""}`,
+    );
+  },
+  adminModuleEventsSummary: () =>
+    request<ModuleEventSummary[]>("/portal/admin/module-events/summary"),
+
+  // Admin - module updates
+  adminListUpdates: () =>
+    request<ModuleUpdateRow[]>("/portal/admin/module-updates"),
+  adminPublishUpdate: (payload: {
+    moduleId: number;
+    version: string;
+    releaseNotes: string;
+    severity?: "normal" | "important" | "critical";
+  }) =>
+    request<{ update: ModuleUpdateRow; fanout: number }>(
+      "/portal/admin/module-updates",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+    }),
 
   // Sales bots
   publicSalesBot: (

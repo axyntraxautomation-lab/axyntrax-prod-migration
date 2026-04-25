@@ -22,6 +22,11 @@ import {
   hashPassword,
 } from "../lib/auth";
 import { audit } from "../lib/audit";
+import {
+  clearFailedLogin,
+  handleFailedLogin,
+  recordAlert,
+} from "../lib/security";
 
 const router: IRouter = Router();
 
@@ -213,6 +218,7 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
         entityType: "client",
         meta: { reason: "not_found" },
       });
+      await handleFailedLogin(req, email, "not_found");
       res.status(401).json({ error: "Credenciales inválidas" });
       return;
     }
@@ -224,9 +230,11 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
         entityId: client.id,
         meta: { reason: "bad_password" },
       });
+      await handleFailedLogin(req, email, "bad_password");
       res.status(401).json({ error: "Credenciales inválidas" });
       return;
     }
+    clearFailedLogin(req, email);
 
     const token = signPortalToken({
       kind: "client",
@@ -256,6 +264,7 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
     .limit(1);
 
   if (!user) {
+    await handleFailedLogin(req, parsed.data.email.toLowerCase(), "admin_not_found");
     res.status(401).json({ error: "Credenciales inválidas" });
     return;
   }
@@ -267,13 +276,22 @@ router.post("/portal/auth/login", async (req, res): Promise<void> => {
       entityId: user.id,
       meta: { reason: "bad_password" },
     });
+    await handleFailedLogin(req, user.email, "admin_bad_password");
     res.status(401).json({ error: "Credenciales inválidas" });
     return;
   }
   if (user.role !== "admin") {
+    await handleFailedLogin(req, user.email, "non_admin");
+    await recordAlert(req, {
+      type: "admin.unauthorized",
+      severity: "warning",
+      message: `Intento de login admin con cuenta no admin: ${user.email}`,
+      meta: { userId: user.id, role: user.role },
+    });
     res.status(403).json({ error: "Solo administradores" });
     return;
   }
+  clearFailedLogin(req, user.email);
 
   const twofaEnabled = user.twofaEnabled === "true" && !!user.twofaSecret;
   if (twofaEnabled) {
@@ -468,6 +486,69 @@ router.get(
           .where(eq(modulesCatalogTable.active, 1))
           .orderBy(modulesCatalogTable.industry, modulesCatalogTable.name);
     res.json(rows);
+  },
+);
+
+router.get(
+  "/portal/me/modules/:id/license-pdf",
+  requirePortalAuth,
+  requirePortalClient,
+  async (req, res): Promise<void> => {
+    if (!req.portal || req.portal.kind !== "client") return;
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
+      res.status(400).json({ error: "ID inválido" });
+      return;
+    }
+    const [row] = await db
+      .select({
+        id: clientModulesTable.id,
+        moduleId: clientModulesTable.moduleId,
+        status: clientModulesTable.status,
+        licenseKey: clientModulesTable.licenseKey,
+        activatedAt: clientModulesTable.activatedAt,
+        expiresAt: clientModulesTable.expiresAt,
+        moduleName: modulesCatalogTable.name,
+        moduleSlug: modulesCatalogTable.slug,
+        moduleIndustry: modulesCatalogTable.industry,
+        clientName: clientsTable.name,
+        clientEmail: clientsTable.email,
+      })
+      .from(clientModulesTable)
+      .leftJoin(
+        modulesCatalogTable,
+        eq(clientModulesTable.moduleId, modulesCatalogTable.id),
+      )
+      .leftJoin(clientsTable, eq(clientModulesTable.clientId, clientsTable.id))
+      .where(
+        and(
+          eq(clientModulesTable.id, id),
+          eq(clientModulesTable.clientId, req.portal.sub),
+        ),
+      )
+      .limit(1);
+    if (!row || !row.licenseKey) {
+      res.status(404).json({ error: "Licencia no encontrada" });
+      return;
+    }
+    const { renderLicensePdf } = await import("../lib/pdf");
+    const pdf = await renderLicensePdf({
+      clientModuleId: row.id,
+      client: { name: row.clientName ?? "Cliente", email: row.clientEmail },
+      moduleName: row.moduleName ?? "Módulo",
+      moduleSlug: row.moduleSlug ?? "",
+      industry: row.moduleIndustry ?? "generic",
+      licenseKey: row.licenseKey,
+      status: row.status,
+      activatedAt: row.activatedAt,
+      expiresAt: row.expiresAt,
+    });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="licencia-${row.moduleSlug}-${row.id}.pdf"`,
+    );
+    res.send(pdf);
   },
 );
 

@@ -7,6 +7,7 @@ import pinoHttp from "pino-http";
 import router from "./routes";
 import webhooksRouter from "./routes/webhooks";
 import { logger } from "./lib/logger";
+import { blocklistGuard, lockdownGuard } from "./middleware/security";
 
 const app: Express = express();
 
@@ -91,6 +92,8 @@ app.use("/api/auth/2fa/verify", authLimiter);
 app.use("/api/auth/2fa/login", authLimiter);
 
 app.use("/api", generalLimiter);
+app.use("/api", blocklistGuard);
+app.use("/api", lockdownGuard);
 app.use("/api", router);
 
 export default app;

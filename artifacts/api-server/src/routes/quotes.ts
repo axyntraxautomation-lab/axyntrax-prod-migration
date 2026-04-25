@@ -214,10 +214,32 @@ router.post(
   },
 );
 
-// In-memory PDF cache. PDFs are deterministic from DB rows so we can
-// regenerate on demand if missed; this just avoids re-rendering on the
-// happy path.
-const pdfCache = new Map<number, Buffer>();
+// Bounded LRU PDF cache. PDFs are deterministic from DB rows so we can
+// regenerate on demand on miss; this just avoids re-rendering on the happy
+// path. Eviction prevents unbounded heap growth across the lifetime of the
+// process.
+const PDF_CACHE_MAX = 100;
+class LruPdfCache {
+  private map = new Map<number, Buffer>();
+  get(id: number): Buffer | undefined {
+    const v = this.map.get(id);
+    if (v !== undefined) {
+      this.map.delete(id);
+      this.map.set(id, v);
+    }
+    return v;
+  }
+  set(id: number, buf: Buffer): void {
+    if (this.map.has(id)) this.map.delete(id);
+    this.map.set(id, buf);
+    while (this.map.size > PDF_CACHE_MAX) {
+      const first = this.map.keys().next().value;
+      if (first === undefined) break;
+      this.map.delete(first);
+    }
+  }
+}
+const pdfCache = new LruPdfCache();
 
 router.get(
   "/portal/quotes",
@@ -336,60 +358,98 @@ router.post(
       res.status(400).json({ error: "id inválido" });
       return;
     }
-    const result = await db.transaction(async (tx) => {
-      const [q] = await tx
-        .select()
-        .from(quotesTable)
-        .where(eq(quotesTable.id, id))
-        .for("update");
-      if (!q) throw new Error("no_existe");
-      if (q.clientId !== req.portal!.sub) throw new Error("no_autorizado");
-      if (q.status !== "enviada") throw new Error(`estado_invalido:${q.status}`);
-      if (q.validUntil < new Date()) throw new Error("vencida");
-
-      const items = await tx
-        .select()
-        .from(quoteItemsTable)
-        .where(eq(quoteItemsTable.quoteId, id));
-
-      // Crear solicitudes de módulo pendientes para cada item, evitando
-      // duplicados con módulos ya activos/pendientes.
-      const existing = await tx
-        .select({
-          moduleId: clientModulesTable.moduleId,
-          status: clientModulesTable.status,
-        })
-        .from(clientModulesTable)
-        .where(eq(clientModulesTable.clientId, q.clientId));
-      const blocked = new Set(
-        existing
-          .filter((e) => e.status === "activo" || e.status === "pendiente")
-          .map((e) => e.moduleId),
-      );
-      const toInsert = items
-        .filter((it) => !blocked.has(it.moduleId))
-        .map((it) => ({
-          clientId: q.clientId,
-          moduleId: it.moduleId,
-          status: "pendiente",
-          notes: `Generado por cotización aceptada #${q.id}`,
-        }));
-      let createdRequests: number[] = [];
-      if (toInsert.length) {
-        const inserted = await tx
-          .insert(clientModulesTable)
-          .values(toInsert)
-          .returning({ id: clientModulesTable.id });
-        createdRequests = inserted.map((r) => r.id);
+    type AcceptError =
+      | { code: "no_existe" }
+      | { code: "no_autorizado" }
+      | { code: "estado_invalido"; status: string }
+      | { code: "vencida" };
+    class QuoteAcceptError extends Error {
+      constructor(public detail: AcceptError) {
+        super(detail.code);
       }
+    }
 
-      const [updated] = await tx
-        .update(quotesTable)
-        .set({ status: "aceptada", acceptedAt: new Date() })
-        .where(eq(quotesTable.id, id))
-        .returning();
-      return { quote: updated, createdRequests, skipped: items.length - toInsert.length };
-    });
+    let result;
+    try {
+      result = await db.transaction(async (tx) => {
+        const [q] = await tx
+          .select()
+          .from(quotesTable)
+          .where(eq(quotesTable.id, id))
+          .for("update");
+        if (!q) throw new QuoteAcceptError({ code: "no_existe" });
+        if (q.clientId !== req.portal!.sub)
+          throw new QuoteAcceptError({ code: "no_autorizado" });
+        if (q.status !== "enviada")
+          throw new QuoteAcceptError({ code: "estado_invalido", status: q.status });
+        if (q.validUntil < new Date()) throw new QuoteAcceptError({ code: "vencida" });
+
+        const items = await tx
+          .select()
+          .from(quoteItemsTable)
+          .where(eq(quoteItemsTable.quoteId, id));
+
+        // Crear solicitudes de módulo pendientes para cada item, evitando
+        // duplicados con módulos ya activos/pendientes.
+        const existing = await tx
+          .select({
+            moduleId: clientModulesTable.moduleId,
+            status: clientModulesTable.status,
+          })
+          .from(clientModulesTable)
+          .where(eq(clientModulesTable.clientId, q.clientId));
+        const blocked = new Set(
+          existing
+            .filter((e) => e.status === "activo" || e.status === "pendiente")
+            .map((e) => e.moduleId),
+        );
+        const toInsert = items
+          .filter((it) => !blocked.has(it.moduleId))
+          .map((it) => ({
+            clientId: q.clientId,
+            moduleId: it.moduleId,
+            status: "pendiente",
+            notes: `Generado por cotización aceptada #${q.id}`,
+          }));
+        let createdRequests: number[] = [];
+        if (toInsert.length) {
+          const inserted = await tx
+            .insert(clientModulesTable)
+            .values(toInsert)
+            .returning({ id: clientModulesTable.id });
+          createdRequests = inserted.map((r) => r.id);
+        }
+
+        const [updated] = await tx
+          .update(quotesTable)
+          .set({ status: "aceptada", acceptedAt: new Date() })
+          .where(eq(quotesTable.id, id))
+          .returning();
+        return {
+          quote: updated,
+          createdRequests,
+          skipped: items.length - toInsert.length,
+        };
+      });
+    } catch (err) {
+      if (err instanceof QuoteAcceptError) {
+        const map: Record<AcceptError["code"], { http: number; msg: string }> = {
+          no_existe: { http: 404, msg: "La cotización no existe" },
+          no_autorizado: { http: 403, msg: "No autorizado a aceptar esta cotización" },
+          estado_invalido: {
+            http: 409,
+            msg: "La cotización no está en estado 'enviada'",
+          },
+          vencida: { http: 410, msg: "La cotización está vencida" },
+        };
+        const m = map[err.detail.code];
+        res.status(m.http).json({ error: m.msg, code: err.detail.code, detail: err.detail });
+        return;
+      }
+      logger.error({ err, quoteId: id }, "quote accept failed");
+      res.status(500).json({ error: "No se pudo aceptar la cotización" });
+      return;
+    }
 
     await audit(req, {
       action: "portal.quote.accept",

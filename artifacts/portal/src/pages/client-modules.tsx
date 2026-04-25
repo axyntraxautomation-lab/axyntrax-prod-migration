@@ -77,6 +77,46 @@ export default function ClientModulesPage() {
   const [filter, setFilter] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [creatingQuote, setCreatingQuote] = useState(false);
+  const [createdQuote, setCreatedQuote] = useState<CreateQuoteResult | null>(
+    null,
+  );
+  const [supportFor, setSupportFor] = useState<ClientModuleRow | null>(null);
+  const [supportHistory, setSupportHistory] = useState<
+    { role: "user" | "assistant"; content: string }[]
+  >([]);
+  const [supportInput, setSupportInput] = useState("");
+  const [supportSending, setSupportSending] = useState(false);
+  const [updates, setUpdates] = useState<
+    {
+      id: number;
+      version: string;
+      severity: string;
+      releaseNotes: string;
+      moduleName: string | null;
+      status: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    portalApi.myUpdates().then(setUpdates).catch(() => setUpdates([]));
+  }, []);
+
+  const selectedModules = useMemo(() => {
+    if (!catalog) return [];
+    const paidNow = catalog
+      .filter(
+        (m) =>
+          !filter ||
+          m.name.toLowerCase().includes(filter.toLowerCase()) ||
+          m.industry.toLowerCase().includes(filter.toLowerCase()) ||
+          m.slug.toLowerCase().includes(filter.toLowerCase()),
+      )
+      .filter((m) => Number(m.monthlyPrice) > 0);
+    return paidNow.filter((m) => selectedIds.has(m.id));
+  }, [catalog, filter, selectedIds]);
 
   const copyKey = async (id: number, key: string) => {
     try {
@@ -149,17 +189,52 @@ export default function ClientModulesPage() {
   const paid = filtered.filter((m) => Number(m.monthlyPrice) > 0);
   const free = filtered.filter((m) => Number(m.monthlyPrice) === 0);
 
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [quoteOpen, setQuoteOpen] = useState(false);
-  const [creatingQuote, setCreatingQuote] = useState(false);
-  const [createdQuote, setCreatedQuote] = useState<CreateQuoteResult | null>(
-    null,
-  );
+  async function applyUpdate(id: number) {
+    try {
+      await portalApi.applyUpdate(id);
+      setUpdates((prev) => prev.filter((u) => u.id !== id));
+      toast({ title: "Update aplicado" });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "No se pudo aplicar",
+        description: err instanceof Error ? err.message : "Reintentá",
+      });
+    }
+  }
 
-  const selectedModules = useMemo(
-    () => paid.filter((m) => selectedIds.has(m.id)),
-    [paid, selectedIds],
-  );
+  async function sendSupport() {
+    if (!supportFor || !supportInput.trim()) return;
+    const msg = supportInput.trim();
+    setSupportInput("");
+    const newHistory = [
+      ...supportHistory,
+      { role: "user" as const, content: msg },
+    ];
+    setSupportHistory(newHistory);
+    setSupportSending(true);
+    try {
+      const r = await portalApi.moduleSupport(supportFor.id, msg, supportHistory);
+      const reply = r.steps?.length
+        ? `${r.reply}\n\n${r.steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}${r.needsHuman ? "\n\nVamos a derivar este caso al equipo humano de AXYNTRAX." : ""}`
+        : r.reply + (r.needsHuman ? "\n\nDerivado al equipo humano." : "");
+      setSupportHistory([
+        ...newHistory,
+        { role: "assistant" as const, content: reply },
+      ]);
+    } catch (err) {
+      setSupportHistory([
+        ...newHistory,
+        {
+          role: "assistant" as const,
+          content:
+            err instanceof Error ? err.message : "No pude responder ahora.",
+        },
+      ]);
+    } finally {
+      setSupportSending(false);
+    }
+  }
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) => {
@@ -237,6 +312,55 @@ export default function ClientModulesPage() {
             : "Gestioná tus módulos AXYNTRAX"}
         </p>
       </div>
+
+      {(() => {
+        const pending = updates.filter((u) => u.status !== "applied");
+        if (pending.length === 0) return null;
+        return (
+          <div
+            className="rounded-md border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100 space-y-2"
+            data-testid="banner-updates"
+          >
+            <div className="font-medium">
+              Tenés {pending.length} actualización
+              {pending.length === 1 ? "" : "es"} pendiente
+              {pending.length === 1 ? "" : "s"}
+            </div>
+            <div className="space-y-2">
+              {pending.map((u) => (
+                <div
+                  key={u.id}
+                  className="flex items-start justify-between gap-3 border border-cyan-500/30 rounded p-2"
+                  data-testid={`update-row-${u.id}`}
+                >
+                  <div className="text-xs space-y-1">
+                    <div>
+                      <span className="font-medium">
+                        {u.moduleName ?? "Módulo"}
+                      </span>{" "}
+                      <span className="font-mono">v{u.version}</span> ·{" "}
+                      <span className="uppercase">{u.severity}</span>
+                    </div>
+                    {u.releaseNotes ? (
+                      <div className="text-cyan-200/80 whitespace-pre-wrap">
+                        {u.releaseNotes}
+                      </div>
+                    ) : null}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => applyUpdate(u.id)}
+                    data-testid={`btn-apply-update-${u.id}`}
+                  >
+                    Aplicar
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {expiringSoon.length > 0 ? (
         <div
@@ -371,6 +495,25 @@ export default function ClientModulesPage() {
                             ) : (
                               <Copy className="h-3.5 w-3.5" />
                             )}
+                          </Button>
+                          <a
+                            href={portalApi.licensePdfUrl(row.id)}
+                            target="_blank"
+                            rel="noreferrer"
+                            data-testid={`button-license-pdf-${row.id}`}
+                          >
+                            <Button type="button" size="sm" variant="outline">
+                              <FileDown className="h-3.5 w-3.5" />
+                            </Button>
+                          </a>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSupportFor(row)}
+                            data-testid={`button-support-${row.id}`}
+                          >
+                            Soporte IA
                           </Button>
                         </div>
                         <p className="text-[11px] text-muted-foreground">
@@ -597,6 +740,79 @@ export default function ClientModulesPage() {
             <Link href="/mis-cotizaciones">
               <Button data-testid="button-go-quotes">Ver mis cotizaciones</Button>
             </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!supportFor}
+        onOpenChange={(o) => {
+          if (!o) {
+            setSupportFor(null);
+            setSupportHistory([]);
+            setSupportInput("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Soporte IA · {supportFor?.moduleName}
+            </DialogTitle>
+            <DialogDescription>
+              Cecilia Soporte, ingeniero TI senior, te ayuda en línea con este módulo.
+            </DialogDescription>
+          </DialogHeader>
+          <div
+            className="space-y-3 max-h-80 overflow-y-auto pr-1"
+            data-testid="support-history"
+          >
+            {supportHistory.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                Contale qué problema estás teniendo. No incluyas contraseñas.
+              </p>
+            ) : (
+              supportHistory.map((m, i) => (
+                <div
+                  key={i}
+                  className={
+                    m.role === "user"
+                      ? "ml-8 rounded-md bg-primary/10 border border-primary/20 px-3 py-2 text-sm"
+                      : "mr-8 rounded-md bg-muted/40 border border-border px-3 py-2 text-sm whitespace-pre-wrap"
+                  }
+                  data-testid={`support-msg-${i}`}
+                >
+                  {m.content}
+                </div>
+              ))
+            )}
+            {supportSending ? (
+              <div className="text-xs text-muted-foreground flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" /> Cecilia está escribiendo...
+              </div>
+            ) : null}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              data-testid="input-support"
+              placeholder="Describí el problema..."
+              value={supportInput}
+              onChange={(e) => setSupportInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void sendSupport();
+                }
+              }}
+              disabled={supportSending}
+            />
+            <Button
+              onClick={() => void sendSupport()}
+              disabled={supportSending || !supportInput.trim()}
+              data-testid="btn-send-support"
+            >
+              Enviar
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

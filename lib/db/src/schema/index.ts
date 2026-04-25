@@ -13,3 +13,6 @@ export * from "./pushSubscriptions";
 export * from "./gmailTemplates";
 export * from "./modules";
 export * from "./quotes";
+export * from "./securityAlerts";
+export * from "./moduleEvents";
+export * from "./moduleUpdates";

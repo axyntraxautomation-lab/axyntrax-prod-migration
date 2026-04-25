@@ -20,6 +20,10 @@ import modulesRouter from "./modules";
 import portalRouter from "./portal";
 import quotesRouter from "./quotes";
 import salesBotRouter from "./sales-bot";
+import securityRouter from "./security";
+import moduleEventsRouter from "./module-events";
+import moduleUpdatesRouter from "./module-updates";
+import moduleSupportRouter from "./module-support";
 
 const router: IRouter = Router();
 
@@ -44,5 +48,9 @@ router.use(modulesRouter);
 router.use(portalRouter);
 router.use(quotesRouter);
 router.use(salesBotRouter);
+router.use(securityRouter);
+router.use(moduleEventsRouter);
+router.use(moduleUpdatesRouter);
+router.use(moduleSupportRouter);
 
 export default router;
