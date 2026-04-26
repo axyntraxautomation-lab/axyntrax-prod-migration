@@ -1,9 +1,160 @@
+import fs from "node:fs";
 import os from "node:os";
+import path from "node:path";
 
 const ALERT_TIMEOUT_MS = (() => {
   const raw = Number(process.env.SECURITY_ALERT_TIMEOUT_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : 5000;
 })();
+
+const THROTTLE_WINDOW_MS = (() => {
+  const raw = Number(process.env.SECURITY_ALERT_THROTTLE_WINDOW_MS);
+  return Number.isFinite(raw) && raw > 0 ? raw : 60_000;
+})();
+
+const THROTTLE_MAX_PER_WINDOW = (() => {
+  const raw = Number(process.env.SECURITY_ALERT_THROTTLE_MAX_PER_WINDOW);
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 1;
+})();
+
+const THROTTLE_STATE_FILE = (() => {
+  const raw = (process.env.SECURITY_ALERT_THROTTLE_STATE_FILE || "").trim();
+  if (raw) return raw;
+  return path.join(os.tmpdir(), "axyntrax-security-alerts-throttle.json");
+})();
+
+function loadThrottleState() {
+  try {
+    const raw = fs.readFileSync(THROTTLE_STATE_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed;
+    }
+    return {};
+  } catch (err) {
+    if (err?.code !== "ENOENT") {
+      console.warn(
+        `[security-alerts] no se pudo leer estado de throttling (${THROTTLE_STATE_FILE}): ${err?.message ?? err}`,
+      );
+    }
+    return {};
+  }
+}
+
+function saveThrottleState(state) {
+  try {
+    const tmp = `${THROTTLE_STATE_FILE}.${process.pid}.tmp`;
+    fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
+    fs.renameSync(tmp, THROTTLE_STATE_FILE);
+  } catch (err) {
+    console.warn(
+      `[security-alerts] no se pudo guardar estado de throttling (${THROTTLE_STATE_FILE}): ${err?.message ?? err}`,
+    );
+  }
+}
+
+function throttleKey(operator, targetEmail) {
+  const op = (operator || "unknown").toString();
+  const tg = (targetEmail || "").toString().toLowerCase();
+  return `${op}|${tg}`;
+}
+
+function pruneThrottleState(state, now) {
+  for (const k of Object.keys(state)) {
+    const v = state[k];
+    const recentSends = Array.isArray(v?.sentAt)
+      ? v.sentAt.some((t) => now - t < THROTTLE_WINDOW_MS)
+      : false;
+    const recentSuppressions =
+      typeof v?.suppressedLastAt === "number" &&
+      now - v.suppressedLastAt < THROTTLE_WINDOW_MS &&
+      (v?.suppressedCount || 0) > 0;
+    if (!recentSends && !recentSuppressions) {
+      delete state[k];
+    }
+  }
+}
+
+/**
+ * Decide si la alerta debe enviarse o suprimirse para `(operator, targetEmail)`.
+ * - allowed=true  -> mandar; si `summary` viene seteado, hubo alertas previas
+ *                    suprimidas que conviene mencionar en el cuerpo del mensaje.
+ * - allowed=false -> no mandar nada; ya hay un alerta reciente para esa combo.
+ *
+ * El estado se persiste en un JSON en /tmp para que sobreviva entre invocaciones
+ * cortas del CLI; el server long-running comparte el mismo archivo así un mismo
+ * atacante no puede fluir el canal alternando CLI y UI.
+ */
+function checkThrottle({ operator, targetEmail, action }, now = Date.now()) {
+  const state = loadThrottleState();
+  const key = throttleKey(operator, targetEmail);
+  const entry = state[key] || {
+    sentAt: [],
+    suppressedSince: null,
+    suppressedLastAt: null,
+    suppressedCount: 0,
+    suppressedActions: {},
+  };
+
+  entry.sentAt = (Array.isArray(entry.sentAt) ? entry.sentAt : []).filter(
+    (t) => typeof t === "number" && now - t < THROTTLE_WINDOW_MS,
+  );
+
+  // Si la última supresión fue hace más de la ventana, el contexto ya no es
+  // relevante y el resumen quedaría rancio ("se suprimieron 3 alertas hace 5h").
+  // Reseteamos para que el próximo allowed no arrastre datos viejos.
+  if (
+    entry.suppressedLastAt &&
+    now - entry.suppressedLastAt > THROTTLE_WINDOW_MS
+  ) {
+    entry.suppressedCount = 0;
+    entry.suppressedSince = null;
+    entry.suppressedLastAt = null;
+    entry.suppressedActions = {};
+  }
+
+  if (entry.sentAt.length >= THROTTLE_MAX_PER_WINDOW) {
+    entry.suppressedCount = (entry.suppressedCount || 0) + 1;
+    entry.suppressedSince = entry.suppressedSince || now;
+    entry.suppressedLastAt = now;
+    entry.suppressedActions = entry.suppressedActions || {};
+    entry.suppressedActions[action] =
+      (entry.suppressedActions[action] || 0) + 1;
+    state[key] = entry;
+    pruneThrottleState(state, now);
+    saveThrottleState(state);
+    return { allowed: false };
+  }
+
+  let summary = null;
+  if ((entry.suppressedCount || 0) > 0) {
+    summary = {
+      suppressedCount: entry.suppressedCount,
+      suppressedSince: new Date(entry.suppressedSince || now).toISOString(),
+      suppressedActions: { ...(entry.suppressedActions || {}) },
+      windowMs: THROTTLE_WINDOW_MS,
+    };
+  }
+
+  entry.sentAt.push(now);
+  entry.suppressedCount = 0;
+  entry.suppressedSince = null;
+  entry.suppressedLastAt = null;
+  entry.suppressedActions = {};
+  state[key] = entry;
+  pruneThrottleState(state, now);
+  saveThrottleState(state);
+  return { allowed: true, summary };
+}
+
+// Permite a los tests resetear el archivo de estado entre casos.
+export function __resetThrottleStateForTests() {
+  try {
+    fs.unlinkSync(THROTTLE_STATE_FILE);
+  } catch (err) {
+    if (err?.code !== "ENOENT") throw err;
+  }
+}
 
 function withTimeout(ms) {
   const ctrl = new AbortController();
@@ -60,7 +211,23 @@ function buildSubject({ action, targetEmail }) {
   return `[ALERTA SEGURIDAD] ${headline}: ${targetEmail} (${describeAction(action)})`;
 }
 
-function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, extra }) {
+function formatSuppressedActions(suppressedActions) {
+  const entries = Object.entries(suppressedActions || {});
+  if (entries.length === 0) return null;
+  return entries.map(([a, n]) => `${a} x${n}`).join(", ");
+}
+
+function describeThrottleSummary(summary) {
+  if (!summary) return null;
+  const minutes = Math.max(1, Math.round((summary.windowMs || 0) / 60_000));
+  return (
+    `Throttle: se suprimieron ${summary.suppressedCount} alertas similares de` +
+    ` la misma combinación operator+target desde ${summary.suppressedSince}` +
+    ` (ventana ~${minutes}m).`
+  );
+}
+
+function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, extra, throttleSummary }) {
   const intro = CATEGORY_BODY_INTRO[categoryFor(action)];
   const lines = [
     intro,
@@ -81,12 +248,20 @@ function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, e
       }
     }
   }
+  if (throttleSummary) {
+    lines.push("");
+    lines.push(describeThrottleSummary(throttleSummary));
+    const actionsLine = formatSuppressedActions(throttleSummary.suppressedActions);
+    if (actionsLine) {
+      lines.push(`  Acciones suprimidas: ${actionsLine}`);
+    }
+  }
   lines.push("");
   lines.push("Si vos no estás detrás de esto, revisá audit_log y rotá credenciales del servidor YA.");
   return lines.join("\n");
 }
 
-function buildSlackPayload({ action, operator, targetEmail, targetRole, timestamp, extra }) {
+function buildSlackPayload({ action, operator, targetEmail, targetRole, timestamp, extra, throttleSummary }) {
   const headline = CATEGORY_HEADLINES[categoryFor(action)];
   const text = `:rotating_light: *${headline}* \`${targetEmail}\` — ${describeAction(action)}`;
   const fields = [
@@ -106,6 +281,17 @@ function buildSlackPayload({ action, operator, targetEmail, targetRole, timestam
         short: false,
       });
     }
+  }
+  if (throttleSummary) {
+    const actionsLine = formatSuppressedActions(throttleSummary.suppressedActions);
+    fields.push({
+      title: "Throttle",
+      value:
+        `${throttleSummary.suppressedCount} alertas suprimidas desde ` +
+        `${throttleSummary.suppressedSince}` +
+        (actionsLine ? ` (${actionsLine})` : ""),
+      short: false,
+    });
   }
   return {
     text,
@@ -239,6 +425,24 @@ export async function notifyAdminSensitiveAction(event) {
       timestamp: new Date().toISOString(),
       ...event,
     };
+
+    const decision = checkThrottle({
+      operator: enriched.operator,
+      targetEmail: enriched.targetEmail,
+      action: enriched.action,
+    });
+
+    if (!decision.allowed) {
+      console.log(
+        `[security-alerts] alerta SUPRIMIDA por throttle ` +
+          `(operator=${enriched.operator}, target=${enriched.targetEmail}, action=${enriched.action})`,
+      );
+      return;
+    }
+
+    if (decision.summary) {
+      enriched.throttleSummary = decision.summary;
+    }
 
     if (webhookUrl) {
       const res = await sendWebhook(webhookUrl, buildSlackPayload(enriched));
