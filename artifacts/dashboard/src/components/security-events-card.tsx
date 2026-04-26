@@ -369,6 +369,12 @@ const FILTER_QUERY_KEY = "ev";
 const SEARCH_STORAGE_KEY = "axyntrax.security-events.search";
 const SEARCH_QUERY_KEY = "q";
 const SEARCH_MAX_LENGTH = 200;
+const DATE_RANGE_STORAGE_KEY = "axyntrax.security-events.dateRange";
+const DATE_RANGE_QUERY_KEY = "dr";
+const DATE_FROM_STORAGE_KEY = "axyntrax.security-events.dateFrom";
+const DATE_FROM_QUERY_KEY = "df";
+const DATE_TO_STORAGE_KEY = "axyntrax.security-events.dateTo";
+const DATE_TO_QUERY_KEY = "dt";
 
 function isCategoryValue(value: string): value is CategoryValue {
   return CATEGORIES.some((c) => c.value === value);
@@ -472,6 +478,49 @@ interface DateRange {
   to: Date | null;
 }
 
+function readInitialDateRange(): DateRangeValue {
+  if (typeof window === "undefined") return "all";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(DATE_RANGE_QUERY_KEY);
+    if (fromUrl && isDateRangeValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(DATE_RANGE_STORAGE_KEY);
+    if (fromStorage && isDateRangeValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "all";
+}
+
+// Reads the persisted custom Desde/Hasta dates. We only honor them when the
+// active preset is "custom"; otherwise the picker UI is hidden anyway and we
+// don't want stale values to silently affect the request.
+function readInitialCustomDate(
+  queryKey: string,
+  storageKey: string,
+  fallback: string,
+): string {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(queryKey);
+    if (fromUrl && parseDateInputValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(storageKey);
+    if (fromStorage && parseDateInputValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return fallback;
+}
+
 function computeDateRange(
   preset: DateRangeValue,
   customFrom: string,
@@ -507,10 +556,20 @@ function computeDateRange(
 export function SecurityEventsCard() {
   const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
   const [search, setSearch] = useState<string>(readInitialSearch);
-  const [dateRange, setDateRange] = useState<DateRangeValue>("all");
+  const [dateRange, setDateRange] = useState<DateRangeValue>(
+    readInitialDateRange,
+  );
   const today = useMemo(() => toDateInputValue(new Date()), []);
-  const [customFrom, setCustomFrom] = useState<string>(today);
-  const [customTo, setCustomTo] = useState<string>(today);
+  const [customFrom, setCustomFrom] = useState<string>(() =>
+    readInitialCustomDate(
+      DATE_FROM_QUERY_KEY,
+      DATE_FROM_STORAGE_KEY,
+      today,
+    ),
+  );
+  const [customTo, setCustomTo] = useState<string>(() =>
+    readInitialCustomDate(DATE_TO_QUERY_KEY, DATE_TO_STORAGE_KEY, today),
+  );
 
   const { from: rangeFrom, to: rangeTo } = useMemo(
     () => computeDateRange(dateRange, customFrom, customTo),
@@ -659,6 +718,75 @@ export function SecurityEventsCard() {
       // ignore URL update errors
     }
   }, [search]);
+
+  // Persist the date-range preset (and, when "custom", the Desde/Hasta
+  // values) so that refreshing the panel keeps the active investigation
+  // window. We mirror the same localStorage + query-string pattern used for
+  // the category and search filters above. The Desde/Hasta entries are only
+  // written when the preset is "custom"; for other presets the dates are
+  // computed from `now` on every render and persisting stale values would be
+  // misleading.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const persistCustom = dateRange === "custom";
+    const fromValue = persistCustom ? customFrom : "";
+    const toValue = persistCustom ? customTo : "";
+    try {
+      if (dateRange === "all") {
+        window.localStorage.removeItem(DATE_RANGE_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(DATE_RANGE_STORAGE_KEY, dateRange);
+      }
+      if (persistCustom && fromValue) {
+        window.localStorage.setItem(DATE_FROM_STORAGE_KEY, fromValue);
+      } else {
+        window.localStorage.removeItem(DATE_FROM_STORAGE_KEY);
+      }
+      if (persistCustom && toValue) {
+        window.localStorage.setItem(DATE_TO_STORAGE_KEY, toValue);
+      } else {
+        window.localStorage.removeItem(DATE_TO_STORAGE_KEY);
+      }
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const currentRange = url.searchParams.get(DATE_RANGE_QUERY_KEY);
+      const currentFrom = url.searchParams.get(DATE_FROM_QUERY_KEY);
+      const currentTo = url.searchParams.get(DATE_TO_QUERY_KEY);
+      const desiredRange = dateRange === "all" ? null : dateRange;
+      const desiredFrom = persistCustom && fromValue ? fromValue : null;
+      const desiredTo = persistCustom && toValue ? toValue : null;
+      if (
+        currentRange === desiredRange &&
+        currentFrom === desiredFrom &&
+        currentTo === desiredTo
+      ) {
+        return;
+      }
+      if (desiredRange === null) {
+        url.searchParams.delete(DATE_RANGE_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_RANGE_QUERY_KEY, desiredRange);
+      }
+      if (desiredFrom === null) {
+        url.searchParams.delete(DATE_FROM_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_FROM_QUERY_KEY, desiredFrom);
+      }
+      if (desiredTo === null) {
+        url.searchParams.delete(DATE_TO_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_TO_QUERY_KEY, desiredTo);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history while picking dates.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [dateRange, customFrom, customTo]);
 
   const visibleEntries = useMemo(() => pages.flat(), [pages]);
   const totalLoaded = visibleEntries.length;
