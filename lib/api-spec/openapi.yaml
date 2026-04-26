@@ -1076,6 +1076,31 @@ paths:
           required: false
           description: Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.
           schema: { type: string, format: date-time }
+        - in: query
+          name: action
+          required: false
+          description: Filtra por acción exacta (ej. "auth.2fa.reset_cli").
+          schema: { type: string, maxLength: 64 }
+        - in: query
+          name: actionPrefix
+          required: false
+          description: Filtra por prefijo de acción (ej. "auth.2fa." captura todas las acciones 2FA). Si se envía junto con `action`, manda `action`.
+          schema: { type: string, maxLength: 64 }
+        - in: query
+          name: actionExclude
+          required: false
+          description: Lista separada por comas de prefijos de acción a excluir. Útil para la categoría "Otros".
+          schema: { type: string, maxLength: 256 }
+        - in: query
+          name: q
+          required: false
+          description: Búsqueda case-insensitive en meta.operator, meta.targetEmail, meta.email, meta.actorEmail, meta.userEmail, entityType y entityId.
+          schema: { type: string, maxLength: 200 }
+        - in: query
+          name: before
+          required: false
+          description: Cursor de paginación. Devuelve eventos con id menor (más antiguos) que el id indicado.
+          schema: { type: integer, minimum: 1 }
       responses:
         "200":
           description: Eventos

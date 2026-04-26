@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useListAuditLog,
   type AuditEntry,
   type AuditEntryMeta,
+  type ListAuditLogParams,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,76 +58,112 @@ type CategoryValue =
   | "admin"
   | "other";
 
+// Server-side action filter para una categoría. Cuando el filtro es server-side
+// el componente deja de filtrar las filas en memoria, así no se pide media base
+// solo para descartarla. Mantenemos `match` también para contar localmente las
+// categorías visibles en el dropdown ("(N)").
+//
+// IMPORTANT: El mapping a `actionExclude` para "Otros" debe estar alineado con
+// los `actionPrefix` que usan las demás categorías; si agregamos una nueva
+// categoría con prefijo, hay que excluir el mismo prefijo aquí para que "Otros"
+// siga siendo el complemento real.
 interface CategoryDef {
   value: CategoryValue;
   label: string;
   match: (action: string) => boolean;
+  serverFilter: Pick<
+    ListAuditLogParams,
+    "action" | "actionPrefix" | "actionExclude"
+  >;
 }
 
+const OTHER_EXCLUDE_PREFIXES = [
+  "auth.2fa",
+  "portal.",
+  "module.",
+  "cecilia.",
+  "security.",
+  "admin.",
+] as const;
+
 const CATEGORIES: ReadonlyArray<CategoryDef> = [
-  { value: "all", label: "Todos los eventos", match: () => true },
+  {
+    value: "all",
+    label: "Todos los eventos",
+    match: () => true,
+    serverFilter: {},
+  },
   {
     value: "auth_2fa",
     label: "2FA (todos)",
     match: (a) => a.startsWith("auth.2fa"),
+    serverFilter: { actionPrefix: "auth.2fa" },
   },
   {
     value: "reset_cli",
     label: "Reset 2FA · CLI (todos)",
     match: (a) => isCliResetAction(a),
+    serverFilter: { actionPrefix: "auth.2fa.reset_cli" },
   },
   {
     value: "reset_cli_ok",
     label: "Reset 2FA · CLI exitoso",
     match: (a) => a === "auth.2fa.reset_cli",
+    serverFilter: { action: "auth.2fa.reset_cli" },
   },
   {
     value: "reset_cli_cancelled",
     label: "Reset 2FA · CLI cancelado",
     match: (a) => a === "auth.2fa.reset_cli.cancelled",
+    serverFilter: { action: "auth.2fa.reset_cli.cancelled" },
   },
   {
     value: "reset_cli_failed",
     label: "Reset 2FA · CLI fallido",
     match: (a) => a === "auth.2fa.reset_cli.failed",
+    serverFilter: { action: "auth.2fa.reset_cli.failed" },
   },
   {
     value: "portal",
     label: "Portal (logins, registros)",
     match: (a) => a.startsWith("portal."),
+    serverFilter: { actionPrefix: "portal." },
   },
   {
     value: "modules",
     label: "Módulos",
     match: (a) => a.startsWith("module."),
+    serverFilter: { actionPrefix: "module." },
   },
   {
     value: "cecilia",
     label: "Cecilia",
     match: (a) => a.startsWith("cecilia."),
+    serverFilter: { actionPrefix: "cecilia." },
   },
   {
     value: "security",
     label: "Seguridad (alertas/IP)",
     match: (a) => a.startsWith("security."),
+    serverFilter: { actionPrefix: "security." },
   },
   {
     value: "admin",
     label: "Admin (backup, etc.)",
     match: (a) => a.startsWith("admin."),
+    serverFilter: { actionPrefix: "admin." },
   },
   {
     value: "other",
     label: "Otros",
-    match: (a) =>
-      !a.startsWith("auth.2fa") &&
-      !a.startsWith("portal.") &&
-      !a.startsWith("module.") &&
-      !a.startsWith("cecilia.") &&
-      !a.startsWith("security.") &&
-      !a.startsWith("admin."),
+    match: (a) => OTHER_EXCLUDE_PREFIXES.every((p) => !a.startsWith(p)),
+    serverFilter: { actionExclude: OTHER_EXCLUDE_PREFIXES.join(",") },
   },
 ];
+
+function getCategoryDef(value: CategoryValue): CategoryDef {
+  return CATEGORIES.find((c) => c.value === value) ?? CATEGORIES[0];
+}
 
 function metaString(meta: AuditEntryMeta, key: string): string | null {
   if (!meta || typeof meta !== "object") return null;
@@ -165,35 +202,13 @@ function metaNumber(meta: AuditEntryMeta, key: string): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-const SEARCHABLE_META_KEYS = [
-  "operator",
-  "targetEmail",
-  "email",
-  "actorEmail",
-  "userEmail",
-];
-
-function entryMatchesSearch(entry: AuditEntry, query: string): boolean {
-  if (!query) return true;
-  const needle = query.toLowerCase();
-  const meta = entry.meta ?? null;
-  if (meta && typeof meta === "object") {
-    const record = meta as Record<string, unknown>;
-    for (const key of SEARCHABLE_META_KEYS) {
-      const value = record[key];
-      if (typeof value === "string" && value.toLowerCase().includes(needle)) {
-        return true;
-      }
-    }
-  }
-  if (entry.entityId && String(entry.entityId).toLowerCase().includes(needle)) {
-    return true;
-  }
-  if (entry.entityType && entry.entityType.toLowerCase().includes(needle)) {
-    return true;
-  }
-  return false;
-}
+// Documenta qué claves de meta busca el endpoint server-side. Mantener en sync
+// con `/admin/audit?q=...` (ver artifacts/api-server/src/routes/admin.ts).
+// Se conserva como comentario para futuras referencias / pruebas, no se usa
+// en runtime ya que la búsqueda corre en el servidor.
+// const SEARCHABLE_META_KEYS = [
+//   "operator", "targetEmail", "email", "actorEmail", "userEmail",
+// ];
 
 function AuditRow({ entry }: { entry: AuditEntry }) {
   const [expanded, setExpanded] = useState(false);
@@ -403,16 +418,10 @@ function readInitialSearch(): string {
   return "";
 }
 
-const LIMIT_STEPS = [50, 200, 500] as const;
-const INITIAL_LIMIT = LIMIT_STEPS[0];
-const MAX_LIMIT = LIMIT_STEPS[LIMIT_STEPS.length - 1];
-
-function nextLimitStep(current: number): number {
-  for (const step of LIMIT_STEPS) {
-    if (step > current) return step;
-  }
-  return MAX_LIMIT;
-}
+// Tamaño de página para la paginación con cursor. Antes el componente subía el
+// `limit` (50 → 200 → 500) y filtraba en el cliente. Ahora pedimos páginas de
+// 50 y usamos `before=<id-más-viejo>` para seguir paginando indefinidamente.
+const PAGE_SIZE = 50;
 
 type DateRangeValue = "all" | "today" | "last7" | "thisMonth" | "custom";
 
@@ -496,7 +505,6 @@ function computeDateRange(
 }
 
 export function SecurityEventsCard() {
-  const [limit, setLimit] = useState<number>(INITIAL_LIMIT);
   const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
   const [search, setSearch] = useState<string>(readInitialSearch);
   const [dateRange, setDateRange] = useState<DateRangeValue>("all");
@@ -509,11 +517,91 @@ export function SecurityEventsCard() {
     [dateRange, customFrom, customTo],
   );
 
-  const { data, isLoading, isFetching, isError, error } = useListAuditLog({
-    limit,
-    ...(rangeFrom ? { from: rangeFrom.toISOString() } : {}),
-    ...(rangeTo ? { to: rangeTo.toISOString() } : {}),
-  });
+  const trimmedSearch = search.trim();
+  const categoryDef = getCategoryDef(category);
+
+  // `filterKey` cambia cuando cualquier filtro server-side cambia. Cuando eso
+  // pasa, reseteamos el cursor y la lista acumulada — empezamos a paginar de
+  // nuevo desde la página más reciente.
+  const filterKey = useMemo(
+    () =>
+      JSON.stringify({
+        a: categoryDef.serverFilter.action ?? null,
+        ap: categoryDef.serverFilter.actionPrefix ?? null,
+        ax: categoryDef.serverFilter.actionExclude ?? null,
+        q: trimmedSearch,
+        from: rangeFrom ? rangeFrom.toISOString() : null,
+        to: rangeTo ? rangeTo.toISOString() : null,
+      }),
+    [categoryDef, trimmedSearch, rangeFrom, rangeTo],
+  );
+
+  const [cursor, setCursor] = useState<number | null>(null);
+  const [pages, setPages] = useState<AuditEntry[][]>([]);
+  const [exhausted, setExhausted] = useState(false);
+
+  // Reseteamos cursor y lista cuando cambian los filtros. Usamos un ref para
+  // que la primera petición del nuevo filtro no se haga con el cursor viejo
+  // (los useEffect corren después del render).
+  const lastFilterKeyRef = useRef(filterKey);
+  let effectiveCursor = cursor;
+  if (lastFilterKeyRef.current !== filterKey) {
+    effectiveCursor = null;
+  }
+
+  useEffect(() => {
+    if (lastFilterKeyRef.current === filterKey) return;
+    lastFilterKeyRef.current = filterKey;
+    setCursor(null);
+    setPages([]);
+    setExhausted(false);
+  }, [filterKey]);
+
+  const queryParams: ListAuditLogParams = useMemo(
+    () => ({
+      limit: PAGE_SIZE,
+      ...categoryDef.serverFilter,
+      ...(trimmedSearch ? { q: trimmedSearch } : {}),
+      ...(rangeFrom ? { from: rangeFrom.toISOString() } : {}),
+      ...(rangeTo ? { to: rangeTo.toISOString() } : {}),
+      ...(effectiveCursor ? { before: effectiveCursor } : {}),
+    }),
+    [
+      categoryDef,
+      trimmedSearch,
+      rangeFrom,
+      rangeTo,
+      effectiveCursor,
+    ],
+  );
+
+  const { data, isLoading, isFetching, isError, error } =
+    useListAuditLog(queryParams);
+
+  // Acumulamos cada página en `pages`. Usamos un ref + flag para no apendear
+  // dos veces el mismo data object (puede dispararse el efecto si React vuelve
+  // a renderizar sin que `data` cambie de referencia).
+  const lastAppendedDataRef = useRef<readonly AuditEntry[] | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    if (!data) return;
+    if (lastAppendedDataRef.current === data) return;
+    lastAppendedDataRef.current = data;
+    setPages((prev) => {
+      if (effectiveCursor == null) {
+        // Primera página del filtro actual.
+        return [data];
+      }
+      // Páginas siguientes: dedupe por id por si el backend devuelve traslapes
+      // (no debería, pero más vale defensivos).
+      const seen = new Set<number>();
+      for (const page of prev) for (const e of page) seen.add(e.id);
+      const fresh = data.filter((e) => !seen.has(e.id));
+      return fresh.length ? [...prev, fresh] : prev;
+    });
+    setExhausted(data.length < PAGE_SIZE);
+  }, [data, effectiveCursor]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -572,11 +660,17 @@ export function SecurityEventsCard() {
     }
   }, [search]);
 
+  const visibleEntries = useMemo(() => pages.flat(), [pages]);
+  const totalLoaded = visibleEntries.length;
+
+  // Los conteos por categoría se computan sobre las filas ya cargadas. Cuando
+  // hay un filtro server-side activo (categoría != "all", q, o rango), los
+  // conteos representan ese subconjunto — switching de categoría en el
+  // dropdown re-paginas con el nuevo filtro.
   const counts = useMemo(() => {
     const result = new Map<CategoryValue, number>();
     for (const c of CATEGORIES) result.set(c.value, 0);
-    if (!data) return result;
-    for (const entry of data) {
+    for (const entry of visibleEntries) {
       for (const c of CATEGORIES) {
         if (c.match(entry.action)) {
           result.set(c.value, (result.get(c.value) ?? 0) + 1);
@@ -584,25 +678,17 @@ export function SecurityEventsCard() {
       }
     }
     return result;
-  }, [data]);
-
-  const trimmedSearch = search.trim();
-
-  const visibleEntries = useMemo(() => {
-    if (!data) return [];
-    const def = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
-    return data.filter(
-      (entry) =>
-        def.match(entry.action) && entryMatchesSearch(entry, trimmedSearch),
-    );
-  }, [data, category, trimmedSearch]);
+  }, [visibleEntries]);
 
   const filtersActive =
     category !== "all" || trimmedSearch.length > 0 || dateRange !== "all";
-  const canLoadMore = limit < MAX_LIMIT;
+  const canLoadMore = !exhausted && totalLoaded > 0;
   const loadingMore = isFetching && !isLoading;
   const handleLoadMore = () => {
-    setLimit((current) => nextLimitStep(current));
+    if (totalLoaded === 0) return;
+    const lastEntry = visibleEntries[totalLoaded - 1];
+    if (!lastEntry) return;
+    setCursor(lastEntry.id);
   };
 
   return (
@@ -613,8 +699,9 @@ export function SecurityEventsCard() {
           Eventos de seguridad
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Últimas {limit} entradas de auditoría. Filtra por tipo de evento,
-          rango de fechas o busca por operador / email afectado.
+          Entradas de auditoría más recientes. Filtra por tipo de evento, rango
+          de fechas o busca por operador / email afectado — los filtros se
+          aplican en el servidor y puedes seguir cargando eventos más antiguos.
         </p>
       </CardHeader>
       <CardContent>
@@ -797,39 +884,22 @@ export function SecurityEventsCard() {
             No se pudo cargar el audit log
             {error instanceof Error ? `: ${error.message}` : "."}
           </div>
-        ) : !data || data.length === 0 ? (
-          <div className="text-sm text-muted-foreground text-center py-6">
-            No hay eventos registrados todavía.
-          </div>
         ) : visibleEntries.length === 0 ? (
           <div
             className="flex flex-col items-center gap-3 text-sm text-muted-foreground text-center py-6"
             data-testid="audit-empty-filtered"
           >
-            <span>No hay eventos para este filtro.</span>
-            {filtersActive && canLoadMore && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-                data-testid="audit-load-older"
-              >
-                {loadingMore ? (
-                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                ) : (
-                  <History className="h-3.5 w-3.5 mr-1.5" />
-                )}
-                Buscar en eventos más antiguos (hasta {nextLimitStep(limit)})
-              </Button>
-            )}
-            {filtersActive && !canLoadMore && (
+            <span>
+              {filtersActive
+                ? "No hay eventos para este filtro."
+                : "No hay eventos registrados todavía."}
+            </span>
+            {filtersActive && exhausted && (
               <span
                 className="text-xs"
                 data-testid="audit-load-older-exhausted"
               >
-                Ya buscamos en las últimas {MAX_LIMIT} entradas y no
+                Ya recorrimos todo el audit log con estos filtros y no
                 encontramos coincidencias.
               </span>
             )}
@@ -841,8 +911,9 @@ export function SecurityEventsCard() {
               data-testid="audit-filter-summary"
             >
               <span className="text-xs text-muted-foreground">
-                Mostrando {visibleEntries.length} de {data.length} eventos
-                cargados{filtersActive ? " (filtrado)" : ""}
+                Mostrando {totalLoaded} evento{totalLoaded === 1 ? "" : "s"}
+                {filtersActive ? " (filtrado)" : ""}
+                {exhausted ? " · sin más eventos" : ""}
               </span>
               {canLoadMore && (
                 <Button
@@ -859,7 +930,7 @@ export function SecurityEventsCard() {
                   ) : (
                     <History className="h-3 w-3 mr-1" />
                   )}
-                  Cargar más antiguos ({nextLimitStep(limit)})
+                  Cargar más antiguos
                 </Button>
               )}
             </div>

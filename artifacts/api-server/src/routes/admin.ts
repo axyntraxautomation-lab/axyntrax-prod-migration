@@ -1,5 +1,18 @@
 import { Router, type IRouter } from "express";
-import { and, desc, eq, gte, lte } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  gte,
+  ilike,
+  like,
+  lt,
+  lte,
+  not,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import { z } from "zod";
 import {
   db,
@@ -207,13 +220,22 @@ router.post(
   },
 );
 
+// Caracteres especiales de LIKE/ILIKE en Postgres. Los escapamos para que el
+// usuario pueda buscar por strings que contengan `%` o `_` literalmente.
+function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
 router.get(
   "/admin/audit",
   requireAuth,
   requireRole("admin"),
   async (req, res) => {
-    const limit = Math.min(Number(req.query.limit ?? 100), 500);
-    const filters = [];
+    const limit = Math.min(
+      Math.max(Number(req.query.limit ?? 100) || 100, 1),
+      500,
+    );
+    const filters: SQL[] = [];
     const fromRaw = typeof req.query.from === "string" ? req.query.from : null;
     const toRaw = typeof req.query.to === "string" ? req.query.to : null;
     if (fromRaw) {
@@ -228,11 +250,77 @@ router.get(
         filters.push(lte(auditLogTable.createdAt, to));
       }
     }
+
+    const action =
+      typeof req.query.action === "string" ? req.query.action.trim() : "";
+    const actionPrefix =
+      typeof req.query.actionPrefix === "string"
+        ? req.query.actionPrefix.trim()
+        : "";
+    if (action) {
+      // Match exacto tiene prioridad sobre prefijo (ver descripción del param).
+      filters.push(eq(auditLogTable.action, action.slice(0, 64)));
+    } else if (actionPrefix) {
+      filters.push(
+        like(
+          auditLogTable.action,
+          `${escapeLikePattern(actionPrefix.slice(0, 64))}%`,
+        ),
+      );
+    }
+
+    const actionExcludeRaw =
+      typeof req.query.actionExclude === "string"
+        ? req.query.actionExclude
+        : "";
+    if (actionExcludeRaw) {
+      const prefixes = actionExcludeRaw
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0)
+        .slice(0, 16);
+      for (const prefix of prefixes) {
+        filters.push(
+          not(
+            like(
+              auditLogTable.action,
+              `${escapeLikePattern(prefix.slice(0, 64))}%`,
+            ),
+          ),
+        );
+      }
+    }
+
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    if (q) {
+      const pattern = `%${escapeLikePattern(q.slice(0, 200))}%`;
+      const searchClause = or(
+        ilike(auditLogTable.entityType, pattern),
+        ilike(auditLogTable.entityId, pattern),
+        sql`${auditLogTable.meta} ->> 'operator' ILIKE ${pattern}`,
+        sql`${auditLogTable.meta} ->> 'targetEmail' ILIKE ${pattern}`,
+        sql`${auditLogTable.meta} ->> 'email' ILIKE ${pattern}`,
+        sql`${auditLogTable.meta} ->> 'actorEmail' ILIKE ${pattern}`,
+        sql`${auditLogTable.meta} ->> 'userEmail' ILIKE ${pattern}`,
+      );
+      if (searchClause) filters.push(searchClause);
+    }
+
+    const beforeRaw = req.query.before;
+    if (beforeRaw !== undefined && beforeRaw !== "") {
+      const before = Number(beforeRaw);
+      if (Number.isFinite(before) && before > 0) {
+        filters.push(lt(auditLogTable.id, Math.floor(before)));
+      }
+    }
+
     const rows = await db
       .select()
       .from(auditLogTable)
       .where(filters.length ? and(...filters) : undefined)
-      .orderBy(desc(auditLogTable.createdAt))
+      // id desc como criterio de desempate estable; los ids son seriales así
+      // que también garantizan orden cronológico para el cursor `before`.
+      .orderBy(desc(auditLogTable.createdAt), desc(auditLogTable.id))
       .limit(limit);
     res.json(
       rows.map((r) => ({

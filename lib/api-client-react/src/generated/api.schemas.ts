@@ -738,23 +738,6 @@ export interface TwofaResetStatsResponse {
   combos: TwofaResetStatsCombo[];
 }
 
-export type ListTwofaResetStatsWindowHours =
-  (typeof ListTwofaResetStatsWindowHours)[keyof typeof ListTwofaResetStatsWindowHours];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListTwofaResetStatsWindowHours = {
-  NUMBER_1: 1,
-  NUMBER_24: 24,
-  NUMBER_168: 168,
-} as const;
-
-export type ListTwofaResetStatsParams = {
-  /**
-   * Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).
-   */
-  windowHours?: ListTwofaResetStatsWindowHours;
-};
-
 export interface ModuleCatalog {
   id: number;
   slug: string;
@@ -875,6 +858,22 @@ export type ListModulesCatalogParams = {
   industry?: string;
 };
 
+export type ListTwofaResetStatsParams = {
+  /**
+   * Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).
+   */
+  windowHours?: ListTwofaResetStatsWindowHours;
+};
+
+export type ListTwofaResetStatsWindowHours =
+  (typeof ListTwofaResetStatsWindowHours)[keyof typeof ListTwofaResetStatsWindowHours];
+
+export const ListTwofaResetStatsWindowHours = {
+  NUMBER_1: 1,
+  NUMBER_24: 24,
+  NUMBER_168: 168,
+} as const;
+
 export type ListAuditLogParams = {
   /**
    * @maximum 500
@@ -888,4 +887,29 @@ export type ListAuditLogParams = {
    * Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.
    */
   to?: string;
+  /**
+   * Filtra por acción exacta (ej. "auth.2fa.reset_cli").
+   * @maxLength 64
+   */
+  action?: string;
+  /**
+   * Filtra por prefijo de acción (ej. "auth.2fa." captura todas las acciones 2FA). Si se envía junto con `action`, manda `action`.
+   * @maxLength 64
+   */
+  actionPrefix?: string;
+  /**
+   * Lista separada por comas de prefijos de acción a excluir. Útil para la categoría "Otros".
+   * @maxLength 256
+   */
+  actionExclude?: string;
+  /**
+   * Búsqueda case-insensitive en meta.operator, meta.targetEmail, meta.email, meta.actorEmail, meta.userEmail, entityType y entityId.
+   * @maxLength 200
+   */
+  q?: string;
+  /**
+   * Cursor de paginación. Devuelve eventos con id menor (más antiguos) que el id indicado.
+   * @minimum 1
+   */
+  before?: number;
 };

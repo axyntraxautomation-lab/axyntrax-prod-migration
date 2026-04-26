@@ -4512,100 +4512,6 @@ export const useAdminResetUserPassword = <
 };
 
 /**
- * @summary Lista los últimos eventos del audit log (admin)
- */
-export const getListAuditLogUrl = (params?: ListAuditLogParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/admin/audit?${stringifiedParams}`
-    : `/api/admin/audit`;
-};
-
-export const listAuditLog = async (
-  params?: ListAuditLogParams,
-  options?: RequestInit,
-): Promise<AuditEntry[]> => {
-  return customFetch<AuditEntry[]>(getListAuditLogUrl(params), {
-    ...options,
-    method: "GET",
-  });
-};
-
-export const getListAuditLogQueryKey = (params?: ListAuditLogParams) => {
-  return [`/api/admin/audit`, ...(params ? [params] : [])] as const;
-};
-
-export const getListAuditLogQueryOptions = <
-  TData = Awaited<ReturnType<typeof listAuditLog>>,
-  TError = ErrorType<unknown>,
->(
-  params?: ListAuditLogParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof listAuditLog>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getListAuditLogQueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof listAuditLog>>> = ({
-    signal,
-  }) => listAuditLog(params, { signal, ...requestOptions });
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof listAuditLog>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type ListAuditLogQueryResult = NonNullable<
-  Awaited<ReturnType<typeof listAuditLog>>
->;
-export type ListAuditLogQueryError = ErrorType<unknown>;
-
-/**
- * @summary Lista los últimos eventos del audit log (admin)
- */
-
-export function useListAuditLog<
-  TData = Awaited<ReturnType<typeof listAuditLog>>,
-  TError = ErrorType<unknown>,
->(
-  params?: ListAuditLogParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof listAuditLog>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getListAuditLogQueryOptions(params, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
-
-/**
  * @summary Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
  */
 export const getListTwofaResetStatsUrl = (
@@ -4703,6 +4609,100 @@ export function useListTwofaResetStats<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListTwofaResetStatsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Lista los últimos eventos del audit log (admin)
+ */
+export const getListAuditLogUrl = (params?: ListAuditLogParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/admin/audit?${stringifiedParams}`
+    : `/api/admin/audit`;
+};
+
+export const listAuditLog = async (
+  params?: ListAuditLogParams,
+  options?: RequestInit,
+): Promise<AuditEntry[]> => {
+  return customFetch<AuditEntry[]>(getListAuditLogUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListAuditLogQueryKey = (params?: ListAuditLogParams) => {
+  return [`/api/admin/audit`, ...(params ? [params] : [])] as const;
+};
+
+export const getListAuditLogQueryOptions = <
+  TData = Awaited<ReturnType<typeof listAuditLog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAuditLogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listAuditLog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListAuditLogQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listAuditLog>>> = ({
+    signal,
+  }) => listAuditLog(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listAuditLog>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListAuditLogQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listAuditLog>>
+>;
+export type ListAuditLogQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Lista los últimos eventos del audit log (admin)
+ */
+
+export function useListAuditLog<
+  TData = Awaited<ReturnType<typeof listAuditLog>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAuditLogParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listAuditLog>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListAuditLogQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

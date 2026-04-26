@@ -1096,10 +1096,48 @@ export const AdminResetUserPasswordResponse = zod.object({
 });
 
 /**
+ * @summary Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
+ */
+export const listTwofaResetStatsQueryWindowHoursDefault = 24;
+
+export const ListTwofaResetStatsQueryParams = zod.object({
+  windowHours: zod
+    .union([zod.literal(1), zod.literal(24), zod.literal(168)])
+    .default(listTwofaResetStatsQueryWindowHoursDefault)
+    .describe(
+      "Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).",
+    ),
+});
+
+export const ListTwofaResetStatsResponse = zod.object({
+  windowHours: zod.number(),
+  since: zod.coerce.date(),
+  generatedAt: zod.coerce.date(),
+  combos: zod.array(
+    zod.object({
+      operator: zod.string(),
+      targetEmail: zod.string(),
+      count: zod.number(),
+      sentCount: zod.number(),
+      suppressedCount: zod.number(),
+      lastActivityAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
  * @summary Lista los últimos eventos del audit log (admin)
  */
 export const listAuditLogQueryLimitDefault = 100;
 export const listAuditLogQueryLimitMax = 500;
+
+export const listAuditLogQueryActionMax = 64;
+
+export const listAuditLogQueryActionPrefixMax = 64;
+
+export const listAuditLogQueryActionExcludeMax = 256;
+
+export const listAuditLogQueryQMax = 200;
 
 export const ListAuditLogQueryParams = zod.object({
   limit: zod.coerce
@@ -1117,6 +1155,39 @@ export const ListAuditLogQueryParams = zod.object({
     .optional()
     .describe(
       "Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.",
+    ),
+  action: zod.coerce
+    .string()
+    .max(listAuditLogQueryActionMax)
+    .optional()
+    .describe('Filtra por acción exacta (ej. \"auth.2fa.reset_cli\").'),
+  actionPrefix: zod.coerce
+    .string()
+    .max(listAuditLogQueryActionPrefixMax)
+    .optional()
+    .describe(
+      'Filtra por prefijo de acción (ej. \"auth.2fa.\" captura todas las acciones 2FA). Si se envía junto con `action`, manda `action`.',
+    ),
+  actionExclude: zod.coerce
+    .string()
+    .max(listAuditLogQueryActionExcludeMax)
+    .optional()
+    .describe(
+      'Lista separada por comas de prefijos de acción a excluir. Útil para la categoría \"Otros\".',
+    ),
+  q: zod.coerce
+    .string()
+    .max(listAuditLogQueryQMax)
+    .optional()
+    .describe(
+      "Búsqueda case-insensitive en meta.operator, meta.targetEmail, meta.email, meta.actorEmail, meta.userEmail, entityType y entityId.",
+    ),
+  before: zod.coerce
+    .number()
+    .min(1)
+    .optional()
+    .describe(
+      "Cursor de paginación. Devuelve eventos con id menor (más antiguos) que el id indicado.",
     ),
 });
 
