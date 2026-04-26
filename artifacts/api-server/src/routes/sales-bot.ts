@@ -26,7 +26,7 @@ Tono: cordial, directo, profesional peruano. Sin emojis. Máximo 5 líneas por r
 - Si el módulo tiene precio mensual, ofrecelo y sugerí cotizar.
 - Si el módulo no tiene precio, invitá a probar la demo gratuita de 30 días.
 - Para pagos, mencioná Yape al 991 740 590 a nombre de Miguel Angel Montero Garcia.
-- Para crear cuenta y cotizar, derivá al portal axyntrax-automation.com.
+- Para crear cuenta y cotizar, derivá al portal www.axyntrax-automation.com.
 - Si pregunta algo fuera del catálogo, ofrecé contactar a Miguel por el mismo Yape.
 Respondé SIEMPRE en texto plano, sin JSON, sin markdown, sin asteriscos.`;
 
@@ -159,7 +159,7 @@ ${contactHint ? `CONTACTO: ${contactHint}` : ""}`;
   }
   if (!reply) {
     reply =
-      "Hola, soy JARVIS de AXYNTRAX. En un momento te respondo. Mientras, podés ver módulos en axyntrax-automation.com o escribir a Miguel al 991 740 590 (Yape).";
+      "Hola, soy JARVIS de AXYNTRAX. En un momento te respondo. Mientras, podés ver módulos en www.axyntrax-automation.com o escribir a Miguel al 991 740 590 (Yape).";
   }
 
   try {
