@@ -22,6 +22,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  History,
+  Loader2,
   ScrollText,
   Search,
   ShieldAlert,
@@ -341,8 +343,22 @@ function readInitialCategory(): CategoryValue {
   return "all";
 }
 
+const LIMIT_STEPS = [50, 200, 500] as const;
+const INITIAL_LIMIT = LIMIT_STEPS[0];
+const MAX_LIMIT = LIMIT_STEPS[LIMIT_STEPS.length - 1];
+
+function nextLimitStep(current: number): number {
+  for (const step of LIMIT_STEPS) {
+    if (step > current) return step;
+  }
+  return MAX_LIMIT;
+}
+
 export function SecurityEventsCard() {
-  const { data, isLoading, isError, error } = useListAuditLog({ limit: 50 });
+  const [limit, setLimit] = useState<number>(INITIAL_LIMIT);
+  const { data, isLoading, isFetching, isError, error } = useListAuditLog({
+    limit,
+  });
   const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
   const [search, setSearch] = useState("");
 
@@ -397,6 +413,11 @@ export function SecurityEventsCard() {
   }, [data, category, trimmedSearch]);
 
   const filtersActive = category !== "all" || trimmedSearch.length > 0;
+  const canLoadMore = limit < MAX_LIMIT;
+  const loadingMore = isFetching && !isLoading;
+  const handleLoadMore = () => {
+    setLimit((current) => nextLimitStep(current));
+  };
 
   return (
     <Card data-testid="card-audit-log">
@@ -406,8 +427,8 @@ export function SecurityEventsCard() {
           Eventos de seguridad
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Últimas 50 entradas de auditoría. Filtra por tipo de evento o busca
-          por operador / email afectado.
+          Últimas {limit} entradas de auditoría. Filtra por tipo de evento o
+          busca por operador / email afectado.
         </p>
       </CardHeader>
       <CardContent>
@@ -519,19 +540,65 @@ export function SecurityEventsCard() {
           </div>
         ) : visibleEntries.length === 0 ? (
           <div
-            className="text-sm text-muted-foreground text-center py-6"
+            className="flex flex-col items-center gap-3 text-sm text-muted-foreground text-center py-6"
             data-testid="audit-empty-filtered"
           >
-            No hay eventos para este filtro.
+            <span>No hay eventos para este filtro.</span>
+            {filtersActive && canLoadMore && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                data-testid="audit-load-older"
+              >
+                {loadingMore ? (
+                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                ) : (
+                  <History className="h-3.5 w-3.5 mr-1.5" />
+                )}
+                Buscar en eventos más antiguos (hasta {nextLimitStep(limit)})
+              </Button>
+            )}
+            {filtersActive && !canLoadMore && (
+              <span
+                className="text-xs"
+                data-testid="audit-load-older-exhausted"
+              >
+                Ya buscamos en las últimas {MAX_LIMIT} entradas y no
+                encontramos coincidencias.
+              </span>
+            )}
           </div>
         ) : (
           <>
             <div
-              className="text-xs text-muted-foreground mb-2"
+              className="flex flex-wrap items-center justify-between gap-2 mb-2"
               data-testid="audit-filter-summary"
             >
-              Mostrando {visibleEntries.length} de {data.length} eventos
-              {filtersActive ? " (filtrado)" : ""}
+              <span className="text-xs text-muted-foreground">
+                Mostrando {visibleEntries.length} de {data.length} eventos
+                cargados{filtersActive ? " (filtrado)" : ""}
+              </span>
+              {canLoadMore && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-[11px]"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  data-testid="audit-load-older"
+                >
+                  {loadingMore ? (
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  ) : (
+                    <History className="h-3 w-3 mr-1" />
+                  )}
+                  Cargar más antiguos ({nextLimitStep(limit)})
+                </Button>
+              )}
             </div>
             <div className="space-y-2" data-testid="audit-list">
               {visibleEntries.map((entry) => (
