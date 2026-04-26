@@ -10,6 +10,8 @@ export const usersTable = pgTable("users", {
   role: varchar("role", { length: 32 }).notNull().default("agente"),
   twofaSecret: text("twofa_secret"),
   twofaEnabled: text("twofa_enabled").notNull().default("false"),
+  emailOtpHash: text("email_otp_hash"),
+  emailOtpExpiresAt: timestamp("email_otp_expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()

@@ -86,10 +86,22 @@ app.use("/instagram", (req, res, next) => {
   webhooksRouter(req, res, next);
 });
 
+const emailOtpLimiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: 6,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: {
+    error:
+      "Demasiadas solicitudes de código por correo. Esperá una hora o usá tu app autenticadora.",
+  },
+});
+
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/auth/2fa/verify", authLimiter);
 app.use("/api/auth/2fa/login", authLimiter);
+app.use("/api/auth/2fa/email/request", emailOtpLimiter);
 
 app.use("/api", generalLimiter);
 app.use("/api", blocklistGuard);

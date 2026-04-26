@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { authenticator } from "otplib";
 import QRCode from "qrcode";
+import { z } from "zod/v4";
 import { db, usersTable } from "@workspace/db";
 import {
   EnableTwofaBody,
@@ -9,11 +10,49 @@ import {
   EnableTwofaResponse,
   SetupTwofaResponse,
 } from "@workspace/api-zod";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, verifyPassword } from "../lib/auth";
+import { issueEmailOtp, maskEmail } from "../lib/email-otp";
 
 const router: IRouter = Router();
 
 const ISSUER = "AXYNTRAX";
+
+const RequestEmailOtpBody = z.object({
+  email: z.string().trim().toLowerCase().email(),
+  password: z.string().min(1),
+});
+
+router.post("/auth/2fa/email/request", async (req, res): Promise<void> => {
+  const parsed = RequestEmailOtpBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Datos inválidos" });
+    return;
+  }
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, parsed.data.email))
+    .limit(1);
+  if (!user) {
+    res.status(401).json({ error: "Credenciales inválidas" });
+    return;
+  }
+  const ok = await verifyPassword(parsed.data.password, user.passwordHash);
+  if (!ok) {
+    res.status(401).json({ error: "Credenciales inválidas" });
+    return;
+  }
+  const result = await issueEmailOtp(user.id, user.email);
+  if (!result.ok) {
+    res.status(502).json({ error: result.error ?? "No se pudo enviar el correo" });
+    return;
+  }
+  res.json({
+    ok: true,
+    sentTo: result.sentTo ?? maskEmail(user.email),
+    expiresAt: result.expiresAt?.toISOString(),
+  });
+});
 
 router.post(
   "/auth/2fa/setup",

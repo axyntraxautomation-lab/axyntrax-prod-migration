@@ -14,6 +14,7 @@ import {
   Cpu,
   Radar,
   ArrowRight,
+  Mail,
 } from "lucide-react";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -47,6 +48,58 @@ export default function Login() {
     qrDataUrl: string;
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [sendingEmailOtp, setSendingEmailOtp] = useState(false);
+  const [emailOtpSent, setEmailOtpSent] = useState<{ sentTo: string } | null>(
+    null,
+  );
+
+  const requestEmailOtp = async () => {
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Datos incompletos",
+        description:
+          "Volvé al primer paso e ingresá tu correo y contraseña primero.",
+      });
+      return;
+    }
+    setSendingEmailOtp(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/2fa/email/request`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        sentTo?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.ok) {
+        toast({
+          variant: "destructive",
+          title: "No se pudo enviar el código",
+          description: data.error ?? "Reintentá en un momento.",
+        });
+        return;
+      }
+      setEmailOtpSent({ sentTo: data.sentTo ?? email });
+      setTwofaCode("");
+      toast({
+        title: "Código enviado",
+        description: `Revisá tu bandeja en ${data.sentTo ?? email}. El código vence en 10 minutos.`,
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error de red",
+        description: "No se pudo contactar al servidor. Reintentá.",
+      });
+    } finally {
+      setSendingEmailOtp(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -260,38 +313,85 @@ export default function Login() {
                 )}
 
                 {inSecondPhase && (
-                  <div className="space-y-1.5">
-                    <Label
-                      htmlFor="twofa"
-                      className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
-                    >
-                      <ShieldCheck className="h-3.5 w-3.5 text-cyan-300" />
-                      Código de 6 dígitos
-                    </Label>
-                    <Input
-                      id="twofa"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      pattern="[0-9]{6}"
-                      maxLength={6}
-                      value={twofaCode}
-                      onChange={(e) =>
-                        setTwofaCode(
-                          e.target.value.replace(/\D/g, "").slice(0, 6),
-                        )
-                      }
-                      placeholder="000000"
-                      required
-                      autoFocus
-                      className={cn(
-                        inputCls,
-                        "text-center font-mono text-xl tracking-[0.4em]",
-                      )}
-                    />
-                    <p className="text-[11px] text-slate-500">
-                      Cuenta:{" "}
-                      <span className="font-mono text-slate-300">{email}</span>
-                    </p>
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="twofa"
+                        className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5 text-cyan-300" />
+                        Código de 6 dígitos
+                      </Label>
+                      <Input
+                        id="twofa"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        value={twofaCode}
+                        onChange={(e) =>
+                          setTwofaCode(
+                            e.target.value.replace(/\D/g, "").slice(0, 6),
+                          )
+                        }
+                        placeholder="000000"
+                        required
+                        autoFocus
+                        className={cn(
+                          inputCls,
+                          "text-center font-mono text-xl tracking-[0.4em]",
+                        )}
+                      />
+                      <p className="text-[11px] text-slate-500">
+                        Cuenta:{" "}
+                        <span className="font-mono text-slate-300">{email}</span>
+                      </p>
+                    </div>
+
+                    {twofaRequired && !twofaSetup && (
+                      <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-3">
+                        {emailOtpSent ? (
+                          <div className="space-y-2 text-center">
+                            <div className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.16em] text-emerald-300">
+                              <Mail className="h-3.5 w-3.5" />
+                              Código enviado a {emailOtpSent.sentTo}
+                            </div>
+                            <p className="text-[11px] text-slate-400">
+                              Revisá tu bandeja (incluye spam). Vence en 10 min.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={requestEmailOtp}
+                              disabled={sendingEmailOtp}
+                              className="text-[11px] font-medium text-cyan-300 underline-offset-4 hover:underline disabled:opacity-50"
+                            >
+                              {sendingEmailOtp
+                                ? "Reenviando..."
+                                : "Reenviar código por correo"}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 text-center">
+                            <p className="text-[11px] text-slate-400">
+                              ¿No tenés acceso a tu app autenticadora?
+                            </p>
+                            <button
+                              type="button"
+                              onClick={requestEmailOtp}
+                              disabled={sendingEmailOtp}
+                              className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-300 hover:text-cyan-200 disabled:opacity-50"
+                            >
+                              {sendingEmailOtp ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Mail className="h-3.5 w-3.5" />
+                              )}
+                              Recibir código por correo
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -325,6 +425,7 @@ export default function Login() {
                       setTwofaRequired(false);
                       setTwofaSetup(null);
                       setTwofaCode("");
+                      setEmailOtpSent(null);
                     }}
                   >
                     Cancelar

@@ -69,6 +69,15 @@ router.post(
       return;
     }
 
+    const currencies = new Set(paid.map((m) => m.currency));
+    if (currencies.size > 1) {
+      res.status(400).json({
+        error:
+          "No se puede cotizar módulos de monedas distintas en una sola cotización. Generá una cotización por moneda.",
+        currencies: Array.from(currencies),
+      });
+      return;
+    }
     const currency = paid[0].currency;
     let subtotal = 0;
     const items = paid.map((m) => {

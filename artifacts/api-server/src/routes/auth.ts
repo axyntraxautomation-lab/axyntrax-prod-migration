@@ -15,6 +15,7 @@ import {
   signToken,
   verifyPassword,
 } from "../lib/auth";
+import { verifyEmailOtp } from "../lib/email-otp";
 
 const router: IRouter = Router();
 
@@ -90,10 +91,15 @@ router.post("/auth/login", async (req, res): Promise<void> => {
       });
       return;
     }
-    const valid = authenticator.verify({
+    // Acepta TOTP (app autenticadora) O código de 6 dígitos enviado por email.
+    let valid = authenticator.verify({
       token: code,
       secret: user.twofaSecret as string,
     });
+    if (!valid && /^\d{4,8}$/.test(code)) {
+      const emailOtpResult = await verifyEmailOtp(user.id, code);
+      valid = emailOtpResult.ok;
+    }
     if (!valid) {
       res.status(401).json({
         error: "Código 2FA inválido",

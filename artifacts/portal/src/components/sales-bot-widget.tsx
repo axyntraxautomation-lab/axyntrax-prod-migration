@@ -1,12 +1,31 @@
-import { useEffect, useRef, useState } from "react";
-import { Loader2, MessageCircle, Send, Sparkles, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "wouter";
+import {
+  ArrowRight,
+  FileText,
+  Loader2,
+  MessageCircle,
+  Send,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
 import { ChatBubble, ChatTypingIndicator } from "@/components/ui/chat-bubble";
-import { portalApi, type SalesBotReply } from "@/lib/portal-api";
+import {
+  portalApi,
+  type CatalogModule,
+  type SalesBotReply,
+} from "@/lib/portal-api";
+import { useAuth } from "@/lib/auth-context";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  recommendedSlugs?: string[];
+  ctaQuote?: boolean;
+};
 
 interface Props {
   scope: "public" | "client";
@@ -24,7 +43,30 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
   const [history, setHistory] = useState<Msg[]>([GREETING]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [catalog, setCatalog] = useState<CatalogModule[] | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const { session } = useAuth();
+
+  useEffect(() => {
+    let cancelled = false;
+    portalApi
+      .catalog()
+      .then((rows) => {
+        if (!cancelled) setCatalog(rows);
+      })
+      .catch(() => {
+        // Catalog optional; ignore failures here.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const catalogBySlug = useMemo(() => {
+    const map = new Map<string, CatalogModule>();
+    for (const m of catalog ?? []) map.set(m.slug, m);
+    return map;
+  }, [catalog]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -44,11 +86,18 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
         scope === "public" ? portalApi.publicSalesBot : portalApi.quoteBot;
       const reply: SalesBotReply = await fn(
         msg,
-        next.filter((m) => m !== GREETING),
+        next
+          .filter((m) => m !== GREETING)
+          .map((m) => ({ role: m.role, content: m.content })),
       );
       setHistory((h) => [
         ...h,
-        { role: "assistant", content: reply.reply || "(sin respuesta)" },
+        {
+          role: "assistant",
+          content: reply.reply || "(sin respuesta)",
+          recommendedSlugs: reply.recommendedModuleSlugs ?? [],
+          ctaQuote: !!reply.ctaQuote,
+        },
       ]);
     } catch (err) {
       setHistory((h) => [
@@ -124,17 +173,87 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
             Asistente IA en vivo
           </span>
         </div>
-        {history.map((m, i) => (
-          <ChatBubble
-            key={i}
-            role={m.role}
-            data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}
-          >
-            <span data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}>
-              {m.content}
-            </span>
-          </ChatBubble>
-        ))}
+        {history.map((m, i) => {
+          const recs = (m.recommendedSlugs ?? [])
+            .map((s) => catalogBySlug.get(s))
+            .filter((x): x is CatalogModule => !!x);
+          return (
+            <div key={i} className="space-y-2">
+              <ChatBubble
+                role={m.role}
+                data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}
+              >
+                <span
+                  data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}
+                >
+                  {m.content}
+                </span>
+              </ChatBubble>
+              {m.role === "assistant" && recs.length > 0 && (
+                <div
+                  className="space-y-2 pl-2"
+                  data-testid="bot-recommendations"
+                >
+                  {recs.map((mod) => {
+                    const isPaid = Number(mod.monthlyPrice) > 0;
+                    return (
+                      <div
+                        key={mod.id}
+                        className="rounded-xl border border-cyan-400/25 bg-cyan-400/[0.05] p-3"
+                        data-testid={`bot-rec-${mod.slug}`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="font-display text-xs font-semibold text-slate-50">
+                            {mod.name}
+                          </div>
+                          <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-cyan-200">
+                            {isPaid ? "Cotizable" : "Demo"}
+                          </span>
+                        </div>
+                        <div className="mt-1 font-mono text-[11px] text-cyan-200">
+                          {isPaid
+                            ? `${mod.currency} ${Number(mod.monthlyPrice).toFixed(2)} / mes`
+                            : "Demo gratuita 30 días"}
+                        </div>
+                        {mod.description && (
+                          <p className="mt-1 text-[11px] leading-snug text-slate-400">
+                            {mod.description}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {m.role === "assistant" && m.ctaQuote && (
+                <div className="pl-2">
+                  <Link
+                    href={
+                      session
+                        ? scope === "client"
+                          ? "/mis-modulos"
+                          : "/mis-modulos"
+                        : "/login?tab=register"
+                    }
+                  >
+                    <GradientButton
+                      size="sm"
+                      variant="primary"
+                      className="w-full"
+                      data-testid="bot-cta-quote"
+                    >
+                      <FileText className="h-3.5 w-3.5" />
+                      {session
+                        ? "Ir a pedir cotización"
+                        : "Crear cuenta y cotizar"}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </GradientButton>
+                  </Link>
+                </div>
+              )}
+            </div>
+          );
+        })}
         {loading && <ChatTypingIndicator />}
       </div>
 
