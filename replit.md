@@ -61,6 +61,31 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
     pnpm --filter @workspace/api-server run reset-2fa <email>
     ```
     El script (`artifacts/api-server/scripts/reset-2fa.mjs`) muestra los datos del usuario, pide confirmación escribiendo `RESET`, y luego setea `twofa_secret = NULL`, `twofa_enabled = 'false'`, `email_otp_hash = NULL`, `email_otp_expires_at = NULL`. La contraseña no se toca. En el próximo login el flujo existente de `routes/auth.ts:52-85` genera automáticamente un secreto nuevo y devuelve `requiresTwofaSetup: true` con `qrDataUrl` y `secret`, forzando al usuario a re-enrolarse escaneando el QR. Como respaldo manual sin script: `UPDATE users SET twofa_secret = NULL, twofa_enabled = 'false', email_otp_hash = NULL, email_otp_expires_at = NULL WHERE email = '<email>';`.
+
+    **Reset operativo registrado:**
+    - Usuario afectado: `axyntraxautomation@gmail.com` (id=1, role=admin)
+    - Fecha/hora UTC: 2026-04-26 04:48:16 UTC
+    - Operador: `runner` (sesión Replit del fundador)
+    - Motivo: app autenticadora desincronizada con secreto en DB
+    - Resultado en DB tras el UPDATE: `twofa_secret IS NULL`, `twofa_enabled = 'false'`, `email_otp_hash IS NULL`, `email_otp_expires_at IS NULL`.
+
+    **Smoke test post-reset (curl contra `http://localhost:8080`):**
+    ```
+    curl -s -X POST http://localhost:8080/api/auth/login \
+      -H "content-type: application/json" \
+      -d '{"email":"axyntraxautomation@gmail.com","password":"AxynTest2026!"}'
+    ```
+    Respuesta: `HTTP 401`
+    ```json
+    {
+      "error": "JARVIS requiere doble factor obligatorio. Escaneá el QR con tu app autenticadora y enviá el primer código.",
+      "requiresTwofaSetup": true,
+      "secretLen": 16,
+      "otpauthPrefix": "otpauth://totp/JARVIS%20%C2%B7%20AXYNTRAX:axyn",
+      "qrDataUrlLen": 4258
+    }
+    ```
+    El 401 es esperado en este flujo: el frontend (`artifacts/dashboard/src/pages/login.tsx:124-141`) detecta `requiresTwofaSetup: true` y pinta el QR para que el admin escanee.
 - **RBAC Hardening (April 2026):** Comprehensive role-based access control applied across internal CRM, inbox, modules, and licenses routes:
     - `clients.ts`: `GET /api/clients` and `GET/PATCH /api/clients/:id` require `admin` or `supervisor` (prevents `agente` from reading/mutating decrypted phone/notes); `DELETE /api/clients/:id` is `admin` only.
     - `conversations.ts`: `agente` is force-scoped to their own `assignedAgentId` on list, read, message, and status updates; assignment and CRM linking require `admin` or `supervisor`.
