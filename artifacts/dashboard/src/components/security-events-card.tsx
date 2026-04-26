@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useListAuditLog,
   type AuditEntry,
@@ -316,10 +316,60 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
   );
 }
 
+const FILTER_STORAGE_KEY = "axyntrax.security-events.filter";
+const FILTER_QUERY_KEY = "ev";
+
+function isCategoryValue(value: string): value is CategoryValue {
+  return CATEGORIES.some((c) => c.value === value);
+}
+
+function readInitialCategory(): CategoryValue {
+  if (typeof window === "undefined") return "all";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(FILTER_QUERY_KEY);
+    if (fromUrl && isCategoryValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(FILTER_STORAGE_KEY);
+    if (fromStorage && isCategoryValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "all";
+}
+
 export function SecurityEventsCard() {
   const { data, isLoading, isError, error } = useListAuditLog({ limit: 50 });
-  const [category, setCategory] = useState<CategoryValue>("all");
+  const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(FILTER_STORAGE_KEY, category);
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const current = url.searchParams.get(FILTER_QUERY_KEY);
+      if (category === "all") {
+        if (current === null) return;
+        url.searchParams.delete(FILTER_QUERY_KEY);
+      } else {
+        if (current === category) return;
+        url.searchParams.set(FILTER_QUERY_KEY, category);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history with each filter change.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [category]);
 
   const counts = useMemo(() => {
     const result = new Map<CategoryValue, number>();
