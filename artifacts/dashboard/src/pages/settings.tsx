@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, BellOff, Loader2, LogOut, Shield, ShieldCheck, Users } from "lucide-react";
 import { TwofaCard } from "@/components/twofa-card";
 import { SecurityEventsCard } from "@/components/security-events-card";
+import { TeamManagementCard } from "@/components/team-management-card";
 import { usePushNotifications } from "@/hooks/use-push";
 
 function initials(name: string) {
@@ -112,45 +113,53 @@ export default function Settings() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            Equipo ({users?.length ?? 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loadingUsers ? (
-            <div className="space-y-3">
-              {[1, 2].map((i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {users?.map((u) => (
-                <div
-                  key={u.id}
-                  className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
-                      <AvatarFallback className="bg-muted text-foreground text-xs">
-                        {initials(u.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-sm">{u.name}</p>
-                      <p className="text-xs text-muted-foreground">{u.email}</p>
+      {user?.role === "admin" ? (
+        <TeamManagementCard
+          users={users}
+          loading={loadingUsers}
+          currentUserId={user.id}
+        />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Equipo ({users?.length ?? 0})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingUsers ? (
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {users?.map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9">
+                        <AvatarFallback className="bg-muted text-foreground text-xs">
+                          {initials(u.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-sm">{u.name}</p>
+                        <p className="text-xs text-muted-foreground">{u.email}</p>
+                      </div>
                     </div>
+                    {roleBadge(u.role)}
                   </div>
-                  {roleBadge(u.role)}
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <TwofaCard enabled={!!user?.twofaEnabled} />
 
