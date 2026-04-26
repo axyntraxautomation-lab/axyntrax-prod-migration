@@ -30,6 +30,8 @@ tags:
     description: Finanzas — movimientos, pagos, Culqi y comprobantes SUNAT
   - name: axia
     description: AXIA — asistente financiero (IA)
+  - name: admin
+    description: Acciones administrativas sensibles (gestión de usuarios, auditoría)
 paths:
   /healthz:
     get:
@@ -191,6 +193,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+
+  /users/{id}/role:
+    patch:
+      operationId: changeUserRole
+      tags: [users, admin]
+      summary: Cambia el rol de un usuario (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRoleBody"
+      responses:
+        "200":
+          description: Usuario con el rol actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
 
   /clients:
     get:
@@ -966,6 +992,48 @@ paths:
               schema:
                 $ref: "#/components/schemas/ClientModule"
 
+  /admin/users/{id}/disable-twofa:
+    post:
+      operationId: adminDisableUserTwofa
+      tags: [admin]
+      summary: Desactiva 2FA de un usuario y limpia su secreto/OTP (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: 2FA desactivado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+
+  /admin/users/{id}/reset-password:
+    post:
+      operationId: adminResetUserPassword
+      tags: [admin]
+      summary: Reinicia la contraseña de un usuario (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminResetPasswordBody"
+      responses:
+        "200":
+          description: Contraseña actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+
   /admin/audit:
     get:
       operationId: listAuditLog
@@ -1015,6 +1083,29 @@ components:
     UserRole:
       type: string
       enum: [admin, supervisor, agente]
+
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+
+    UpdateUserRoleBody:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/UserRole"
+      required: [role]
+
+    AdminResetPasswordBody:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 200
+      required: [newPassword]
 
     User:
       type: object

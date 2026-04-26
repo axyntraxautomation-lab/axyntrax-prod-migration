@@ -8,6 +8,7 @@
 
 export * from "./activityItem";
 export * from "./activityItemType";
+export * from "./adminResetPasswordBody";
 export * from "./aiChatMessage";
 export * from "./aiChatMessageRole";
 export * from "./aiChatRequest";
@@ -78,6 +79,7 @@ export * from "./messageDirection";
 export * from "./moduleApproveBody";
 export * from "./moduleCatalog";
 export * from "./moduleRequestBody";
+export * from "./okResponse";
 export * from "./payment";
 export * from "./paymentCreate";
 export * from "./paymentStatus";
@@ -95,5 +97,6 @@ export * from "./sunatComprobanteResponseTipo";
 export * from "./twofaDisableRequest";
 export * from "./twofaEnableRequest";
 export * from "./twofaSetupResponse";
+export * from "./updateUserRoleBody";
 export * from "./user";
 export * from "./userRole";

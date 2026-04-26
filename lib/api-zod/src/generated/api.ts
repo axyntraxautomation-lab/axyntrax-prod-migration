@@ -116,6 +116,26 @@ export const ListUsersResponseItem = zod.object({
 export const ListUsersResponse = zod.array(ListUsersResponseItem);
 
 /**
+ * @summary Cambia el rol de un usuario (solo admin)
+ */
+export const ChangeUserRoleParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ChangeUserRoleBody = zod.object({
+  role: zod.enum(["admin", "supervisor", "agente"]),
+});
+
+export const ChangeUserRoleResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  role: zod.enum(["admin", "supervisor", "agente"]),
+  twofaEnabled: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
  * @summary List clients
  */
 export const ListClientsResponseItem = zod.object({
@@ -1041,6 +1061,38 @@ export const CancelModuleResponse = zod.object({
   currency: zod.string().nullish(),
   clientName: zod.string().nullish(),
   clientCompany: zod.string().nullish(),
+});
+
+/**
+ * @summary Desactiva 2FA de un usuario y limpia su secreto/OTP (solo admin)
+ */
+export const AdminDisableUserTwofaParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminDisableUserTwofaResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
+ * @summary Reinicia la contraseña de un usuario (solo admin)
+ */
+export const AdminResetUserPasswordParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const adminResetUserPasswordBodyNewPasswordMin = 8;
+export const adminResetUserPasswordBodyNewPasswordMax = 200;
+
+export const AdminResetUserPasswordBody = zod.object({
+  newPassword: zod
+    .string()
+    .min(adminResetUserPasswordBodyNewPasswordMin)
+    .max(adminResetUserPasswordBodyNewPasswordMax),
+});
+
+export const AdminResetUserPasswordResponse = zod.object({
+  ok: zod.boolean(),
 });
 
 /**

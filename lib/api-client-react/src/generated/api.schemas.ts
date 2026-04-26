@@ -21,6 +21,22 @@ export const UserRole = {
   agente: "agente",
 } as const;
 
+export interface OkResponse {
+  ok: boolean;
+}
+
+export interface UpdateUserRoleBody {
+  role: UserRole;
+}
+
+export interface AdminResetPasswordBody {
+  /**
+   * @minLength 8
+   * @maxLength 200
+   */
+  newPassword: string;
+}
+
 export interface User {
   id: number;
   name: string;

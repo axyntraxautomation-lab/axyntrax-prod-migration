@@ -18,6 +18,7 @@ import type {
 
 import type {
   ActivityItem,
+  AdminResetPasswordBody,
   AiChatRequest,
   AnalyticsOverview,
   AssignConversationRequest,
@@ -60,6 +61,7 @@ import type {
   ModuleApproveBody,
   ModuleCatalog,
   ModuleRequestBody,
+  OkResponse,
   Payment,
   PaymentCreate,
   PushSubscribeRequest,
@@ -72,6 +74,7 @@ import type {
   TwofaDisableRequest,
   TwofaEnableRequest,
   TwofaSetupResponse,
+  UpdateUserRoleBody,
   User,
 } from "./api.schemas";
 
@@ -800,6 +803,93 @@ export function useListUsers<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Cambia el rol de un usuario (solo admin)
+ */
+export const getChangeUserRoleUrl = (id: number) => {
+  return `/api/users/${id}/role`;
+};
+
+export const changeUserRole = async (
+  id: number,
+  updateUserRoleBody: UpdateUserRoleBody,
+  options?: RequestInit,
+): Promise<User> => {
+  return customFetch<User>(getChangeUserRoleUrl(id), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(updateUserRoleBody),
+  });
+};
+
+export const getChangeUserRoleMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof changeUserRole>>,
+    TError,
+    { id: number; data: BodyType<UpdateUserRoleBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof changeUserRole>>,
+  TError,
+  { id: number; data: BodyType<UpdateUserRoleBody> },
+  TContext
+> => {
+  const mutationKey = ["changeUserRole"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof changeUserRole>>,
+    { id: number; data: BodyType<UpdateUserRoleBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return changeUserRole(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ChangeUserRoleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof changeUserRole>>
+>;
+export type ChangeUserRoleMutationBody = BodyType<UpdateUserRoleBody>;
+export type ChangeUserRoleMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Cambia el rol de un usuario (solo admin)
+ */
+export const useChangeUserRole = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof changeUserRole>>,
+    TError,
+    { id: number; data: BodyType<UpdateUserRoleBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof changeUserRole>>,
+  TError,
+  { id: number; data: BodyType<UpdateUserRoleBody> },
+  TContext
+> => {
+  return useMutation(getChangeUserRoleMutationOptions(options));
+};
 
 /**
  * @summary List clients
@@ -4245,6 +4335,178 @@ export const useCancelModule = <
   TContext
 > => {
   return useMutation(getCancelModuleMutationOptions(options));
+};
+
+/**
+ * @summary Desactiva 2FA de un usuario y limpia su secreto/OTP (solo admin)
+ */
+export const getAdminDisableUserTwofaUrl = (id: number) => {
+  return `/api/admin/users/${id}/disable-twofa`;
+};
+
+export const adminDisableUserTwofa = async (
+  id: number,
+  options?: RequestInit,
+): Promise<OkResponse> => {
+  return customFetch<OkResponse>(getAdminDisableUserTwofaUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getAdminDisableUserTwofaMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminDisableUserTwofa>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminDisableUserTwofa>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["adminDisableUserTwofa"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminDisableUserTwofa>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return adminDisableUserTwofa(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminDisableUserTwofaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminDisableUserTwofa>>
+>;
+
+export type AdminDisableUserTwofaMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Desactiva 2FA de un usuario y limpia su secreto/OTP (solo admin)
+ */
+export const useAdminDisableUserTwofa = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminDisableUserTwofa>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminDisableUserTwofa>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getAdminDisableUserTwofaMutationOptions(options));
+};
+
+/**
+ * @summary Reinicia la contraseña de un usuario (solo admin)
+ */
+export const getAdminResetUserPasswordUrl = (id: number) => {
+  return `/api/admin/users/${id}/reset-password`;
+};
+
+export const adminResetUserPassword = async (
+  id: number,
+  adminResetPasswordBody: AdminResetPasswordBody,
+  options?: RequestInit,
+): Promise<OkResponse> => {
+  return customFetch<OkResponse>(getAdminResetUserPasswordUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminResetPasswordBody),
+  });
+};
+
+export const getAdminResetUserPasswordMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminResetUserPassword>>,
+    TError,
+    { id: number; data: BodyType<AdminResetPasswordBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminResetUserPassword>>,
+  TError,
+  { id: number; data: BodyType<AdminResetPasswordBody> },
+  TContext
+> => {
+  const mutationKey = ["adminResetUserPassword"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminResetUserPassword>>,
+    { id: number; data: BodyType<AdminResetPasswordBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return adminResetUserPassword(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminResetUserPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminResetUserPassword>>
+>;
+export type AdminResetUserPasswordMutationBody =
+  BodyType<AdminResetPasswordBody>;
+export type AdminResetUserPasswordMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Reinicia la contraseña de un usuario (solo admin)
+ */
+export const useAdminResetUserPassword = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminResetUserPassword>>,
+    TError,
+    { id: number; data: BodyType<AdminResetPasswordBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminResetUserPassword>>,
+  TError,
+  { id: number; data: BodyType<AdminResetPasswordBody> },
+  TContext
+> => {
+  return useMutation(getAdminResetUserPasswordMutationOptions(options));
 };
 
 /**
