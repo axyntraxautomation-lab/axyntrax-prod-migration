@@ -22,6 +22,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { StatusPill } from "@/components/ui/status-pill";
 import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
@@ -177,10 +178,8 @@ export function MainLayout({ children }: MainLayoutProps) {
               side="left"
               className="w-72 border-white/5 bg-slate-950/95 p-0 backdrop-blur-xl"
             >
-              <div className="flex h-16 items-center gap-3 border-b border-white/5 px-5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950">
-                  AX
-                </span>
+              <div className="flex h-20 items-center gap-3 border-b border-white/5 px-5">
+                <BrandLogo size="md" />
                 <div className="leading-tight">
                   <div className="font-display text-sm font-semibold text-slate-50">
                     JARVIS
@@ -196,13 +195,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         <Link href="/" className="hidden items-center gap-3 md:flex">
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
-            AX
-            <span
-              aria-hidden
-              className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20"
-            />
-          </span>
+          <BrandLogo size="md" />
           <div className="leading-tight">
             <div className="font-display text-sm font-semibold tracking-tight text-slate-50">
               JARVIS

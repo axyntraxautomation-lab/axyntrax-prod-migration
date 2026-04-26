@@ -18,6 +18,7 @@ import { GradientButton } from "@/components/ui/gradient-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusPill } from "@/components/ui/status-pill";
 import { BlueprintBackdrop } from "@/components/ui/blueprint-backdrop";
+import { BrandLogo } from "@/components/brand-logo";
 
 const VALORES = [
   {
@@ -77,19 +78,10 @@ export default function Nosotros() {
       <header className="sticky top-0 z-40 border-b border-white/[0.04] bg-background/65 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
           <Link href="/" className="flex items-center gap-3">
-            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
-              AX
-              <span
-                aria-hidden
-                className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20"
-              />
-            </span>
-            <div className="leading-tight">
-              <div className="font-display text-base font-semibold tracking-tight text-slate-50">
-                AXYNTRAX
-              </div>
+            <BrandLogo size="md" />
+            <div className="hidden leading-tight sm:block">
               <div className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
-                Automation OS
+                Automation OS · Arequipa
               </div>
             </div>
           </Link>

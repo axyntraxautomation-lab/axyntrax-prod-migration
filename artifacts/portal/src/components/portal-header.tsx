@@ -3,6 +3,7 @@ import { LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { StatusPill } from "@/components/ui/status-pill";
+import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 export function PortalHeader() {
@@ -48,14 +49,8 @@ export function PortalHeader() {
           href={isAdmin ? "/admin" : "/mis-modulos"}
           className="flex items-center gap-3"
         >
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
-            AX
-            <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
-          </span>
+          <BrandLogo size="md" />
           <div className="leading-tight">
-            <div className="font-display text-sm font-semibold tracking-tight text-slate-50">
-              AXYNTRAX
-            </div>
             <div className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
               {isAdmin ? "Cabina admin" : "Portal cliente"}
             </div>

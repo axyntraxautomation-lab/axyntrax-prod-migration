@@ -21,6 +21,7 @@ import { GradientButton } from "@/components/ui/gradient-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { BlueprintBackdrop } from "@/components/ui/blueprint-backdrop";
 import { StatusPill } from "@/components/ui/status-pill";
+import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 export default function Login() {
@@ -193,16 +194,11 @@ export default function Login() {
         <BlueprintBackdrop intensity="vivid" animated className="hidden lg:flex">
           <div className="relative flex h-full w-full items-center justify-center px-12">
             <div className="max-w-md space-y-8">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl gradient-cyan-violet font-display text-base font-bold text-slate-950 shadow-[0_10px_40px_-10px_rgba(34,211,238,0.6)]">
-                  AX
-                </span>
+              <div className="flex items-center gap-4">
+                <BrandLogo size="xl" />
                 <div className="leading-tight">
-                  <div className="font-display text-lg font-semibold text-slate-50">
-                    AXYNTRAX
-                  </div>
                   <div className="text-[11px] uppercase tracking-[0.22em] text-cyan-300">
-                    Automation OS
+                    Automation OS · Arequipa
                   </div>
                 </div>
               </div>
@@ -253,14 +249,9 @@ export default function Login() {
           <div className="relative w-full max-w-[440px]">
             {/* Logo móvil */}
             <div className="mb-6 flex flex-col items-center text-center lg:hidden">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl gradient-cyan-violet font-display text-base font-bold text-slate-950 shadow-[0_10px_30px_-10px_rgba(34,211,238,0.6)]">
-                AX
-              </span>
-              <h1 className="mt-3 font-display text-2xl font-semibold text-slate-50">
-                AXYNTRAX
-              </h1>
-              <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">
-                Automation OS
+              <BrandLogo size="lg" />
+              <p className="mt-3 text-xs uppercase tracking-[0.22em] text-cyan-300">
+                Automation OS · Arequipa
               </p>
             </div>
 

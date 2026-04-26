@@ -31,6 +31,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { StatusPill } from "@/components/ui/status-pill";
 import { KpiTile } from "@/components/ui/kpi-tile";
 import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 const INDUSTRY_META: Record<
@@ -191,16 +192,10 @@ export default function LandingPage() {
       <header className="sticky top-0 z-40 border-b border-white/[0.04] bg-background/65 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
           <Link href="/" className="flex items-center gap-3">
-            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
-              AX
-              <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
-            </span>
-            <div className="leading-tight">
-              <div className="font-display text-base font-semibold tracking-tight text-slate-50">
-                AXYNTRAX
-              </div>
+            <BrandLogo size="md" />
+            <div className="hidden leading-tight sm:block">
               <div className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
-                Automation OS
+                Automation OS · Arequipa
               </div>
             </div>
           </Link>
@@ -788,15 +783,8 @@ export default function LandingPage() {
       <footer className="relative">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-5">
           <div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950">
-                AX
-              </span>
-              <div className="font-display text-base font-semibold text-slate-50">
-                AXYNTRAX
-              </div>
-            </div>
-            <p className="mt-3 max-w-xs text-xs leading-relaxed text-slate-400">
+            <BrandLogo size="lg" />
+            <p className="mt-4 max-w-xs text-xs leading-relaxed text-slate-400">
               Automation OS · Arequipa, Perú. IA aplicada al negocio peruano,
               módulo por módulo.
             </p>
