@@ -139,6 +139,7 @@ function actionVariant(
 ): "default" | "secondary" | "destructive" | "outline" {
   if (action === "auth.2fa.reset_cli.failed") return "destructive";
   if (action === "auth.2fa.reset_cli.cancelled") return "outline";
+  if (action === "security.alert.throttled") return "outline";
   if (action.startsWith("auth.2fa")) return "default";
   return "secondary";
 }
@@ -151,9 +152,17 @@ function actionLabel(action: string): string {
       return "Reset 2FA cancelado";
     case "auth.2fa.reset_cli.failed":
       return "Reset 2FA falló";
+    case "security.alert.throttled":
+      return "Alerta suprimida (throttle)";
     default:
       return action;
   }
+}
+
+function metaNumber(meta: AuditEntryMeta, key: string): number | null {
+  if (!meta || typeof meta !== "object") return null;
+  const value = (meta as Record<string, unknown>)[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 const SEARCHABLE_META_KEYS = [
@@ -189,11 +198,21 @@ function entryMatchesSearch(entry: AuditEntry, query: string): boolean {
 function AuditRow({ entry }: { entry: AuditEntry }) {
   const [expanded, setExpanded] = useState(false);
   const cli = isCliResetAction(entry.action);
-  const operator = cli ? metaString(entry.meta ?? null, "operator") : null;
-  const targetEmail = cli
+  const throttled = entry.action === "security.alert.throttled";
+  const showsOperatorTarget = cli || throttled;
+  const operator = showsOperatorTarget
+    ? metaString(entry.meta ?? null, "operator")
+    : null;
+  const targetEmail = showsOperatorTarget
     ? metaString(entry.meta ?? null, "targetEmail")
     : null;
   const failed = entry.action === "auth.2fa.reset_cli.failed";
+  const suppressedCount = throttled
+    ? metaNumber(entry.meta ?? null, "suppressedCount")
+    : null;
+  const suppressedAction = throttled
+    ? metaString(entry.meta ?? null, "suppressedAction")
+    : null;
 
   return (
     <div
@@ -208,6 +227,8 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         >
           {failed ? (
             <ShieldAlert className="h-3 w-3 mr-1" />
+          ) : throttled ? (
+            <ShieldAlert className="h-3 w-3 mr-1" />
           ) : cli ? (
             <Terminal className="h-3 w-3 mr-1" />
           ) : null}
@@ -216,9 +237,19 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
         <span className="text-xs text-muted-foreground">
           {new Date(entry.createdAt).toLocaleString("es-PE")}
         </span>
+        {throttled && suppressedCount !== null && (
+          <span
+            className="text-xs text-muted-foreground"
+            data-testid={`audit-throttle-count-${entry.id}`}
+          >
+            {suppressedCount} {suppressedCount === 1 ? "alerta" : "alertas"}{" "}
+            silenciada{suppressedCount === 1 ? "" : "s"}
+            {suppressedAction ? ` · ${suppressedAction}` : ""}
+          </span>
+        )}
       </div>
 
-      {cli ? (
+      {showsOperatorTarget ? (
         <div className="grid sm:grid-cols-2 gap-2 text-sm">
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase text-muted-foreground tracking-wide">

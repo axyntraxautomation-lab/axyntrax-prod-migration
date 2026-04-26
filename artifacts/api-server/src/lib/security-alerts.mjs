@@ -123,7 +123,15 @@ function checkThrottle({ operator, targetEmail, action }, now = Date.now()) {
     state[key] = entry;
     pruneThrottleState(state, now);
     saveThrottleState(state);
-    return { allowed: false };
+    return {
+      allowed: false,
+      suppression: {
+        suppressedCount: entry.suppressedCount,
+        suppressedSince: new Date(entry.suppressedSince).toISOString(),
+        suppressedActions: { ...entry.suppressedActions },
+        windowMs: THROTTLE_WINDOW_MS,
+      },
+    };
   }
 
   let summary = null;
@@ -145,6 +153,66 @@ function checkThrottle({ operator, targetEmail, action }, now = Date.now()) {
   pruneThrottleState(state, now);
   saveThrottleState(state);
   return { allowed: true, summary };
+}
+
+// Allows tests to inject a fake audit-log writer instead of touching the DB.
+let __recordSuppressedAuditImpl = null;
+export function __setRecordSuppressedAuditForTests(fn) {
+  __recordSuppressedAuditImpl = fn;
+}
+
+/**
+ * Registra en `audit_log` una fila por cada alerta suprimida por throttle
+ * (`security.alert.throttled`), así el panel JARVIS de eventos de seguridad
+ * muestra los intentos extra aunque Slack/email se hayan callado. Si la
+ * inserción falla, sólo deja un warning y no rompe el flujo del llamador.
+ */
+async function recordSuppressedAlertAudit({
+  operator,
+  targetEmail,
+  targetRole,
+  action,
+  suppression,
+}) {
+  const meta = {
+    suppressedAction: action,
+    operator: operator ?? null,
+    targetEmail: targetEmail ?? null,
+    targetRole: targetRole ?? null,
+    suppressedCount: suppression?.suppressedCount ?? null,
+    suppressedSince: suppression?.suppressedSince ?? null,
+    suppressedActions: suppression?.suppressedActions
+      ? { ...suppression.suppressedActions }
+      : null,
+    windowMs: suppression?.windowMs ?? null,
+    host: os.hostname(),
+  };
+  if (__recordSuppressedAuditImpl) {
+    try {
+      await __recordSuppressedAuditImpl({ meta, targetEmail });
+    } catch (err) {
+      console.warn(
+        `[security-alerts] no se pudo registrar el throttle en audit_log (test): ${err?.message ?? err}`,
+      );
+    }
+    return;
+  }
+  try {
+    const { db, auditLogTable } = await import("@workspace/db");
+    await db.insert(auditLogTable).values({
+      userId: null,
+      action: "security.alert.throttled",
+      entityType: "security_alert",
+      entityId: targetEmail ? String(targetEmail).slice(0, 64) : null,
+      ip: null,
+      userAgent: null,
+      meta,
+    });
+  } catch (err) {
+    console.warn(
+      `[security-alerts] no se pudo registrar el throttle en audit_log: ${err?.message ?? err}`,
+    );
+  }
 }
 
 // Permite a los tests resetear el archivo de estado entre casos.
@@ -437,6 +505,13 @@ export async function notifyAdminSensitiveAction(event) {
         `[security-alerts] alerta SUPRIMIDA por throttle ` +
           `(operator=${enriched.operator}, target=${enriched.targetEmail}, action=${enriched.action})`,
       );
+      await recordSuppressedAlertAudit({
+        operator: enriched.operator,
+        targetEmail: enriched.targetEmail,
+        targetRole: enriched.targetRole,
+        action: enriched.action,
+        suppression: decision.suppression ?? null,
+      });
       return;
     }
 
