@@ -1,5 +1,21 @@
 # DASHBOARD SUPREMO AXYNTRAX
 
+## GOLDEN BASELINE — AXYNTRAX JARVIS
+
+> **Estado base GUARDADO el 26 de abril de 2026.**
+> Nombre del baseline: **AXYNTRAX JARVIS**
+> Commit: `0938839` ("Restrict module requests to only allow free demos")
+> Tag git: `axyntrax-jarvis-gold-v1`
+>
+> A partir de este punto, este proyecto es la **única fuente de verdad** para la
+> página web pública (portal) y el dashboard interno (JARVIS · IA AXYNTRAX) de
+> AXYNTRAX AUTOMATION. Toda modificación de UI, branding, módulos, bots de
+> ventas, cotizaciones, 2FA y panel admin se hace **aquí**, sobre este baseline.
+>
+> Para volver a este estado se puede:
+> - Restaurar el checkpoint `0938839ba…` desde el panel del proyecto.
+> - O ejecutar `git checkout axyntrax-jarvis-gold-v1` para inspeccionar el árbol.
+
 ## Overview
 
 AXYNTRAX DASHBOARD SUPREMO is an enterprise dashboard designed to centralize and streamline business operations for AXYNTRAX AUTOMATION. It integrates AI orchestration, omnichannel communication, CRM, license management, finance, email automation, and analytics. The project's main purpose is to provide a unified platform for managing client interactions, sales, financial transactions, and AI-driven tasks within a secure, user-friendly interface. The business vision is to offer a comprehensive solution for companies to manage their entire operational workflow efficiently, leveraging AI and robust communication tools.
