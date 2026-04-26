@@ -102,7 +102,7 @@ const PROCESS_STEPS = [
   {
     n: "02",
     icon: Bot,
-    title: "Hablá con JARVIS",
+    title: "Hablá con Cecilia",
     body: "Contale tu rubro y recibí los módulos justos para tu operación.",
   },
   {
@@ -115,7 +115,7 @@ const PROCESS_STEPS = [
     n: "04",
     icon: Wallet,
     title: "Pagá por Yape y listo",
-    body: "Depositás vía Yape, JARVIS activa tus módulos en minutos.",
+    body: "Depositás vía Yape, Cecilia te activa los módulos en minutos.",
   },
 ];
 
@@ -266,7 +266,7 @@ export default function LandingPage() {
               </h1>
               <p className="max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg">
                 Módulos de automatización IA para clínicas, estudios legales y
-                administraciones. <strong className="text-slate-100">JARVIS</strong>{" "}
+                administraciones. <strong className="text-slate-100">Cecilia</strong>{" "}
                 cotiza al instante, activa demos en minutos y atiende WhatsApp 24/7
                 con tu catálogo en vivo.
               </p>
@@ -306,7 +306,7 @@ export default function LandingPage() {
                   <KpiTile
                     label="Soporte"
                     value="24/7"
-                    hint="Atención JARVIS"
+                    hint="Atención Cecilia"
                     icon={<Zap className="h-4 w-4" />}
                   />
                 </div>
@@ -375,7 +375,7 @@ export default function LandingPage() {
                       </span>
                       <div className="leading-tight">
                         <div className="text-xs font-medium text-slate-100">
-                          WhatsApp respondido por JARVIS
+                          WhatsApp respondido por Cecilia
                         </div>
                         <div className="text-[10px] text-slate-500">+51 998 xxx xxx · Dental</div>
                       </div>
@@ -414,7 +414,7 @@ export default function LandingPage() {
               {
                 icon: Bot,
                 title: "Cotización con IA",
-                body: "JARVIS analiza tu rubro y arma una propuesta detallada en PDF con IGV incluido, lista para firmar.",
+                body: "Cecilia analiza tu rubro y arma una propuesta detallada en PDF con IGV incluido, lista para firmar.",
               },
               {
                 icon: Sparkles,
@@ -513,7 +513,7 @@ export default function LandingPage() {
             align="center"
             eyebrow="Cómo funciona"
             title="De prospecto a cliente activo en 4 pasos"
-            description="Un flujo claro y sin fricciones. Desde el primer mensaje hasta la activación, JARVIS te acompaña."
+            description="Un flujo claro y sin fricciones. Desde el primer mensaje hasta la activación, Cecilia te acompaña."
           />
           <div className="relative mt-14">
             <div
@@ -553,7 +553,7 @@ export default function LandingPage() {
             align="center"
             eyebrow="Catálogo"
             title="Todos los módulos disponibles"
-            description="Demos sin precio se descargan gratis por 30 días. Los módulos cotizables los arma JARVIS y te llegan por correo en PDF."
+            description="Demos sin precio se descargan gratis por 30 días. Los módulos cotizables los arma Cecilia y te llegan por correo en PDF."
           />
 
           {/* Filtros */}
@@ -703,14 +703,14 @@ export default function LandingPage() {
                 </h2>
                 <p className="text-base leading-relaxed text-slate-400">
                   Aceptás la cotización dentro del portal, depositás por Yape al
-                  titular y JARVIS activa tus módulos casi al instante. Sin
+                  titular y Cecilia te activa los módulos casi al instante. Sin
                   tarjetas, sin trámites bancarios, sin tiempos muertos.
                 </p>
                 <ul className="space-y-3 text-sm">
                   {[
                     <>Titular: <strong className="text-slate-100">Miguel Angel Montero Garcia</strong></>,
                     <>Yape: <span className="font-mono font-semibold text-cyan-200">991 740 590</span></>,
-                    "Avisanos por el chat de JARVIS y activamos en el momento.",
+                    "Avisanos por el chat de Cecilia y activamos en el momento.",
                     "Toda cotización trae IGV 18 % incluido y comprobante en PDF.",
                   ].map((line, i) => (
                     <li key={i} className="flex items-start gap-2.5">
@@ -752,7 +752,7 @@ export default function LandingPage() {
               ¿Listo para automatizar tu negocio?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400">
-              Crea tu cuenta gratis y conversá con JARVIS ahora. Sin compromiso,
+              Crea tu cuenta gratis y conversá con Cecilia ahora. Sin compromiso,
               sin tarjeta. Si no encontrás el módulo que buscás, lo armamos para
               tu rubro.
             </p>

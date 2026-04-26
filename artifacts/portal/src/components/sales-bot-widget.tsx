@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { GradientButton } from "@/components/ui/gradient-button";
-import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { CeciliaAvatar } from "@/components/ui/jarvis-avatar";
 import { ChatBubble, ChatTypingIndicator } from "@/components/ui/chat-bubble";
 import {
   portalApi,
@@ -35,7 +35,7 @@ interface Props {
 const GREETING: Msg = {
   role: "assistant",
   content:
-    "Hola, soy JARVIS, la IA principal de AXYNTRAX. Contame de tu negocio y te recomiendo módulos de automatización con cotización al instante. Si querés reservar tu módulo, depositá por Yape al 991 740 590 (Miguel Montero).",
+    "Hola, soy Cecilia, la asesora IA de AXYNTRAX. Contame de tu negocio y te recomiendo módulos de automatización con cotización al instante. Si querés reservar tu módulo, depositá por Yape al 991 740 590 (Miguel Montero).",
 };
 
 export function SalesBotWidget({ scope, initialOpen = false }: Props) {
@@ -127,7 +127,7 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
           <MessageCircle className="h-5 w-5" />
           <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.9)]" aria-hidden />
         </span>
-        JARVIS ventas
+        Cecilia · Ventas
       </button>
     );
   }
@@ -141,10 +141,10 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
 
       <header className="flex items-center justify-between gap-3 border-b border-white/5 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent px-4 py-3">
         <div className="flex items-center gap-3">
-          <JarvisAvatar size="md" pulse />
+          <CeciliaAvatar size="md" pulse />
           <div className="leading-tight">
             <div className="font-display text-sm font-semibold text-slate-50">
-              JARVIS · IA AXYNTRAX
+              Cecilia · Ventas AXYNTRAX
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />

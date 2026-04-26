@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-type JarvisAvatarProps = {
+type AvatarProps = {
   size?: "sm" | "md" | "lg" | "xl";
   pulse?: boolean;
   className?: string;
@@ -14,7 +14,7 @@ const sizeMap = {
   xl: "h-16 w-16 text-base",
 };
 
-export function JarvisAvatar({ size = "md", pulse = false, className }: JarvisAvatarProps) {
+export function JarvisAvatar({ size = "md", pulse = false, className }: AvatarProps) {
   return (
     <span
       className={cn(
@@ -29,6 +29,25 @@ export function JarvisAvatar({ size = "md", pulse = false, className }: JarvisAv
     >
       <span aria-hidden className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400/20 via-transparent to-violet-500/20" />
       <span className="relative">JX</span>
+    </span>
+  );
+}
+
+export function CeciliaAvatar({ size = "md", pulse = false, className }: AvatarProps) {
+  return (
+    <span
+      className={cn(
+        "relative inline-flex items-center justify-center rounded-full",
+        "border border-rose-300/40 bg-slate-950/70 font-mono font-semibold tracking-[0.18em] text-rose-200",
+        "shadow-[inset_0_0_18px_rgba(244,114,182,0.18)]",
+        sizeMap[size],
+        pulse && "animate-pulse-ring",
+        className,
+      )}
+      aria-label="Cecilia"
+    >
+      <span aria-hidden className="absolute inset-1 rounded-full bg-gradient-to-br from-rose-400/20 via-transparent to-violet-500/20" />
+      <span className="relative">CX</span>
     </span>
   );
 }

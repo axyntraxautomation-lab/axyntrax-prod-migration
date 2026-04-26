@@ -9,8 +9,8 @@ import { buildJarvisKnowledge } from "../lib/jarvis-knowledge";
 
 const router: IRouter = Router();
 
-const SYSTEM_BASE = `Eres "JARVIS", la inteligencia artificial principal de AXYNTRAX AUTOMATION. JARVIS coordina ventas, soporte y operaciones de la empresa.
-Cuando hablás con prospectos, sos asesor comercial de los módulos SaaS de automatización por industria.
+const SYSTEM_BASE = `Eres "Cecilia", asesora comercial IA de AXYNTRAX AUTOMATION. Cecilia atiende a prospectos en el sitio público y los chats de los rubros (clínica, dental, legal, administraciones, etc.).
+JARVIS es el sistema interno de operaciones que sólo se menciona si el cliente pregunta cómo funciona la cabina admin; nunca te presentes como JARVIS.
 Tono: cordial, directo, profesional peruano. Sin emojis. Respuestas breves (máx 6 líneas).
 - Si el módulo tiene precio mensual, ofrecelo y sugerí cotizar.
 - Si el módulo no tiene precio (gratis), invitá a probar la demo de 30 días.
@@ -21,7 +21,8 @@ SIEMPRE devolvé JSON con esta forma:
 { "reply": "<texto al usuario>", "recommendedModuleSlugs": ["slug1","slug2"], "ctaQuote": true|false }
 "ctaQuote" es true cuando proponés cotizar módulos pagos concretos.`;
 
-const PLAIN_SYSTEM_BASE = `Eres "JARVIS", la inteligencia artificial principal de AXYNTRAX AUTOMATION. Atendés WhatsApp y conversaciones de ventas.
+const PLAIN_SYSTEM_BASE = `Eres "Cecilia", asesora comercial IA de AXYNTRAX AUTOMATION. Atendés WhatsApp, mensajería social y conversaciones de ventas con prospectos y clientes.
+JARVIS es el sistema interno de la empresa; no te presentes como JARVIS bajo ningún concepto. Si te preguntan por el dashboard interno podés mencionarlo, pero tu nombre es Cecilia.
 Tono: cordial, directo, profesional peruano. Sin emojis. Máximo 5 líneas por respuesta.
 - Si el módulo tiene precio mensual, ofrecelo y sugerí cotizar.
 - Si el módulo no tiene precio, invitá a probar la demo gratuita de 30 días.
@@ -159,7 +160,7 @@ ${contactHint ? `CONTACTO: ${contactHint}` : ""}`;
   }
   if (!reply) {
     reply =
-      "Hola, soy JARVIS de AXYNTRAX. En un momento te respondo. Mientras, podés ver módulos en www.axyntrax-automation.com o escribir a Miguel al 991 740 590 (Yape).";
+      "Hola, soy Cecilia de AXYNTRAX. En un momento te respondo. Mientras, podés ver módulos en www.axyntrax-automation.com o escribir a Miguel al 991 740 590 (Yape).";
   }
 
   try {
@@ -189,7 +190,7 @@ router.post(
       res.json(reply);
     } catch (err) {
       logger.error({ err }, "public sales-bot failed");
-      res.status(502).json({ error: "JARVIS no respondió, intentá más tarde." });
+      res.status(502).json({ error: "Cecilia no respondió, intentá más tarde." });
     }
   },
 );
@@ -216,7 +217,7 @@ router.post(
       res.json(reply);
     } catch (err) {
       logger.error({ err }, "portal quote-bot failed");
-      res.status(502).json({ error: "JARVIS no respondió, intentá más tarde." });
+      res.status(502).json({ error: "Cecilia no respondió, intentá más tarde." });
     }
   },
 );
