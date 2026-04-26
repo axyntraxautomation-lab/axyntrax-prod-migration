@@ -51,15 +51,6 @@ console.log("Esta acción borrará el secreto TOTP y el flag 2FA.");
 console.log("El próximo login del usuario disparará el QR de re-enrolamiento.");
 console.log("");
 
-const rl = readline.createInterface({ input, output });
-const answer = (await rl.question('Escribí "RESET" para confirmar: ')).trim();
-rl.close();
-
-if (answer !== "RESET") {
-  console.log("Cancelado. No se hicieron cambios.");
-  exit(0);
-}
-
 const operator =
   (process.env.AUDIT_OPERATOR || "").trim() ||
   process.env.SUDO_USER ||
@@ -72,6 +63,46 @@ const operator =
       return "unknown";
     }
   })();
+
+const baseMeta = {
+  operator,
+  targetEmail: user.email,
+  targetRole: user.role,
+  hadTwofaSecret: Boolean(user.twofaSecret),
+  twofaEnabledBefore: user.twofaEnabled,
+};
+
+const baseAuditEntry = {
+  userId: null,
+  entityType: "user",
+  entityId: String(user.id),
+  ip: null,
+  userAgent: `reset-2fa-cli (host=${os.hostname()})`,
+};
+
+const rl = readline.createInterface({ input, output });
+const answer = (await rl.question('Escribí "RESET" para confirmar: ')).trim();
+rl.close();
+
+if (answer !== "RESET") {
+  try {
+    await db.insert(auditLogTable).values({
+      ...baseAuditEntry,
+      action: "auth.2fa.reset_cli.cancelled",
+      meta: {
+        ...baseMeta,
+        confirmationAnswer: answer,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "ADVERTENCIA: No se pudo registrar la cancelación en audit_log:",
+      err?.message ?? err,
+    );
+  }
+  console.log("Cancelado. No se hicieron cambios.");
+  exit(0);
+}
 
 try {
   await db.transaction(async (tx) => {
@@ -86,26 +117,32 @@ try {
       .where(eq(usersTable.id, user.id));
 
     await tx.insert(auditLogTable).values({
-      userId: null,
+      ...baseAuditEntry,
       action: "auth.2fa.reset_cli",
-      entityType: "user",
-      entityId: String(user.id),
-      ip: null,
-      userAgent: `reset-2fa-cli (host=${os.hostname()})`,
-      meta: {
-        operator,
-        targetEmail: user.email,
-        targetRole: user.role,
-        hadTwofaSecret: Boolean(user.twofaSecret),
-        twofaEnabledBefore: user.twofaEnabled,
-      },
+      meta: baseMeta,
     });
   });
 } catch (err) {
+  const errorMessage = err?.message ?? String(err);
   console.error(
     "ERROR: Reset 2FA abortado: no se pudo aplicar el cambio + auditoría en la misma transacción.",
   );
-  console.error(err?.message ?? err);
+  console.error(errorMessage);
+  try {
+    await db.insert(auditLogTable).values({
+      ...baseAuditEntry,
+      action: "auth.2fa.reset_cli.failed",
+      meta: {
+        ...baseMeta,
+        error: errorMessage,
+      },
+    });
+  } catch (logErr) {
+    console.error(
+      "ADVERTENCIA: Tampoco se pudo registrar la falla en audit_log:",
+      logErr?.message ?? logErr,
+    );
+  }
   exit(1);
 }
 
