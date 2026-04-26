@@ -1054,6 +1054,18 @@ export const ListAuditLogQueryParams = zod.object({
     .number()
     .max(listAuditLogQueryLimitMax)
     .default(listAuditLogQueryLimitDefault),
+  from: zod
+    .date()
+    .optional()
+    .describe(
+      "Fecha mínima (inclusive) en ISO 8601 para filtrar por createdAt.",
+    ),
+  to: zod
+    .date()
+    .optional()
+    .describe(
+      "Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.",
+    ),
 });
 
 export const ListAuditLogResponseItem = zod.object({

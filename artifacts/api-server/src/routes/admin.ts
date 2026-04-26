@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { z } from "zod";
 import {
   db,
@@ -213,9 +213,25 @@ router.get(
   requireRole("admin"),
   async (req, res) => {
     const limit = Math.min(Number(req.query.limit ?? 100), 500);
+    const filters = [];
+    const fromRaw = typeof req.query.from === "string" ? req.query.from : null;
+    const toRaw = typeof req.query.to === "string" ? req.query.to : null;
+    if (fromRaw) {
+      const from = new Date(fromRaw);
+      if (!Number.isNaN(from.getTime())) {
+        filters.push(gte(auditLogTable.createdAt, from));
+      }
+    }
+    if (toRaw) {
+      const to = new Date(toRaw);
+      if (!Number.isNaN(to.getTime())) {
+        filters.push(lte(auditLogTable.createdAt, to));
+      }
+    }
     const rows = await db
       .select()
       .from(auditLogTable)
+      .where(filters.length ? and(...filters) : undefined)
       .orderBy(desc(auditLogTable.createdAt))
       .limit(limit);
     res.json(

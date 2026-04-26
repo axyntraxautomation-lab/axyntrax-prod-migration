@@ -831,4 +831,12 @@ export type ListAuditLogParams = {
    * @maximum 500
    */
   limit?: number;
+  /**
+   * Fecha mínima (inclusive) en ISO 8601 para filtrar por createdAt.
+   */
+  from?: string;
+  /**
+   * Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.
+   */
+  to?: string;
 };

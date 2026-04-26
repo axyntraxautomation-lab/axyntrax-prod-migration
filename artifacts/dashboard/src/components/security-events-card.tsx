@@ -354,13 +354,106 @@ function nextLimitStep(current: number): number {
   return MAX_LIMIT;
 }
 
+type DateRangeValue = "all" | "today" | "last7" | "thisMonth" | "custom";
+
+const DATE_RANGE_OPTIONS: ReadonlyArray<{
+  value: DateRangeValue;
+  label: string;
+}> = [
+  { value: "all", label: "Cualquier fecha" },
+  { value: "today", label: "Hoy" },
+  { value: "last7", label: "Últimos 7 días" },
+  { value: "thisMonth", label: "Este mes" },
+  { value: "custom", label: "Rango personalizado" },
+];
+
+function isDateRangeValue(value: string): value is DateRangeValue {
+  return DATE_RANGE_OPTIONS.some((o) => o.value === value);
+}
+
+function startOfDay(d: Date): Date {
+  const out = new Date(d);
+  out.setHours(0, 0, 0, 0);
+  return out;
+}
+
+function endOfDay(d: Date): Date {
+  const out = new Date(d);
+  out.setHours(23, 59, 59, 999);
+  return out;
+}
+
+function toDateInputValue(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function parseDateInputValue(s: string): Date | null {
+  if (!s) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+interface DateRange {
+  from: Date | null;
+  to: Date | null;
+}
+
+function computeDateRange(
+  preset: DateRangeValue,
+  customFrom: string,
+  customTo: string,
+): DateRange {
+  const now = new Date();
+  switch (preset) {
+    case "today":
+      return { from: startOfDay(now), to: endOfDay(now) };
+    case "last7": {
+      const from = startOfDay(now);
+      from.setDate(from.getDate() - 6);
+      return { from, to: endOfDay(now) };
+    }
+    case "thisMonth": {
+      const from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      return { from, to: endOfDay(now) };
+    }
+    case "custom": {
+      const fromDate = parseDateInputValue(customFrom);
+      const toDate = parseDateInputValue(customTo);
+      return {
+        from: fromDate ? startOfDay(fromDate) : null,
+        to: toDate ? endOfDay(toDate) : null,
+      };
+    }
+    case "all":
+    default:
+      return { from: null, to: null };
+  }
+}
+
 export function SecurityEventsCard() {
   const [limit, setLimit] = useState<number>(INITIAL_LIMIT);
-  const { data, isLoading, isFetching, isError, error } = useListAuditLog({
-    limit,
-  });
   const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
   const [search, setSearch] = useState("");
+  const [dateRange, setDateRange] = useState<DateRangeValue>("all");
+  const today = useMemo(() => toDateInputValue(new Date()), []);
+  const [customFrom, setCustomFrom] = useState<string>(today);
+  const [customTo, setCustomTo] = useState<string>(today);
+
+  const { from: rangeFrom, to: rangeTo } = useMemo(
+    () => computeDateRange(dateRange, customFrom, customTo),
+    [dateRange, customFrom, customTo],
+  );
+
+  const { data, isLoading, isFetching, isError, error } = useListAuditLog({
+    limit,
+    ...(rangeFrom ? { from: rangeFrom.toISOString() } : {}),
+    ...(rangeTo ? { to: rangeTo.toISOString() } : {}),
+  });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -412,7 +505,8 @@ export function SecurityEventsCard() {
     );
   }, [data, category, trimmedSearch]);
 
-  const filtersActive = category !== "all" || trimmedSearch.length > 0;
+  const filtersActive =
+    category !== "all" || trimmedSearch.length > 0 || dateRange !== "all";
   const canLoadMore = limit < MAX_LIMIT;
   const loadingMore = isFetching && !isLoading;
   const handleLoadMore = () => {
@@ -427,13 +521,13 @@ export function SecurityEventsCard() {
           Eventos de seguridad
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Últimas {limit} entradas de auditoría. Filtra por tipo de evento o
-          busca por operador / email afectado.
+          Últimas {limit} entradas de auditoría. Filtra por tipo de evento,
+          rango de fechas o busca por operador / email afectado.
         </p>
       </CardHeader>
       <CardContent>
         <div
-          className="grid gap-3 mb-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end"
+          className="grid gap-3 mb-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end"
           data-testid="audit-filter-bar"
         >
           <div className="space-y-1">
@@ -472,6 +566,81 @@ export function SecurityEventsCard() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1">
+            <Label
+              htmlFor="audit-filter-date-range"
+              className="text-xs text-muted-foreground"
+            >
+              Rango de fechas
+            </Label>
+            <Select
+              value={dateRange}
+              onValueChange={(value) => {
+                if (isDateRangeValue(value)) setDateRange(value);
+              }}
+            >
+              <SelectTrigger
+                id="audit-filter-date-range"
+                className="h-9"
+                data-testid="audit-filter-date-range"
+              >
+                <SelectValue placeholder="Cualquier fecha" />
+              </SelectTrigger>
+              <SelectContent>
+                {DATE_RANGE_OPTIONS.map((o) => (
+                  <SelectItem
+                    key={o.value}
+                    value={o.value}
+                    data-testid={`audit-filter-date-range-${o.value}`}
+                  >
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {dateRange === "custom" && (
+              <div
+                className="flex flex-wrap items-center gap-2 pt-2"
+                data-testid="audit-filter-date-custom"
+              >
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="audit-filter-date-from"
+                    className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                  >
+                    Desde
+                  </Label>
+                  <Input
+                    id="audit-filter-date-from"
+                    type="date"
+                    value={customFrom}
+                    max={customTo || undefined}
+                    onChange={(e) => setCustomFrom(e.target.value)}
+                    className="h-8 text-xs"
+                    data-testid="audit-filter-date-from"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="audit-filter-date-to"
+                    className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                  >
+                    Hasta
+                  </Label>
+                  <Input
+                    id="audit-filter-date-to"
+                    type="date"
+                    value={customTo}
+                    min={customFrom || undefined}
+                    onChange={(e) => setCustomTo(e.target.value)}
+                    className="h-8 text-xs"
+                    data-testid="audit-filter-date-to"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1">
@@ -515,6 +684,7 @@ export function SecurityEventsCard() {
               onClick={() => {
                 setCategory("all");
                 setSearch("");
+                setDateRange("all");
               }}
               data-testid="audit-filter-reset"
             >

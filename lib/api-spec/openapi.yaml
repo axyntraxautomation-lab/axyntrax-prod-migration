@@ -976,6 +976,16 @@ paths:
           name: limit
           required: false
           schema: { type: integer, default: 100, maximum: 500 }
+        - in: query
+          name: from
+          required: false
+          description: Fecha mínima (inclusive) en ISO 8601 para filtrar por createdAt.
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          required: false
+          description: Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.
+          schema: { type: string, format: date-time }
       responses:
         "200":
           description: Eventos
