@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, BellOff, Loader2, LogOut, Shield, ShieldCheck, Users } from "lucide-react";
 import { TwofaCard } from "@/components/twofa-card";
 import { SecurityEventsCard } from "@/components/security-events-card";
+import { TwofaResetStatsCard } from "@/components/twofa-reset-stats-card";
 import { TeamManagementCard } from "@/components/team-management-card";
 import { usePushNotifications } from "@/hooks/use-push";
 
@@ -162,6 +163,8 @@ export default function Settings() {
       )}
 
       <TwofaCard enabled={!!user?.twofaEnabled} />
+
+      {user?.role === "admin" && <TwofaResetStatsCard />}
 
       {user?.role === "admin" && <SecurityEventsCard />}
 

@@ -56,6 +56,7 @@ import type {
   ListFinancesParams,
   ListModulesCatalogParams,
   ListPaymentsParams,
+  ListTwofaResetStatsParams,
   LoginRequest,
   Message,
   ModuleApproveBody,
@@ -73,6 +74,7 @@ import type {
   SunatComprobanteResponse,
   TwofaDisableRequest,
   TwofaEnableRequest,
+  TwofaResetStatsResponse,
   TwofaSetupResponse,
   UpdateUserRoleBody,
   User,
@@ -4595,6 +4597,112 @@ export function useListAuditLog<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListAuditLogQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
+ */
+export const getListTwofaResetStatsUrl = (
+  params?: ListTwofaResetStatsParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/admin/security/twofa-reset-stats?${stringifiedParams}`
+    : `/api/admin/security/twofa-reset-stats`;
+};
+
+export const listTwofaResetStats = async (
+  params?: ListTwofaResetStatsParams,
+  options?: RequestInit,
+): Promise<TwofaResetStatsResponse> => {
+  return customFetch<TwofaResetStatsResponse>(
+    getListTwofaResetStatsUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getListTwofaResetStatsQueryKey = (
+  params?: ListTwofaResetStatsParams,
+) => {
+  return [
+    `/api/admin/security/twofa-reset-stats`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getListTwofaResetStatsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listTwofaResetStats>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListTwofaResetStatsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listTwofaResetStats>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListTwofaResetStatsQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listTwofaResetStats>>
+  > = ({ signal }) =>
+    listTwofaResetStats(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listTwofaResetStats>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListTwofaResetStatsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listTwofaResetStats>>
+>;
+export type ListTwofaResetStatsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
+ */
+
+export function useListTwofaResetStats<
+  TData = Awaited<ReturnType<typeof listTwofaResetStats>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListTwofaResetStatsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listTwofaResetStats>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListTwofaResetStatsQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

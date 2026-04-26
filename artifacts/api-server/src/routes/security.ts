@@ -1,12 +1,18 @@
 import { Router, type IRouter } from "express";
-import { desc, eq, gt, isNull } from "drizzle-orm";
+import { and, desc, eq, gt, gte, isNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
+  auditLogTable,
   db,
   ipBlocklistTable,
   securityAlertsTable,
 } from "@workspace/db";
-import { requirePortalAuth, requirePortalAdmin } from "../lib/auth";
+import {
+  requireAuth,
+  requireRole,
+  requirePortalAuth,
+  requirePortalAdmin,
+} from "../lib/auth";
 import {
   getLockdown,
   invalidateLockdownCache,
@@ -155,6 +161,81 @@ router.post(
       });
     }
     res.json(lock);
+  },
+);
+
+/**
+ * Aggregate (operator, targetEmail) combinations that triggered 2FA reset
+ * alerts (sent or suppressed by throttle) inside a sliding window. Used by the
+ * JARVIS admin dashboard to spot scripts/attackers that hammer the same
+ * combo and would otherwise be invisible because the throttle silenced
+ * Slack/email after the first hit.
+ *
+ * "2FA reset alerts" here means the audit_log entries the security alerts
+ * helper produces for the auth.2fa.* family, plus the synthetic
+ * security.alert.throttled rows whose suppressedAction belongs to that
+ * family.
+ */
+const TWOFA_RESET_ACTION_PREFIX = "auth.2fa.";
+const ALLOWED_WINDOW_HOURS = new Set([1, 24, 168]);
+
+router.get(
+  "/admin/security/twofa-reset-stats",
+  requireAuth,
+  requireRole("admin"),
+  async (req, res): Promise<void> => {
+    const rawWindow = Number(req.query.windowHours ?? 24);
+    const windowHours = ALLOWED_WINDOW_HOURS.has(rawWindow) ? rawWindow : 24;
+    const since = new Date(Date.now() - windowHours * 60 * 60 * 1000);
+    const generatedAt = new Date();
+
+    const operatorExpr = sql<string>`COALESCE(NULLIF(${auditLogTable.meta} ->> 'operator', ''), 'desconocido')`;
+    const targetExpr = sql<string>`COALESCE(NULLIF(LOWER(${auditLogTable.meta} ->> 'targetEmail'), ''), '')`;
+
+    const rows = await db
+      .select({
+        operator: operatorExpr,
+        targetEmail: targetExpr,
+        count: sql<number>`COUNT(*)::int`,
+        sentCount: sql<number>`COUNT(*) FILTER (WHERE ${auditLogTable.action} <> 'security.alert.throttled')::int`,
+        suppressedCount: sql<number>`COUNT(*) FILTER (WHERE ${auditLogTable.action} = 'security.alert.throttled')::int`,
+        lastActivityAt: sql<Date>`MAX(${auditLogTable.createdAt})`,
+      })
+      .from(auditLogTable)
+      .where(
+        and(
+          gte(auditLogTable.createdAt, since),
+          or(
+            sql`${auditLogTable.action} LIKE ${`${TWOFA_RESET_ACTION_PREFIX}%`}`,
+            and(
+              eq(auditLogTable.action, "security.alert.throttled"),
+              sql`${auditLogTable.meta} ->> 'suppressedAction' LIKE ${`${TWOFA_RESET_ACTION_PREFIX}%`}`,
+            ),
+          ),
+        ),
+      )
+      .groupBy(operatorExpr, targetExpr)
+      .orderBy(desc(sql`COUNT(*)`), desc(sql`MAX(${auditLogTable.createdAt})`))
+      .limit(100);
+
+    const combos = rows.map((row) => ({
+      operator: row.operator,
+      targetEmail: row.targetEmail,
+      count: Number(row.count) || 0,
+      sentCount: Number(row.sentCount) || 0,
+      suppressedCount: Number(row.suppressedCount) || 0,
+      lastActivityAt:
+        row.lastActivityAt instanceof Date
+          ? row.lastActivityAt.toISOString()
+          : new Date(row.lastActivityAt as unknown as string).toISOString(),
+    }));
+
+    res.json({
+      windowHours,
+      since: since.toISOString(),
+      generatedAt: generatedAt.toISOString(),
+      combos,
+    });
   },
 );
 

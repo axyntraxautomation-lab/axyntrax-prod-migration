@@ -1034,6 +1034,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/OkResponse"
 
+  /admin/security/twofa-reset-stats:
+    get:
+      operationId: listTwofaResetStats
+      summary: Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
+      tags: [admin]
+      parameters:
+        - in: query
+          name: windowHours
+          required: false
+          description: Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).
+          schema:
+            type: integer
+            enum: [1, 24, 168]
+            default: 24
+      responses:
+        "200":
+          description: Listado agregado de combos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwofaResetStatsResponse"
+
   /admin/audit:
     get:
       operationId: listAuditLog
@@ -1791,6 +1813,30 @@ components:
         meta: { type: ["object", "null"], additionalProperties: true }
         createdAt: { type: string, format: date-time }
       required: [id, action, createdAt]
+
+    TwofaResetStatsCombo:
+      type: object
+      properties:
+        operator: { type: string }
+        targetEmail: { type: string }
+        count: { type: integer }
+        sentCount: { type: integer }
+        suppressedCount: { type: integer }
+        lastActivityAt: { type: string, format: date-time }
+      required:
+        [operator, targetEmail, count, sentCount, suppressedCount, lastActivityAt]
+
+    TwofaResetStatsResponse:
+      type: object
+      properties:
+        windowHours: { type: integer }
+        since: { type: string, format: date-time }
+        generatedAt: { type: string, format: date-time }
+        combos:
+          type: array
+          items:
+            $ref: "#/components/schemas/TwofaResetStatsCombo"
+      required: [windowHours, since, generatedAt, combos]
 
     ModuleCatalog:
       type: object

@@ -722,6 +722,39 @@ export interface AuditEntry {
   createdAt: string;
 }
 
+export interface TwofaResetStatsCombo {
+  operator: string;
+  targetEmail: string;
+  count: number;
+  sentCount: number;
+  suppressedCount: number;
+  lastActivityAt: string;
+}
+
+export interface TwofaResetStatsResponse {
+  windowHours: number;
+  since: string;
+  generatedAt: string;
+  combos: TwofaResetStatsCombo[];
+}
+
+export type ListTwofaResetStatsWindowHours =
+  (typeof ListTwofaResetStatsWindowHours)[keyof typeof ListTwofaResetStatsWindowHours];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ListTwofaResetStatsWindowHours = {
+  NUMBER_1: 1,
+  NUMBER_24: 24,
+  NUMBER_168: 168,
+} as const;
+
+export type ListTwofaResetStatsParams = {
+  /**
+   * Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).
+   */
+  windowHours?: ListTwofaResetStatsWindowHours;
+};
+
 export interface ModuleCatalog {
   id: number;
   slug: string;
