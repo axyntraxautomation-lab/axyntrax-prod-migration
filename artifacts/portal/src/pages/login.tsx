@@ -490,7 +490,7 @@ export default function Login() {
                           onChange={(e) => setEmail(e.target.value)}
                           required
                           className={inputCls}
-                          placeholder="admin@axyntrax-automation.com"
+                          placeholder="admin@axyntrax-automation.net"
                           data-testid="input-email"
                         />
                       }

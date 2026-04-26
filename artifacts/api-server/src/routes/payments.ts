@@ -95,7 +95,7 @@ router.post("/payments/culqi/charge", requireAuth, async (req, res): Promise<voi
   const email =
     typeof body.email === "string" && body.email.length > 3
       ? body.email
-      : "no-reply@axyntrax-automation.com";
+      : "no-reply@axyntrax-automation.net";
   const culqi = await createCulqiCharge({
     amountCents: Math.round(amount * 100),
     currency,

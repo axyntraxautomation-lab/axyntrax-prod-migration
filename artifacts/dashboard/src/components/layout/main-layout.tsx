@@ -294,7 +294,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <footer className="fixed bottom-0 z-20 w-full border-t border-white/[0.04] bg-background/80 px-6 py-2.5 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-1 text-[10px] text-slate-500 md:flex-row">
           <div className="font-mono uppercase tracking-[0.16em]">
-            Miguel Montero · CEO · axyntrax-automation.com
+            Miguel Montero · CEO · www.axyntrax-automation.net
           </div>
           <div className="flex items-center gap-2">
             <Wallet className="h-3 w-3 text-cyan-300" />

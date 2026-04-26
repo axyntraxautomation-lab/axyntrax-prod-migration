@@ -101,14 +101,16 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
 
 ## Public Domain
 
-- **URL canónica del Portal (objetivo):** `https://axyntrax-automation.com/` (apex, sin `www.`).
-- **URL temporal de respaldo (sigue activa):** `https://social-media-answerer.replit.app/` — sigue funcionando incluso después del traslado y conviene dejarla viva como respaldo.
-- **Estado actual del traslado (abril 2026):** el apex `axyntrax-automation.com` ya resuelve a una IP de Replit (`34.111.179.208`) y tiene un `TXT replit-verify=9bf30e6a-9625-49e8-9716-aebc75deb77f` en Namecheap, pero el dominio está bound a OTRO deploy de Replit del fundador ("AXYNTRAX Automation Suite") — **no a este Portal**. Para completar el traslado hay que liberar el dominio del otro deploy y agregarlo como custom domain a este `@workspace/api-server` (ver el runbook en `.local/tasks/runbook-traslado-dominio.md`).
-- **DNS hosteado en:** Namecheap (NS `dns1/dns2.registrar-servers.com`).
-- **Email:** Namecheap email forwarding (MX `eforward1..5.registrar-servers.com`) — **no tocar los MX** al cambiar registros web.
-- **Cookies:** las cookies de auth son host-bound (sin atributo `domain=`), así que las sesiones del `.replit.app` no migran al apex. Cada usuario se va a tener que loguear de nuevo en el dominio nuevo.
+- **URL canónica del Portal (objetivo):** `https://www.axyntrax-automation.net/`.
+- **URL de respaldo (sigue activa):** `https://social-media-answerer.replit.app/` — el deploy `.replit.app` sigue sirviendo el Portal aun después del traslado al `.net` y conviene dejarlo vivo como fallback.
+- **Dominio descontinuado:** `axyntrax-automation.com` quedó desreferenciado del código en abril de 2026 (pivote del fundador a `.net`). El `.com` sigue registrado en Namecheap pero el código nuevo ya no lo menciona; el dueño decide después si lo deja vencer o lo redirige.
+- **Estado actual del traslado al `.net` (abril 2026):** `www.axyntrax-automation.net` y `axyntrax-automation.net` resuelven hoy a `162.0.215.135`, que es el plan de **hosting compartido cPanel de Namecheap** del fundador (sirve un sitio web no relacionado a este Portal, server `LiteSpeed`). Para completar el traslado hay que agregar `www.axyntrax-automation.net` como custom domain en el panel de Replit Deployments, y luego, en el cPanel del `.net`, redirigir el CNAME del host `www` al CNAME que devuelva Replit y agregar el TXT `replit-verify=...` (ver runbook en `.local/tasks/runbook-traslado-dominio-net.md`).
+- **DNS hosteado en:** Namecheap Web Hosting / cPanel (NS `dns1/dns2.namecheaphosting.com`). Se recomienda mantener esos NS para que el cPanel siga manejando el correo del `.net`.
+- **Email:** Namecheap email del cPanel (MX `mx1..3-hosting.jellyfish.systems`, SPF `v=spf1 +a +mx +ip4:... include:spf.web-hosting.com ~all`). **NO tocar los MX ni el SPF** al cambiar los registros de la web — si se tocan se cae el email `@axyntrax-automation.net`.
+- **Cookies:** las cookies de auth son host-bound (sin atributo `domain=`), así que las sesiones del `.replit.app` no migran al `.net`. Cada usuario va a tener que loguearse de nuevo en el dominio nuevo (esperado).
 - **CORS:** `cors({ credentials: true })` en `app.ts:43` deja pasar todos los orígenes, así que el cambio de host no rompe pedidos cross-origin.
 - **Backend / webhooks:** WhatsApp y Meta siguen apuntando a la URL `.replit.app` del api-server, no se mueven con este traslado.
+- **Email "from" del sistema:** los emails que el api-server manda como remitente fallback ahora salen como `no-reply@axyntrax-automation.net` (`artifacts/api-server/src/routes/payments.ts:98`). Para que esos emails no caigan en spam, el dueño debería crear esa cuenta en el cPanel (Email Accounts) o un alias equivalente.
 
 ## External Dependencies
 

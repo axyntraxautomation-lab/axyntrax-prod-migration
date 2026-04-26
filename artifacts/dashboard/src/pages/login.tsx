@@ -464,7 +464,7 @@ export default function Login() {
 
         <footer className="px-6 py-5 text-center text-[10px] text-slate-500 sm:px-10">
           <div>
-            Miguel Montero — Fundador & CEO · axyntrax-automation.com · +51 991
+            Miguel Montero — Fundador & CEO · www.axyntrax-automation.net · +51 991
             740 590
           </div>
           <div className="mt-1 font-mono uppercase tracking-[0.18em]">

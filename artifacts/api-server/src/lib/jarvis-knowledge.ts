@@ -33,7 +33,7 @@ MODELO HÍBRIDO DE VENTA:
   Activación inmediata por el equipo / admin.
 
 PROCESO ESTÁNDAR:
-1. Prospecto crea cuenta en el portal (axyntrax-automation.com).
+1. Prospecto crea cuenta en el portal (www.axyntrax-automation.net).
 2. Habla con JARVIS (chat público) o navega el catálogo.
 3. Pide cotización o demo según el módulo.
 4. Recibe cotización en PDF + email.
