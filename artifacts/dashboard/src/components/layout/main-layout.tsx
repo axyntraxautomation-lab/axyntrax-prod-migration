@@ -15,6 +15,7 @@ import {
   Megaphone,
   Cpu,
   Activity,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -35,6 +36,7 @@ const NAV_SECTIONS: NavSection[] = [
     title: "Operaciones",
     items: [
       { href: "/", label: "Centro de mando", icon: LayoutDashboard },
+      { href: "/jarvis-live", label: "JARVIS Live", icon: Sparkles },
       { href: "/inbox", label: "Bandeja JARVIS", icon: MessageSquare },
       { href: "/crm", label: "CRM", icon: Users },
     ],

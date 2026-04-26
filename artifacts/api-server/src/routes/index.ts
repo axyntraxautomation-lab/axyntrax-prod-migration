@@ -25,6 +25,7 @@ import moduleEventsRouter from "./module-events";
 import moduleUpdatesRouter from "./module-updates";
 import moduleSupportRouter from "./module-support";
 import jarvisAdsRouter from "./jarvis-ads";
+import jarvisLiveRouter from "./jarvis-live";
 
 const router: IRouter = Router();
 
@@ -54,5 +55,6 @@ router.use(moduleEventsRouter);
 router.use(moduleUpdatesRouter);
 router.use(moduleSupportRouter);
 router.use(jarvisAdsRouter);
+router.use(jarvisLiveRouter);
 
 export default router;

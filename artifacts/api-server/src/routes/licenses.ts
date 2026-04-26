@@ -17,9 +17,16 @@ const TYPE_TO_DAYS: Record<string, number> = {
   addon: 365,
 };
 
-function generateKey(prefix: string): string {
-  const part = randomBytes(6).toString("hex").toUpperCase();
-  return `AXYN-${prefix.toUpperCase()}-${part}`;
+const KEY_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const KEY_LENGTH = 30;
+
+function generateKey(_prefix: string): string {
+  const bytes = randomBytes(KEY_LENGTH);
+  let out = "";
+  for (let i = 0; i < KEY_LENGTH; i++) {
+    out += KEY_ALPHABET[bytes[i] % KEY_ALPHABET.length];
+  }
+  return out;
 }
 
 router.get("/licenses", requireAuth, async (_req, res): Promise<void> => {

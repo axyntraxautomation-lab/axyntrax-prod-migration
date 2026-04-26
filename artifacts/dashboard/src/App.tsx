@@ -18,6 +18,7 @@ import Analytics from "@/pages/analytics";
 import AxynCore from "@/pages/axyn-core";
 import Settings from "@/pages/settings";
 import Publicidad from "@/pages/publicidad";
+import JarvisLive from "@/pages/jarvis-live";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient({
@@ -75,6 +76,7 @@ function Router() {
       <Route path="/axyn-core" component={() => <ProtectedRoute component={AxynCore} />} />
       <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />
       <Route path="/publicidad" component={() => <ProtectedRoute component={Publicidad} />} />
+      <Route path="/jarvis-live" component={() => <ProtectedRoute component={JarvisLive} />} />
       <Route component={NotFound} />
     </Switch>
   );
