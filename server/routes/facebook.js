@@ -16,11 +16,13 @@ router.post('/', verifyMeta, async (req, res) => {
         const psid = ev.sender.id, text = ev.message.text.trim();
         console.log('FB de ' + psid + ': ' + text.slice(0,60));
         const axios = require('axios');
-        let respuesta = 'Hola! Soy Cecilia de AxyntraX. Demo GRATIS: axyntrax-automation.com';
+        let respuesta = 'Hola! Soy Cecilia de AxyntraX. Demo GRATIS: axyntrax-automation.net
+';
         if (process.env.GEMINI_API_KEY) {
           try {
             const { GoogleGenerativeAI } = require('@google/generative-ai');
-            const r = await new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: 'gemini-2.0-flash' }).generateContent('Eres Cecilia IA de AxyntraX Automation Peru. Responde en espanol. Termina con: Demo GRATIS: axyntrax-automation.com\nCliente: ' + text + '\nCecilia:');
+            const r = await new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: 'gemini-2.0-flash' }).generateContent('Eres Cecilia IA de AxyntraX Automation Peru. Responde en espanol. Termina con: Demo GRATIS: axyntrax-automation.net
+\nCliente: ' + text + '\nCecilia:');
             respuesta = r.response.text();
           } catch(e) { console.error('Gemini FB err:', e.message); }
         }

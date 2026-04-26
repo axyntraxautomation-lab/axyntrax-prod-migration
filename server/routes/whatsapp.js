@@ -22,10 +22,12 @@ router.post('/', verifyMeta, async (req, res) => {
           const { GoogleGenerativeAI } = require('@google/generative-ai');
           const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
           const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-          let respuesta = 'Hola! Soy Cecilia de AxyntraX Automation. Demo GRATIS: axyntrax-automation.com | +51991740590';
+          let respuesta = 'Hola! Soy Cecilia de AxyntraX Automation. Demo GRATIS: axyntrax-automation.net
+ | +51991740590';
           if (process.env.GEMINI_API_KEY) {
             try {
-              const r = await model.generateContent('Eres Cecilia, IA de AxyntraX Automation Peru. Responde en espanol. Termina con: Demo GRATIS 30 dias: axyntrax-automation.com\nCliente: ' + text + '\nCecilia:');
+              const r = await model.generateContent('Eres Cecilia, IA de AxyntraX Automation Peru. Responde en espanol. Termina con: Demo GRATIS 30 dias: axyntrax-automation.net
+\nCliente: ' + text + '\nCecilia:');
               respuesta = r.response.text();
             } catch(e) { console.error('Gemini err:', e.message); }
           }
