@@ -22,6 +22,7 @@ import {
   verifyPassword,
   hashPassword,
 } from "../lib/auth";
+import { encryptField, decryptField } from "../lib/crypto";
 import { audit } from "../lib/audit";
 import {
   clearFailedLogin,
@@ -67,8 +68,8 @@ function generateLicenseKey(slug: string): string {
 function publicClient(c: {
   id: number;
   name: string;
-  firstName: string | null;
-  lastName: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   company: string | null;
   industry: string | null;
   email: string | null;
@@ -77,12 +78,12 @@ function publicClient(c: {
   return {
     id: c.id,
     name: c.name,
-    firstName: c.firstName,
-    lastName: c.lastName,
+    firstName: c.firstName ?? null,
+    lastName: c.lastName ?? null,
     company: c.company,
     industry: c.industry,
     email: c.email,
-    phone: c.phone,
+    phone: decryptField(c.phone),
   };
 }
 
@@ -137,62 +138,46 @@ router.post("/portal/auth/register", portalRegisterLimiter, async (req, res): Pr
     .where(sql`lower(${clientsTable.email}) = ${normalizedEmail}`)
     .limit(1);
 
-  let client: typeof clientsTable.$inferSelect;
-  let claimed = false;
-
+  // Any pre-existing record (with or without a password) blocks registration.
+  // Allowing registration to overwrite a password-less CRM record is an
+  // account-takeover vector: knowledge of the victim's email is sufficient.
+  // Legitimate CRM contacts must be invited through an admin-initiated flow.
   if (existing) {
-    if (existing.passwordHash) {
-      // Already a real account — block.
+    res.status(409).json({
+      error: "Ya existe una cuenta con ese correo",
+      field: "email",
+    });
+    return;
+  }
+
+  let client: typeof clientsTable.$inferSelect;
+
+  try {
+    const [created] = await db
+      .insert(clientsTable)
+      .values({
+        name: fullName,
+        firstName,
+        lastName,
+        email: normalizedEmail,
+        phone: encryptField(phone),
+        passwordHash,
+        channel: "portal",
+        stage: "prospecto",
+      })
+      .returning();
+    client = created;
+  } catch (err) {
+    // Race-condition fallback: unique index hit between SELECT and INSERT.
+    const code = (err as { code?: string }).code;
+    if (code === "23505") {
       res.status(409).json({
         error: "Ya existe una cuenta con ese correo",
         field: "email",
       });
       return;
     }
-    // Legacy CRM contact (no password yet) → claim the account.
-    const [updated] = await db
-      .update(clientsTable)
-      .set({
-        name: fullName,
-        firstName,
-        lastName,
-        email: normalizedEmail,
-        phone,
-        passwordHash,
-        channel: existing.channel ?? "portal",
-      })
-      .where(eq(clientsTable.id, existing.id))
-      .returning();
-    client = updated;
-    claimed = true;
-  } else {
-    try {
-      const [created] = await db
-        .insert(clientsTable)
-        .values({
-          name: fullName,
-          firstName,
-          lastName,
-          email: normalizedEmail,
-          phone,
-          passwordHash,
-          channel: "portal",
-          stage: "prospecto",
-        })
-        .returning();
-      client = created;
-    } catch (err) {
-      // Race-condition fallback: unique index hit between SELECT and INSERT.
-      const code = (err as { code?: string }).code;
-      if (code === "23505") {
-        res.status(409).json({
-          error: "Ya existe una cuenta con ese correo",
-          field: "email",
-        });
-        return;
-      }
-      throw err;
-    }
+    throw err;
   }
 
   const token = signPortalToken({
@@ -203,7 +188,7 @@ router.post("/portal/auth/register", portalRegisterLimiter, async (req, res): Pr
   setPortalCookie(res, token);
 
   await audit(req, {
-    action: claimed ? "portal.register.claim" : "portal.register",
+    action: "portal.register",
     entityType: "client",
     entityId: client.id,
   });
@@ -211,7 +196,6 @@ router.post("/portal/auth/register", portalRegisterLimiter, async (req, res): Pr
   res.status(201).json({
     kind: "client",
     client: publicClient(client),
-    claimed,
   });
 });
 
