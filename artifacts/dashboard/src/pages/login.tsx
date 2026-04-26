@@ -3,18 +3,24 @@ import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetCurrentUserQueryKey } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Loader2, ShieldCheck, ShieldAlert, Wallet } from "lucide-react";
+  Loader2,
+  ShieldCheck,
+  ShieldAlert,
+  Wallet,
+  Lock,
+  Cpu,
+  Radar,
+  ArrowRight,
+} from "lucide-react";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { GlassCard } from "@/components/ui/glass-card";
+import { BlueprintBackdrop } from "@/components/ui/blueprint-backdrop";
+import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { StatusPill } from "@/components/ui/status-pill";
+import { cn } from "@/lib/utils";
 
 const API_BASE = "/api";
 
@@ -108,180 +114,263 @@ export default function Login() {
   };
 
   const inSecondPhase = twofaRequired || !!twofaSetup;
+  const inputCls =
+    "h-11 rounded-xl border-white/10 bg-white/[0.04] text-slate-100 placeholder:text-slate-500 focus-visible:border-cyan-400/40 focus-visible:ring-cyan-400/20";
 
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background p-4 relative">
-      <div className="w-full max-w-md">
-        <div className="flex flex-col items-center mb-8">
-          <img
-            src="/axyntrax-logo.jpeg"
-            alt="AXYNTRAX AUTOMATION"
-            className="h-16 mb-4"
-          />
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            JARVIS
-          </h1>
-          <p className="text-xs uppercase tracking-[0.4em] text-primary mt-1">
-            IA AXYNTRAX
-          </p>
-          <p className="text-muted-foreground text-sm mt-2">
-            Cabina de mando — solo personal autorizado
-          </p>
+    <BlueprintBackdrop
+      intensity="vivid"
+      animated
+      className="min-h-[100dvh] w-full"
+    >
+      <div className="relative z-10 flex min-h-[100dvh] flex-col">
+        {/* Top status bar */}
+        <div className="flex items-center justify-between gap-3 px-6 py-4 sm:px-10">
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-slate-500">
+            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.7)]" />
+            Cabina JARVIS · acceso restringido
+          </div>
+          <StatusPill tone="violet" size="sm">
+            AXYNTRAX OS · v1.2
+          </StatusPill>
         </div>
 
-        <Card className="border-border bg-card shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              {twofaSetup ? (
-                <>
-                  <ShieldAlert className="h-5 w-5 text-primary" />
-                  Configurá doble factor
-                </>
-              ) : twofaRequired ? (
-                <>
-                  <ShieldCheck className="h-5 w-5 text-primary" />
-                  Verificación de dos pasos
-                </>
-              ) : (
-                "Acceso a JARVIS"
-              )}
-            </CardTitle>
-            <CardDescription>
-              {twofaSetup
-                ? "JARVIS exige doble factor obligatorio. Escaneá este QR con Google Authenticator, Authy o 1Password y enviá el primer código de 6 dígitos."
-                : twofaRequired
-                  ? "Ingresá el código de 6 dígitos de tu aplicación de autenticación."
-                  : "Ingresá tus credenciales para iniciar sesión en JARVIS."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!inSecondPhase && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Correo electrónico</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ejemplo@axyntrax.com"
-                      required
-                      className="bg-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Contraseña</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="bg-input"
-                    />
-                  </div>
-                </>
-              )}
-
-              {twofaSetup && (
-                <div className="space-y-3 rounded-md border border-primary/30 bg-primary/5 p-3">
-                  <div className="flex justify-center">
-                    <img
-                      src={twofaSetup.qrDataUrl}
-                      alt="Código QR para doble factor"
-                      className="h-44 w-44 bg-white p-2 rounded-md"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Si no podés escanear, usá esta clave secreta:
-                  </p>
-                  <p className="text-center font-mono text-sm tracking-widest break-all">
-                    {twofaSetup.secret}
-                  </p>
-                </div>
-              )}
-
-              {inSecondPhase && (
-                <div className="space-y-2">
-                  <Label htmlFor="twofa" className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-primary" />
-                    Código de 6 dígitos
-                  </Label>
-                  <Input
-                    id="twofa"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    pattern="[0-9]{6}"
-                    maxLength={6}
-                    value={twofaCode}
-                    onChange={(e) =>
-                      setTwofaCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-                    }
-                    placeholder="000000"
-                    required
-                    autoFocus
-                    className="bg-input text-center text-lg tracking-[0.4em] font-mono"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Cuenta:{" "}
-                    <span className="text-foreground">{email}</span>
-                  </p>
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={
-                  submitting ||
-                  (inSecondPhase && twofaCode.length !== 6)
-                }
-              >
-                {submitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : twofaSetup ? (
-                  "Activar doble factor e ingresar"
-                ) : twofaRequired ? (
-                  "Verificar"
-                ) : (
-                  "Iniciar sesión"
-                )}
-              </Button>
-
-              {inSecondPhase && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => {
-                    setTwofaRequired(false);
-                    setTwofaSetup(null);
-                    setTwofaCode("");
-                  }}
-                >
-                  Cancelar
-                </Button>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col items-center gap-2 text-xs text-muted-foreground opacity-80">
-            <div className="flex items-center gap-2 text-foreground/80">
-              <Wallet className="h-3.5 w-3.5 text-primary" />
-              <span>Depósitos Yape · Miguel Montero ·</span>
-              <span className="font-mono font-semibold">991 740 590</span>
+        <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6">
+          <div className="w-full max-w-[460px]">
+            {/* Header dramático con avatar pulsante */}
+            <div className="mb-7 flex flex-col items-center text-center">
+              <JarvisAvatar size="xl" pulse />
+              <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-slate-50 sm:text-5xl">
+                <span className="gradient-text-cyan-violet">JARVIS</span>
+              </h1>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.34em] text-cyan-300">
+                IA AXYNTRAX
+              </p>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-400">
+                Centro de mando interno. Solo personal autorizado con doble
+                factor activo.
+              </p>
             </div>
-            <div>Acceso restringido — solo personal autorizado.</div>
-          </CardFooter>
-        </Card>
-      </div>
 
-      <footer className="absolute bottom-0 w-full p-4 text-center text-xs text-muted-foreground">
-        <div>
-          Miguel Montero — Fundador & CEO · axyntrax-automation.com · +51 991 740 590
+            <GlassCard tone="strong" border="gradient" className="p-6 sm:p-7">
+              <div className="mb-5 flex items-center gap-2.5">
+                {twofaSetup ? (
+                  <>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/10 text-amber-200">
+                      <ShieldAlert className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <div className="font-display text-base font-semibold text-slate-50">
+                        Configurá doble factor
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Obligatorio para entrar a JARVIS
+                      </div>
+                    </div>
+                  </>
+                ) : twofaRequired ? (
+                  <>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-200">
+                      <ShieldCheck className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <div className="font-display text-base font-semibold text-slate-50">
+                        Verificación 2FA
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Ingresá el código de 6 dígitos
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-200">
+                      <Lock className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <div className="font-display text-base font-semibold text-slate-50">
+                        Acceso a JARVIS
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Iniciá sesión con tus credenciales
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!inSecondPhase && (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="email"
+                        className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
+                      >
+                        Correo electrónico
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="ejemplo@axyntrax.com"
+                        required
+                        className={inputCls}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label
+                        htmlFor="password"
+                        className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
+                      >
+                        Contraseña
+                      </Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className={inputCls}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {twofaSetup && (
+                  <div className="space-y-3 rounded-2xl border border-cyan-400/25 bg-cyan-400/[0.04] p-4">
+                    <div className="flex justify-center">
+                      <div className="rounded-2xl bg-white p-3 shadow-[0_10px_30px_-8px_rgba(34,211,238,0.4)]">
+                        <img
+                          src={twofaSetup.qrDataUrl}
+                          alt="Código QR para doble factor"
+                          className="h-44 w-44"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-center text-[11px] text-slate-400">
+                      Si no podés escanear, usá esta clave secreta:
+                    </p>
+                    <p className="break-all text-center font-mono text-sm font-semibold tracking-widest text-cyan-200">
+                      {twofaSetup.secret}
+                    </p>
+                  </div>
+                )}
+
+                {inSecondPhase && (
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="twofa"
+                      className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400"
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5 text-cyan-300" />
+                      Código de 6 dígitos
+                    </Label>
+                    <Input
+                      id="twofa"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      value={twofaCode}
+                      onChange={(e) =>
+                        setTwofaCode(
+                          e.target.value.replace(/\D/g, "").slice(0, 6),
+                        )
+                      }
+                      placeholder="000000"
+                      required
+                      autoFocus
+                      className={cn(
+                        inputCls,
+                        "text-center font-mono text-xl tracking-[0.4em]",
+                      )}
+                    />
+                    <p className="text-[11px] text-slate-500">
+                      Cuenta:{" "}
+                      <span className="font-mono text-slate-300">{email}</span>
+                    </p>
+                  </div>
+                )}
+
+                <GradientButton
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  disabled={
+                    submitting || (inSecondPhase && twofaCode.length !== 6)
+                  }
+                >
+                  {submitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : null}
+                  {twofaSetup
+                    ? "Activar doble factor e ingresar"
+                    : twofaRequired
+                      ? "Verificar y entrar"
+                      : "Iniciar sesión"}
+                  {!submitting && <ArrowRight className="h-4 w-4" />}
+                </GradientButton>
+
+                {inSecondPhase && (
+                  <GradientButton
+                    type="button"
+                    variant="ghost"
+                    size="md"
+                    className="w-full"
+                    onClick={() => {
+                      setTwofaRequired(false);
+                      setTwofaSetup(null);
+                      setTwofaCode("");
+                    }}
+                  >
+                    Cancelar
+                  </GradientButton>
+                )}
+              </form>
+
+              <div className="mt-6 grid grid-cols-3 gap-2 border-t border-white/5 pt-5 text-center">
+                {[
+                  { icon: Cpu, label: "Núcleo IA" },
+                  { icon: Radar, label: "Telemetría" },
+                  { icon: Lock, label: "AES-256" },
+                ].map(({ icon: Icon, label }) => (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.02] px-2 py-2.5"
+                  >
+                    <Icon className="h-3.5 w-3.5 text-cyan-300" />
+                    <span className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-slate-500">
+                <Wallet className="h-3 w-3 text-cyan-300" />
+                Depósitos Yape · Miguel Montero ·{" "}
+                <span className="font-mono font-semibold text-slate-300">
+                  991 740 590
+                </span>
+              </div>
+            </GlassCard>
+          </div>
         </div>
-        <div className="mt-1">JARVIS · © 2026 AXYNTRAX AUTOMATION</div>
-      </footer>
-    </div>
+
+        <footer className="px-6 py-5 text-center text-[10px] text-slate-500 sm:px-10">
+          <div>
+            Miguel Montero — Fundador & CEO · axyntrax-automation.com · +51 991
+            740 590
+          </div>
+          <div className="mt-1 font-mono uppercase tracking-[0.18em]">
+            JARVIS · © 2026 AXYNTRAX AUTOMATION
+          </div>
+        </footer>
+      </div>
+    </BlueprintBackdrop>
   );
 }
