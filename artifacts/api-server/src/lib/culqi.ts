@@ -98,8 +98,18 @@ export async function createCulqiCharge(
   }
 }
 
-export function verifyCulqiSignature(_rawBody: string, _signature: string | undefined): boolean {
+export function verifyCulqiSignature(rawBody: string, signature: string | undefined): boolean {
   const secret = process.env.CULQI_WEBHOOK_SECRET;
-  if (!secret) return true;
-  return true;
+  if (!secret) return false;
+  if (!signature) return false;
+  try {
+    const { createHmac, timingSafeEqual } = require("crypto") as typeof import("crypto");
+    const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
+    const expectedBuf = Buffer.from(expected, "utf8");
+    const actualBuf = Buffer.from(signature, "utf8");
+    if (expectedBuf.length !== actualBuf.length) return false;
+    return timingSafeEqual(expectedBuf, actualBuf);
+  } catch {
+    return false;
+  }
 }

@@ -6,7 +6,7 @@ import {
   paymentsTable,
   licensesTable,
 } from "@workspace/db";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, requireRole } from "../lib/auth";
 
 const router: IRouter = Router();
 
@@ -19,7 +19,7 @@ function serializeFinance(f: typeof financesTable.$inferSelect) {
   };
 }
 
-router.get("/finances", requireAuth, async (req, res): Promise<void> => {
+router.get("/finances", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const filters = [];
   const type = typeof req.query.type === "string" ? req.query.type : null;
   if (type === "ingreso" || type === "egreso") {
@@ -41,7 +41,7 @@ router.get("/finances", requireAuth, async (req, res): Promise<void> => {
   res.json(rows.map(serializeFinance));
 });
 
-router.post("/finances", requireAuth, async (req, res): Promise<void> => {
+router.post("/finances", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const body = req.body as Record<string, unknown>;
   const type = body.type;
   const amount = Number(body.amount);
@@ -71,7 +71,7 @@ router.post("/finances", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(serializeFinance(row));
 });
 
-router.delete("/finances/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/finances/:id", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
     res.status(400).json({ error: "id inválido" });
@@ -81,7 +81,7 @@ router.delete("/finances/:id", requireAuth, async (req, res): Promise<void> => {
   res.status(204).end();
 });
 
-router.get("/finances/summary", requireAuth, async (_req, res): Promise<void> => {
+router.get("/finances/summary", requireAuth, requireRole("admin"), async (_req, res): Promise<void> => {
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
   startOfMonth.setHours(0, 0, 0, 0);

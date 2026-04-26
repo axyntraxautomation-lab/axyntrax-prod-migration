@@ -7,8 +7,8 @@ import {
   clientsTable,
   licensesTable,
 } from "@workspace/db";
-import { requireAuth } from "../lib/auth";
-import { createCulqiCharge } from "../lib/culqi";
+import { requireAuth, requireRole } from "../lib/auth";
+import { createCulqiCharge, verifyCulqiSignature } from "../lib/culqi";
 import { emitirComprobante } from "../lib/sunat";
 import { logger } from "../lib/logger";
 
@@ -23,7 +23,7 @@ function serialize(p: typeof paymentsTable.$inferSelect) {
   };
 }
 
-router.get("/payments", requireAuth, async (req, res): Promise<void> => {
+router.get("/payments", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const filters = [];
   if (typeof req.query.status === "string") {
     filters.push(eq(paymentsTable.status, req.query.status));
@@ -40,17 +40,14 @@ router.get("/payments", requireAuth, async (req, res): Promise<void> => {
   res.json(rows.map(serialize));
 });
 
-router.post("/payments", requireAuth, async (req, res): Promise<void> => {
+router.post("/payments", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const body = req.body as Record<string, unknown>;
   const amount = Number(body.amount);
   if (!Number.isFinite(amount) || amount <= 0) {
     res.status(400).json({ error: "amount debe ser positivo" });
     return;
   }
-  const status =
-    typeof body.status === "string"
-      ? body.status
-      : "pendiente";
+  const status = "pendiente";
   const [row] = await db
     .insert(paymentsTable)
     .values({
@@ -133,7 +130,7 @@ router.post("/payments/culqi/charge", requireAuth, async (req, res): Promise<voi
       clientId: row.clientId,
       paymentId: row.id,
       date: new Date(),
-    });
+    }).onConflictDoNothing();
   }
 
   if (!culqi.ok) {
@@ -144,6 +141,14 @@ router.post("/payments/culqi/charge", requireAuth, async (req, res): Promise<voi
 });
 
 router.post("/webhooks/culqi", async (req, res): Promise<void> => {
+  const rawBody = (req as unknown as { rawBody?: Buffer }).rawBody;
+  const signature = req.headers["x-culqi-signature"] as string | undefined;
+  if (!verifyCulqiSignature(rawBody?.toString("utf8") ?? "", signature)) {
+    logger.warn({ signature }, "Webhook Culqi rechazado: firma inválida");
+    res.status(401).json({ error: "Firma de webhook inválida" });
+    return;
+  }
+
   const body = req.body as Record<string, unknown>;
   const evento = typeof body.event === "string" ? body.event : "";
   const data = body.data as Record<string, unknown> | undefined;
@@ -164,6 +169,15 @@ router.post("/webhooks/culqi", async (req, res): Promise<void> => {
     res.status(202).json({ ignored: true });
     return;
   }
+
+  const [existing] = await db
+    .select({ id: paymentsTable.id, status: paymentsTable.status })
+    .from(paymentsTable)
+    .where(eq(paymentsTable.externalId, externalId))
+    .limit(1);
+
+  const wasAlreadyExitoso = existing?.status === "exitoso";
+
   const [updated] = await db
     .update(paymentsTable)
     .set({
@@ -172,7 +186,8 @@ router.post("/webhooks/culqi", async (req, res): Promise<void> => {
     })
     .where(eq(paymentsTable.externalId, externalId))
     .returning();
-  if (updated && newStatus === "exitoso") {
+
+  if (updated && newStatus === "exitoso" && !wasAlreadyExitoso) {
     await db.insert(financesTable).values({
       type: "ingreso",
       amount: updated.amount,
@@ -182,15 +197,16 @@ router.post("/webhooks/culqi", async (req, res): Promise<void> => {
       clientId: updated.clientId,
       paymentId: updated.id,
       date: new Date(),
-    });
+    }).onConflictDoNothing();
   }
-  logger.info({ evento, externalId, newStatus }, "Webhook Culqi procesado");
+  logger.info({ evento, externalId, newStatus, wasAlreadyExitoso }, "Webhook Culqi procesado");
   res.json({ ok: true });
 });
 
 router.post(
   "/payments/:id/sunat-comprobante",
   requireAuth,
+  requireRole("admin"),
   async (req, res): Promise<void> => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) {
