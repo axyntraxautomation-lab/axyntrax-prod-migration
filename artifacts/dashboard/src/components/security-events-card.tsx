@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useListAuditLog,
   type AuditEntry,
@@ -10,12 +10,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
   ScrollText,
   ShieldAlert,
   Terminal,
   UserCog,
+  XCircle,
 } from "lucide-react";
 
 const CLI_RESET_ACTIONS = new Set([
@@ -27,6 +29,45 @@ const CLI_RESET_ACTIONS = new Set([
 function isCliResetAction(action: string): boolean {
   return CLI_RESET_ACTIONS.has(action);
 }
+
+type ResetFilter = "all" | "ok" | "cancelled" | "failed";
+
+const RESET_FILTERS: ReadonlyArray<{
+  value: ResetFilter;
+  label: string;
+  testId: string;
+  icon: typeof Terminal | null;
+  action: string | null;
+}> = [
+  {
+    value: "all",
+    label: "Todos",
+    testId: "filter-all",
+    icon: null,
+    action: null,
+  },
+  {
+    value: "ok",
+    label: "Reset 2FA exitoso",
+    testId: "filter-reset-ok",
+    icon: CheckCircle2,
+    action: "auth.2fa.reset_cli",
+  },
+  {
+    value: "cancelled",
+    label: "Reset 2FA cancelado",
+    testId: "filter-reset-cancelled",
+    icon: XCircle,
+    action: "auth.2fa.reset_cli.cancelled",
+  },
+  {
+    value: "failed",
+    label: "Reset 2FA fallido",
+    testId: "filter-reset-failed",
+    icon: ShieldAlert,
+    action: "auth.2fa.reset_cli.failed",
+  },
+];
 
 function metaString(meta: AuditEntryMeta, key: string): string | null {
   if (!meta || typeof meta !== "object") return null;
@@ -190,6 +231,33 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
 
 export function SecurityEventsCard() {
   const { data, isLoading, isError, error } = useListAuditLog({ limit: 50 });
+  const [resetFilter, setResetFilter] = useState<ResetFilter>("all");
+
+  const counts = useMemo(() => {
+    const result: Record<ResetFilter, number> = {
+      all: 0,
+      ok: 0,
+      cancelled: 0,
+      failed: 0,
+    };
+    if (!data) return result;
+    for (const entry of data) {
+      result.all += 1;
+      if (entry.action === "auth.2fa.reset_cli") result.ok += 1;
+      else if (entry.action === "auth.2fa.reset_cli.cancelled")
+        result.cancelled += 1;
+      else if (entry.action === "auth.2fa.reset_cli.failed")
+        result.failed += 1;
+    }
+    return result;
+  }, [data]);
+
+  const visibleEntries = useMemo(() => {
+    if (!data) return [];
+    const target = RESET_FILTERS.find((f) => f.value === resetFilter)?.action;
+    if (!target) return data;
+    return data.filter((entry) => entry.action === target);
+  }, [data, resetFilter]);
 
   return (
     <Card data-testid="card-audit-log">
@@ -204,6 +272,34 @@ export function SecurityEventsCard() {
         </p>
       </CardHeader>
       <CardContent>
+        <div
+          className="flex flex-wrap gap-2 mb-4"
+          data-testid="audit-filter-bar"
+          role="group"
+          aria-label="Filtrar eventos por tipo"
+        >
+          {RESET_FILTERS.map((f) => {
+            const active = resetFilter === f.value;
+            const Icon = f.icon;
+            return (
+              <Button
+                key={f.value}
+                type="button"
+                size="sm"
+                variant={active ? "default" : "outline"}
+                className="h-7 px-2 text-xs"
+                onClick={() => setResetFilter(f.value)}
+                data-testid={f.testId}
+                aria-pressed={active}
+              >
+                {Icon ? <Icon className="h-3 w-3 mr-1" /> : null}
+                {f.label}
+                <span className="ml-1.5 opacity-70">({counts[f.value]})</span>
+              </Button>
+            );
+          })}
+        </div>
+
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -219,9 +315,16 @@ export function SecurityEventsCard() {
           <div className="text-sm text-muted-foreground text-center py-6">
             No hay eventos registrados todavía.
           </div>
+        ) : visibleEntries.length === 0 ? (
+          <div
+            className="text-sm text-muted-foreground text-center py-6"
+            data-testid="audit-empty-filtered"
+          >
+            No hay eventos para este filtro.
+          </div>
         ) : (
-          <div className="space-y-2">
-            {data.map((entry) => (
+          <div className="space-y-2" data-testid="audit-list">
+            {visibleEntries.map((entry) => (
               <AuditRow key={entry.id} entry={entry} />
             ))}
           </div>
