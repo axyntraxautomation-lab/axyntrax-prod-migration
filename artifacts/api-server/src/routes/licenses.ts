@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { db, clientsTable, licensesTable } from "@workspace/db";
 import { ListLicensesResponse, CreateLicenseBody } from "@workspace/api-zod";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, requireRole } from "../lib/auth";
 import { decryptField, encryptField } from "../lib/crypto";
 
 const router: IRouter = Router();
@@ -29,7 +29,7 @@ function generateKey(_prefix: string): string {
   return out;
 }
 
-router.get("/licenses", requireAuth, async (_req, res): Promise<void> => {
+router.get("/licenses", requireAuth, requireRole("admin", "supervisor"), async (_req, res): Promise<void> => {
   const rows = await db
     .select({
       id: licensesTable.id,
@@ -57,7 +57,7 @@ router.get("/licenses", requireAuth, async (_req, res): Promise<void> => {
   res.json(ListLicensesResponse.parse(mapped));
 });
 
-router.post("/licenses", requireAuth, async (req, res): Promise<void> => {
+router.post("/licenses", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const parsed = CreateLicenseBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });

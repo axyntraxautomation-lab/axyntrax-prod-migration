@@ -11,7 +11,7 @@ import {
   UpdateClientResponse,
   DeleteClientParams,
 } from "@workspace/api-zod";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, requireRole } from "../lib/auth";
 import { decryptField, encryptField } from "../lib/crypto";
 
 const router: IRouter = Router();
@@ -26,7 +26,7 @@ function decryptClient(c: ClientRow): ClientRow {
   };
 }
 
-router.get("/clients", requireAuth, async (_req, res): Promise<void> => {
+router.get("/clients", requireAuth, requireRole("admin", "supervisor"), async (_req, res): Promise<void> => {
   const clients = await db
     .select()
     .from(clientsTable)
@@ -54,7 +54,7 @@ router.post("/clients", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(GetClientResponse.parse(decryptClient(client)));
 });
 
-router.get("/clients/:id", requireAuth, async (req, res): Promise<void> => {
+router.get("/clients/:id", requireAuth, requireRole("admin", "supervisor"), async (req, res): Promise<void> => {
   const params = GetClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -71,7 +71,7 @@ router.get("/clients/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(GetClientResponse.parse(decryptClient(client)));
 });
 
-router.patch("/clients/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/clients/:id", requireAuth, requireRole("admin", "supervisor"), async (req, res): Promise<void> => {
   const params = UpdateClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -107,7 +107,7 @@ router.patch("/clients/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateClientResponse.parse(decryptClient(client)));
 });
 
-router.delete("/clients/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/clients/:id", requireAuth, requireRole("admin"), async (req, res): Promise<void> => {
   const params = DeleteClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

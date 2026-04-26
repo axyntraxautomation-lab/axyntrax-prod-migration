@@ -50,38 +50,43 @@ router.get("/modules/industry-prompt/:industry", requireAuth, async (req, res) =
   res.json({ industry: req.params.industry, ...data });
 });
 
-router.get("/modules/client/:clientId", requireAuth, async (req, res): Promise<void> => {
-  const clientId = Number(req.params.clientId);
-  if (!Number.isFinite(clientId)) {
-    res.status(400).json({ error: "clientId inválido" });
-    return;
-  }
-  const rows = await db
-    .select({
-      id: clientModulesTable.id,
-      clientId: clientModulesTable.clientId,
-      moduleId: clientModulesTable.moduleId,
-      status: clientModulesTable.status,
-      notes: clientModulesTable.notes,
-      requestedAt: clientModulesTable.requestedAt,
-      activatedAt: clientModulesTable.activatedAt,
-      expiresAt: clientModulesTable.expiresAt,
-      cancelledAt: clientModulesTable.cancelledAt,
-      moduleSlug: modulesCatalogTable.slug,
-      moduleName: modulesCatalogTable.name,
-      moduleIndustry: modulesCatalogTable.industry,
-      monthlyPrice: modulesCatalogTable.monthlyPrice,
-      currency: modulesCatalogTable.currency,
-    })
-    .from(clientModulesTable)
-    .innerJoin(
-      modulesCatalogTable,
-      eq(modulesCatalogTable.id, clientModulesTable.moduleId),
-    )
-    .where(eq(clientModulesTable.clientId, clientId))
-    .orderBy(desc(clientModulesTable.requestedAt));
-  res.json(rows);
-});
+router.get(
+  "/modules/client/:clientId",
+  requireAuth,
+  requireRole("admin", "supervisor"),
+  async (req, res): Promise<void> => {
+    const clientId = Number(req.params.clientId);
+    if (!Number.isFinite(clientId)) {
+      res.status(400).json({ error: "clientId inválido" });
+      return;
+    }
+    const rows = await db
+      .select({
+        id: clientModulesTable.id,
+        clientId: clientModulesTable.clientId,
+        moduleId: clientModulesTable.moduleId,
+        status: clientModulesTable.status,
+        notes: clientModulesTable.notes,
+        requestedAt: clientModulesTable.requestedAt,
+        activatedAt: clientModulesTable.activatedAt,
+        expiresAt: clientModulesTable.expiresAt,
+        cancelledAt: clientModulesTable.cancelledAt,
+        moduleSlug: modulesCatalogTable.slug,
+        moduleName: modulesCatalogTable.name,
+        moduleIndustry: modulesCatalogTable.industry,
+        monthlyPrice: modulesCatalogTable.monthlyPrice,
+        currency: modulesCatalogTable.currency,
+      })
+      .from(clientModulesTable)
+      .innerJoin(
+        modulesCatalogTable,
+        eq(modulesCatalogTable.id, clientModulesTable.moduleId),
+      )
+      .where(eq(clientModulesTable.clientId, clientId))
+      .orderBy(desc(clientModulesTable.requestedAt));
+    res.json(rows);
+  },
+);
 
 router.get("/modules/requests", requireAuth, requireRole("admin"), async (_req, res) => {
   const rows = await db
@@ -114,77 +119,82 @@ const RequestBody = z.object({
   notes: z.string().max(500).optional(),
 });
 
-router.post("/modules/request", requireAuth, async (req, res): Promise<void> => {
-  const parsed = RequestBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-  const [client] = await db
-    .select()
-    .from(clientsTable)
-    .where(eq(clientsTable.id, parsed.data.clientId));
-  if (!client) {
-    res.status(404).json({ error: "Cliente no encontrado" });
-    return;
-  }
-  const [mod] = await db
-    .select()
-    .from(modulesCatalogTable)
-    .where(eq(modulesCatalogTable.id, parsed.data.moduleId));
-  if (!mod) {
-    res.status(404).json({ error: "Módulo no encontrado" });
-    return;
-  }
-  if (mod.active !== 1) {
-    res.status(409).json({ error: "Módulo desactivado en el catálogo" });
-    return;
-  }
-  let row: typeof clientModulesTable.$inferSelect | undefined;
-  let conflict: string | null = null;
-  await db.transaction(async (tx) => {
-    const existing = await tx
-      .select()
-      .from(clientModulesTable)
-      .where(
-        and(
-          eq(clientModulesTable.clientId, parsed.data.clientId),
-          eq(clientModulesTable.moduleId, parsed.data.moduleId),
-        ),
-      )
-      .for("update");
-    if (existing.some((e) => e.status !== "cancelado")) {
-      conflict = "El módulo ya está solicitado o activo";
+router.post(
+  "/modules/request",
+  requireAuth,
+  requireRole("admin", "supervisor"),
+  async (req, res): Promise<void> => {
+    const parsed = RequestBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.message });
       return;
     }
-    const [inserted] = await tx
-      .insert(clientModulesTable)
-      .values({
-        clientId: parsed.data.clientId,
-        moduleId: parsed.data.moduleId,
-        status: "pendiente",
-        notes: parsed.data.notes ?? null,
-        requestedById: req.user!.id,
-      })
-      .returning();
-    row = inserted;
-  });
-  if (conflict) {
-    res.status(409).json({ error: conflict });
-    return;
-  }
-  if (!row) {
-    res.status(500).json({ error: "No se pudo crear la solicitud" });
-    return;
-  }
-  await audit(req, {
-    action: "module.request",
-    entityType: "client_module",
-    entityId: row.id,
-    meta: { clientId: parsed.data.clientId, moduleSlug: mod.slug },
-  });
-  res.status(201).json(row);
-});
+    const [client] = await db
+      .select()
+      .from(clientsTable)
+      .where(eq(clientsTable.id, parsed.data.clientId));
+    if (!client) {
+      res.status(404).json({ error: "Cliente no encontrado" });
+      return;
+    }
+    const [mod] = await db
+      .select()
+      .from(modulesCatalogTable)
+      .where(eq(modulesCatalogTable.id, parsed.data.moduleId));
+    if (!mod) {
+      res.status(404).json({ error: "Módulo no encontrado" });
+      return;
+    }
+    if (mod.active !== 1) {
+      res.status(409).json({ error: "Módulo desactivado en el catálogo" });
+      return;
+    }
+    let row: typeof clientModulesTable.$inferSelect | undefined;
+    let conflict: string | null = null;
+    await db.transaction(async (tx) => {
+      const existing = await tx
+        .select()
+        .from(clientModulesTable)
+        .where(
+          and(
+            eq(clientModulesTable.clientId, parsed.data.clientId),
+            eq(clientModulesTable.moduleId, parsed.data.moduleId),
+          ),
+        )
+        .for("update");
+      if (existing.some((e) => e.status !== "cancelado")) {
+        conflict = "El módulo ya está solicitado o activo";
+        return;
+      }
+      const [inserted] = await tx
+        .insert(clientModulesTable)
+        .values({
+          clientId: parsed.data.clientId,
+          moduleId: parsed.data.moduleId,
+          status: "pendiente",
+          notes: parsed.data.notes ?? null,
+          requestedById: req.user!.id,
+        })
+        .returning();
+      row = inserted;
+    });
+    if (conflict) {
+      res.status(409).json({ error: conflict });
+      return;
+    }
+    if (!row) {
+      res.status(500).json({ error: "No se pudo crear la solicitud" });
+      return;
+    }
+    await audit(req, {
+      action: "module.request",
+      entityType: "client_module",
+      entityId: row.id,
+      meta: { clientId: parsed.data.clientId, moduleSlug: mod.slug },
+    });
+    res.status(201).json(row);
+  },
+);
 
 const ApproveBody = z.object({
   durationMonths: z.number().int().positive().max(60).default(1),
