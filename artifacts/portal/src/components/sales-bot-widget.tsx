@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Loader2, MessageCircle, Send, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2, MessageCircle, Send, Sparkles, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { ChatBubble, ChatTypingIndicator } from "@/components/ui/chat-bubble";
 import { portalApi, type SalesBotReply } from "@/lib/portal-api";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -69,10 +71,13 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-medium px-4 py-3 shadow-lg shadow-cyan-500/30"
+        className="group fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full gradient-cyan-violet px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_50px_-12px_rgba(34,211,238,0.65)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-10px_rgba(34,211,238,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
         data-testid="sales-bot-toggle"
       >
-        <MessageCircle className="h-5 w-5" />
+        <span className="relative inline-flex">
+          <MessageCircle className="h-5 w-5" />
+          <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.9)]" aria-hidden />
+        </span>
         JARVIS ventas
       </button>
     );
@@ -80,79 +85,93 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
 
   return (
     <div
-      className="fixed bottom-5 right-5 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-2rem)] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+      className="fixed bottom-5 right-5 z-50 flex h-[560px] max-h-[calc(100vh-2rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/85 shadow-[0_30px_80px_-20px_rgba(34,211,238,0.45)] backdrop-blur-xl"
       data-testid="sales-bot-panel"
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-cyan-500/10">
-        <div>
-          <div className="text-sm font-semibold text-cyan-300">
-            JARVIS · IA AXYNTRAX
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Te cotizo al toque · Yape 991 740 590
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
+
+      <header className="flex items-center justify-between gap-3 border-b border-white/5 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent px-4 py-3">
+        <div className="flex items-center gap-3">
+          <JarvisAvatar size="md" pulse />
+          <div className="leading-tight">
+            <div className="font-display text-sm font-semibold text-slate-50">
+              JARVIS · IA AXYNTRAX
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              En línea · Yape 991 740 590
+            </div>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-muted-foreground hover:text-foreground"
+          className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100"
           data-testid="sales-bot-close"
           aria-label="Cerrar"
         >
           <X className="h-4 w-4" />
         </button>
-      </div>
+      </header>
+
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3 py-3 space-y-3 text-sm"
+        className="flex-1 space-y-3 overflow-y-auto px-3 py-4"
       >
+        <div className="mx-auto inline-flex w-full justify-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-200">
+            <Sparkles className="h-3 w-3" />
+            Asistente IA en vivo
+          </span>
+        </div>
         {history.map((m, i) => (
-          <div
+          <ChatBubble
             key={i}
-            className={
-              m.role === "user"
-                ? "ml-auto max-w-[85%] rounded-lg bg-cyan-500 text-slate-950 px-3 py-2 whitespace-pre-wrap"
-                : "mr-auto max-w-[90%] rounded-lg bg-muted text-foreground px-3 py-2 whitespace-pre-wrap"
-            }
+            role={m.role}
             data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}
           >
-            {m.content}
-          </div>
+            <span data-testid={m.role === "assistant" ? "bot-msg" : "user-msg"}>
+              {m.content}
+            </span>
+          </ChatBubble>
         ))}
-        {loading && (
-          <div className="mr-auto inline-flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" /> JARVIS está
-            escribiendo...
-          </div>
-        )}
+        {loading && <ChatTypingIndicator />}
       </div>
-      <div className="border-t border-border p-2 flex gap-2 items-end">
-        <Textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              void send();
-            }
-          }}
-          placeholder="Contame qué hace tu negocio..."
-          rows={2}
-          className="resize-none"
-          data-testid="sales-bot-input"
-        />
-        <Button
-          size="sm"
-          onClick={() => void send()}
-          disabled={loading || !draft.trim()}
-          data-testid="sales-bot-send"
-        >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-        </Button>
+
+      <div className="border-t border-white/5 bg-slate-950/60 p-3">
+        <div className="flex items-end gap-2">
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void send();
+              }
+            }}
+            placeholder="Contame qué hace tu negocio…"
+            rows={2}
+            className="min-h-[44px] resize-none rounded-xl border-white/10 bg-white/[0.03] text-sm text-slate-100 placeholder:text-slate-500 focus-visible:border-cyan-400/40 focus-visible:ring-cyan-400/20"
+            data-testid="sales-bot-input"
+          />
+          <GradientButton
+            size="sm"
+            onClick={() => void send()}
+            disabled={loading || !draft.trim()}
+            data-testid="sales-bot-send"
+            className="h-11 w-11 rounded-xl px-0"
+            aria-label="Enviar"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </GradientButton>
+        </div>
+        <p className="mt-2 text-center text-[10px] text-slate-500">
+          Enter para enviar · Shift + Enter salto de línea
+        </p>
       </div>
     </div>
   );

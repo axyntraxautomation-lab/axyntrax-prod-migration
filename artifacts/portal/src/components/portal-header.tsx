@@ -1,7 +1,9 @@
 import { Link, useLocation } from "wouter";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { StatusPill } from "@/components/ui/status-pill";
+import { cn } from "@/lib/utils";
 
 export function PortalHeader() {
   const { session, logout } = useAuth();
@@ -40,37 +42,48 @@ export function PortalHeader() {
     session?.kind === "client" ? session.client.phone ?? "" : "";
 
   return (
-    <header className="border-b border-border bg-card">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-        <Link href={isAdmin ? "/admin" : "/mis-modulos"} className="flex items-center gap-3">
-          <img
-            src={`${import.meta.env.BASE_URL}axyntrax-logo.jpeg`}
-            alt="AXYNTRAX"
-            className="h-9 w-9 rounded object-cover"
-          />
+    <header className="sticky top-0 z-30 border-b border-white/[0.04] bg-background/65 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3.5">
+        <Link
+          href={isAdmin ? "/admin" : "/mis-modulos"}
+          className="flex items-center gap-3"
+        >
+          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
+            AX
+            <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
+          </span>
           <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-wide">AXYNTRAX AUTOMATION</div>
-            <div className="text-xs text-muted-foreground">Portal de clientes</div>
+            <div className="font-display text-sm font-semibold tracking-tight text-slate-50">
+              AXYNTRAX
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
+              {isAdmin ? "Cabina admin" : "Portal cliente"}
+            </div>
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
           {navItems.map((it) => {
             const active = location === it.href;
             return (
-              <Link key={it.href} href={it.href}>
-                <Button
-                  variant={active ? "secondary" : "ghost"}
-                  size="sm"
-                  className={
-                    active
-                      ? "bg-primary/10 text-primary hover:bg-primary/20"
-                      : "text-muted-foreground hover:text-foreground"
-                  }
-                  data-testid={`nav-${it.href.replace(/\//g, "-")}`}
-                >
-                  {it.label}
-                </Button>
+              <Link
+                key={it.href}
+                href={it.href}
+                data-testid={`nav-${it.href.replace(/\//g, "-")}`}
+                className={cn(
+                  "relative inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200",
+                  active
+                    ? "border border-cyan-400/40 bg-cyan-400/10 text-cyan-100 shadow-[inset_0_0_18px_rgba(34,211,238,0.12)]"
+                    : "border border-transparent text-slate-300 hover:bg-white/[0.04] hover:text-cyan-200",
+                )}
+              >
+                {it.label}
+                {active && (
+                  <span
+                    aria-hidden
+                    className="ml-1.5 h-1 w-1 rounded-full bg-cyan-300 shadow-[0_0_6px_rgba(34,211,238,0.8)]"
+                  />
+                )}
               </Link>
             );
           })}
@@ -78,43 +91,73 @@ export function PortalHeader() {
 
         <div className="flex items-center gap-3">
           <div
-            className="text-right hidden sm:block"
+            className="hidden text-right sm:block"
             data-testid="header-user-info"
           >
             <div
-              className="text-sm font-medium leading-tight"
+              className="font-display text-sm font-semibold leading-tight text-slate-50"
               data-testid="header-user-name"
             >
               {displayName}
             </div>
             <div
-              className="text-xs text-muted-foreground leading-tight"
+              className="text-[11px] leading-tight text-slate-400"
               data-testid="header-user-email"
             >
               {subtitle}
             </div>
             {tertiary ? (
               <div
-                className="text-xs text-muted-foreground leading-tight"
+                className="font-mono text-[10px] leading-tight text-slate-500"
                 data-testid="header-user-phone"
               >
                 {tertiary}
               </div>
             ) : null}
           </div>
-          <Button
+          <StatusPill tone="success" size="sm" className="hidden md:inline-flex">
+            En línea
+          </StatusPill>
+          <GradientButton
             variant="outline"
             size="sm"
             onClick={() => {
               void logout().then(() => {
-                window.location.href = `${import.meta.env.BASE_URL}login`.replace(/\/+/g, "/");
+                window.location.href = `${import.meta.env.BASE_URL}login`.replace(
+                  /\/+/g,
+                  "/",
+                );
               });
             }}
             data-testid="button-logout"
           >
-            <LogOut className="h-4 w-4 mr-1" />
+            <LogOut className="h-3.5 w-3.5" />
             Salir
-          </Button>
+          </GradientButton>
+        </div>
+      </div>
+
+      {/* Mobile nav row */}
+      <div className="border-t border-white/[0.04] lg:hidden">
+        <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-6 py-2">
+          {navItems.map((it) => {
+            const active = location === it.href;
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                className={cn(
+                  "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+                  active
+                    ? "bg-cyan-400/10 text-cyan-100 border border-cyan-400/30"
+                    : "text-slate-400 hover:text-cyan-200",
+                )}
+              >
+                {it.label}
+                {active && <ChevronRight className="h-3 w-3" />}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </header>

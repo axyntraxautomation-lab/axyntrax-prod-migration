@@ -15,49 +15,62 @@ import {
   FileText,
   Wallet,
   Headphones,
+  Cpu,
+  Radar,
+  Zap,
+  ChevronRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { portalApi, type CatalogModule } from "@/lib/portal-api";
 import { SalesBotWidget } from "@/components/sales-bot-widget";
 import { YapeQR } from "@/components/yape-qr";
 import { useAuth } from "@/lib/auth-context";
+import { GradientButton } from "@/components/ui/gradient-button";
+import { GlassCard } from "@/components/ui/glass-card";
+import { BlueprintBackdrop } from "@/components/ui/blueprint-backdrop";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusPill } from "@/components/ui/status-pill";
+import { KpiTile } from "@/components/ui/kpi-tile";
+import { JarvisAvatar } from "@/components/ui/jarvis-avatar";
+import { cn } from "@/lib/utils";
 
 const INDUSTRY_META: Record<
   string,
-  { label: string; icon: typeof Stethoscope; gradient: string }
+  {
+    label: string;
+    icon: typeof Stethoscope;
+    accent: string;
+    gradient: string;
+  }
 > = {
   medical: {
     label: "Medicina",
     icon: Stethoscope,
-    gradient: "from-cyan-500/20 to-cyan-500/0",
+    accent: "text-cyan-300",
+    gradient: "from-cyan-500/30 via-cyan-400/10 to-transparent",
   },
   dental: {
     label: "Dental",
     icon: Smile,
-    gradient: "from-sky-500/20 to-sky-500/0",
+    accent: "text-sky-300",
+    gradient: "from-sky-500/30 via-sky-400/10 to-transparent",
   },
   veterinary: {
     label: "Veterinaria",
     icon: PawPrint,
-    gradient: "from-emerald-500/20 to-emerald-500/0",
+    accent: "text-emerald-300",
+    gradient: "from-emerald-500/30 via-emerald-400/10 to-transparent",
   },
   legal: {
     label: "Legal",
     icon: Scale,
-    gradient: "from-violet-500/20 to-violet-500/0",
+    accent: "text-violet-300",
+    gradient: "from-violet-500/30 via-violet-400/10 to-transparent",
   },
   condo: {
     label: "Condominios",
     icon: Building2,
-    gradient: "from-amber-500/20 to-amber-500/0",
+    accent: "text-amber-300",
+    gradient: "from-amber-500/30 via-amber-400/10 to-transparent",
   },
 };
 
@@ -65,11 +78,45 @@ function industryLabel(slug: string): string {
   return INDUSTRY_META[slug]?.label ?? slug;
 }
 
-function fmtPrice(n: string, c: string) {
+function fmtPrice(n: string, c: string): string {
   const num = Number(n);
   if (!num) return "Demo gratuita por 30 días";
   return `${c} ${num.toFixed(2)} / mes`;
 }
+
+const NAV = [
+  { id: "industrias", label: "Industrias" },
+  { id: "catalogo", label: "Catálogo" },
+  { id: "proceso", label: "Cómo funciona" },
+  { id: "pago", label: "Pago" },
+] as const;
+
+const PROCESS_STEPS = [
+  {
+    n: "01",
+    icon: CheckCircle2,
+    title: "Creá tu cuenta",
+    body: "Registro gratuito en menos de un minuto. Solo email y celular.",
+  },
+  {
+    n: "02",
+    icon: Bot,
+    title: "Hablá con JARVIS",
+    body: "Contale tu rubro y recibí los módulos justos para tu operación.",
+  },
+  {
+    n: "03",
+    icon: FileText,
+    title: "Recibí tu cotización",
+    body: "Cotización formal con IGV 18 % en PDF, descargable y por correo.",
+  },
+  {
+    n: "04",
+    icon: Wallet,
+    title: "Pagá por Yape y listo",
+    body: "Depositás vía Yape, JARVIS activa tus módulos en minutos.",
+  },
+];
 
 export default function LandingPage() {
   const [modules, setModules] = useState<CatalogModule[] | null>(null);
@@ -135,70 +182,64 @@ export default function LandingPage() {
     }, {}),
   );
 
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-bold tracking-tight text-cyan-400">
-              AXYNTRAX
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      {/* ===== HEADER ===== */}
+      <header className="sticky top-0 z-40 border-b border-white/[0.04] bg-background/65 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950 shadow-[0_8px_24px_-8px_rgba(34,211,238,0.5)]">
+              AX
+              <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
             </span>
-            <span className="text-xs uppercase tracking-widest text-muted-foreground hidden sm:inline">
-              Automation · Arequipa, Perú
-            </span>
-          </div>
-          <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground">
-            <a
-              href="#industrias"
-              className="hover:text-foreground transition"
-              data-testid="nav-industrias"
-            >
-              Industrias
-            </a>
-            <a
-              href="#catalogo"
-              className="hover:text-foreground transition"
-              data-testid="nav-catalogo"
-            >
-              Catálogo
-            </a>
-            <a
-              href="#proceso"
-              className="hover:text-foreground transition"
-              data-testid="nav-proceso"
-            >
-              Cómo funciona
-            </a>
-            <a
-              href="#pago"
-              className="hover:text-foreground transition"
-              data-testid="nav-pago"
-            >
-              Pago
-            </a>
+            <div className="leading-tight">
+              <div className="font-display text-base font-semibold tracking-tight text-slate-50">
+                AXYNTRAX
+              </div>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-slate-400">
+                Automation OS
+              </div>
+            </div>
+          </Link>
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV.map((it) => (
+              <a
+                key={it.id}
+                href={`#${it.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollTo(it.id);
+                }}
+                data-testid={`nav-${it.id}`}
+                className="rounded-full px-3 py-1.5 text-sm text-slate-300 transition-colors hover:bg-white/[0.04] hover:text-cyan-200"
+              >
+                {it.label}
+              </a>
+            ))}
           </nav>
           <div className="flex items-center gap-2">
             {session ? (
               <Link href={session.kind === "admin" ? "/admin" : "/mis-modulos"}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  data-testid="link-portal"
-                >
+                <GradientButton variant="outline" size="sm" data-testid="link-portal">
                   Ir a mi portal
-                </Button>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </GradientButton>
               </Link>
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" data-testid="link-login">
+                  <GradientButton variant="ghost" size="sm" data-testid="link-login">
                     Ingresar
-                  </Button>
+                  </GradientButton>
                 </Link>
                 <Link href="/login?tab=register">
-                  <Button size="sm" data-testid="link-register">
+                  <GradientButton variant="primary" size="sm" data-testid="link-register">
                     Crear cuenta
-                  </Button>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </GradientButton>
                 </Link>
               </>
             )}
@@ -206,139 +247,217 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-background to-background pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
-          <Badge
-            variant="outline"
-            className="bg-cyan-500/10 text-cyan-300 border-cyan-500/30 mb-5"
-          >
-            IA aplicada al negocio peruano
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-5 leading-tight">
-            Automatizá tu consultorio,
-            <br className="hidden md:block" /> estudio o condominio
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Módulos SaaS listos para medicina, dental, veterinaria, legal y
-            condominios. <strong className="text-foreground">JARVIS</strong>,
-            nuestra IA principal, te arma la cotización al instante y activamos
-            en minutos.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/login?tab=register">
-              <Button size="lg" data-testid="cta-register">
-                Crear cuenta y probar
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </Link>
-            <a href="#catalogo">
-              <Button size="lg" variant="outline" data-testid="cta-explore">
-                Ver módulos
-              </Button>
-            </a>
-          </div>
-
-          {/* KPIs */}
-          {modules && (
-            <div className="mt-10 grid grid-cols-3 max-w-xl mx-auto gap-3 text-center">
-              <div className="rounded-lg border border-border bg-card/50 px-3 py-3">
-                <div
-                  className="text-2xl font-bold text-cyan-400"
-                  data-testid="stat-modules"
+      {/* ===== HERO ===== */}
+      <BlueprintBackdrop intensity="default" animated className="border-b border-white/5">
+        <div className="mx-auto max-w-6xl px-6 pt-20 pb-24 sm:pt-28">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+            <div className="flex flex-col gap-8">
+              <StatusPill tone="info" size="md" className="self-start">
+                Operaciones IA · Arequipa, Perú · 2026
+              </StatusPill>
+              <h1 className="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-slate-50 sm:text-5xl md:text-[3.6rem]">
+                Tu negocio,
+                <br />
+                con un{" "}
+                <span className="gradient-text-cyan-violet">centro de mando</span>{" "}
+                que nunca duerme.
+              </h1>
+              <p className="max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg">
+                Módulos de automatización IA para clínicas, estudios legales y
+                administraciones. <strong className="text-slate-100">JARVIS</strong>{" "}
+                cotiza al instante, activa demos en minutos y atiende WhatsApp 24/7
+                con tu catálogo en vivo.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/login?tab=register">
+                  <GradientButton size="lg" variant="primary" data-testid="cta-register">
+                    Crear cuenta y probar
+                    <ArrowRight className="h-4 w-4" />
+                  </GradientButton>
+                </Link>
+                <a
+                  href="#catalogo"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo("catalogo");
+                  }}
                 >
-                  {stats.modules}
-                </div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Módulos activos
-                </div>
+                  <GradientButton size="lg" variant="outline" data-testid="cta-explore">
+                    Ver módulos
+                  </GradientButton>
+                </a>
               </div>
-              <div className="rounded-lg border border-border bg-card/50 px-3 py-3">
-                <div
-                  className="text-2xl font-bold text-cyan-400"
-                  data-testid="stat-industries"
-                >
-                  {stats.industries}
+              {modules && (
+                <div className="grid grid-cols-3 gap-3 pt-4 sm:max-w-lg">
+                  <KpiTile
+                    label="Módulos"
+                    value={<span data-testid="stat-modules">{stats.modules}</span>}
+                    hint="Activos en catálogo"
+                    icon={<Cpu className="h-4 w-4" />}
+                  />
+                  <KpiTile
+                    label="Industrias"
+                    value={<span data-testid="stat-industries">{stats.industries}</span>}
+                    hint="Verticales atendidas"
+                    icon={<Radar className="h-4 w-4" />}
+                  />
+                  <KpiTile
+                    label="Soporte"
+                    value="24/7"
+                    hint="Atención JARVIS"
+                    icon={<Zap className="h-4 w-4" />}
+                  />
                 </div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Industrias
-                </div>
-              </div>
-              <div className="rounded-lg border border-border bg-card/50 px-3 py-3">
-                <div className="text-2xl font-bold text-cyan-400">24/7</div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Soporte JARVIS
-                </div>
-              </div>
+              )}
             </div>
-          )}
 
-          {/* Pillars */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12 text-left">
-            <Card className="bg-card/40 border-border">
-              <CardHeader className="pb-2">
-                <Bot className="h-5 w-5 text-cyan-400 mb-2" />
-                <CardTitle className="text-base">Cotización con IA</CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs text-muted-foreground">
-                JARVIS analiza tu rubro y arma una propuesta detallada en PDF
-                con IGV incluido.
-              </CardContent>
-            </Card>
-            <Card className="bg-card/40 border-border">
-              <CardHeader className="pb-2">
-                <Sparkles className="h-5 w-5 text-cyan-400 mb-2" />
-                <CardTitle className="text-base">
-                  Activación inmediata
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs text-muted-foreground">
-                Aceptás la cotización, pagás por Yape y empezamos a trabajar
-                en minutos.
-              </CardContent>
-            </Card>
-            <Card className="bg-card/40 border-border">
-              <CardHeader className="pb-2">
-                <ShieldCheck className="h-5 w-5 text-cyan-400 mb-2" />
-                <CardTitle className="text-base">Datos protegidos</CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs text-muted-foreground">
-                Cifrado AES-256, auditoría y respaldos. Cumplimos con la Ley
-                29733 (Perú).
-              </CardContent>
-            </Card>
+            {/* Tarjeta decorativa: preview de cabina JARVIS */}
+            <div className="relative mx-auto w-full max-w-md lg:mx-0 lg:ml-auto">
+              <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-mesh-cyan opacity-80 blur-2xl" aria-hidden />
+              <GlassCard tone="strong" border="gradient" className="overflow-hidden p-0 animate-float">
+                <div className="flex items-center justify-between gap-3 border-b border-white/5 px-5 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <JarvisAvatar size="md" pulse />
+                    <div className="leading-tight">
+                      <div className="font-display text-sm font-semibold text-slate-50">
+                        JARVIS · Cabina
+                      </div>
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-300">
+                        Stream en vivo
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    <span className="h-2 w-2 rounded-full bg-rose-400" />
+                  </div>
+                </div>
+                <div className="space-y-3 p-5">
+                  <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-emerald-400/30 bg-emerald-400/10 text-emerald-200">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      </span>
+                      <div className="leading-tight">
+                        <div className="text-xs font-medium text-slate-100">
+                          Demo activada · Veterinaria
+                        </div>
+                        <div className="text-[10px] text-slate-500">hace 2 min · 30 días</div>
+                      </div>
+                    </div>
+                    <StatusPill tone="success" size="sm" dot={false}>
+                      ACTIVA
+                    </StatusPill>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-200">
+                        <FileText className="h-3.5 w-3.5" />
+                      </span>
+                      <div className="leading-tight">
+                        <div className="text-xs font-medium text-slate-100">
+                          Cotización enviada · Estudio legal
+                        </div>
+                        <div className="text-[10px] text-slate-500">PDF + correo · S/ 1,180</div>
+                      </div>
+                    </div>
+                    <StatusPill tone="info" size="sm" dot={false}>
+                      ENVIADA
+                    </StatusPill>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-violet-400/30 bg-violet-400/10 text-violet-200">
+                        <Bot className="h-3.5 w-3.5" />
+                      </span>
+                      <div className="leading-tight">
+                        <div className="text-xs font-medium text-slate-100">
+                          WhatsApp respondido por JARVIS
+                        </div>
+                        <div className="text-[10px] text-slate-500">+51 998 xxx xxx · Dental</div>
+                      </div>
+                    </div>
+                    <StatusPill tone="violet" size="sm" dot={false}>
+                      AUTO
+                    </StatusPill>
+                  </div>
+                  <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 px-3 py-3">
+                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-cyan-200">
+                      <span>Pulso operativo</span>
+                      <span className="font-mono text-cyan-100">99.9%</span>
+                    </div>
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-900/80">
+                      <div className="h-full w-[99%] gradient-cyan-violet shimmer-overlay" />
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+        </div>
+      </BlueprintBackdrop>
+
+      {/* ===== PILARES ===== */}
+      <section className="relative border-b border-white/5">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <SectionHeader
+            align="center"
+            eyebrow="Por qué AXYNTRAX"
+            title={<>Tres certezas que sostienen tu operación</>}
+            description="Una plataforma diseñada para profesionales peruanos: IA aplicada, activación inmediata y datos cifrados de punta a punta."
+          />
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: Bot,
+                title: "Cotización con IA",
+                body: "JARVIS analiza tu rubro y arma una propuesta detallada en PDF con IGV incluido, lista para firmar.",
+              },
+              {
+                icon: Sparkles,
+                title: "Activación inmediata",
+                body: "Aceptás la cotización, depositás por Yape y empezamos a trabajar en minutos, sin trámites bancarios.",
+              },
+              {
+                icon: ShieldCheck,
+                title: "Datos protegidos",
+                body: "Cifrado AES-256-GCM, 2FA en JARVIS, auditoría y respaldos. Cumplimos con la Ley 29733.",
+              },
+            ].map(({ icon: Icon, title, body }) => (
+              <GlassCard
+                key={title}
+                tone="default"
+                border="gradient"
+                className="group p-7 transition-all duration-300 hover:-translate-y-1 hover:glow-cyan-sm"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-200 shadow-[inset_0_0_18px_rgba(34,211,238,0.18)] transition-colors group-hover:border-cyan-300/50">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-xl font-semibold text-slate-50">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-400">{body}</p>
+              </GlassCard>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* INDUSTRIAS */}
-      <section
-        id="industrias"
-        className="border-t border-border bg-card/20"
-      >
-        <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="text-center mb-10">
-            <Badge
-              variant="outline"
-              className="bg-cyan-500/10 text-cyan-300 border-cyan-500/30 mb-3"
-            >
-              Industrias atendidas
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight">
-              Hecho para profesionales peruanos
-            </h2>
-            <p className="text-muted-foreground text-sm mt-2 max-w-xl mx-auto">
-              Cada módulo está pensado para un rubro específico. Tu negocio
-              recibe IA entrenada con su jerga y normativa.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {/* ===== INDUSTRIAS ===== */}
+      <section id="industrias" className="relative border-b border-white/5 bg-mesh-soft">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <SectionHeader
+            align="center"
+            eyebrow="Industrias atendidas"
+            title="Hecho para profesionales peruanos"
+            description="Cada módulo está pensado para un rubro específico. Tu negocio recibe IA entrenada con su jerga, sus procesos y su normativa."
+          />
+          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-5">
             {Object.entries(INDUSTRY_META).map(([slug, meta]) => {
-              const count = (modules ?? []).filter(
-                (m) => m.industry === slug,
-              ).length;
+              const count = (modules ?? []).filter((m) => m.industry === slug).length;
               const Icon = meta.icon;
+              const active = industryFilter === slug;
               return (
                 <button
                   key={slug}
@@ -346,22 +465,37 @@ export default function LandingPage() {
                   onClick={() => {
                     setIndustryFilter(slug);
                     setFilter("all");
-                    document
-                      .getElementById("catalogo")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    scrollTo("catalogo");
                   }}
                   data-testid={`industry-card-${slug}`}
-                  className={`group relative overflow-hidden rounded-lg border border-border bg-card p-5 text-left transition hover:border-cyan-500/50 hover:scale-[1.02]`}
+                  className={cn(
+                    "group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-left transition-all duration-300",
+                    "hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/[0.04] hover:glow-cyan-sm",
+                    active && "border-cyan-400/60 bg-cyan-400/5 ring-1 ring-cyan-400/40 glow-cyan-sm",
+                  )}
                 >
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-50 group-hover:opacity-100 transition`}
+                    aria-hidden
+                    className={cn(
+                      "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity duration-300 group-hover:opacity-100",
+                      meta.gradient,
+                    )}
                   />
-                  <div className="relative">
-                    <Icon className="h-7 w-7 text-cyan-400 mb-3" />
-                    <div className="font-semibold text-sm">{meta.label}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {count} {count === 1 ? "módulo" : "módulos"}
+                  <div className="relative flex flex-col gap-3">
+                    <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-slate-950/60 backdrop-blur", meta.accent)}>
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <div className="font-display text-sm font-semibold text-slate-50">
+                        {meta.label}
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        {count} {count === 1 ? "módulo" : "módulos"}
+                      </div>
                     </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-cyan-200 opacity-0 transition-opacity group-hover:opacity-100">
+                      Filtrar catálogo <ArrowRight className="h-3 w-3" />
+                    </span>
                   </div>
                 </button>
               );
@@ -370,153 +504,119 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PROCESO */}
-      <section id="proceso" className="border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="text-center mb-10">
-            <Badge
-              variant="outline"
-              className="bg-cyan-500/10 text-cyan-300 border-cyan-500/30 mb-3"
-            >
-              Cómo funciona
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight">
-              De prospecto a cliente activo en 4 pasos
-            </h2>
-          </div>
-          <div className="grid gap-5 md:grid-cols-4">
-            {[
-              {
-                n: "1",
-                icon: CheckCircle2,
-                title: "Creá tu cuenta",
-                body: "Registro gratuito en menos de un minuto. Solo email y celular.",
-              },
-              {
-                n: "2",
-                icon: Bot,
-                title: "Hablá con JARVIS",
-                body: "Contale tu rubro y JARVIS te recomienda los módulos justos.",
-              },
-              {
-                n: "3",
-                icon: FileText,
-                title: "Recibí tu cotización",
-                body: "Cotización formal con IGV 18% en PDF, descargable y por correo.",
-              },
-              {
-                n: "4",
-                icon: Wallet,
-                title: "Pagá por Yape y listo",
-                body: "Depositás vía Yape, JARVIS activa tus módulos en minutos.",
-              },
-            ].map(({ n, icon: Icon, title, body }) => (
-              <div
-                key={n}
-                className="relative rounded-lg border border-border bg-card p-5"
-                data-testid={`process-step-${n}`}
-              >
-                <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-cyan-500 text-background font-bold flex items-center justify-center text-sm">
-                  {n}
+      {/* ===== PROCESO ===== */}
+      <section id="proceso" className="relative border-b border-white/5">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <SectionHeader
+            align="center"
+            eyebrow="Cómo funciona"
+            title="De prospecto a cliente activo en 4 pasos"
+            description="Un flujo claro y sin fricciones. Desde el primer mensaje hasta la activación, JARVIS te acompaña."
+          />
+          <div className="relative mt-14">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-0 right-0 top-6 hidden h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent md:block"
+            />
+            <div className="grid gap-5 md:grid-cols-4">
+              {PROCESS_STEPS.map(({ n, icon: Icon, title, body }) => (
+                <div
+                  key={n}
+                  className="relative"
+                  data-testid={`process-step-${parseInt(n, 10)}`}
+                >
+                  <div className="relative mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-950 ring-1 ring-cyan-400/40 shadow-[0_0_28px_-6px_rgba(34,211,238,0.5)]">
+                    <Icon className="h-5 w-5 text-cyan-300" />
+                  </div>
+                  <GlassCard tone="default" border="soft" className="mt-5 p-5 text-center">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-300">
+                      Paso {n}
+                    </span>
+                    <h3 className="mt-1 font-display text-base font-semibold text-slate-50">
+                      {title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-400">{body}</p>
+                  </GlassCard>
                 </div>
-                <Icon className="h-6 w-6 text-cyan-400 mb-3" />
-                <div className="font-semibold mb-1">{title}</div>
-                <p className="text-xs text-muted-foreground">{body}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CATÁLOGO */}
-      <section
-        id="catalogo"
-        className="border-t border-border bg-card/20"
-      >
-        <div className="max-w-6xl mx-auto px-6 py-16 space-y-8">
-          <div className="text-center">
-            <Badge
-              variant="outline"
-              className="bg-cyan-500/10 text-cyan-300 border-cyan-500/30 mb-3"
-            >
-              Catálogo
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight">
-              Todos los módulos disponibles
-            </h2>
-            <p className="text-muted-foreground text-sm mt-2 max-w-xl mx-auto">
-              Demos sin precio se descargan gratis por 30 días. Los módulos
-              cotizables los arma JARVIS y te llegan por correo en PDF.
-            </p>
-          </div>
+      {/* ===== CATÁLOGO ===== */}
+      <section id="catalogo" className="relative border-b border-white/5 bg-mesh-soft">
+        <div className="mx-auto max-w-6xl space-y-10 px-6 py-20">
+          <SectionHeader
+            align="center"
+            eyebrow="Catálogo"
+            title="Todos los módulos disponibles"
+            description="Demos sin precio se descargan gratis por 30 días. Los módulos cotizables los arma JARVIS y te llegan por correo en PDF."
+          />
 
           {/* Filtros */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant={filter === "all" ? "default" : "outline"}
-                onClick={() => setFilter("all")}
-                data-testid="filter-all"
-              >
-                Todos
-              </Button>
-              <Button
-                size="sm"
-                variant={filter === "paid" ? "default" : "outline"}
-                onClick={() => setFilter("paid")}
-                data-testid="filter-paid"
-              >
-                Cotizables
-              </Button>
-              <Button
-                size="sm"
-                variant={filter === "free" ? "default" : "outline"}
-                onClick={() => setFilter("free")}
-                data-testid="filter-free"
-              >
-                Demos gratis
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground mr-1">
-                Industria
-              </span>
-              <Button
-                size="sm"
-                variant={industryFilter === "all" ? "default" : "outline"}
-                onClick={() => setIndustryFilter("all")}
-                data-testid="industry-filter-all"
-              >
-                Todas
-              </Button>
-              {industriesList.map((slug) => (
-                <Button
-                  key={slug}
-                  size="sm"
-                  variant={industryFilter === slug ? "default" : "outline"}
-                  onClick={() => setIndustryFilter(slug)}
-                  data-testid={`industry-filter-${slug}`}
+          <GlassCard tone="default" border="soft" className="px-4 py-4 sm:px-6 sm:py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
+                  Tipo
+                </span>
+                {([
+                  { key: "all", label: "Todos" },
+                  { key: "paid", label: "Cotizables" },
+                  { key: "free", label: "Demos gratis" },
+                ] as const).map((opt) => (
+                  <FilterChip
+                    key={opt.key}
+                    active={filter === opt.key}
+                    onClick={() => setFilter(opt.key)}
+                    testId={`filter-${opt.key}`}
+                  >
+                    {opt.label}
+                  </FilterChip>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
+                  Industria
+                </span>
+                <FilterChip
+                  active={industryFilter === "all"}
+                  onClick={() => setIndustryFilter("all")}
+                  testId="industry-filter-all"
                 >
-                  {industryLabel(slug)}
-                </Button>
-              ))}
+                  Todas
+                </FilterChip>
+                {industriesList.map((slug) => (
+                  <FilterChip
+                    key={slug}
+                    active={industryFilter === slug}
+                    onClick={() => setIndustryFilter(slug)}
+                    testId={`industry-filter-${slug}`}
+                  >
+                    {industryLabel(slug)}
+                  </FilterChip>
+                ))}
+              </div>
             </div>
-          </div>
+          </GlassCard>
 
           {error && (
-            <div className="text-sm text-destructive">{error}</div>
+            <div className="rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+              {error}
+            </div>
           )}
           {!modules && !error && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Cargando catálogo...
+            <div className="flex items-center justify-center gap-2 py-12 text-slate-400">
+              <Loader2 className="h-4 w-4 animate-spin" /> Cargando catálogo…
             </div>
           )}
-
           {modules && filtered.length === 0 && (
-            <div className="text-center text-sm text-muted-foreground py-8">
-              No hay módulos con esos filtros. Probá con "Todos".
-            </div>
+            <GlassCard tone="default" border="soft" className="px-6 py-12 text-center">
+              <p className="text-sm text-slate-400">
+                No hay módulos con esos filtros. Probá con "Todos".
+              </p>
+            </GlassCard>
           )}
 
           {modules &&
@@ -524,76 +624,59 @@ export default function LandingPage() {
               const meta = INDUSTRY_META[industry];
               const Icon = meta?.icon;
               return (
-                <div key={industry} className="space-y-4">
-                  <div className="flex items-center gap-3 pt-2">
-                    {Icon && <Icon className="h-5 w-5 text-cyan-400" />}
-                    <h3 className="text-lg font-semibold">
+                <div key={industry} className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    {Icon && (
+                      <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]", meta?.accent)}>
+                        <Icon className="h-4 w-4" />
+                      </span>
+                    )}
+                    <h3 className="font-display text-xl font-semibold text-slate-50">
                       {industryLabel(industry)}
                     </h3>
-                    <span className="text-xs text-muted-foreground">
-                      ({items.length})
+                    <span className="text-xs text-slate-500">
+                      {items.length} {items.length === 1 ? "módulo" : "módulos"}
                     </span>
                   </div>
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {items.map((m) => {
                       const isPaid = Number(m.monthlyPrice) > 0;
                       return (
-                        <Card
+                        <GlassCard
                           key={m.id}
+                          tone="default"
+                          border="gradient"
                           data-testid={`landing-module-${m.slug}`}
-                          className="flex flex-col hover:border-cyan-500/40 transition"
+                          className="group flex flex-col gap-4 p-5 transition-all duration-300 hover:-translate-y-1 hover:glow-cyan-sm"
                         >
-                          <CardHeader className="pb-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <CardTitle className="text-base">
-                                {m.name}
-                              </CardTitle>
-                              {isPaid ? (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-cyan-500/15 text-cyan-300 border-cyan-500/30 whitespace-nowrap"
-                                >
-                                  Cotizable
-                                </Badge>
-                              ) : (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 whitespace-nowrap"
-                                >
-                                  Demo gratis
-                                </Badge>
-                              )}
-                            </div>
-                            <CardDescription className="text-cyan-300/90 font-medium">
-                              {fmtPrice(m.monthlyPrice, m.currency)}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-3 flex-1 flex flex-col">
-                            {m.description && (
-                              <p className="text-sm text-muted-foreground flex-1">
-                                {m.description}
-                              </p>
-                            )}
-                            <Link
-                              href={
-                                session
-                                  ? "/mis-modulos"
-                                  : "/login?tab=register"
-                              }
+                          <div className="flex items-start justify-between gap-3">
+                            <h4 className="font-display text-base font-semibold leading-tight text-slate-50">
+                              {m.name}
+                            </h4>
+                            <StatusPill tone={isPaid ? "info" : "success"} size="sm">
+                              {isPaid ? "Cotizable" : "Demo gratis"}
+                            </StatusPill>
+                          </div>
+                          <div className="font-mono text-sm font-semibold text-cyan-200">
+                            {fmtPrice(m.monthlyPrice, m.currency)}
+                          </div>
+                          {m.description && (
+                            <p className="flex-1 text-sm leading-relaxed text-slate-400">
+                              {m.description}
+                            </p>
+                          )}
+                          <Link href={session ? "/mis-modulos" : "/login?tab=register"}>
+                            <GradientButton
+                              size="sm"
+                              variant={isPaid ? "primary" : "soft"}
+                              className="w-full"
+                              data-testid={`landing-cta-${m.slug}`}
                             >
-                              <Button
-                                size="sm"
-                                variant={isPaid ? "default" : "outline"}
-                                className="w-full"
-                                data-testid={`landing-cta-${m.slug}`}
-                              >
-                                {isPaid
-                                  ? "Cotizar con un asesor"
-                                  : "Probar demo gratis"}
-                              </Button>
-                            </Link>
-                          </CardContent>
-                        </Card>
+                              {isPaid ? "Cotizar con un asesor" : "Probar demo gratis"}
+                              <ArrowRight className="h-3.5 w-3.5" />
+                            </GradientButton>
+                          </Link>
+                        </GlassCard>
                       );
                     })}
                   </div>
@@ -603,185 +686,231 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PAGO YAPE */}
-      <section id="pago" className="border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div>
-              <Badge
-                variant="outline"
-                className="bg-purple-500/10 text-purple-300 border-purple-500/30 mb-3"
+      {/* ===== PAGO YAPE ===== */}
+      <section id="pago" className="relative border-b border-white/5">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <GlassCard tone="strong" border="gradient" className="overflow-hidden p-0">
+            <div className="grid items-center gap-10 p-8 md:grid-cols-[1.1fr_1fr] md:p-12">
+              <div className="flex flex-col gap-6">
+                <StatusPill tone="violet" size="md" className="self-start">
+                  Pago seguro vía Yape
+                </StatusPill>
+                <h2 className="font-display text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
+                  Pagás por Yape, activamos en{" "}
+                  <span className="gradient-text-cyan-violet">minutos</span>
+                </h2>
+                <p className="text-base leading-relaxed text-slate-400">
+                  Aceptás la cotización dentro del portal, depositás por Yape al
+                  titular y JARVIS activa tus módulos casi al instante. Sin
+                  tarjetas, sin trámites bancarios, sin tiempos muertos.
+                </p>
+                <ul className="space-y-3 text-sm">
+                  {[
+                    <>Titular: <strong className="text-slate-100">Miguel Angel Montero Garcia</strong></>,
+                    <>Yape: <span className="font-mono font-semibold text-cyan-200">991 740 590</span></>,
+                    "Avisanos por el chat de JARVIS y activamos en el momento.",
+                    "Toda cotización trae IGV 18 % incluido y comprobante en PDF.",
+                  ].map((line, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-300">
+                        <CheckCircle2 className="h-3 w-3" />
+                      </span>
+                      <span className="text-slate-300">{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative flex justify-center">
+                <div className="absolute -inset-6 rounded-full bg-mesh-cyan opacity-70 blur-2xl" aria-hidden />
+                <div className="relative rounded-3xl border border-white/10 bg-slate-950/60 p-5 backdrop-blur-xl glow-cyan-sm">
+                  <YapeQR size={220} showCaption={false} />
+                  <div className="mt-3 text-center">
+                    <div className="font-display text-sm font-semibold text-slate-50">
+                      Yape · Miguel Montero
+                    </div>
+                    <div className="font-mono text-base font-semibold text-cyan-200">
+                      991 740 590
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+      </section>
+
+      {/* ===== CTA FINAL ===== */}
+      <section className="relative border-b border-white/5">
+        <BlueprintBackdrop intensity="subtle" className="">
+          <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-200 shadow-[inset_0_0_18px_rgba(34,211,238,0.18)]">
+              <Headphones className="h-6 w-6" />
+            </div>
+            <h2 className="font-display text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
+              ¿Listo para automatizar tu negocio?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400">
+              Crea tu cuenta gratis y conversá con JARVIS ahora. Sin compromiso,
+              sin tarjeta. Si no encontrás el módulo que buscás, lo armamos para
+              tu rubro.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/login?tab=register">
+                <GradientButton size="lg" variant="primary" data-testid="cta-final-register">
+                  Crear cuenta gratis
+                  <ArrowRight className="h-4 w-4" />
+                </GradientButton>
+              </Link>
+              <a
+                href="#catalogo"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollTo("catalogo");
+                }}
               >
-                Pago seguro
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight mb-3">
-                Pagás por Yape, activamos en minutos
-              </h2>
-              <p className="text-muted-foreground text-sm mb-6">
-                Aceptás la cotización dentro del portal, depositás por Yape al
-                titular y JARVIS activa tus módulos casi al instante. Sin
-                tarjetas, sin trámites bancarios, sin tiempos muertos.
-              </p>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                  <span>
-                    Titular: <strong>Miguel Angel Montero Garcia</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                  <span>
-                    Yape: <strong className="font-mono">991 740 590</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                  <span>
-                    Avisanos por el chat de JARVIS y activamos en el momento.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-1 flex-shrink-0" />
-                  <span>
-                    Toda cotización trae IGV 18 % incluido y comprobante en PDF.
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex justify-center">
-              <YapeQR size={200} showCaption={false} />
+                <GradientButton size="lg" variant="outline" data-testid="cta-final-catalog">
+                  Explorar catálogo
+                </GradientButton>
+              </a>
             </div>
           </div>
-        </div>
+        </BlueprintBackdrop>
       </section>
 
-      {/* CTA FINAL */}
-      <section className="border-t border-border bg-gradient-to-b from-cyan-500/5 to-background">
-        <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-          <Headphones className="h-10 w-10 text-cyan-400 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold tracking-tight mb-3">
-            ¿Listo para automatizar tu negocio?
-          </h2>
-          <p className="text-muted-foreground text-sm mb-6">
-            Crea tu cuenta gratis y conversá con JARVIS ahora. Sin compromiso,
-            sin tarjeta. Si no encontrás el módulo que buscás, lo armamos para
-            tu rubro.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/login?tab=register">
-              <Button size="lg" data-testid="cta-final-register">
-                Crear cuenta gratis
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </Link>
-            <a href="#catalogo">
-              <Button size="lg" variant="outline" data-testid="cta-final-catalog">
-                Explorar catálogo
-              </Button>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 py-10 grid gap-8 md:grid-cols-4 text-sm">
+      {/* ===== FOOTER ===== */}
+      <footer className="relative">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-4">
           <div>
-            <div className="text-base font-bold tracking-tight text-cyan-400 mb-2">
-              AXYNTRAX
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950">
+                AX
+              </span>
+              <div className="font-display text-base font-semibold text-slate-50">
+                AXYNTRAX
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Automation · Arequipa, Perú. IA aplicada al negocio peruano,
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-slate-400">
+              Automation OS · Arequipa, Perú. IA aplicada al negocio peruano,
               módulo por módulo.
             </p>
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-              Producto
+            <div className="mt-4">
+              <StatusPill tone="success" size="sm">
+                Online · 99.9 % uptime
+              </StatusPill>
             </div>
-            <ul className="space-y-1.5 text-xs">
-              <li>
-                <a href="#industrias" className="hover:text-cyan-400">
-                  Industrias
-                </a>
-              </li>
-              <li>
-                <a href="#catalogo" className="hover:text-cyan-400">
-                  Catálogo
-                </a>
-              </li>
-              <li>
-                <a href="#proceso" className="hover:text-cyan-400">
-                  Cómo funciona
-                </a>
-              </li>
-              <li>
-                <a href="#pago" className="hover:text-cyan-400">
-                  Cómo pagar
-                </a>
-              </li>
-            </ul>
           </div>
+          <FooterCol
+            title="Producto"
+            items={[
+              { href: "#industrias", label: "Industrias" },
+              { href: "#catalogo", label: "Catálogo" },
+              { href: "#proceso", label: "Cómo funciona" },
+              { href: "#pago", label: "Cómo pagar" },
+            ]}
+          />
+          <FooterCol
+            title="Cuenta"
+            items={[
+              { href: "/login", label: "Iniciar sesión", internal: true },
+              { href: "/login?tab=register", label: "Crear cuenta", internal: true },
+              { href: "/mis-modulos", label: "Mis módulos", internal: true },
+              { href: "/mis-cotizaciones", label: "Mis cotizaciones", internal: true },
+            ]}
+          />
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-              Cuenta
-            </div>
-            <ul className="space-y-1.5 text-xs">
-              <li>
-                <Link href="/login" className="hover:text-cyan-400">
-                  Iniciar sesión
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/login?tab=register"
-                  className="hover:text-cyan-400"
-                >
-                  Crear cuenta
-                </Link>
-              </li>
-              <li>
-                <Link href="/mis-modulos" className="hover:text-cyan-400">
-                  Mis módulos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/mis-cotizaciones"
-                  className="hover:text-cyan-400"
-                >
-                  Mis cotizaciones
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
               Contacto
             </div>
-            <ul className="space-y-1.5 text-xs text-muted-foreground">
+            <ul className="mt-3 space-y-2 text-sm text-slate-300">
               <li>Miguel Angel Montero Garcia</li>
               <li>
                 <a
                   href="mailto:axyntraxautomation@gmail.com"
-                  className="hover:text-cyan-400"
+                  className="text-slate-400 transition-colors hover:text-cyan-200"
                 >
                   axyntraxautomation@gmail.com
                 </a>
               </li>
-              <li className="font-mono">Yape · 991 740 590</li>
+              <li className="font-mono text-cyan-200">Yape · 991 740 590</li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-border">
-          <div className="max-w-6xl mx-auto px-6 py-4 text-[11px] text-muted-foreground flex flex-wrap justify-between gap-2">
-            <div>© {new Date().getFullYear()} AXYNTRAX AUTOMATION</div>
-            <div>Hecho con IA en Arequipa, Perú</div>
+        <div className="border-t border-white/5">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-6 py-5 text-[11px] text-slate-500">
+            <div>© {new Date().getFullYear()} AXYNTRAX AUTOMATION · Todos los derechos reservados</div>
+            <div className="font-mono">AXYNTRAX OS · v1.2 · Arequipa, Perú</div>
           </div>
         </div>
       </footer>
 
       <SalesBotWidget scope="public" />
+    </div>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children,
+  testId,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  testId?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-testid={testId}
+      className={cn(
+        "inline-flex items-center rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-200",
+        active
+          ? "border-cyan-400/60 bg-cyan-400/15 text-cyan-100 shadow-[0_0_18px_-4px_rgba(34,211,238,0.5)]"
+          : "border-white/10 bg-white/[0.03] text-slate-300 hover:border-cyan-400/30 hover:bg-white/[0.06] hover:text-cyan-100",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FooterCol({
+  title,
+  items,
+}: {
+  title: string;
+  items: { href: string; label: string; internal?: boolean }[];
+}) {
+  return (
+    <div>
+      <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
+        {title}
+      </div>
+      <ul className="mt-3 space-y-2 text-sm">
+        {items.map((it) =>
+          it.internal ? (
+            <li key={it.href}>
+              <Link
+                href={it.href}
+                className="text-slate-300 transition-colors hover:text-cyan-200"
+              >
+                {it.label}
+              </Link>
+            </li>
+          ) : (
+            <li key={it.href}>
+              <a
+                href={it.href}
+                className="text-slate-300 transition-colors hover:text-cyan-200"
+              >
+                {it.label}
+              </a>
+            </li>
+          ),
+        )}
+      </ul>
     </div>
   );
 }
