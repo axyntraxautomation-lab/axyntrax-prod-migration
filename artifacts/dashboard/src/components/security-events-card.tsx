@@ -351,6 +351,9 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
 
 const FILTER_STORAGE_KEY = "axyntrax.security-events.filter";
 const FILTER_QUERY_KEY = "ev";
+const SEARCH_STORAGE_KEY = "axyntrax.security-events.search";
+const SEARCH_QUERY_KEY = "q";
+const SEARCH_MAX_LENGTH = 200;
 
 function isCategoryValue(value: string): value is CategoryValue {
   return CATEGORIES.some((c) => c.value === value);
@@ -372,6 +375,32 @@ function readInitialCategory(): CategoryValue {
     // localStorage not accessible (private mode, etc.)
   }
   return "all";
+}
+
+function sanitizeSearch(value: string): string {
+  // Cap raw input length to avoid stuffing localStorage or the URL with
+  // arbitrarily long strings. We intentionally do NOT trim here so the user
+  // can keep typing spaces while editing; the persistence effect trims the
+  // value before writing to localStorage / the URL.
+  return value.slice(0, SEARCH_MAX_LENGTH);
+}
+
+function readInitialSearch(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(SEARCH_QUERY_KEY);
+    if (fromUrl !== null) return sanitizeSearch(fromUrl);
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(SEARCH_STORAGE_KEY);
+    if (fromStorage) return sanitizeSearch(fromStorage);
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "";
 }
 
 const LIMIT_STEPS = [50, 200, 500] as const;
@@ -469,7 +498,7 @@ function computeDateRange(
 export function SecurityEventsCard() {
   const [limit, setLimit] = useState<number>(INITIAL_LIMIT);
   const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string>(readInitialSearch);
   const [dateRange, setDateRange] = useState<DateRangeValue>("all");
   const today = useMemo(() => toDateInputValue(new Date()), []);
   const [customFrom, setCustomFrom] = useState<string>(today);
@@ -510,6 +539,38 @@ export function SecurityEventsCard() {
       // ignore URL update errors
     }
   }, [category]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // For persistence we use the trimmed value: leading/trailing whitespace
+    // shouldn't survive a reload or end up in a shared link.
+    const persisted = search.trim();
+    try {
+      if (persisted) {
+        window.localStorage.setItem(SEARCH_STORAGE_KEY, persisted);
+      } else {
+        window.localStorage.removeItem(SEARCH_STORAGE_KEY);
+      }
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const current = url.searchParams.get(SEARCH_QUERY_KEY);
+      if (!persisted) {
+        if (current === null) return;
+        url.searchParams.delete(SEARCH_QUERY_KEY);
+      } else {
+        if (current === persisted) return;
+        url.searchParams.set(SEARCH_QUERY_KEY, persisted);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history with each keystroke.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [search]);
 
   const counts = useMemo(() => {
     const result = new Map<CategoryValue, number>();
@@ -686,9 +747,10 @@ export function SecurityEventsCard() {
               <Input
                 id="audit-filter-search"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => setSearch(sanitizeSearch(e.target.value))}
                 placeholder="ej: ana@axyntrax.com"
                 className="h-9 pl-7 pr-7"
+                maxLength={SEARCH_MAX_LENGTH}
                 data-testid="audit-filter-search"
                 autoComplete="off"
               />
