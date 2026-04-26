@@ -603,6 +603,13 @@ router.post(
           .limit(1);
         if (!mod) throw new Error("Módulo no existe");
         if (mod.active !== 1) throw new Error("Módulo inactivo");
+        // Solo módulos básicos (gratuitos) son demo de 30 días.
+        // Los módulos pagos requieren cotización formal.
+        if (Number(mod.monthlyPrice) > 0) {
+          throw new Error(
+            "Este módulo es de pago: solicita una cotización en lugar de una demo gratuita",
+          );
+        }
 
         const existing = await tx
           .select({ id: clientModulesTable.id, status: clientModulesTable.status })
@@ -732,6 +739,14 @@ router.post(
           .where(eq(modulesCatalogTable.id, row.moduleId))
           .limit(1);
         if (!mod || mod.active !== 1) throw new Error("Módulo inactivo");
+        // Esta vía aprueba SOLO demos básicas (gratuitas) de 30 días.
+        // Los módulos de pago se aprueban por la ruta administrativa
+        // /api/modules/requests/:id/approve, que respeta duración y cobro.
+        if (Number(mod.monthlyPrice) > 0) {
+          throw new Error(
+            "Este módulo es de pago: usa la aprobación administrativa con duración y cobro",
+          );
+        }
 
         // Demo gratuita: el módulo se activa sin venta. Mantenemos un
         // registro en `payments` con monto 0 + método "demo" + estado
