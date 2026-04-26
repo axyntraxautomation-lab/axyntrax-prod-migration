@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import LandingPage from "@/pages/landing";
+import Nosotros from "@/pages/nosotros";
 import ClientModulesPage from "@/pages/client-modules";
 import ClientQuotesPage from "@/pages/client-quotes";
 import AdminRequestsPage from "@/pages/admin-requests";
@@ -71,6 +72,7 @@ function PortalRouter() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/nosotros" component={Nosotros} />
       <Route path="/login" component={Login} />
       <Route
         path="/mis-modulos"

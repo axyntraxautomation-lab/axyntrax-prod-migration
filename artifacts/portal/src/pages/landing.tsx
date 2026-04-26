@@ -219,6 +219,13 @@ export default function LandingPage() {
                 {it.label}
               </a>
             ))}
+            <Link
+              href="/nosotros"
+              data-testid="nav-nosotros"
+              className="rounded-full px-3 py-1.5 text-sm text-slate-300 transition-colors hover:bg-white/[0.04] hover:text-cyan-200"
+            >
+              Nosotros
+            </Link>
           </nav>
           <div className="flex items-center gap-2">
             {session ? (
@@ -779,7 +786,7 @@ export default function LandingPage() {
 
       {/* ===== FOOTER ===== */}
       <footer className="relative">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-5">
           <div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl gradient-cyan-violet font-display text-sm font-bold text-slate-950">
@@ -806,6 +813,15 @@ export default function LandingPage() {
               { href: "#catalogo", label: "Catálogo" },
               { href: "#proceso", label: "Cómo funciona" },
               { href: "#pago", label: "Cómo pagar" },
+            ]}
+          />
+          <FooterCol
+            title="Empresa"
+            items={[
+              { href: "/nosotros", label: "Nosotros", internal: true },
+              { href: "/nosotros#mision", label: "Misión", internal: true },
+              { href: "/nosotros#vision", label: "Visión", internal: true },
+              { href: "/nosotros#valores", label: "Valores", internal: true },
             ]}
           />
           <FooterCol
