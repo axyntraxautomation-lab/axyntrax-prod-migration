@@ -99,6 +99,17 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
 - **Module Updates Fanout:** Admin can publish module updates, which are fanned out to active client modules with push notifications.
 - **JARVIS Support:** AI-powered support for modules via Gemini 2.5 Flash, with persona tailored per industry.
 
+## Public Domain
+
+- **URL canónica del Portal (objetivo):** `https://axyntrax-automation.com/` (apex, sin `www.`).
+- **URL temporal de respaldo (sigue activa):** `https://social-media-answerer.replit.app/` — sigue funcionando incluso después del traslado y conviene dejarla viva como respaldo.
+- **Estado actual del traslado (abril 2026):** el apex `axyntrax-automation.com` ya resuelve a una IP de Replit (`34.111.179.208`) y tiene un `TXT replit-verify=9bf30e6a-9625-49e8-9716-aebc75deb77f` en Namecheap, pero el dominio está bound a OTRO deploy de Replit del fundador ("AXYNTRAX Automation Suite") — **no a este Portal**. Para completar el traslado hay que liberar el dominio del otro deploy y agregarlo como custom domain a este `@workspace/api-server` (ver el runbook en `.local/tasks/runbook-traslado-dominio.md`).
+- **DNS hosteado en:** Namecheap (NS `dns1/dns2.registrar-servers.com`).
+- **Email:** Namecheap email forwarding (MX `eforward1..5.registrar-servers.com`) — **no tocar los MX** al cambiar registros web.
+- **Cookies:** las cookies de auth son host-bound (sin atributo `domain=`), así que las sesiones del `.replit.app` no migran al apex. Cada usuario se va a tener que loguear de nuevo en el dominio nuevo.
+- **CORS:** `cors({ credentials: true })` en `app.ts:43` deja pasar todos los orígenes, así que el cambio de host no rompe pedidos cross-origin.
+- **Backend / webhooks:** WhatsApp y Meta siguen apuntando a la URL `.replit.app` del api-server, no se mueven con este traslado.
+
 ## External Dependencies
 
 - **Database:** Replit-provisioned PostgreSQL.
