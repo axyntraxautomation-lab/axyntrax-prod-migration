@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, BellOff, Loader2, LogOut, Shield, ShieldCheck, Users } from "lucide-react";
 import { TwofaCard } from "@/components/twofa-card";
+import { SecurityEventsCard } from "@/components/security-events-card";
 import { usePushNotifications } from "@/hooks/use-push";
 
 function initials(name: string) {
@@ -152,6 +153,8 @@ export default function Settings() {
       </Card>
 
       <TwofaCard enabled={!!user?.twofaEnabled} />
+
+      {user?.role === "admin" && <SecurityEventsCard />}
 
       <PushNotificationsCard />
 
