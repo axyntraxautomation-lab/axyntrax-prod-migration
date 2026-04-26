@@ -12,6 +12,9 @@ import {
 } from "@workspace/api-zod";
 import { requireAuth, verifyPassword } from "../lib/auth";
 import { issueEmailOtp, maskEmail } from "../lib/email-otp";
+import { audit } from "../lib/audit";
+// @ts-expect-error - JS helper sin tipos, ver lib/security-alerts.mjs
+import { notifyAdminSensitiveAction } from "../lib/security-alerts.mjs";
 
 const router: IRouter = Router();
 
@@ -153,6 +156,24 @@ router.post(
       .set({ twofaSecret: null, twofaEnabled: "false" })
       .where(eq(usersTable.id, req.user.id))
       .returning();
+    await audit(req, {
+      action: "auth.2fa.disable_self_ui",
+      entityType: "user",
+      entityId: updated.id,
+      meta: {
+        targetEmail: updated.email,
+        targetRole: updated.role,
+      },
+    });
+    if (updated.role === "admin") {
+      await notifyAdminSensitiveAction({
+        action: "auth.2fa.disable_self_ui",
+        operator: `${updated.email} (self)`,
+        targetEmail: updated.email,
+        targetRole: updated.role,
+        extra: null,
+      });
+    }
     res.json({
       id: updated.id,
       name: updated.name,

@@ -12,22 +12,58 @@ function withTimeout(ms) {
 }
 
 const ACTION_LABELS = {
-  "auth.2fa.reset_cli": "EJECUTADO (2FA borrado)",
-  "auth.2fa.reset_cli.cancelled": "CANCELADO en el prompt",
-  "auth.2fa.reset_cli.failed": "FALLÓ durante el commit",
+  "auth.2fa.reset_cli": "EJECUTADO (2FA borrado vía CLI)",
+  "auth.2fa.reset_cli.cancelled": "CANCELADO en el prompt del CLI",
+  "auth.2fa.reset_cli.failed": "FALLÓ durante el commit del CLI",
+  "auth.2fa.disable_self_ui": "Admin desactivó su propio 2FA desde la UI",
+  "auth.2fa.disable_admin_ui": "Admin desactivó el 2FA de otro admin desde la UI",
+  "auth.password.reset_admin_ui": "Admin reseteó la contraseña de un admin desde la UI",
+  "user.role.promoted_to_admin": "Usuario promovido al rol admin desde el panel",
+};
+
+const ACTION_CATEGORIES = {
+  "auth.2fa.reset_cli": "twofa-reset",
+  "auth.2fa.reset_cli.cancelled": "twofa-reset",
+  "auth.2fa.reset_cli.failed": "twofa-reset",
+  "auth.2fa.disable_self_ui": "twofa-disable",
+  "auth.2fa.disable_admin_ui": "twofa-disable",
+  "auth.password.reset_admin_ui": "password-reset",
+  "user.role.promoted_to_admin": "role-promote",
+};
+
+const CATEGORY_HEADLINES = {
+  "twofa-reset": "Intento de reset 2FA sobre admin",
+  "twofa-disable": "Desactivación de 2FA de admin",
+  "password-reset": "Reset de contraseña de admin",
+  "role-promote": "Promoción de usuario al rol admin",
+  "generic": "Acción sensible sobre cuenta admin",
+};
+
+const CATEGORY_BODY_INTRO = {
+  "twofa-reset": "Se intentó resetear el 2FA de una cuenta admin desde el CLI.",
+  "twofa-disable": "Se desactivó la verificación en dos pasos de una cuenta admin desde la UI.",
+  "password-reset": "Se reseteó la contraseña de una cuenta admin desde la UI/panel.",
+  "role-promote": "Se promovió a un usuario al rol admin desde el panel.",
+  "generic": "Se realizó una acción sensible sobre una cuenta admin.",
 };
 
 function describeAction(action) {
   return ACTION_LABELS[action] || action;
 }
 
+function categoryFor(action) {
+  return ACTION_CATEGORIES[action] || "generic";
+}
+
 function buildSubject({ action, targetEmail }) {
-  return `[ALERTA SEGURIDAD] Intento de reset 2FA sobre admin ${targetEmail} (${describeAction(action)})`;
+  const headline = CATEGORY_HEADLINES[categoryFor(action)];
+  return `[ALERTA SEGURIDAD] ${headline}: ${targetEmail} (${describeAction(action)})`;
 }
 
 function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, extra }) {
+  const intro = CATEGORY_BODY_INTRO[categoryFor(action)];
   const lines = [
-    "Se intentó resetear el 2FA de una cuenta admin desde el CLI.",
+    intro,
     "",
     `Acción:     ${action} (${describeAction(action)})`,
     `Target:     ${targetEmail} (rol=${targetRole})`,
@@ -51,7 +87,8 @@ function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, e
 }
 
 function buildSlackPayload({ action, operator, targetEmail, targetRole, timestamp, extra }) {
-  const text = `:rotating_light: *Intento de reset 2FA sobre admin* \`${targetEmail}\` — ${describeAction(action)}`;
+  const headline = CATEGORY_HEADLINES[categoryFor(action)];
+  const text = `:rotating_light: *${headline}* \`${targetEmail}\` — ${describeAction(action)}`;
   const fields = [
     { title: "Acción", value: action, short: true },
     { title: "Estado", value: describeAction(action), short: true },
@@ -179,11 +216,16 @@ async function sendEmailViaGmail(to, subject, textBody) {
 }
 
 /**
- * Notifica un intento (success/cancelled/failed) de reset de 2FA cuando el target
- * es admin. Lee SECURITY_ALERT_WEBHOOK y SECURITY_ALERT_EMAIL del entorno; si no
- * hay ninguna configurada, no hace nada y no rompe.
+ * Notifica una acción sensible sobre una cuenta admin (reset 2FA CLI/UI,
+ * desactivación de 2FA, reset de password, promoción a admin). Lee
+ * SECURITY_ALERT_WEBHOOK y SECURITY_ALERT_EMAIL del entorno; si no hay ninguna
+ * configurada, no hace nada y no rompe.
+ *
+ * El llamador es responsable de decidir cuándo invocarla. Para cambios de rol
+ * sólo conviene avisar cuando el rol nuevo es admin; para 2FA / password sólo
+ * cuando el target es admin.
  */
-export async function notifyAdminTwofaResetAttempt(event) {
+export async function notifyAdminSensitiveAction(event) {
   try {
     const { targetRole } = event;
     if (targetRole !== "admin") return;
@@ -222,4 +264,12 @@ export async function notifyAdminTwofaResetAttempt(event) {
       `[security-alerts] error inesperado al enviar alerta: ${err?.message ?? err}`,
     );
   }
+}
+
+/**
+ * Compatibilidad hacia atrás: el CLI `reset-2fa` sigue llamando a esta
+ * función para los tres action types relacionados con el reset CLI.
+ */
+export async function notifyAdminTwofaResetAttempt(event) {
+  return notifyAdminSensitiveAction(event);
 }

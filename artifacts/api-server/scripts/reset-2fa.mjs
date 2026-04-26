@@ -18,7 +18,9 @@ if (!process.env.DATABASE_URL) {
 
 const { db, usersTable, auditLogTable } = await import("@workspace/db");
 const { eq } = await import("drizzle-orm");
-const { notifyAdminTwofaResetAttempt } = await import("./security-alerts.mjs");
+const { notifyAdminTwofaResetAttempt } = await import(
+  "../src/lib/security-alerts.mjs"
+);
 
 async function alertIfAdmin(action, extra) {
   try {
