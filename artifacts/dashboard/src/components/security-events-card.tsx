@@ -8,15 +8,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertCircle,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
   ScrollText,
+  Search,
   ShieldAlert,
   Terminal,
   UserCog,
+  X,
   XCircle,
 } from "lucide-react";
 
@@ -30,42 +41,88 @@ function isCliResetAction(action: string): boolean {
   return CLI_RESET_ACTIONS.has(action);
 }
 
-type ResetFilter = "all" | "ok" | "cancelled" | "failed";
+type CategoryValue =
+  | "all"
+  | "auth_2fa"
+  | "reset_cli"
+  | "reset_cli_ok"
+  | "reset_cli_cancelled"
+  | "reset_cli_failed"
+  | "portal"
+  | "modules"
+  | "cecilia"
+  | "security"
+  | "admin"
+  | "other";
 
-const RESET_FILTERS: ReadonlyArray<{
-  value: ResetFilter;
+interface CategoryDef {
+  value: CategoryValue;
   label: string;
-  testId: string;
-  icon: typeof Terminal | null;
-  action: string | null;
-}> = [
+  match: (action: string) => boolean;
+}
+
+const CATEGORIES: ReadonlyArray<CategoryDef> = [
+  { value: "all", label: "Todos los eventos", match: () => true },
   {
-    value: "all",
-    label: "Todos",
-    testId: "filter-all",
-    icon: null,
-    action: null,
+    value: "auth_2fa",
+    label: "2FA (todos)",
+    match: (a) => a.startsWith("auth.2fa"),
   },
   {
-    value: "ok",
-    label: "Reset 2FA exitoso",
-    testId: "filter-reset-ok",
-    icon: CheckCircle2,
-    action: "auth.2fa.reset_cli",
+    value: "reset_cli",
+    label: "Reset 2FA · CLI (todos)",
+    match: (a) => isCliResetAction(a),
   },
   {
-    value: "cancelled",
-    label: "Reset 2FA cancelado",
-    testId: "filter-reset-cancelled",
-    icon: XCircle,
-    action: "auth.2fa.reset_cli.cancelled",
+    value: "reset_cli_ok",
+    label: "Reset 2FA · CLI exitoso",
+    match: (a) => a === "auth.2fa.reset_cli",
   },
   {
-    value: "failed",
-    label: "Reset 2FA fallido",
-    testId: "filter-reset-failed",
-    icon: ShieldAlert,
-    action: "auth.2fa.reset_cli.failed",
+    value: "reset_cli_cancelled",
+    label: "Reset 2FA · CLI cancelado",
+    match: (a) => a === "auth.2fa.reset_cli.cancelled",
+  },
+  {
+    value: "reset_cli_failed",
+    label: "Reset 2FA · CLI fallido",
+    match: (a) => a === "auth.2fa.reset_cli.failed",
+  },
+  {
+    value: "portal",
+    label: "Portal (logins, registros)",
+    match: (a) => a.startsWith("portal."),
+  },
+  {
+    value: "modules",
+    label: "Módulos",
+    match: (a) => a.startsWith("module."),
+  },
+  {
+    value: "cecilia",
+    label: "Cecilia",
+    match: (a) => a.startsWith("cecilia."),
+  },
+  {
+    value: "security",
+    label: "Seguridad (alertas/IP)",
+    match: (a) => a.startsWith("security."),
+  },
+  {
+    value: "admin",
+    label: "Admin (backup, etc.)",
+    match: (a) => a.startsWith("admin."),
+  },
+  {
+    value: "other",
+    label: "Otros",
+    match: (a) =>
+      !a.startsWith("auth.2fa") &&
+      !a.startsWith("portal.") &&
+      !a.startsWith("module.") &&
+      !a.startsWith("cecilia.") &&
+      !a.startsWith("security.") &&
+      !a.startsWith("admin."),
   },
 ];
 
@@ -95,6 +152,36 @@ function actionLabel(action: string): string {
     default:
       return action;
   }
+}
+
+const SEARCHABLE_META_KEYS = [
+  "operator",
+  "targetEmail",
+  "email",
+  "actorEmail",
+  "userEmail",
+];
+
+function entryMatchesSearch(entry: AuditEntry, query: string): boolean {
+  if (!query) return true;
+  const needle = query.toLowerCase();
+  const meta = entry.meta ?? null;
+  if (meta && typeof meta === "object") {
+    const record = meta as Record<string, unknown>;
+    for (const key of SEARCHABLE_META_KEYS) {
+      const value = record[key];
+      if (typeof value === "string" && value.toLowerCase().includes(needle)) {
+        return true;
+      }
+    }
+  }
+  if (entry.entityId && String(entry.entityId).toLowerCase().includes(needle)) {
+    return true;
+  }
+  if (entry.entityType && entry.entityType.toLowerCase().includes(needle)) {
+    return true;
+  }
+  return false;
 }
 
 function AuditRow({ entry }: { entry: AuditEntry }) {
@@ -231,33 +318,35 @@ function AuditRow({ entry }: { entry: AuditEntry }) {
 
 export function SecurityEventsCard() {
   const { data, isLoading, isError, error } = useListAuditLog({ limit: 50 });
-  const [resetFilter, setResetFilter] = useState<ResetFilter>("all");
+  const [category, setCategory] = useState<CategoryValue>("all");
+  const [search, setSearch] = useState("");
 
   const counts = useMemo(() => {
-    const result: Record<ResetFilter, number> = {
-      all: 0,
-      ok: 0,
-      cancelled: 0,
-      failed: 0,
-    };
+    const result = new Map<CategoryValue, number>();
+    for (const c of CATEGORIES) result.set(c.value, 0);
     if (!data) return result;
     for (const entry of data) {
-      result.all += 1;
-      if (entry.action === "auth.2fa.reset_cli") result.ok += 1;
-      else if (entry.action === "auth.2fa.reset_cli.cancelled")
-        result.cancelled += 1;
-      else if (entry.action === "auth.2fa.reset_cli.failed")
-        result.failed += 1;
+      for (const c of CATEGORIES) {
+        if (c.match(entry.action)) {
+          result.set(c.value, (result.get(c.value) ?? 0) + 1);
+        }
+      }
     }
     return result;
   }, [data]);
 
+  const trimmedSearch = search.trim();
+
   const visibleEntries = useMemo(() => {
     if (!data) return [];
-    const target = RESET_FILTERS.find((f) => f.value === resetFilter)?.action;
-    if (!target) return data;
-    return data.filter((entry) => entry.action === target);
-  }, [data, resetFilter]);
+    const def = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
+    return data.filter(
+      (entry) =>
+        def.match(entry.action) && entryMatchesSearch(entry, trimmedSearch),
+    );
+  }, [data, category, trimmedSearch]);
+
+  const filtersActive = category !== "all" || trimmedSearch.length > 0;
 
   return (
     <Card data-testid="card-audit-log">
@@ -267,37 +356,100 @@ export function SecurityEventsCard() {
           Eventos de seguridad
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Últimas 50 entradas de auditoría. Los resets de 2FA hechos desde el
-          CLI muestran al operador y al usuario afectado.
+          Últimas 50 entradas de auditoría. Filtra por tipo de evento o busca
+          por operador / email afectado.
         </p>
       </CardHeader>
       <CardContent>
         <div
-          className="flex flex-wrap gap-2 mb-4"
+          className="grid gap-3 mb-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end"
           data-testid="audit-filter-bar"
-          role="group"
-          aria-label="Filtrar eventos por tipo"
         >
-          {RESET_FILTERS.map((f) => {
-            const active = resetFilter === f.value;
-            const Icon = f.icon;
-            return (
-              <Button
-                key={f.value}
-                type="button"
-                size="sm"
-                variant={active ? "default" : "outline"}
-                className="h-7 px-2 text-xs"
-                onClick={() => setResetFilter(f.value)}
-                data-testid={f.testId}
-                aria-pressed={active}
+          <div className="space-y-1">
+            <Label
+              htmlFor="audit-filter-category"
+              className="text-xs text-muted-foreground"
+            >
+              Tipo de evento
+            </Label>
+            <Select
+              value={category}
+              onValueChange={(value) => {
+                const known = CATEGORIES.find((c) => c.value === value);
+                setCategory(known ? known.value : "all");
+              }}
+            >
+              <SelectTrigger
+                id="audit-filter-category"
+                className="h-9"
+                data-testid="audit-filter-category"
               >
-                {Icon ? <Icon className="h-3 w-3 mr-1" /> : null}
-                {f.label}
-                <span className="ml-1.5 opacity-70">({counts[f.value]})</span>
-              </Button>
-            );
-          })}
+                <SelectValue placeholder="Todos los eventos" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((c) => (
+                  <SelectItem
+                    key={c.value}
+                    value={c.value}
+                    data-testid={`audit-filter-category-${c.value}`}
+                  >
+                    {c.label}
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      ({counts.get(c.value) ?? 0})
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1">
+            <Label
+              htmlFor="audit-filter-search"
+              className="text-xs text-muted-foreground"
+            >
+              Operador o email afectado
+            </Label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                id="audit-filter-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="ej: ana@axyntrax.com"
+                className="h-9 pl-7 pr-7"
+                data-testid="audit-filter-search"
+                autoComplete="off"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Limpiar búsqueda"
+                  data-testid="audit-filter-search-clear"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {filtersActive && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-9 self-end"
+              onClick={() => {
+                setCategory("all");
+                setSearch("");
+              }}
+              data-testid="audit-filter-reset"
+            >
+              Limpiar filtros
+            </Button>
+          )}
         </div>
 
         {isLoading ? (
@@ -323,12 +475,75 @@ export function SecurityEventsCard() {
             No hay eventos para este filtro.
           </div>
         ) : (
-          <div className="space-y-2" data-testid="audit-list">
-            {visibleEntries.map((entry) => (
-              <AuditRow key={entry.id} entry={entry} />
-            ))}
-          </div>
+          <>
+            <div
+              className="text-xs text-muted-foreground mb-2"
+              data-testid="audit-filter-summary"
+            >
+              Mostrando {visibleEntries.length} de {data.length} eventos
+              {filtersActive ? " (filtrado)" : ""}
+            </div>
+            <div className="space-y-2" data-testid="audit-list">
+              {visibleEntries.map((entry) => (
+                <AuditRow key={entry.id} entry={entry} />
+              ))}
+            </div>
+          </>
         )}
+
+        {/* Quick reset filters preserved as compact shortcuts */}
+        <div
+          className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-border"
+          data-testid="audit-quick-filters"
+          aria-label="Atajos rápidos de filtros"
+        >
+          <span className="text-[11px] uppercase tracking-wide text-muted-foreground self-center mr-1">
+            Atajos:
+          </span>
+          {(
+            [
+              {
+                value: "reset_cli_ok",
+                label: "OK",
+                icon: CheckCircle2,
+                testId: "filter-reset-ok",
+              },
+              {
+                value: "reset_cli_cancelled",
+                label: "Cancelado",
+                icon: XCircle,
+                testId: "filter-reset-cancelled",
+              },
+              {
+                value: "reset_cli_failed",
+                label: "Fallido",
+                icon: ShieldAlert,
+                testId: "filter-reset-failed",
+              },
+            ] as const
+          ).map((s) => {
+            const Icon = s.icon;
+            const active = category === s.value;
+            return (
+              <Button
+                key={s.value}
+                type="button"
+                size="sm"
+                variant={active ? "default" : "outline"}
+                className="h-6 px-2 text-[11px]"
+                onClick={() => setCategory(s.value)}
+                data-testid={s.testId}
+                aria-pressed={active}
+              >
+                <Icon className="h-3 w-3 mr-1" />
+                {s.label}
+                <span className="ml-1 opacity-70">
+                  ({counts.get(s.value) ?? 0})
+                </span>
+              </Button>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
