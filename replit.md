@@ -17,11 +17,11 @@ AXYNTRAX DASHBOARD SUPREMO is an enterprise dashboard for AXYNTRAX AUTOMATION, d
 Estos dos puntos están cerrados, verificados en producción y NO deben ser modificados sin pedido explícito del usuario:
 
 1. **Web única en producción.** El sistema completo (portal público + dashboard JARVIS + api-server) está publicado como un único deployment en Replit. URL pública canónica que el usuario eligió:
-   - `https://www.axyntrax-automation.com/` → portal público AXYNTRAX
-   - `https://www.axyntrax-automation.com/jarvis/` → dashboard JARVIS interno (2FA)
-   - URL técnica de respaldo del deployment: `https://social-media-answerer.replit.app/` (alias heredado del slug original; ya sirve el sistema nuevo).
-   - Dominio personalizado `axyntrax-automation.com` apuntado en Replit (registros A `34.111.179.208` y TXT `replit-verify=fef1518d-8691-4a1d-a26a-52e988afbb28`); el usuario debe completar la propagación DNS en el registrador.
-   - Cualquier referencia visible al sitio en bots, plantillas y emails se redirige a `www.axyntrax-automation.com`.
+   - **DOMINIO PRINCIPAL ÚNICO (CARA AL CLIENTE):** `https://www.axyntrax-automation.com/` — este es el dominio oficial y SIEMPRE el principal de la marca AXYNTRAX. Todos los enlaces visibles (emails, cotizaciones PDF, bots WhatsApp/Cecilia, plantillas, redes sociales, materiales comerciales) usan exclusivamente `www.axyntrax-automation.com`.
+   - `https://www.axyntrax-automation.com/` → portal público AXYNTRAX (landing + login + cliente).
+   - `https://www.axyntrax-automation.com/jarvis/` → dashboard JARVIS interno (acceso restringido con 2FA).
+   - **Alias técnico interno (NO mostrar al cliente):** `https://social-media-answerer.replit.app/` es solo el slug heredado del deployment de Replit, usado únicamente como endpoint del webhook WhatsApp Meta (que ya está conectado y NO debe moverse). En materiales comerciales y cara al cliente NO se usa nunca.
+   - Dominio personalizado `axyntrax-automation.com` apuntado en Replit (registros A `34.111.179.208` y TXT `replit-verify=fef1518d-8691-4a1d-a26a-52e988afbb28`); cuando se publique el deployment el dominio personalizado se confirma desde el panel de Deployments → Settings → Custom domains.
 2. **WhatsApp Business activo y verificado.** Webhook conectado en Meta Cloud API a `https://social-media-answerer.replit.app/api/webhooks/whatsapp`, suscripción al campo `messages` confirmada, JARVIS auto-responde por WhatsApp con catálogo en vivo. Secretos cargados (`WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_PHONE_NUMBER_ID`, `META_VERIFY_TOKEN`).
 
 Cualquier rediseño futuro debe mantener intactos estos circuitos: NO renombrar el endpoint `/api/webhooks/whatsapp`, NO cambiar el slug del deployment, NO romper las rutas `/` y `/jarvis/`.
