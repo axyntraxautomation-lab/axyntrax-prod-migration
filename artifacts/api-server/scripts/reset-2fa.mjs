@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+import readline from "node:readline/promises";
+import { stdin as input, stdout as output, argv, exit } from "node:process";
+
+const email = (argv[2] || "").trim().toLowerCase();
+
+if (!email) {
+  console.error("Uso: pnpm --filter @workspace/api-server run reset-2fa <email>");
+  console.error("Ejemplo: pnpm --filter @workspace/api-server run reset-2fa axyntraxautomation@gmail.com");
+  exit(1);
+}
+
+if (!process.env.DATABASE_URL) {
+  console.error("ERROR: La variable DATABASE_URL no está definida.");
+  exit(1);
+}
+
+const { db, usersTable } = await import("@workspace/db");
+const { eq } = await import("drizzle-orm");
+
+const [user] = await db
+  .select({
+    id: usersTable.id,
+    email: usersTable.email,
+    name: usersTable.name,
+    role: usersTable.role,
+    twofaEnabled: usersTable.twofaEnabled,
+    twofaSecret: usersTable.twofaSecret,
+  })
+  .from(usersTable)
+  .where(eq(usersTable.email, email))
+  .limit(1);
+
+if (!user) {
+  console.error(`ERROR: No existe ningún usuario con email "${email}".`);
+  exit(1);
+}
+
+console.log("--------------------------------------------------");
+console.log("Usuario encontrado:");
+console.log("  id:           ", user.id);
+console.log("  email:        ", user.email);
+console.log("  name:         ", user.name);
+console.log("  role:         ", user.role);
+console.log("  twofa_enabled:", user.twofaEnabled);
+console.log("  twofa_secret: ", user.twofaSecret ? "(definido)" : "(vacío)");
+console.log("--------------------------------------------------");
+console.log("");
+console.log("Esta acción borrará el secreto TOTP y el flag 2FA.");
+console.log("El próximo login del usuario disparará el QR de re-enrolamiento.");
+console.log("");
+
+const rl = readline.createInterface({ input, output });
+const answer = (await rl.question('Escribí "RESET" para confirmar: ')).trim();
+rl.close();
+
+if (answer !== "RESET") {
+  console.log("Cancelado. No se hicieron cambios.");
+  exit(0);
+}
+
+await db
+  .update(usersTable)
+  .set({
+    twofaSecret: null,
+    twofaEnabled: "false",
+    emailOtpHash: null,
+    emailOtpExpiresAt: null,
+  })
+  .where(eq(usersTable.id, user.id));
+
+console.log("");
+console.log("OK: 2FA reseteado para", user.email);
+console.log("Pasos para el usuario:");
+console.log("  1. Ir a /jarvis/login");
+console.log("  2. Ingresar email + contraseña actual");
+console.log("  3. Escanear el QR que aparece con Google Authenticator o Authy");
+console.log("  4. Ingresar el primer código de 6 dígitos para entrar");
+
+exit(0);
