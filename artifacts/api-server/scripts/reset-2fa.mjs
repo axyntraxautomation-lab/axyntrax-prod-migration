@@ -18,6 +18,24 @@ if (!process.env.DATABASE_URL) {
 
 const { db, usersTable, auditLogTable } = await import("@workspace/db");
 const { eq } = await import("drizzle-orm");
+const { notifyAdminTwofaResetAttempt } = await import("./security-alerts.mjs");
+
+async function alertIfAdmin(action, extra) {
+  try {
+    await notifyAdminTwofaResetAttempt({
+      action,
+      operator,
+      targetEmail: user.email,
+      targetRole: user.role,
+      extra,
+    });
+  } catch (err) {
+    console.error(
+      "ADVERTENCIA: fallo al enviar la alerta de seguridad:",
+      err?.message ?? err,
+    );
+  }
+}
 
 const [user] = await db
   .select({
@@ -100,6 +118,9 @@ if (answer !== "RESET") {
       err?.message ?? err,
     );
   }
+  await alertIfAdmin("auth.2fa.reset_cli.cancelled", {
+    confirmationAnswer: answer,
+  });
   console.log("Cancelado. No se hicieron cambios.");
   exit(0);
 }
@@ -122,6 +143,7 @@ try {
       meta: baseMeta,
     });
   });
+  await alertIfAdmin("auth.2fa.reset_cli", null);
 } catch (err) {
   const errorMessage = err?.message ?? String(err);
   console.error(
@@ -143,6 +165,7 @@ try {
       logErr?.message ?? logErr,
     );
   }
+  await alertIfAdmin("auth.2fa.reset_cli.failed", { error: errorMessage });
   exit(1);
 }
 
