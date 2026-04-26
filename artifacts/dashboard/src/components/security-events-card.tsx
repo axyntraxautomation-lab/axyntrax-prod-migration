@@ -521,6 +521,34 @@ function readInitialCustomDate(
   return fallback;
 }
 
+function formatCustomDateForDisplay(s: string): string {
+  const d = parseDateInputValue(s);
+  if (!d) return s;
+  return d.toLocaleDateString("es-PE");
+}
+
+// Devuelve un texto legible del rango activo o null si es "Cualquier fecha".
+// Para presets fijos usa el label del select ("Últimos 7 días"); para
+// "custom" formatea Desde/Hasta como "01/04/2026 → 26/04/2026" usando es-PE
+// (DD/MM/YYYY). Si en custom solo hay una de las dos fechas, lo refleja.
+function describeDateRange(
+  preset: DateRangeValue,
+  customFrom: string,
+  customTo: string,
+): string | null {
+  if (preset === "all") return null;
+  if (preset === "custom") {
+    const from = customFrom ? formatCustomDateForDisplay(customFrom) : null;
+    const to = customTo ? formatCustomDateForDisplay(customTo) : null;
+    if (from && to) return `${from} → ${to}`;
+    if (from) return `Desde ${from}`;
+    if (to) return `Hasta ${to}`;
+    return "Rango personalizado";
+  }
+  const opt = DATE_RANGE_OPTIONS.find((o) => o.value === preset);
+  return opt ? opt.label : null;
+}
+
 function computeDateRange(
   preset: DateRangeValue,
   customFrom: string,
@@ -808,6 +836,11 @@ export function SecurityEventsCard() {
     return result;
   }, [visibleEntries]);
 
+  const dateRangeSummary = useMemo(
+    () => describeDateRange(dateRange, customFrom, customTo),
+    [dateRange, customFrom, customTo],
+  );
+
   const filtersActive =
     category !== "all" || trimmedSearch.length > 0 || dateRange !== "all";
   const canLoadMore = !exhausted && totalLoaded > 0;
@@ -876,12 +909,23 @@ export function SecurityEventsCard() {
           </div>
 
           <div className="space-y-1">
-            <Label
-              htmlFor="audit-filter-date-range"
-              className="text-xs text-muted-foreground"
-            >
-              Rango de fechas
-            </Label>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Label
+                htmlFor="audit-filter-date-range"
+                className="text-xs text-muted-foreground"
+              >
+                Rango de fechas
+              </Label>
+              {dateRangeSummary && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] font-normal"
+                  data-testid="audit-filter-date-range-badge"
+                >
+                  {dateRangeSummary}
+                </Badge>
+              )}
+            </div>
             <Select
               value={dateRange}
               onValueChange={(value) => {
@@ -1038,9 +1082,13 @@ export function SecurityEventsCard() {
               className="flex flex-wrap items-center justify-between gap-2 mb-2"
               data-testid="audit-filter-summary"
             >
-              <span className="text-xs text-muted-foreground">
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="audit-filter-summary-text"
+              >
                 Mostrando {totalLoaded} evento{totalLoaded === 1 ? "" : "s"}
                 {filtersActive ? " (filtrado)" : ""}
+                {dateRangeSummary ? ` · Filtro: ${dateRangeSummary}` : ""}
                 {exhausted ? " · sin más eventos" : ""}
               </span>
               {canLoadMore && (
