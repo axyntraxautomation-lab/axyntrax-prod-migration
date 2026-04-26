@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import readline from "node:readline/promises";
+import os from "node:os";
 import { stdin as input, stdout as output, argv, exit } from "node:process";
 
 const email = (argv[2] || "").trim().toLowerCase();
@@ -15,7 +16,7 @@ if (!process.env.DATABASE_URL) {
   exit(1);
 }
 
-const { db, usersTable } = await import("@workspace/db");
+const { db, usersTable, auditLogTable } = await import("@workspace/db");
 const { eq } = await import("drizzle-orm");
 
 const [user] = await db
@@ -59,18 +60,58 @@ if (answer !== "RESET") {
   exit(0);
 }
 
-await db
-  .update(usersTable)
-  .set({
-    twofaSecret: null,
-    twofaEnabled: "false",
-    emailOtpHash: null,
-    emailOtpExpiresAt: null,
-  })
-  .where(eq(usersTable.id, user.id));
+const operator =
+  (process.env.AUDIT_OPERATOR || "").trim() ||
+  process.env.SUDO_USER ||
+  process.env.USER ||
+  process.env.LOGNAME ||
+  (() => {
+    try {
+      return os.userInfo().username;
+    } catch {
+      return "unknown";
+    }
+  })();
+
+try {
+  await db.transaction(async (tx) => {
+    await tx
+      .update(usersTable)
+      .set({
+        twofaSecret: null,
+        twofaEnabled: "false",
+        emailOtpHash: null,
+        emailOtpExpiresAt: null,
+      })
+      .where(eq(usersTable.id, user.id));
+
+    await tx.insert(auditLogTable).values({
+      userId: null,
+      action: "auth.2fa.reset_cli",
+      entityType: "user",
+      entityId: String(user.id),
+      ip: null,
+      userAgent: `reset-2fa-cli (host=${os.hostname()})`,
+      meta: {
+        operator,
+        targetEmail: user.email,
+        targetRole: user.role,
+        hadTwofaSecret: Boolean(user.twofaSecret),
+        twofaEnabledBefore: user.twofaEnabled,
+      },
+    });
+  });
+} catch (err) {
+  console.error(
+    "ERROR: Reset 2FA abortado: no se pudo aplicar el cambio + auditoría en la misma transacción.",
+  );
+  console.error(err?.message ?? err);
+  exit(1);
+}
 
 console.log("");
 console.log("OK: 2FA reseteado para", user.email);
+console.log("Operador registrado en bitácora:", operator);
 console.log("Pasos para el usuario:");
 console.log("  1. Ir a /jarvis/login");
 console.log("  2. Ingresar email + contraseña actual");
