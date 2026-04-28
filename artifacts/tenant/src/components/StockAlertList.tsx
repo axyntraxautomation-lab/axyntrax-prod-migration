@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, type InventarioItem } from "@/lib/api";
+import { useRealtimeRefetch } from "@/hooks/useRealtimeBus";
 
 const STOCK_THRESHOLD = 0.2; // 20%
 
@@ -21,22 +22,18 @@ export function StockAlertList() {
   const [items, setItems] = useState<InventarioItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  const fetchItems = useCallback(() => {
     apiGet<{ items: InventarioItem[] }>("/api/tenant/inventario")
-      .then((d) => {
-        if (!cancelled) setItems(d.items);
-      })
-      .catch(() => {
-        // ignore
-      })
-      .finally(() => {
-        if (!cancelled) setLoaded(true);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .then((d) => setItems(d.items))
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, []);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
+
+  useRealtimeRefetch(["tenant_inventario"], fetchItems);
 
   const sorted = useMemo(
     () =>

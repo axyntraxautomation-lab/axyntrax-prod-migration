@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTenantReady } from "@/providers/TenantProvider";
 import { apiGet, type FinanzaSummary } from "@/lib/api";
+import { useRealtimeRefetch } from "@/hooks/useRealtimeBus";
 
 type Channel = {
   id: "yape" | "plin" | "efectivo";
@@ -24,19 +25,22 @@ export function FinanceCard() {
   const simbolo = moneda === "PEN" ? "S/" : moneda;
   const [summary, setSummary] = useState<FinanzaSummary | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const refetch = useCallback(() => {
     apiGet<FinanzaSummary>("/api/tenant/finanzas/summary")
-      .then((s) => {
-        if (!cancelled) setSummary(s);
-      })
+      .then((s) => setSummary(s))
       .catch(() => {
         // Silencio: el componente queda con ceros si falla.
       });
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  useRealtimeRefetch(
+    ["tenant_finanzas_movimientos", "tenant_pagos_qr"],
+    refetch,
+  );
 
   const channels = CHANNELS.map((c) => ({
     ...c,

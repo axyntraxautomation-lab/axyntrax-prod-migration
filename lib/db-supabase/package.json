@@ -13,7 +13,8 @@
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
     "seed": "tsx ./src/seed/run.ts",
-    "bootstrap": "tsx ./scripts/bootstrap-roles.ts"
+    "bootstrap": "tsx ./scripts/bootstrap-roles.ts",
+    "install-rls": "tsx ./scripts/install-rls.ts"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",

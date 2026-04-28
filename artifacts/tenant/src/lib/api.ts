@@ -59,6 +59,15 @@ export async function apiSend<T>(
   return (await res.json()) as T;
 }
 
+export const apiPost = <T>(path: string, body?: unknown) =>
+  apiSend<T>("POST", path, body);
+export const apiPatch = <T>(path: string, body?: unknown) =>
+  apiSend<T>("PATCH", path, body);
+export const apiPut = <T>(path: string, body?: unknown) =>
+  apiSend<T>("PUT", path, body);
+export const apiDelete = <T>(path: string, body?: unknown) =>
+  apiSend<T>("DELETE", path, body);
+
 export type TenantMe = {
   tenant: {
     id: string;
@@ -90,6 +99,10 @@ export type TenantMe = {
     modulos: string[];
     kpis: string[];
     onboarding_steps: string[];
+  } | null;
+  realtime: {
+    supabaseUrl: string;
+    supabaseAnonKey: string;
   } | null;
 };
 

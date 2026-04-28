@@ -14,6 +14,7 @@ import {
   type TenantJwtResponse,
 } from "@/lib/api";
 import { redirectToPortalLogin } from "@/lib/portal-redirect";
+import { useTenantRealtimeBootstrap } from "@/hooks/useRealtimeBus";
 
 type TenantState =
   | { status: "loading" }
@@ -109,12 +110,23 @@ export function TenantProvider({ children }: { children: ReactNode }) {
     };
   }, [load]);
 
+  const getJwt = useCallback(() => jwtRef.current?.token ?? null, []);
+
   const value: TenantContextValue = {
     state,
     refresh: load,
     setMe: (me) => setState({ status: "ready", me }),
-    getJwt: () => jwtRef.current?.token ?? null,
+    getJwt,
   };
+
+  const realtime = state.status === "ready" ? state.me.realtime : null;
+  const tenantId = state.status === "ready" ? state.me.tenant.id : null;
+  useTenantRealtimeBootstrap({
+    url: realtime?.supabaseUrl ?? null,
+    anonKey: realtime?.supabaseAnonKey ?? null,
+    tenantId,
+    getJwt,
+  });
 
   return <TenantContext.Provider value={value}>{children}</TenantContext.Provider>;
 }

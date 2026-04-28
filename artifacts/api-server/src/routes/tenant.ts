@@ -381,6 +381,15 @@ router.get(
       ensureRubroExists(tenant.rubroId),
     ]);
 
+    // Config Realtime para el frontend (anon key es público por diseño,
+    // RLS endurecido + JWT por canal son la verdadera línea de defensa).
+    const supabaseUrl = process.env.SUPABASE_URL ?? null;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ?? null;
+    const realtime =
+      supabaseUrl && supabaseAnonKey
+        ? { supabaseUrl, supabaseAnonKey }
+        : null;
+
     res.json({
       tenant,
       branding,
@@ -395,6 +404,7 @@ router.get(
             onboarding_steps: rubro.onboarding_steps,
           }
         : null,
+      realtime,
     });
   },
 );

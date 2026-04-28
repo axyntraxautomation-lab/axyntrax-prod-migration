@@ -2,6 +2,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { ensureSeedData } from "./lib/seed";
 import { startJarvisAdScheduler } from "./lib/jarvis-ads-generator";
+import { startCeciliaRulesScheduler } from "./lib/cecilia-rules";
 
 const rawPort = process.env["PORT"];
 
@@ -26,4 +27,5 @@ app.listen(port, async (err) => {
   logger.info({ port }, "Server listening");
   await ensureSeedData();
   startJarvisAdScheduler();
+  startCeciliaRulesScheduler();
 });
