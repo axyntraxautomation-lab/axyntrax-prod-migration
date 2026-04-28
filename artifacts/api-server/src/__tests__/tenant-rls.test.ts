@@ -193,7 +193,7 @@ async function seedTenant(args: {
     tipo: "ingreso",
     monto: "100.00",
     moneda: "PEN",
-    canal: "yape",
+    metodoPago: "yape",
     concepto: `Ingreso ${args.slug}`,
   });
   await sdb.insert(tenantPagosQrTable).values({
