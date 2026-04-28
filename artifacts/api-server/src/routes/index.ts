@@ -28,6 +28,7 @@ import jarvisAdsRouter from "./jarvis-ads";
 import jarvisLiveRouter from "./jarvis-live";
 import tenantRouter from "./tenant";
 import tenantCeciliaRouter from "./tenant-cecilia";
+import tenantBusinessRouter from "./tenant-business";
 
 const router: IRouter = Router();
 
@@ -60,5 +61,6 @@ router.use(jarvisAdsRouter);
 router.use(jarvisLiveRouter);
 router.use(tenantRouter);
 router.use(tenantCeciliaRouter);
+router.use(tenantBusinessRouter);
 
 export default router;

@@ -114,3 +114,132 @@ export type CeciliaMessage = {
   content: string;
   created_at: string;
 };
+
+// ===== Entidades del negocio (Task #46) =====
+
+export type InventarioItem = {
+  id: string;
+  tenantId: string;
+  sku: string | null;
+  nombre: string;
+  categoria: string | null;
+  cantidad: string;
+  unidad: string;
+  minimoAlerta: string;
+  precioCosto: string | null;
+  precioVenta: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ServicioItem = {
+  id: string;
+  tenantId: string;
+  nombre: string;
+  descripcion: string | null;
+  categoria: string | null;
+  precio: string;
+  moneda: string;
+  duracionMinutos: number | null;
+  activo: boolean;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ClienteFinal = {
+  id: string;
+  tenantId: string;
+  nombre: string;
+  telefono: string | null;
+  email: string | null;
+  documentoTipo: string | null;
+  documentoNumero: string | null;
+  notas: string | null;
+  rubroData: Record<string, unknown>;
+  historial: unknown[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Cita = {
+  id: string;
+  tenantId: string;
+  clienteFinalId: string | null;
+  servicioId: string | null;
+  titulo: string | null;
+  fechaInicio: string;
+  fechaFin: string | null;
+  estado: string;
+  notas: string | null;
+  recordatorioEnviado: boolean;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanzaMov = {
+  id: string;
+  tenantId: string;
+  clienteFinalId: string | null;
+  tipo: "ingreso" | "egreso";
+  concepto: string | null;
+  monto: string;
+  moneda: string;
+  metodoPago: string;
+  estado: string;
+  fecha: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanzaSummary = {
+  dia: { ingreso: number; egreso: number; balance: number };
+  semana: { ingreso: number; egreso: number; balance: number };
+  mes: { ingreso: number; egreso: number; balance: number };
+  canalesMes: Record<string, number>;
+  moneda: string;
+};
+
+export type Alerta = {
+  id: string;
+  tenantId: string;
+  tipo: string;
+  severidad: string;
+  titulo: string;
+  detalle: string | null;
+  payload: Record<string, unknown>;
+  leida: boolean;
+  resueltaEn: string | null;
+  createdAt: string;
+};
+
+export type FaqOverride = {
+  id: string;
+  tenantId: string;
+  pregunta: string;
+  respuesta: string;
+  categoria: string | null;
+  orden: number;
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PagoQr = {
+  id: string;
+  tenantId: string;
+  clienteFinalId: string | null;
+  metodo: "yape" | "plin";
+  monto: string;
+  moneda: string;
+  concepto: string | null;
+  qrDataUrl: string | null;
+  estado: "pendiente" | "confirmado" | "anulado";
+  confirmadoEn: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};

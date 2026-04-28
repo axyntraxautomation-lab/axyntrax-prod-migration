@@ -4,6 +4,13 @@ import { BrandingStyles } from "@/providers/BrandingStyles";
 import { Onboarding } from "@/pages/Onboarding";
 import { Dashboard } from "@/pages/Dashboard";
 import { Faq } from "@/pages/Faq";
+import { FaqEditor } from "@/pages/FaqEditor";
+import { Inventario } from "@/pages/Inventario";
+import { Catalogo } from "@/pages/Catalogo";
+import { Clientes } from "@/pages/Clientes";
+import { Agenda } from "@/pages/Agenda";
+import { Finanzas } from "@/pages/Finanzas";
+import { Pagos } from "@/pages/Pagos";
 import { LoadingScreen } from "@/pages/LoadingScreen";
 import { ErrorScreen } from "@/pages/ErrorScreen";
 
@@ -44,6 +51,27 @@ function GatedRoutes() {
       </Route>
       <Route path="/t/:slug/dashboard">
         <SlugGate><Dashboard /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/inventario">
+        <SlugGate><Inventario /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/catalogo">
+        <SlugGate><Catalogo /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/clientes">
+        <SlugGate><Clientes /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/agenda">
+        <SlugGate><Agenda /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/finanzas">
+        <SlugGate><Finanzas /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/pagos">
+        <SlugGate><Pagos /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/faq/editar">
+        <SlugGate><FaqEditor /></SlugGate>
       </Route>
       <Route path="/t/:slug/faq">
         <SlugGate><Faq /></SlugGate>

@@ -1,69 +1,49 @@
-import { useMemo } from "react";
-import { useTenantReady } from "@/providers/TenantProvider";
-
-type StockItem = {
-  id: string;
-  nombre: string;
-  unidad: string;
-  stock_actual: number;
-  stock_minimo: number;
-};
+import { useEffect, useMemo, useState } from "react";
+import { apiGet, type InventarioItem } from "@/lib/api";
 
 const STOCK_THRESHOLD = 0.2; // 20%
 
+function ratio(it: InventarioItem): number {
+  const m = Number(it.minimoAlerta);
+  if (m <= 0) return 1;
+  return Number(it.cantidad) / m;
+}
+function isCritical(it: InventarioItem): boolean {
+  return ratio(it) < STOCK_THRESHOLD;
+}
+
 /**
- * Items de muestra por rubro para evidenciar la lógica de alertas mientras
- * la Tarea #3 conecta tenant_inventario en realtime. Cuando llegue el
- * inventario real, sólo cambia el origen de `items` y el render no se toca.
+ * Lista resumida de alertas de stock, leyendo el inventario real del tenant.
+ * Resalta en rojo los items críticos (ratio < 20% del mínimo). Para el
+ * detalle completo el tenant abre /t/:slug/inventario.
  */
-const SAMPLE_ITEMS_BY_RUBRO: Record<string, StockItem[]> = {
-  car_wash: [
-    { id: "shampoo", nombre: "Shampoo industrial", unidad: "L", stock_actual: 3, stock_minimo: 20 },
-    { id: "cera", nombre: "Cera líquida premium", unidad: "L", stock_actual: 8, stock_minimo: 15 },
-    { id: "microfibra", nombre: "Paño microfibra", unidad: "und", stock_actual: 40, stock_minimo: 30 },
-  ],
-  restaurante: [
-    { id: "aceite", nombre: "Aceite vegetal", unidad: "L", stock_actual: 2, stock_minimo: 25 },
-    { id: "arroz", nombre: "Arroz superior", unidad: "kg", stock_actual: 12, stock_minimo: 40 },
-  ],
-  bodega: [
-    { id: "gaseosa", nombre: "Gaseosa 500ml", unidad: "und", stock_actual: 6, stock_minimo: 48 },
-    { id: "leche", nombre: "Leche evaporada", unidad: "und", stock_actual: 18, stock_minimo: 36 },
-  ],
-  farmacia: [
-    { id: "ibuprofeno", nombre: "Ibuprofeno 400mg", unidad: "caja", stock_actual: 1, stock_minimo: 10 },
-  ],
-  salon: [
-    { id: "tintura", nombre: "Tintura castaño", unidad: "und", stock_actual: 2, stock_minimo: 12 },
-  ],
-  taller: [
-    { id: "aceite_motor", nombre: "Aceite 10W-40", unidad: "L", stock_actual: 4, stock_minimo: 24 },
-  ],
-  gimnasio: [],
-  consultoria: [],
-  logistica: [],
-};
-
-function computeRatio(item: StockItem): number {
-  if (item.stock_minimo <= 0) return 1;
-  return item.stock_actual / item.stock_minimo;
-}
-
-function isCritical(item: StockItem): boolean {
-  return computeRatio(item) < STOCK_THRESHOLD;
-}
-
 export function StockAlertList() {
-  const me = useTenantReady();
-  const rubroId = me.tenant.rubroId;
+  const [items, setItems] = useState<InventarioItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
-  const items = useMemo<StockItem[]>(
-    () => SAMPLE_ITEMS_BY_RUBRO[rubroId] ?? [],
-    [rubroId],
-  );
+  useEffect(() => {
+    let cancelled = false;
+    apiGet<{ items: InventarioItem[] }>("/api/tenant/inventario")
+      .then((d) => {
+        if (!cancelled) setItems(d.items);
+      })
+      .catch(() => {
+        // ignore
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const sorted = useMemo(
-    () => [...items].sort((a, b) => computeRatio(a) - computeRatio(b)),
+    () =>
+      items
+        .filter((it) => Number(it.minimoAlerta) > 0)
+        .sort((a, b) => ratio(a) - ratio(b))
+        .slice(0, 6),
     [items],
   );
   const criticalCount = sorted.filter(isCritical).length;
@@ -78,7 +58,9 @@ export function StockAlertList() {
         <span className="text-[11px] text-gray-400">
           {criticalCount > 0
             ? `${criticalCount} crítico${criticalCount === 1 ? "" : "s"}`
-            : "tiempo real"}
+            : loaded
+              ? "todo en orden"
+              : "cargando…"}
         </span>
       </header>
       {sorted.length === 0 ? (
@@ -86,13 +68,17 @@ export function StockAlertList() {
           className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500"
           data-testid="stock-empty"
         >
-          Aún no hay inventario cargado para tu rubro.
+          {loaded
+            ? "Aún no hay inventario con mínimos configurados."
+            : "Cargando inventario…"}
         </p>
       ) : (
         <ul className="space-y-2">
           {sorted.map((item) => {
             const critical = isCritical(item);
-            const pct = Math.round(computeRatio(item) * 100);
+            const pct = Math.round(ratio(item) * 100);
+            const cantidad = Number(item.cantidad);
+            const minimo = Number(item.minimoAlerta);
             return (
               <li
                 key={item.id}
@@ -110,8 +96,7 @@ export function StockAlertList() {
                     {item.nombre}
                   </div>
                   <div className="text-[11px] text-gray-500">
-                    {item.stock_actual} {item.unidad} · mínimo {item.stock_minimo}{" "}
-                    {item.unidad}
+                    {cantidad} {item.unidad} · mínimo {minimo} {item.unidad}
                   </div>
                 </div>
                 {critical ? (

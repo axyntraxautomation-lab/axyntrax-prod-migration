@@ -1,30 +1,49 @@
+import { useEffect, useState } from "react";
 import { useTenantReady } from "@/providers/TenantProvider";
+import { apiGet, type FinanzaSummary } from "@/lib/api";
 
 type Channel = {
   id: "yape" | "plin" | "efectivo";
   label: string;
-  amount: number;
 };
 
+const CHANNELS: Channel[] = [
+  { id: "yape", label: "Yape" },
+  { id: "plin", label: "Plin" },
+  { id: "efectivo", label: "Efectivo" },
+];
+
 /**
- * Tarjeta de finanzas: muestra ingresos del día por canal de pago
- * (Yape, Plin, efectivo) y el total. Los montos quedan en cero hasta que
- * la Tarea #3 conecte tenant_finanzas_movimientos en realtime; la
- * estructura ya soporta los datos reales sin tocar el componente.
+ * Tarjeta de finanzas: ingresos del día por canal de pago (Yape, Plin,
+ * efectivo) y total. Lee de /api/tenant/finanzas/summary que ya filtra por
+ * tenant_id en el backend.
  */
 export function FinanceCard() {
   const me = useTenantReady();
   const moneda = me.tenant.moneda || "PEN";
   const simbolo = moneda === "PEN" ? "S/" : moneda;
+  const [summary, setSummary] = useState<FinanzaSummary | null>(null);
 
-  // Datos reales llegan en Tarea #3 (Supabase realtime). Por ahora ceros
-  // tipados con la misma forma para que el componente no cambie.
-  const channels: Channel[] = [
-    { id: "yape", label: "Yape", amount: 0 },
-    { id: "plin", label: "Plin", amount: 0 },
-    { id: "efectivo", label: "Efectivo", amount: 0 },
-  ];
-  const total = channels.reduce((sum, c) => sum + c.amount, 0);
+  useEffect(() => {
+    let cancelled = false;
+    apiGet<FinanzaSummary>("/api/tenant/finanzas/summary")
+      .then((s) => {
+        if (!cancelled) setSummary(s);
+      })
+      .catch(() => {
+        // Silencio: el componente queda con ceros si falla.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const channels = CHANNELS.map((c) => ({
+    ...c,
+    amount: summary?.canalesMes[c.id] ?? 0,
+  }));
+  const total = summary?.dia.balance ?? 0;
+  const ingresoDia = summary?.dia.ingreso ?? 0;
   const formatter = new Intl.NumberFormat("es-PE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -39,7 +58,7 @@ export function FinanceCard() {
       <header className="mb-3 flex items-baseline justify-between">
         <h3 className="text-sm font-semibold text-gray-900">Caja del día</h3>
         <span className="text-[11px] uppercase tracking-wider text-gray-400">
-          ingresos por canal
+          ingresos del mes por canal
         </span>
       </header>
       <ul className="grid grid-cols-3 gap-2">
@@ -66,7 +85,14 @@ export function FinanceCard() {
         }}
         data-testid="finance-total"
       >
-        <span className="text-xs font-medium uppercase opacity-90">Total hoy</span>
+        <div className="leading-tight">
+          <div className="text-[10px] font-medium uppercase opacity-90">
+            Balance hoy
+          </div>
+          <div className="text-[10px] opacity-80">
+            ingresos {fmt(ingresoDia)}
+          </div>
+        </div>
         <span className="text-base font-bold">{fmt(total)}</span>
       </div>
     </section>
