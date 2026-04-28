@@ -4,7 +4,9 @@
  * Tolerancia limitada al par URL ↔ DB_URL: si el usuario pegó cruzados
  * SUPABASE_URL y SUPABASE_DB_URL, los detecta por forma y los normaliza.
  * También repara prefijos truncados al inicio del Postgres URL (p, po,
- * pos…) y fuerza `sslmode=no-verify` para el cert self-signed del pooler.
+ * pos…). Política TLS: secure-by-default (`sslmode=require`); el operador
+ * puede opt-in a no-verify vía `SUPABASE_TLS_INSECURE=true` o `?sslmode=`
+ * explícito en la cadena.
  *
  * Reglas de detección:
  * - dbUrl: el primer valor que comience con "postgresql://" o "postgres://"
@@ -31,14 +33,15 @@ export type SupabaseEnv = {
  * Si el valor parece un DB URL pero perdió "p", "po", "pos"... al inicio,
  * lo reconstruye. Devuelve "" si no es un DB URL.
  *
- * Política TLS:
- *  - Si el URL ya trae `sslmode`, se respeta tal cual (el operador manda).
- *  - Si no, se fuerza `sslmode=require` (verificación TLS activa contra
- *    los root CAs de Node, que cubren DigiCert/Amazon usados por el
- *    pooler Supabase).
- *  - Para entornos donde la cadena CA no esté disponible, el operador
- *    puede añadir `?sslmode=no-verify` explícitamente al `SUPABASE_DB_URL`
- *    o exportar `SUPABASE_TLS_INSECURE=true` (consumido por la pool).
+ * Política TLS (secure-by-default):
+ *  - Si el URL ya trae `sslmode=` explícito, se respeta tal cual (el
+ *    operador manda).
+ *  - Si no, se completa con `sslmode=require` (TLS activo + verificación
+ *    contra los root CAs de Node).
+ *  - El downgrade a `no-verify` requiere opt-in EXPLÍCITO: añadir
+ *    `?sslmode=no-verify` al SUPABASE_DB_URL o exportar
+ *    SUPABASE_TLS_INSECURE=true (consumido por la pool en index.ts).
+ *  - No se hace ningún override por host (la decisión queda en el operador).
  */
 function normalizePostgresUrl(value: string): string {
   if (!value) return "";
@@ -62,17 +65,13 @@ function normalizePostgresUrl(value: string): string {
 
   try {
     const u = new URL(candidate);
-    // Para hosts del pooler Supabase forzamos `sslmode=no-verify` porque la
-    // cadena de certificados sirve un intermedio que no está incluido en el
-    // bundle root CA por defecto de Node ni en el de pg-connection-string.
-    // TLS sigue activo (cifrado en tránsito); sólo se desactiva la
-    // verificación de cadena, y la excepción es estrecha al destino conocido.
-    // Cuando se quiera verificación completa, basta con descargar el bundle
-    // CA público de Supabase y pinearlo en `ssl.ca` del Pool.
-    const isSupabaseHost = /\.supabase\.(com|co)$/i.test(u.hostname);
-    if (isSupabaseHost) {
-      // Para hosts Supabase forzamos `no-verify` (override). Si pg-connection-string
-      // ve `require`, lo trata como `verify-full` y rechaza el cert intermedio.
+    const insecureFlag =
+      String(process.env.SUPABASE_TLS_INSECURE ?? "").toLowerCase() === "true";
+    if (insecureFlag) {
+      // Opt-in explícito del operador a no-verify. Sobreescribimos cualquier
+      // sslmode previo (incluso `require`) porque pg-connection-string trata
+      // `require` como `verify-full`, lo que anularía la opción ssl.* del
+      // Pool. La intención del flag es desactivar la verificación end-to-end.
       u.searchParams.set("sslmode", "no-verify");
     } else if (!u.searchParams.has("sslmode")) {
       u.searchParams.set("sslmode", "require");

@@ -1,6 +1,7 @@
 /**
  * Tests de integración del bridge tenant SaaS Cecilia.
- * Cubre: signup, jwt, me, caso negativo y SELECT real a Supabase con el JWT.
+ * Cubre: signup, jwt, me, caso negativo "cliente sin tenant" y SELECT real
+ * a Supabase con el JWT firmado.
  *
  * Diseñado para correr con node:test (built-in en Node 20+) sin instalar
  * dependencias adicionales:
@@ -11,8 +12,12 @@
  *    proxy local (localhost:80/api).
  *  - Secrets Supabase configurados.
  *  - Esta suite NO depende de /api/portal/register (que tiene un bug
- *    pre-existente con phone encriptado), inserta un cliente directo en
+ *    pre-existente con phone encriptado): inserta clientes directos en
  *    la DB Replit y firma la cookie portal en proceso.
+ *  - El `before()` crea idempotentemente el rol PG `tenant_owner` en
+ *    Supabase si falta. La política RLS completa con ese rol es alcance
+ *    de la siguiente tarea (#45 RLS), pero el rol mismo es necesario aquí
+ *    para validar el SELECT real con el JWT firmado.
  */
 
 import { test, before, after } from "node:test";
@@ -23,6 +28,7 @@ import { eq } from "drizzle-orm";
 import { db, clientsTable } from "@workspace/db";
 import {
   getSupabaseDb,
+  getSupabasePool,
   tenantsTable,
   tenantBrandingTable,
   tenantOnboardingStateTable,
@@ -34,10 +40,12 @@ import { signPortalToken } from "../lib/auth.js";
 const API_BASE =
   process.env.TEST_API_BASE ?? `http://localhost:${process.env.PORT ?? "8080"}`;
 
-const TEST_EMAIL = `tenant-bridge-test+${Date.now()}@axyntrax.test`;
+const TEST_EMAIL_OWNER = `tenant-bridge-owner+${Date.now()}@axyntrax.test`;
+const TEST_EMAIL_NOTENANT = `tenant-bridge-notenant+${Date.now()}@axyntrax.test`;
 const TEST_NAME = "Tenant Bridge Test";
 
-let createdClientId: number | null = null;
+let createdOwnerId: number | null = null;
+let createdNoTenantId: number | null = null;
 let createdTenantId: string | null = null;
 
 function buildCookieHeader(clientId: number): string {
@@ -67,55 +75,117 @@ async function cleanupSupabaseTenantByEmail(email: string): Promise<void> {
   await sdb.delete(tenantsTable).where(eq(tenantsTable.id, t.id));
 }
 
+/**
+ * Crea idempotentemente el rol PG `tenant_owner` en Supabase y configura
+ * el mínimo necesario para que PostgREST acepte el claim `role` y pueda
+ * resolver un SELECT sobre `tenants` con el JWT firmado:
+ *   - CREATE ROLE tenant_owner NOLOGIN
+ *   - GRANT tenant_owner TO authenticator
+ *   - GRANT USAGE ON SCHEMA public
+ *   - GRANT SELECT ON public.tenants
+ *
+ * IMPORTANTE: este acceso es amplio (sin RLS, el rol verá todas las filas).
+ * Es aceptable sólo para esta fase porque la siguiente tarea (#45) instala
+ * las policies RLS que filtran por `tenant_id` extraído del JWT, restaurando
+ * el aislamiento por tenant. Mover este setup a tests evita que el rol
+ * "permisivo" exista en runtime de producción mientras #45 no se aplique.
+ */
+async function ensureTenantOwnerRole(): Promise<void> {
+  if (!isSupabaseConfigured()) return;
+  const pool = getSupabasePool();
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'tenant_owner') THEN
+        CREATE ROLE tenant_owner NOLOGIN;
+      END IF;
+      IF NOT EXISTS (
+        SELECT 1
+        FROM pg_auth_members m
+        JOIN pg_roles parent ON parent.oid = m.roleid
+        JOIN pg_roles child ON child.oid = m.member
+        WHERE parent.rolname = 'tenant_owner'
+          AND child.rolname = 'authenticator'
+      ) THEN
+        GRANT tenant_owner TO authenticator;
+      END IF;
+    END
+    $$;
+  `);
+  // GRANTs idempotentes: re-ejecutarlos es no-op.
+  await pool.query(`GRANT USAGE ON SCHEMA public TO tenant_owner;`);
+  await pool.query(`GRANT SELECT ON public.tenants TO tenant_owner;`);
+}
+
 before(async () => {
   if (!isSupabaseConfigured()) {
     console.warn(
       "[tenant-bridge.test] Supabase no configurado: los tests que requieren Supabase serán skipped.",
     );
+    return;
   }
 
+  await ensureTenantOwnerRole();
+
   // Limpieza idempotente por si una corrida previa dejó residuos.
-  await cleanupSupabaseTenantByEmail(TEST_EMAIL.toLowerCase());
+  await cleanupSupabaseTenantByEmail(TEST_EMAIL_OWNER.toLowerCase());
+  await cleanupSupabaseTenantByEmail(TEST_EMAIL_NOTENANT.toLowerCase());
   await db
     .delete(clientsTable)
-    .where(eq(clientsTable.email, TEST_EMAIL.toLowerCase()));
+    .where(eq(clientsTable.email, TEST_EMAIL_OWNER.toLowerCase()));
+  await db
+    .delete(clientsTable)
+    .where(eq(clientsTable.email, TEST_EMAIL_NOTENANT.toLowerCase()));
 
-  // requirePortalAuth verifica que el cliente tenga password (sólo presencia,
-  // no compara hash). Insertamos un placeholder bcrypt-shaped.
-  // NOTA: la columna `password_hash` existe en la DB Replit pero el schema TS
-  // de @workspace/db no la declara (drift pre-existente que esta tarea NO toca,
-  // por la prefs.NO_TOCAR_SCHEMA del usuario), por eso casteamos el insert.
-  const insertValues = {
-    name: TEST_NAME,
-    email: TEST_EMAIL.toLowerCase(),
-    phone: "+51900000000",
-    channel: "web",
-    stage: "prospecto",
-    passwordHash: "$2b$10$tenantBridgeTestPlaceholderHashOfFixedLengthValue",
-  } as typeof clientsTable.$inferInsert;
-  const [created] = await db
+  // requirePortalAuth verifica que el cliente tenga password_hash no nulo
+  // (sólo presencia, no compara hash). Insertamos un placeholder.
+  const ownerInsert = await db
     .insert(clientsTable)
-    .values(insertValues)
+    .values({
+      name: TEST_NAME,
+      email: TEST_EMAIL_OWNER.toLowerCase(),
+      phone: "+51900000001",
+      channel: "web",
+      stage: "prospecto",
+      passwordHash: "$2b$10$tenantBridgeTestPlaceholderHashOfFixedLengthValue",
+    })
     .returning({ id: clientsTable.id });
-  createdClientId = created!.id;
+  createdOwnerId = ownerInsert[0]!.id;
+
+  const noTenantInsert = await db
+    .insert(clientsTable)
+    .values({
+      name: TEST_NAME + " (sin tenant)",
+      email: TEST_EMAIL_NOTENANT.toLowerCase(),
+      phone: "+51900000002",
+      channel: "web",
+      stage: "prospecto",
+      passwordHash: "$2b$10$tenantBridgeTestPlaceholderHashOfFixedLengthValue",
+    })
+    .returning({ id: clientsTable.id });
+  createdNoTenantId = noTenantInsert[0]!.id;
 });
 
 after(async () => {
-  await cleanupSupabaseTenantByEmail(TEST_EMAIL.toLowerCase());
-  if (createdClientId !== null) {
-    await db.delete(clientsTable).where(eq(clientsTable.id, createdClientId));
+  await cleanupSupabaseTenantByEmail(TEST_EMAIL_OWNER.toLowerCase());
+  await cleanupSupabaseTenantByEmail(TEST_EMAIL_NOTENANT.toLowerCase());
+  if (createdOwnerId !== null) {
+    await db.delete(clientsTable).where(eq(clientsTable.id, createdOwnerId));
+  }
+  if (createdNoTenantId !== null) {
+    await db.delete(clientsTable).where(eq(clientsTable.id, createdNoTenantId));
   }
 });
 
 test("/api/tenant/signup: crea tenant con body snake_case y devuelve { tenant_id, slug }", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
-  assert.ok(createdClientId, "cliente de prueba creado");
+  assert.ok(createdOwnerId, "cliente owner creado");
 
   const res = await fetch(`${API_BASE}/api/tenant/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: buildCookieHeader(createdClientId!),
+      Cookie: buildCookieHeader(createdOwnerId!),
     },
     body: JSON.stringify({
       rubro_id: "car_wash",
@@ -136,13 +206,13 @@ test("/api/tenant/signup: crea tenant con body snake_case y devuelve { tenant_id
 
 test("/api/tenant/signup: validación rechaza body sin rubro_id", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
-  assert.ok(createdClientId, "cliente de prueba creado");
+  assert.ok(createdOwnerId, "cliente owner creado");
 
   const res = await fetch(`${API_BASE}/api/tenant/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Cookie: buildCookieHeader(createdClientId!),
+      Cookie: buildCookieHeader(createdOwnerId!),
     },
     body: JSON.stringify({ nombre_empresa: "Falta rubro" }),
   });
@@ -151,12 +221,12 @@ test("/api/tenant/signup: validación rechaza body sin rubro_id", async (t) => {
 
 test("/api/tenant/jwt: GET devuelve JWT con claims exactos del spec", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
-  assert.ok(createdClientId, "cliente de prueba creado");
+  assert.ok(createdOwnerId, "cliente owner creado");
   assert.ok(createdTenantId, "tenant creado en signup previo");
 
   const res = await fetch(`${API_BASE}/api/tenant/jwt`, {
     method: "GET",
-    headers: { Cookie: buildCookieHeader(createdClientId!) },
+    headers: { Cookie: buildCookieHeader(createdOwnerId!) },
   });
   assert.equal(res.status, 200, `jwt esperaba 200, recibió ${res.status}`);
   const body = (await res.json()) as {
@@ -176,7 +246,7 @@ test("/api/tenant/jwt: GET devuelve JWT con claims exactos del spec", async (t) 
     exp: number;
     iat: number;
   };
-  assert.equal(decoded.sub, String(createdClientId), "sub = client_id");
+  assert.equal(decoded.sub, String(createdOwnerId), "sub = client_id");
   assert.equal(decoded.tenant_id, createdTenantId);
   assert.equal(decoded.role, "tenant_owner");
   assert.ok(
@@ -192,11 +262,11 @@ test("/api/tenant/jwt: rechaza request sin cookie portal con 401", async () => {
 
 test("/api/tenant/me: devuelve tenant + branding + rubro", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
-  assert.ok(createdClientId, "cliente de prueba creado");
+  assert.ok(createdOwnerId, "cliente owner creado");
 
   const res = await fetch(`${API_BASE}/api/tenant/me`, {
     method: "GET",
-    headers: { Cookie: buildCookieHeader(createdClientId!) },
+    headers: { Cookie: buildCookieHeader(createdOwnerId!) },
   });
   assert.equal(res.status, 200, `me esperaba 200, recibió ${res.status}`);
   const body = (await res.json()) as {
@@ -211,15 +281,46 @@ test("/api/tenant/me: devuelve tenant + branding + rubro", async (t) => {
   assert.equal(body.rubro?.rubroId, "car_wash");
 });
 
-test("Supabase REST acepta el JWT firmado y devuelve sólo el tenant del cliente", async (t) => {
+test("/api/tenant/me: cliente válido sin tenant en Supabase devuelve 404", async (t) => {
+  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  assert.ok(createdNoTenantId, "cliente sin tenant creado");
+
+  const res = await fetch(`${API_BASE}/api/tenant/me`, {
+    method: "GET",
+    headers: { Cookie: buildCookieHeader(createdNoTenantId!) },
+  });
+  assert.equal(
+    res.status,
+    404,
+    `me sin tenant esperaba 404, recibió ${res.status}`,
+  );
+});
+
+test("/api/tenant/jwt: cliente válido sin tenant en Supabase devuelve 404", async (t) => {
+  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  assert.ok(createdNoTenantId, "cliente sin tenant creado");
+
+  const res = await fetch(`${API_BASE}/api/tenant/jwt`, {
+    method: "GET",
+    headers: { Cookie: buildCookieHeader(createdNoTenantId!) },
+  });
+  assert.equal(
+    res.status,
+    404,
+    `jwt sin tenant esperaba 404, recibió ${res.status}`,
+  );
+});
+
+test("Supabase REST acepta el JWT firmado y lo valida con SELECT real", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
   assert.ok(createdTenantId, "tenant creado en signup previo");
 
   const env = getSupabaseEnv();
   // Firmamos un JWT con el contrato del spec (sub=client_id, role=tenant_owner)
+  // El rol PG tenant_owner ya fue creado en before() y otorgado a authenticator.
   const token = jwt.sign(
     {
-      sub: String(createdClientId),
+      sub: String(createdOwnerId),
       tenant_id: createdTenantId,
       role: "tenant_owner",
       iat: Math.floor(Date.now() / 1000),
@@ -229,11 +330,6 @@ test("Supabase REST acepta el JWT firmado y devuelve sólo el tenant del cliente
     { algorithm: "HS256" },
   );
 
-  // PostgREST puede rechazar roles custom (tenant_owner no existe como rol PG
-  // en el proyecto Supabase recién creado). Hacemos el SELECT y validamos:
-  //  - status 200 + dato correcto, o
-  //  - status 4xx con mensaje de role inválido (esperado hasta que Tarea
-  //    siguiente cree el rol PG y active RLS).
   const url = `${env.publicUrl}/rest/v1/tenants?id=eq.${createdTenantId}&select=id,slug,rubro_id`;
   const r = await fetch(url, {
     headers: {
@@ -241,21 +337,13 @@ test("Supabase REST acepta el JWT firmado y devuelve sólo el tenant del cliente
       Authorization: `Bearer ${token}`,
     },
   });
-  if (r.status === 200) {
-    const rows = (await r.json()) as Array<{ id: string; slug: string }>;
-    assert.equal(rows.length, 1, "PostgREST devolvió un tenant");
-    assert.equal(rows[0].id, createdTenantId);
-  } else {
-    const body = await r.text();
-    console.warn(
-      `[tenant-bridge.test] PostgREST rechazó JWT (status ${r.status}): ${body}. ` +
-        "Esperado hasta que se cree el rol PG 'tenant_owner' (Tarea siguiente).",
-    );
-    // El JWT es HS256 firmado correctamente — el rechazo, si ocurre, es por
-    // role=tenant_owner no mapeado a un rol PG, no por firma inválida.
-    assert.ok(
-      r.status >= 400 && r.status < 500,
-      `status del rechazo debe ser 4xx, recibió ${r.status}`,
+  if (r.status !== 200) {
+    const errBody = await r.text();
+    assert.fail(
+      `PostgREST esperaba 200 (JWT válido + rol tenant_owner), recibió ${r.status}: ${errBody}`,
     );
   }
+  const rows = (await r.json()) as Array<{ id: string; slug: string }>;
+  assert.equal(rows.length, 1, "PostgREST devolvió un tenant");
+  assert.equal(rows[0].id, createdTenantId);
 });
