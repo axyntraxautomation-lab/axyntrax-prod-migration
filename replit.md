@@ -27,6 +27,7 @@ AXYNTRAX DASHBOARD SUPREMO is an enterprise dashboard designed to centralize and
 - I prefer an iterative development approach.
 - Ask before making major changes.
 - Do not make changes to folder `lib/db/src/schema`.
+- **Idioma obligatorio: español latinoamericano (Perú). Prohibido inglés y español de España.** Aplica a toda copia visible al usuario (portal público, dashboard JARVIS, mensajes de error de la API que viajan al cliente, correos automáticos, textos generados por la IA de anuncios, labels de formularios, tooltips, toasts, estados vacíos). NO aplica a logs internos, comentarios de código, identificadores de DB ni a marcas/términos técnicos ya peruanizados ("JARVIS", "AXYNTRAX", "Yape", "login", "dashboard", "bot", "API"). Reemplazar formas de España (`vosotros`, `ordenador`, `móvil` como teléfono, `fichero`, `vale`, `coger`, `zumo`, `patata`, `ratón` como mouse, `pulsar` como hacer clic) por la forma Perú (`ustedes`, `computadora`/`PC`, `celular`, `archivo`, `ok`/`está bien`, `agarrar`/`tomar`, `jugo`, `papa`, `mouse`, `hacer clic`).
 
 ## System Architecture
 
@@ -35,7 +36,7 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
 **UI/UX Decisions:**
 - **Branding:** AXYNTRAX logo is consistently displayed.
 - **Color Scheme:** Cyan/turquoise primary color on a dark canvas, using TailwindCSS tokens. Features a unified visual language of "aerospace cockpit / AI operations room" with specific tokens for canvas, signature cyan, plasma violet, and display fonts (Space Grotesk, JetBrains Mono).
-- **Language:** UI is entirely in Spanish.
+- **Language:** Idioma obligatorio en toda la copia visible: **español latinoamericano (Perú)**. Prohibido inglés y español de España. Ver la regla completa en "User Preferences" (palabras a reemplazar). Logs internos, comentarios y claves de DB no cuentan como copia visible.
 - **No Emojis:** Emojis are explicitly excluded from the UI.
 - **Frontend Framework:** React 18 with Vite 7, Wouter for routing, TanStack Query for data fetching, TailwindCSS for styling, shadcn/ui for components, and lucide-react for icons. PWA features are included.
 - **Shared Primitives:** Custom `GlassCard`, `GradientButton`, `BlueprintBackdrop`, `SectionHeader`, `StatusPill`, `KpiTile`, `JarvisAvatar`, `ChatBubble`, `ChatTypingIndicator`, and `EmptyPremium` components apply a consistent premium look across the public portal and internal dashboard.

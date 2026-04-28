@@ -249,12 +249,12 @@ export async function requireAuth(
 ): Promise<void> {
   const token = getTokenFromRequest(req);
   if (!token) {
-    res.status(401).json({ error: "Not authenticated" });
+    res.status(401).json({ error: "No autenticado" });
     return;
   }
   const decoded = verifyToken(token);
   if (!decoded) {
-    res.status(401).json({ error: "Invalid or expired session" });
+    res.status(401).json({ error: "Sesión inválida o vencida" });
     return;
   }
   const [user] = await db
@@ -263,7 +263,7 @@ export async function requireAuth(
     .where(eq(usersTable.id, decoded.id))
     .limit(1);
   if (!user) {
-    res.status(401).json({ error: "User no longer exists" });
+    res.status(401).json({ error: "El usuario ya no existe" });
     return;
   }
   req.user = {
@@ -278,11 +278,11 @@ export async function requireAuth(
 export function requireRole(...allowed: string[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
+      res.status(401).json({ error: "No autenticado" });
       return;
     }
     if (!allowed.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden" });
+      res.status(403).json({ error: "Prohibido" });
       return;
     }
     next();

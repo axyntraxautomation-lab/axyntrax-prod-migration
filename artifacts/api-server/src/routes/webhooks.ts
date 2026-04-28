@@ -35,7 +35,7 @@ router.post("/webhooks/web", async (req, res) => {
   }
   const auth = req.header("authorization") ?? "";
   if (auth !== `Bearer ${WEB_FORM_TOKEN}`) {
-    res.status(401).json({ error: "Invalid bearer token" });
+    res.status(401).json({ error: "Bearer token inválido" });
     return;
   }
   const body = req.body ?? {};
@@ -45,7 +45,7 @@ router.post("/webhooks/web", async (req, res) => {
       : `web-${body.email ?? body.handle ?? body.contactHandle ?? "anon"}`;
   const content = String(body.content ?? body.message ?? "").trim();
   if (!content) {
-    res.status(400).json({ error: "content required" });
+    res.status(400).json({ error: "Contenido requerido" });
     return;
   }
   const result = await ingestInbound({

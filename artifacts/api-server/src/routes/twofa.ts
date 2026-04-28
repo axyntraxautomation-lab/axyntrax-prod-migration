@@ -62,7 +62,7 @@ router.post(
   requireAuth,
   async (req, res): Promise<void> => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
+      res.status(401).json({ error: "No autenticado" });
       return;
     }
     const secret = authenticator.generateSecret();
@@ -87,7 +87,7 @@ router.post(
   requireAuth,
   async (req, res): Promise<void> => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
+      res.status(401).json({ error: "No autenticado" });
       return;
     }
     const parsed = EnableTwofaBody.safeParse(req.body);
@@ -126,7 +126,7 @@ router.post(
   requireAuth,
   async (req, res): Promise<void> => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
+      res.status(401).json({ error: "No autenticado" });
       return;
     }
     const parsed = DisableTwofaBody.safeParse(req.body);

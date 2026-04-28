@@ -140,7 +140,7 @@ router.post("/auth/logout", (_req, res): void => {
 
 router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
   if (!req.user) {
-    res.status(401).json({ error: "Not authenticated" });
+    res.status(401).json({ error: "No autenticado" });
     return;
   }
   const [user] = await db
@@ -149,7 +149,7 @@ router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
     .where(eq(usersTable.id, req.user.id))
     .limit(1);
   if (!user) {
-    res.status(401).json({ error: "Not authenticated" });
+    res.status(401).json({ error: "No autenticado" });
     return;
   }
   res.json(

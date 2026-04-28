@@ -39,7 +39,7 @@ router.patch(
   requireRole("admin"),
   async (req, res): Promise<void> => {
     if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
+      res.status(401).json({ error: "No autenticado" });
       return;
     }
     const targetId = Number(req.params.id);

@@ -68,7 +68,7 @@ router.post("/push/subscribe", requireAuth, async (req, res): Promise<void> => {
 router.post("/push/unsubscribe", requireAuth, async (req, res): Promise<void> => {
   const endpoint = (req.body?.endpoint as string) ?? "";
   if (!endpoint) {
-    res.status(400).json({ error: "endpoint required" });
+    res.status(400).json({ error: "Endpoint requerido" });
     return;
   }
   await db

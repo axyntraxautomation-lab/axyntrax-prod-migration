@@ -54,7 +54,7 @@ router.get("/conversations", requireAuth, async (req, res) => {
 router.get("/conversations/:id", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (!Number.isFinite(id)) {
-    res.status(400).json({ error: "Invalid id" });
+    res.status(400).json({ error: "ID inválido" });
     return;
   }
   const [conversation] = await db
@@ -63,7 +63,7 @@ router.get("/conversations/:id", requireAuth, async (req, res) => {
     .where(eq(conversationsTable.id, id))
     .limit(1);
   if (!conversation) {
-    res.status(404).json({ error: "Conversation not found" });
+    res.status(404).json({ error: "Conversación no encontrada" });
     return;
   }
 
@@ -71,7 +71,7 @@ router.get("/conversations/:id", requireAuth, async (req, res) => {
     !isElevated(req.user!.role) &&
     conversation.assignedAgentId !== req.user!.id
   ) {
-    res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Prohibido" });
     return;
   }
 
@@ -94,13 +94,13 @@ router.get("/conversations/:id", requireAuth, async (req, res) => {
 router.post("/conversations/:id/messages", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (!Number.isFinite(id)) {
-    res.status(400).json({ error: "Invalid id" });
+    res.status(400).json({ error: "ID inválido" });
     return;
   }
   const content =
     typeof req.body?.content === "string" ? req.body.content.trim() : "";
   if (!content) {
-    res.status(400).json({ error: "content required" });
+    res.status(400).json({ error: "Contenido requerido" });
     return;
   }
   const [conv] = await db
@@ -109,12 +109,12 @@ router.post("/conversations/:id/messages", requireAuth, async (req, res) => {
     .where(eq(conversationsTable.id, id))
     .limit(1);
   if (!conv) {
-    res.status(404).json({ error: "Conversation not found" });
+    res.status(404).json({ error: "Conversación no encontrada" });
     return;
   }
 
   if (!isElevated(req.user!.role) && conv.assignedAgentId !== req.user!.id) {
-    res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Prohibido" });
     return;
   }
 
@@ -184,12 +184,12 @@ router.post(
   async (req, res) => {
     const id = parseInt(req.params.id, 10);
     if (!Number.isFinite(id)) {
-      res.status(400).json({ error: "Invalid id" });
+      res.status(400).json({ error: "ID inválido" });
       return;
     }
     const agentId = req.body?.agentId;
     if (agentId !== null && !Number.isFinite(Number(agentId))) {
-      res.status(400).json({ error: "agentId must be integer or null" });
+      res.status(400).json({ error: "agentId debe ser entero o nulo" });
       return;
     }
     if (agentId !== null) {
@@ -199,7 +199,7 @@ router.post(
         .where(eq(usersTable.id, Number(agentId)))
         .limit(1);
       if (!agent) {
-        res.status(400).json({ error: "Agent not found" });
+        res.status(400).json({ error: "Agente no encontrado" });
         return;
       }
     }
@@ -209,7 +209,7 @@ router.post(
       .where(eq(conversationsTable.id, id))
       .returning();
     if (!updated) {
-      res.status(404).json({ error: "Conversation not found" });
+      res.status(404).json({ error: "Conversación no encontrada" });
       return;
     }
     await db.insert(messagesTable).values({
@@ -230,12 +230,12 @@ router.post(
 router.post("/conversations/:id/status", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (!Number.isFinite(id)) {
-    res.status(400).json({ error: "Invalid id" });
+    res.status(400).json({ error: "ID inválido" });
     return;
   }
   const status = req.body?.status;
   if (!VALID_STATUSES.includes(status)) {
-    res.status(400).json({ error: "Invalid status" });
+    res.status(400).json({ error: "Estado inválido" });
     return;
   }
   const [conv] = await db
@@ -244,12 +244,12 @@ router.post("/conversations/:id/status", requireAuth, async (req, res) => {
     .where(eq(conversationsTable.id, id))
     .limit(1);
   if (!conv) {
-    res.status(404).json({ error: "Conversation not found" });
+    res.status(404).json({ error: "Conversación no encontrada" });
     return;
   }
 
   if (!isElevated(req.user!.role) && conv.assignedAgentId !== req.user!.id) {
-    res.status(403).json({ error: "Forbidden" });
+    res.status(403).json({ error: "Prohibido" });
     return;
   }
 
@@ -259,7 +259,7 @@ router.post("/conversations/:id/status", requireAuth, async (req, res) => {
     .where(eq(conversationsTable.id, id))
     .returning();
   if (!updated) {
-    res.status(404).json({ error: "Conversation not found" });
+    res.status(404).json({ error: "Conversación no encontrada" });
     return;
   }
   await db.insert(messagesTable).values({
@@ -280,12 +280,12 @@ router.post(
   async (req, res) => {
     const id = parseInt(req.params.id, 10);
     if (!Number.isFinite(id)) {
-      res.status(400).json({ error: "Invalid id" });
+      res.status(400).json({ error: "ID inválido" });
       return;
     }
     const clientId = req.body?.clientId;
     if (clientId !== null && !Number.isFinite(Number(clientId))) {
-      res.status(400).json({ error: "clientId must be integer or null" });
+      res.status(400).json({ error: "clientId debe ser entero o nulo" });
       return;
     }
     if (clientId !== null) {
@@ -295,7 +295,7 @@ router.post(
         .where(eq(clientsTable.id, Number(clientId)))
         .limit(1);
       if (!client) {
-        res.status(400).json({ error: "Client not found" });
+        res.status(400).json({ error: "Cliente no encontrado" });
         return;
       }
     }
@@ -305,7 +305,7 @@ router.post(
       .where(eq(conversationsTable.id, id))
       .returning();
     if (!updated) {
-      res.status(404).json({ error: "Conversation not found" });
+      res.status(404).json({ error: "Conversación no encontrada" });
       return;
     }
     await db.insert(messagesTable).values({
