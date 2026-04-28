@@ -175,6 +175,11 @@ export type ClienteFinal = {
   historial: unknown[];
   createdAt: string;
   updatedAt: string;
+  // Agregados que vienen del endpoint /tenant/clientes (no de la tabla):
+  // total de compras (cantidad y monto acumulado en S/) calculado desde
+  // tenant_finanzas_movimientos donde tipo='ingreso'.
+  comprasCount?: number;
+  comprasMonto?: string;
 };
 
 export type Cita = {

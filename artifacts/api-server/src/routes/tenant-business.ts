@@ -487,7 +487,48 @@ router.get(
       .where(where)
       .orderBy(asc(tenantClientesFinalesTable.nombre))
       .limit(500);
-    res.json({ items: rows.map(decryptCliente) });
+
+    // total_compras agregado: número de ingresos confirmados + monto acumulado
+    // por cliente. Una sola query con GROUP BY mantiene la lista barata.
+    const totales = await sdb
+      .select({
+        clienteFinalId: tenantFinanzasMovimientosTable.clienteFinalId,
+        comprasCount: sql<number>`COUNT(*)`.as("compras_count"),
+        comprasMonto: sql<string>`COALESCE(SUM(${tenantFinanzasMovimientosTable.monto}), 0)`.as(
+          "compras_monto",
+        ),
+      })
+      .from(tenantFinanzasMovimientosTable)
+      .where(
+        and(
+          eq(tenantFinanzasMovimientosTable.tenantId, ctx.tenant.id),
+          eq(tenantFinanzasMovimientosTable.tipo, "ingreso"),
+        ),
+      )
+      .groupBy(tenantFinanzasMovimientosTable.clienteFinalId);
+    const totalesById = new Map<
+      string,
+      { count: number; monto: string }
+    >();
+    for (const t of totales) {
+      if (t.clienteFinalId) {
+        totalesById.set(t.clienteFinalId, {
+          count: Number(t.comprasCount ?? 0),
+          monto: String(t.comprasMonto ?? "0"),
+        });
+      }
+    }
+
+    const items = rows.map((row) => {
+      const base = decryptCliente(row);
+      const tot = totalesById.get(row.id) ?? { count: 0, monto: "0" };
+      return {
+        ...base,
+        comprasCount: tot.count,
+        comprasMonto: tot.monto,
+      };
+    });
+    res.json({ items });
   },
 );
 
@@ -749,11 +790,13 @@ router.delete(
 
 // ----------------- AGENDA / CITAS -----------------
 
-// Estados normalizados: pendiente (default al crear) → confirmado → completado.
-// "cancelado" cuando el cliente cancela; "no_asistio" cuando no se presentó.
+// Estados normalizados: pendiente (default al crear) → confirmado → en_curso →
+// completado. "cancelado" cuando el cliente cancela; "no_asistio" cuando no se
+// presentó.
 const ESTADOS_CITA = [
   "pendiente",
   "confirmado",
+  "en_curso",
   "completado",
   "cancelado",
   "no_asistio",
@@ -1006,6 +1049,79 @@ router.post(
       })
       .returning();
     res.status(201).json(row);
+  },
+);
+
+// Update parcial de un movimiento ya registrado: corregir monto, concepto,
+// canal o estado. No permitimos cambiar el tipo (ingreso/egreso) ni el
+// tenant_id; eso se hace borrando y volviendo a crear.
+const FinanzaUpdate = z.object({
+  concepto: z.string().trim().max(200).optional().nullable(),
+  monto: z.number().positive().optional(),
+  metodoPago: z.enum(CANALES_MOV).optional(),
+  estado: z.string().trim().max(16).optional(),
+  fecha: z.string().datetime({ offset: true }).optional(),
+  clienteFinalId: z.string().uuid().optional().nullable(),
+  rubroData: z
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
+});
+
+router.patch(
+  "/tenant/finanzas/:id",
+  writeLimiter,
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const params = UuidParam.safeParse(req.params);
+    if (!params.success) return badRequest(res, params.error);
+    const parsed = FinanzaUpdate.safeParse(req.body);
+    if (!parsed.success) return badRequest(res, parsed.error);
+    const d = parsed.data;
+    const sdb = getSupabaseDb();
+    const [existing] = await sdb
+      .select()
+      .from(tenantFinanzasMovimientosTable)
+      .where(
+        and(
+          eq(tenantFinanzasMovimientosTable.id, params.data.id),
+          eq(tenantFinanzasMovimientosTable.tenantId, ctx.tenant.id),
+        ),
+      )
+      .limit(1);
+    if (!existing) {
+      res.status(404).json({ error: "Movimiento no encontrado" });
+      return;
+    }
+    const patch: Record<string, unknown> = {};
+    if (d.concepto !== undefined) patch.concepto = d.concepto;
+    if (d.monto !== undefined) patch.monto = num(d.monto);
+    if (d.metodoPago !== undefined) patch.metodoPago = d.metodoPago;
+    if (d.estado !== undefined) patch.estado = d.estado;
+    if (d.fecha !== undefined) patch.fecha = new Date(d.fecha);
+    if (d.clienteFinalId !== undefined) patch.clienteFinalId = d.clienteFinalId;
+    if (d.rubroData !== undefined) {
+      const prevMeta = (existing.metadata ?? {}) as Record<string, unknown>;
+      patch.metadata = { ...prevMeta, rubro: d.rubroData };
+    }
+    if (Object.keys(patch).length === 0) {
+      res.json(existing);
+      return;
+    }
+    const [row] = await sdb
+      .update(tenantFinanzasMovimientosTable)
+      .set(patch)
+      .where(
+        and(
+          eq(tenantFinanzasMovimientosTable.id, params.data.id),
+          eq(tenantFinanzasMovimientosTable.tenantId, ctx.tenant.id),
+        ),
+      )
+      .returning();
+    res.json(row);
   },
 );
 

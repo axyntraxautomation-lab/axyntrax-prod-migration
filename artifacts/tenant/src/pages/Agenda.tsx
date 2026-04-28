@@ -17,6 +17,7 @@ import { getTerminologia } from "@/lib/rubro-terminologia";
 const ESTADOS = [
   "pendiente",
   "confirmado",
+  "en_curso",
   "completado",
   "cancelado",
   "no_asistio",
@@ -26,6 +27,7 @@ type Estado = (typeof ESTADOS)[number];
 const ESTADO_LABEL: Record<Estado, string> = {
   pendiente: "Pendiente",
   confirmado: "Confirmado",
+  en_curso: "En curso",
   completado: "Completado",
   cancelado: "Cancelado",
   no_asistio: "No asistió",
@@ -34,6 +36,7 @@ const ESTADO_LABEL: Record<Estado, string> = {
 const ESTADO_COLOR: Record<Estado, string> = {
   pendiente: "bg-amber-100 text-amber-800",
   confirmado: "bg-sky-100 text-sky-800",
+  en_curso: "bg-indigo-100 text-indigo-800",
   completado: "bg-emerald-100 text-emerald-800",
   cancelado: "bg-gray-100 text-gray-600",
   no_asistio: "bg-red-100 text-red-800",

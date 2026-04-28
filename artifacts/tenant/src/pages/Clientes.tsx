@@ -171,7 +171,21 @@ export function Clientes() {
                 className="rounded-xl border border-gray-200 bg-white px-3 py-2"
                 data-testid={`cliente-${c.id}`}
               >
-                <div className="text-sm font-medium text-gray-900">{c.nombre}</div>
+                <div className="flex items-baseline justify-between gap-2">
+                  <div className="text-sm font-medium text-gray-900">
+                    {c.nombre}
+                  </div>
+                  {(c.comprasCount ?? 0) > 0 && (
+                    <span
+                      className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700"
+                      data-testid={`cliente-${c.id}-total-compras`}
+                      title="Total de compras registradas en finanzas"
+                    >
+                      {c.comprasCount} compras · S/{" "}
+                      {Number(c.comprasMonto ?? 0).toFixed(2)}
+                    </span>
+                  )}
+                </div>
                 <div className="text-[11px] text-gray-500">
                   {c.telefono && <>📞 {c.telefono} · </>}
                   {c.email && <>{c.email} · </>}
