@@ -12,7 +12,8 @@
   "scripts": {
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
-    "seed": "tsx ./src/seed/run.ts"
+    "seed": "tsx ./src/seed/run.ts",
+    "bootstrap": "tsx ./scripts/bootstrap-roles.ts"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
