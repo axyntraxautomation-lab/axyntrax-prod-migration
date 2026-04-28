@@ -396,24 +396,66 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
   const sdb = getSupabaseDb();
 
   // INSERT con tenant_id=A forjado en body → bloqueado por WITH CHECK.
-  const insertStatus = await restMutate({
-    table: "tenant_inventario",
-    jwt: tokenB,
-    method: "POST",
-    body: {
-      tenant_id: A!.id,
-      sku: `FORGED-${TS}`,
-      nombre: "forged tenant_id",
-      cantidad: "1",
-      minimo_alerta: "0",
-      unidad: "u",
+  // Probado en MÚLTIPLES tablas críticas (no solo inventario) para
+  // blindar el contrato "si una operación pasa está roto".
+  const FORGED_INSERTS: Array<{ table: string; body: Record<string, unknown> }> = [
+    {
+      table: "tenant_inventario",
+      body: {
+        tenant_id: A!.id,
+        sku: `FORGED-${TS}`,
+        nombre: "forged tenant_id",
+        cantidad: "1",
+        minimo_alerta: "0",
+        unidad: "u",
+      },
     },
-  });
-  assert.ok(
-    insertStatus >= 400,
-    `INSERT con tenant_id ajeno debe fallar (status=${insertStatus})`,
-  );
-  // Confirma con service-role que no se creó la fila.
+    {
+      table: "tenant_alertas",
+      body: {
+        tenant_id: A!.id,
+        tipo: "stock_bajo",
+        severidad: "warning",
+        titulo: "forged",
+      },
+    },
+    {
+      table: "tenant_finanzas_movimientos",
+      body: {
+        tenant_id: A!.id,
+        tipo: "ingreso",
+        monto: "999.99",
+        moneda: "PEN",
+        metodo_pago: "yape",
+        concepto: "forged",
+      },
+    },
+    {
+      table: "tenant_pagos_qr",
+      body: {
+        tenant_id: A!.id,
+        metodo: "yape",
+        monto: "1.00",
+        moneda: "PEN",
+        estado: "pendiente",
+      },
+    },
+  ];
+
+  for (const fi of FORGED_INSERTS) {
+    const status = await restMutate({
+      table: fi.table,
+      jwt: tokenB,
+      method: "POST",
+      body: fi.body,
+    });
+    assert.ok(
+      status >= 400,
+      `${fi.table}: INSERT con tenant_id ajeno debe fallar (status=${status})`,
+    );
+  }
+
+  // Confirma con service-role que no se creó la fila inventario forjada.
   const forgedRows = await sdb
     .select({ id: tenantInventarioTable.id })
     .from(tenantInventarioTable)

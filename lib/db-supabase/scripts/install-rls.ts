@@ -102,8 +102,10 @@ async function installForTenantsTable(
 async function installForRubrosRegistry(
   pool: ReturnType<typeof getSupabasePool>,
 ): Promise<void> {
+  // Registry compartido: lectura realmente pública (anon + authenticated +
+  // tenant_owner). NO se habilita RLS porque la tabla no es por-tenant.
   await pool.query(
-    `GRANT SELECT ON public.rubros_registry TO tenant_owner;`,
+    `GRANT SELECT ON public.rubros_registry TO anon, authenticated, tenant_owner;`,
   );
 }
 

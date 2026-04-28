@@ -34,7 +34,7 @@ export function RealtimeStatusBanner() {
       }}
     >
       {reconnecting ? (
-        <span>Reconectando con el servidor…</span>
+        <span>Tu sesión venció, refrescamos en un momento</span>
       ) : (
         <span>Sin conexión en vivo. Refresca la página para reintentar.</span>
       )}
