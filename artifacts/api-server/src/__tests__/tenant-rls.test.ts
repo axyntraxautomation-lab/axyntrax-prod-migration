@@ -48,16 +48,21 @@ const SLUG_B = `rls-b-${TS}`;
 const EMAIL_A = `rls-a-${TS}@axyntrax.test`;
 const EMAIL_B = `rls-b-${TS}@axyntrax.test`;
 
-const SECRET = (() => {
-  const s = process.env.SUPABASE_JWT_SECRET;
-  if (!s) throw new Error("SUPABASE_JWT_SECRET requerido para tests RLS");
-  return s;
-})();
-
 let A: TenantSeed | null = null;
 let B: TenantSeed | null = null;
 
+/**
+ * Una corrida real de RLS exige Supabase configurado **y** el secret HS256
+ * para firmar JWTs simulados. Si falta cualquiera, los tests deben skippear
+ * limpio en CI/sandboxes (no fallar en module-load).
+ */
+function isRlsTestReady(): boolean {
+  return isSupabaseConfigured() && Boolean(process.env.SUPABASE_JWT_SECRET);
+}
+
 function signJwt(tenantId: string): string {
+  const secret = process.env.SUPABASE_JWT_SECRET;
+  if (!secret) throw new Error("SUPABASE_JWT_SECRET requerido para signJwt");
   return jwt.sign(
     {
       sub: `test-${tenantId}`,
@@ -66,7 +71,7 @@ function signJwt(tenantId: string): string {
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 3600,
     },
-    SECRET,
+    secret,
     { algorithm: "HS256" },
   );
 }
@@ -208,7 +213,7 @@ async function seedTenant(args: {
 }
 
 before(async () => {
-  if (!isSupabaseConfigured()) {
+  if (!isRlsTestReady()) {
     console.warn("[tenant-rls.test] Supabase no configurado, tests skipped");
     return;
   }
@@ -219,7 +224,7 @@ before(async () => {
 });
 
 after(async () => {
-  if (!isSupabaseConfigured()) return;
+  if (!isRlsTestReady()) return;
   await cleanupByEmail(EMAIL_A);
   await cleanupByEmail(EMAIL_B);
 });
@@ -258,7 +263,7 @@ const TENANT_TABLES_ALL = [
 ] as const;
 
 test("RLS: tenant B JWT NO ve filas del tenant A en NINGUNA de las 17 tablas tenant_*", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
 
@@ -283,7 +288,7 @@ test("RLS: tenant B JWT NO ve filas del tenant A en NINGUNA de las 17 tablas ten
 });
 
 test("RLS: tenant B SÍ ve sus propias filas en las tablas seedadas", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
 
@@ -303,7 +308,7 @@ test("RLS: tenant B SÍ ve sus propias filas en las tablas seedadas", async (t) 
 });
 
 test("RLS: tenant A JWT solo ve la fila propia de la tabla tenants", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenA = signJwt(A!.id);
   const res = await restGet({
@@ -317,7 +322,7 @@ test("RLS: tenant A JWT solo ve la fila propia de la tabla tenants", async (t) =
 });
 
 test("RLS: SIN JWT (anon sin claims) no debe leer tenant_inventario", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   const env = getSupabaseEnv();
   const res = await fetch(
     `${env.publicUrl}/rest/v1/tenant_inventario?select=*&limit=1`,
@@ -340,7 +345,7 @@ test("RLS: SIN JWT (anon sin claims) no debe leer tenant_inventario", async (t) 
 });
 
 test("RLS: tenant_owner SÍ puede INSERT/UPDATE/DELETE filas de su propio tenant", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
 
@@ -390,7 +395,7 @@ test("RLS: tenant_owner SÍ puede INSERT/UPDATE/DELETE filas de su propio tenant
 });
 
 test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
   const sdb = getSupabaseDb();
@@ -517,7 +522,7 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
 });
 
 test("RLS: tenant B no puede consultar fila específica del tenant A por id", async (t) => {
-  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const sdb = getSupabaseDb();
   const [aAlerta] = await sdb
