@@ -22,6 +22,10 @@ export const tenantServiciosTable = pgTable(
       .references(() => tenantsTable.id, { onDelete: "cascade" }),
     nombre: text("nombre").notNull(),
     descripcion: text("descripcion"),
+    // tipo: 'servicio' (lavado, corte de pelo, consulta), 'producto' (insumo
+    // vendible) o 'menu_item' (plato/bebida en restaurantes). Default
+    // 'servicio' para que el cambio sea retro-compatible.
+    tipo: varchar("tipo", { length: 16 }).notNull().default("servicio"),
     categoria: varchar("categoria", { length: 64 }),
     precio: numeric("precio", { precision: 12, scale: 2 }).notNull().default(sql`0`),
     moneda: varchar("moneda", { length: 8 }).notNull().default("PEN"),

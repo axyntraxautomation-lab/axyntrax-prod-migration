@@ -10,6 +10,8 @@ const FormSchema = z.object({
   concepto: z.string().trim().max(200).optional(),
 });
 
+type EstadoFiltro = "todos" | "pendiente" | "confirmado" | "anulado";
+
 export function Pagos() {
   const [items, setItems] = useState<PagoQr[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,12 +21,17 @@ export function Pagos() {
   const [concepto, setConcepto] = useState("");
   const [busy, setBusy] = useState(false);
   const [recienGenerado, setRecienGenerado] = useState<PagoQr | null>(null);
+  const [filtro, setFiltro] = useState<EstadoFiltro>("todos");
 
-  async function load() {
+  async function load(estadoFiltro: EstadoFiltro = filtro) {
     setLoading(true);
     setErr(null);
     try {
-      const data = await apiGet<{ items: PagoQr[] }>("/api/tenant/pagos-qr");
+      const url =
+        estadoFiltro === "todos"
+          ? "/api/tenant/pagos-qr"
+          : `/api/tenant/pagos-qr?estado=${estadoFiltro}`;
+      const data = await apiGet<{ items: PagoQr[] }>(url);
       setItems(data.items);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "No se pudieron cargar los pagos.");
@@ -34,8 +41,9 @@ export function Pagos() {
   }
 
   useEffect(() => {
-    void load();
-  }, []);
+    void load(filtro);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro]);
 
   async function generar() {
     const parsed = FormSchema.safeParse({
@@ -181,7 +189,28 @@ export function Pagos() {
           </section>
         )}
 
-        <h2 className="mt-5 text-sm font-semibold text-gray-900">Historial</h2>
+        <div className="mt-5 flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-gray-900">Historial</h2>
+          <div className="flex gap-1" data-testid="pagos-filter">
+            {(["todos", "pendiente", "confirmado", "anulado"] as const).map(
+              (op) => (
+                <button
+                  key={op}
+                  type="button"
+                  onClick={() => setFiltro(op)}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+                    filtro === op
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
+                  data-testid={`pagos-filter-${op}`}
+                >
+                  {op === "todos" ? "Todos" : op[0].toUpperCase() + op.slice(1)}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
         {loading ? (
           <p className="mt-2 text-center text-sm text-gray-500">Cargando…</p>
         ) : items.length === 0 ? (

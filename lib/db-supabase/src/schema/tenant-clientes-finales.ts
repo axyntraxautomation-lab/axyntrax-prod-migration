@@ -11,6 +11,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { tenantsTable } from "./tenants";
 
+// telefono es ciphertext AES-GCM (puede superar 32 chars). telefono_hash
+// es un HMAC-SHA256 hex (64 chars) del E.164 normalizado del teléfono y
+// se usa para búsquedas exactas + uniqueness.
 export const tenantClientesFinalesTable = pgTable(
   "tenant_clientes_finales",
   {
@@ -19,7 +22,8 @@ export const tenantClientesFinalesTable = pgTable(
       .notNull()
       .references(() => tenantsTable.id, { onDelete: "cascade" }),
     nombre: text("nombre").notNull(),
-    telefono: varchar("telefono", { length: 32 }),
+    telefono: text("telefono"),
+    telefonoHash: varchar("telefono_hash", { length: 64 }),
     email: varchar("email", { length: 255 }),
     documentoTipo: varchar("documento_tipo", { length: 16 }),
     documentoNumero: varchar("documento_numero", { length: 32 }),
@@ -34,9 +38,11 @@ export const tenantClientesFinalesTable = pgTable(
   },
   (t) => ({
     tenantIdIdx: index("tenant_clientes_finales_tenant_idx").on(t.tenantId),
-    tenantTelefonoUniqueIdx: uniqueIndex("tenant_clientes_finales_tenant_telefono_uniq")
-      .on(t.tenantId, t.telefono)
-      .where(sql`${t.telefono} is not null`),
+    tenantTelefonoHashUniqueIdx: uniqueIndex(
+      "tenant_clientes_finales_tenant_telhash_uniq",
+    )
+      .on(t.tenantId, t.telefonoHash)
+      .where(sql`${t.telefonoHash} is not null`),
   }),
 );
 

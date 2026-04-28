@@ -24,7 +24,7 @@ import {
 import { db, clientsTable } from "@workspace/db";
 import { requirePortalAuth, requirePortalClient } from "../lib/auth";
 import { isSupabaseConfigured } from "../lib/supabase-admin";
-import { encryptField, decryptField } from "../lib/crypto";
+import { encryptField, decryptField, searchHash, normalizePhone } from "../lib/crypto";
 
 const router: IRouter = Router();
 
@@ -290,6 +290,9 @@ router.delete(
 const ServicioCreate = z.object({
   nombre: z.string().trim().min(1).max(160),
   descripcion: z.string().trim().max(2000).optional().nullable(),
+  // tipo: 'servicio' (lavado, corte de pelo, consulta), 'producto' (insumo
+  // vendible) o 'menu_item' (plato/bebida en restaurantes). Default 'servicio'.
+  tipo: z.enum(["servicio", "producto", "menu_item"]).default("servicio"),
   categoria: z.string().trim().max(64).optional().nullable(),
   precio: z.number().min(0).default(0),
   moneda: z.string().trim().max(8).default("PEN"),
@@ -335,6 +338,7 @@ router.post(
         tenantId: ctx.tenant.id,
         nombre: d.nombre,
         descripcion: d.descripcion ?? null,
+        tipo: d.tipo ?? "servicio",
         categoria: d.categoria ?? null,
         precio: num(d.precio ?? 0),
         moneda: d.moneda ?? "PEN",
@@ -425,9 +429,12 @@ router.delete(
 
 type ClienteRow = typeof tenantClientesFinalesTable.$inferSelect;
 
-function decryptCliente(c: ClienteRow): ClienteRow {
+function decryptCliente(c: ClienteRow): Omit<ClienteRow, "telefonoHash"> {
+  // No exponemos telefonoHash al frontend: es un índice interno de búsqueda.
+  const { telefonoHash: _hash, ...rest } = c;
   return {
-    ...c,
+    ...rest,
+    telefono: decryptField(c.telefono),
     notas: decryptField(c.notas),
   };
 }
@@ -452,6 +459,13 @@ router.get(
     if (!ctx) return;
     const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
     const sdb = getSupabaseDb();
+    // El teléfono está cifrado, así que para buscar por número usamos el
+    // hash determinístico (HMAC-SHA256 hex) del teléfono normalizado a sólo
+    // dígitos. Si el query no parece un número, sólo busca en nombre/email/doc.
+    const normalizedPhoneFromQuery = normalizePhone(q);
+    const phoneHash = normalizedPhoneFromQuery
+      ? searchHash(normalizedPhoneFromQuery)
+      : null;
     const where = q
       ? and(
           eq(tenantClientesFinalesTable.tenantId, ctx.tenant.id),
@@ -459,6 +473,9 @@ router.get(
             ilike(tenantClientesFinalesTable.nombre, `%${q}%`),
             ilike(tenantClientesFinalesTable.email, `%${q}%`),
             ilike(tenantClientesFinalesTable.documentoNumero, `%${q}%`),
+            ...(phoneHash
+              ? [eq(tenantClientesFinalesTable.telefonoHash, phoneHash)]
+              : []),
           ),
         )
       : eq(tenantClientesFinalesTable.tenantId, ctx.tenant.id);
@@ -485,19 +502,36 @@ router.post(
     if (!parsed.success) return badRequest(res, parsed.error);
     const d = parsed.data;
     const sdb = getSupabaseDb();
-    const [row] = await sdb
-      .insert(tenantClientesFinalesTable)
-      .values({
-        tenantId: ctx.tenant.id,
-        nombre: d.nombre,
-        telefono: d.telefono && d.telefono !== "" ? d.telefono : null,
-        email: d.email && d.email !== "" ? d.email : null,
-        documentoTipo: d.documentoTipo ?? null,
-        documentoNumero: d.documentoNumero ?? null,
-        notas: encryptField(d.notas ?? null),
-      })
-      .returning();
-    res.status(201).json(decryptCliente(row));
+    try {
+      const [row] = await sdb
+        .insert(tenantClientesFinalesTable)
+        .values({
+          tenantId: ctx.tenant.id,
+          nombre: d.nombre,
+          telefono: encryptField(normalizePhone(d.telefono) ?? null),
+          telefonoHash: searchHash(normalizePhone(d.telefono) ?? null),
+          email: d.email && d.email !== "" ? d.email : null,
+          documentoTipo: d.documentoTipo ?? null,
+          documentoNumero: d.documentoNumero ?? null,
+          notas: encryptField(d.notas ?? null),
+        })
+        .returning();
+      res.status(201).json(decryptCliente(row));
+    } catch (err) {
+      // 23505 = unique_violation. El índice único es por (tenant_id,
+      // telefono_hash) — devolvemos 409 con copy en español PE en lugar de
+      // un 500 con stack trace. Drizzle envuelve el pg error así que
+      // chequeamos también `.cause.code`.
+      const e = err as { code?: string; cause?: { code?: string } } | null;
+      const code = e?.code ?? e?.cause?.code;
+      if (code === "23505") {
+        res.status(409).json({
+          error: "Ya tienes un cliente registrado con ese número de teléfono.",
+        });
+        return;
+      }
+      throw err;
+    }
   },
 );
 
@@ -517,8 +551,11 @@ router.patch(
     const d = parsed.data;
     const patch: Record<string, unknown> = {};
     if (d.nombre !== undefined) patch.nombre = d.nombre;
-    if (d.telefono !== undefined)
-      patch.telefono = d.telefono && d.telefono !== "" ? d.telefono : null;
+    if (d.telefono !== undefined) {
+      const norm = normalizePhone(d.telefono);
+      patch.telefono = encryptField(norm ?? null);
+      patch.telefonoHash = searchHash(norm ?? null);
+    }
     if (d.email !== undefined)
       patch.email = d.email && d.email !== "" ? d.email : null;
     if (d.documentoTipo !== undefined) patch.documentoTipo = d.documentoTipo ?? null;

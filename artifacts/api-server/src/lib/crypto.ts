@@ -2,6 +2,7 @@ import {
   createCipheriv,
   createDecipheriv,
   createHash,
+  createHmac,
   randomBytes,
 } from "node:crypto";
 import { logger } from "./logger";
@@ -82,4 +83,22 @@ export function decryptField(value: string | null | undefined): string | null {
   } catch {
     return null;
   }
+}
+
+// HMAC-SHA256 hex determinístico para construir índices de búsqueda exacta
+// sobre campos cifrados (p. ej. teléfono). Usa la misma clave maestra que la
+// encriptación, así que rotarla rota también los hashes.
+export function searchHash(value: string | null | undefined): string | null {
+  if (value == null || value === "") return null;
+  const key = deriveKey();
+  return createHmac("sha256", key).update(value, "utf8").digest("hex");
+}
+
+// Normaliza un teléfono a sólo dígitos para que el hash sea estable
+// independientemente de espacios, guiones o el prefijo "+51".
+export function normalizePhone(value: string | null | undefined): string | null {
+  if (value == null) return null;
+  const digits = value.replace(/\D+/g, "");
+  if (digits.length === 0) return null;
+  return digits;
 }
