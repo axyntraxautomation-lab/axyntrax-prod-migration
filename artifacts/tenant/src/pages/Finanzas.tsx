@@ -29,6 +29,9 @@ const FormSchema = z.object({
 });
 
 type FormState = {
+  // id presente sólo cuando estamos editando un movimiento existente. Si está
+  // vacío se trata como create (POST), de lo contrario como update (PATCH).
+  id?: string;
   tipo: (typeof TIPOS)[number];
   monto: string;
   metodoPago: (typeof CANALES)[number];
@@ -96,10 +99,12 @@ export function Finanzas() {
     setErr(null);
     try {
       const fechaIso = new Date(parsed.data.fecha).toISOString();
-      await apiSend("POST", "/api/tenant/finanzas", {
-        ...parsed.data,
-        fecha: fechaIso,
-      });
+      const payload = { ...parsed.data, fecha: fechaIso };
+      if (form.id) {
+        await apiSend("PATCH", `/api/tenant/finanzas/${form.id}`, payload);
+      } else {
+        await apiSend("POST", "/api/tenant/finanzas", payload);
+      }
       setForm(null);
       await load();
     } catch (e) {
@@ -107,6 +112,20 @@ export function Finanzas() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function startEdit(m: FinanzaMov) {
+    // datetime-local necesita "YYYY-MM-DDTHH:mm" en hora local del navegador.
+    const d = new Date(m.fecha);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    setForm({
+      id: m.id,
+      tipo: m.tipo,
+      monto: String(m.monto),
+      metodoPago: m.metodoPago as (typeof CANALES)[number],
+      concepto: m.concepto ?? "",
+      fecha: d.toISOString().slice(0, 16),
+    });
   }
 
   async function remove(id: string) {
@@ -240,7 +259,15 @@ export function Finanzas() {
                     {m.tipo === "ingreso" ? "+" : "-"} S/ {fmt.format(Number(m.monto))}
                   </span>
                 </div>
-                <div className="mt-1 flex justify-end">
+                <div className="mt-1 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(m)}
+                    className="rounded-lg border border-gray-200 px-2 py-1 text-[11px] text-gray-700 hover:bg-gray-50"
+                    data-testid={`mov-${m.id}-editar`}
+                  >
+                    Editar
+                  </button>
                   <button
                     type="button"
                     onClick={() => void remove(m.id)}
@@ -263,7 +290,7 @@ export function Finanzas() {
         >
           <div className="w-full max-w-md rounded-t-2xl bg-white p-4 shadow-lg sm:rounded-2xl">
             <h2 className="text-base font-semibold text-gray-900">
-              Registrar movimiento
+              {form.id ? "Editar movimiento" : "Registrar movimiento"}
             </h2>
             <div className="mt-3 grid gap-3">
               <div className="grid grid-cols-2 gap-2">

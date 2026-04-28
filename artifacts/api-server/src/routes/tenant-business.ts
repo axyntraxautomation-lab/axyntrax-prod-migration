@@ -115,7 +115,10 @@ async function createStockAlertIfLow(args: {
   cantidad: number;
   minimo: number;
 }) {
-  if (!(args.minimo > 0 && args.cantidad <= args.minimo)) return;
+  // Trigger estricto: alertamos sólo cuando stock_actual < stock_minimo
+  // (igualdad NO dispara la alerta para evitar falsos positivos al
+  // restock exacto al mínimo).
+  if (!(args.minimo > 0 && args.cantidad < args.minimo)) return;
   const sdb = getSupabaseDb();
   // Evitar duplicados: ya hay alerta abierta no leída para este item
   const existing = await sdb

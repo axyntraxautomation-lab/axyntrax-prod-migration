@@ -27,7 +27,17 @@ const CANALES = [
 ] as const;
 type Canal = (typeof CANALES)[number];
 
-type Step = "que" | "cliente" | "cobro" | "qr" | "ok";
+type Step = "que" | "cliente" | "fecha" | "cobro" | "qr" | "ok";
+
+function defaultLocalNow(): string {
+  // datetime-local quiere "YYYY-MM-DDTHH:mm" en hora local del navegador.
+  const d = new Date();
+  // Redondear al próximo bloque de 30 minutos para sentirse natural en una
+  // reserva real.
+  d.setMinutes(d.getMinutes() + 30 - (d.getMinutes() % 30), 0, 0);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
 
 const Schema = z.object({
   servicioId: z.string().uuid().optional(),
@@ -44,6 +54,8 @@ type FormState = {
   monto: string;
   clienteFinalId: string;
   empleadoId: string;
+  /** datetime-local en hora del navegador. Sólo usado si cfg.pideFecha. */
+  fechaInicio: string;
   canal: Canal;
   rubroData: Record<string, string>;
 };
@@ -54,6 +66,7 @@ const EMPTY: FormState = {
   monto: "",
   clienteFinalId: "",
   empleadoId: "",
+  fechaInicio: "",
   canal: "yape",
   rubroData: {},
 };
@@ -157,6 +170,27 @@ export function NuevaVentaWizard({
         setErr(extraErr);
         return;
       }
+      if (cfg.pideFecha) {
+        // Pre-cargamos un default razonable (próximo bloque de 30').
+        if (!form.fechaInicio) {
+          setForm((f) => ({ ...f, fechaInicio: defaultLocalNow() }));
+        }
+        setStep("fecha");
+        return;
+      }
+      setStep("cobro");
+      return;
+    }
+    if (step === "fecha") {
+      if (!form.fechaInicio) {
+        setErr("Elige fecha y hora de la cita.");
+        return;
+      }
+      const ts = new Date(form.fechaInicio);
+      if (Number.isNaN(ts.getTime())) {
+        setErr("Fecha y hora inválidas.");
+        return;
+      }
       setStep("cobro");
       return;
     }
@@ -181,6 +215,36 @@ export function NuevaVentaWizard({
     setBusy(true);
     setErr(null);
     try {
+      // Si el rubro reserva (salón, taller, gimnasio, consultoría) y se eligió
+      // fecha/hora, persistimos primero la cita para enlazar su id con el
+      // movimiento financiero o pago QR via metadata.rubro.cita_id.
+      let citaId: string | undefined;
+      if (cfg.pideFecha && form.fechaInicio) {
+        try {
+          const ts = new Date(form.fechaInicio);
+          const cita = await apiSend<{ id: string }>(
+            "POST",
+            "/api/tenant/citas",
+            {
+              clienteFinalId: parsed.data.clienteFinalId ?? null,
+              servicioId: parsed.data.servicioId ?? null,
+              empleadoId: parsed.data.empleadoId ?? null,
+              titulo: concepto,
+              fechaInicio: ts.toISOString(),
+              estado: "confirmado",
+            },
+          );
+          citaId = cita.id;
+          rubroData.cita_id = cita.id;
+          rubroData.fecha_inicio = ts.toISOString();
+        } catch (e) {
+          // No bloquear el cobro si falló la cita: avisamos pero continuamos.
+          // Es preferible que el dinero quede registrado a quedarse a medias.
+          // eslint-disable-next-line no-console
+          console.warn("No se pudo crear la cita:", e);
+        }
+      }
+
       if (parsed.data.canal === "yape" || parsed.data.canal === "plin") {
         const generado = await apiSend<PagoQr>(
           "POST",
@@ -207,6 +271,7 @@ export function NuevaVentaWizard({
         setStep("ok");
         onCompleted?.();
       }
+      void citaId;
     } catch (e) {
       setErr(e instanceof ApiError ? e.message : "No se pudo registrar la venta.");
     } finally {
@@ -384,6 +449,29 @@ export function NuevaVentaWizard({
           </div>
         )}
 
+        {step === "fecha" && (
+          <div className="mt-3 grid gap-3" data-testid="venta-step-fecha">
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                Fecha y hora
+              </span>
+              <input
+                type="datetime-local"
+                value={form.fechaInicio}
+                onChange={(e) =>
+                  setForm({ ...form, fechaInicio: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                data-testid="venta-fecha-inicio"
+              />
+            </label>
+            <p className="text-[11px] text-gray-500">
+              Voy a guardar también una cita en tu agenda con estos datos para
+              que no se te pierda el horario.
+            </p>
+          </div>
+        )}
+
         {step === "cobro" && (
           <div className="mt-3 grid gap-3" data-testid="venta-step-cobro">
             <label className="block">
@@ -450,7 +538,7 @@ export function NuevaVentaWizard({
               Cancelar
             </button>
           )}
-          {(step === "que" || step === "cliente") && (
+          {(step === "que" || step === "cliente" || step === "fecha") && (
             <button
               type="button"
               onClick={next}
@@ -572,13 +660,22 @@ function collectRubroData(
 }
 
 function Stepper({ step, cfg }: { step: Step; cfg: RubroWizardConfig }) {
-  const order: Step[] = ["que", "cliente", "cobro"];
+  const order: Step[] = cfg.pideFecha
+    ? ["que", "cliente", "fecha", "cobro"]
+    : ["que", "cliente", "cobro"];
   const idx = order.indexOf(step);
-  const labels = [
-    cfg.stepLabels.que ?? "Qué",
-    cfg.stepLabels.cliente ?? "Quién",
-    cfg.stepLabels.cobro ?? "Cómo cobrar",
-  ];
+  const labels = cfg.pideFecha
+    ? [
+        cfg.stepLabels.que ?? "Qué",
+        cfg.stepLabels.cliente ?? "Quién",
+        "Fecha",
+        cfg.stepLabels.cobro ?? "Cómo cobrar",
+      ]
+    : [
+        cfg.stepLabels.que ?? "Qué",
+        cfg.stepLabels.cliente ?? "Quién",
+        cfg.stepLabels.cobro ?? "Cómo cobrar",
+      ];
   return (
     <ol className="mt-3 flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-400">
       {labels.map((l, i) => {

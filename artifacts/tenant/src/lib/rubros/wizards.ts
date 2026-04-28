@@ -30,6 +30,12 @@ export type RubroWizardConfig = {
   camposCliente: WizardField[];
   /** Si true, el wizard ofrece elegir un empleado/atendido en el paso cliente. */
   pideEmpleado: boolean;
+  /**
+   * Si true, el wizard agrega un paso "fecha/hora" entre cliente y cobro y, al
+   * cobrar, persiste también una cita en `tenant_citas_servicios`. Pensado
+   * para rubros que reservan horarios (salón, taller, gimnasio, consultoría).
+   */
+  pideFecha?: boolean;
   /** Texto del CTA principal del paso cobro (ej. "Cobrar lavado"). */
   ctaCobro?: string;
 };
@@ -39,6 +45,7 @@ const DEFAULT: RubroWizardConfig = {
   camposQue: [],
   camposCliente: [],
   pideEmpleado: false,
+  pideFecha: false,
   ctaCobro: "Cobrar",
 };
 
@@ -92,6 +99,7 @@ const POR_RUBRO: Record<string, RubroWizardConfig> = {
     camposQue: [],
     camposCliente: [],
     pideEmpleado: true,
+    pideFecha: true,
     ctaCobro: "Cobrar atención",
   },
   taller: {
@@ -121,6 +129,7 @@ const POR_RUBRO: Record<string, RubroWizardConfig> = {
     ],
     camposCliente: [],
     pideEmpleado: true,
+    pideFecha: true,
     ctaCobro: "Cobrar trabajo",
   },
   bodega: {
@@ -158,6 +167,7 @@ const POR_RUBRO: Record<string, RubroWizardConfig> = {
     ],
     camposCliente: [],
     pideEmpleado: false,
+    pideFecha: true,
     ctaCobro: "Cobrar inscripción",
   },
   consultoria: {
@@ -165,6 +175,7 @@ const POR_RUBRO: Record<string, RubroWizardConfig> = {
     camposQue: [],
     camposCliente: [],
     pideEmpleado: true,
+    pideFecha: true,
     ctaCobro: "Cobrar sesión",
   },
   logistica: {
