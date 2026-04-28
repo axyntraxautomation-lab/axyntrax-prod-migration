@@ -217,11 +217,13 @@ export function NuevaVentaWizard({
     try {
       // Si el rubro reserva (salón, taller, gimnasio, consultoría) y se eligió
       // fecha/hora, persistimos primero la cita para enlazar su id con el
-      // movimiento financiero o pago QR via metadata.rubro.cita_id.
+      // movimiento financiero o pago QR (citaId top-level y también en
+      // metadata.rubro.cita_id para reportes). Si la cita falla, BLOQUEAMOS el
+      // cobro: en rubros con agenda no tiene sentido cobrar sin reservar.
       let citaId: string | undefined;
       if (cfg.pideFecha && form.fechaInicio) {
+        const ts = new Date(form.fechaInicio);
         try {
-          const ts = new Date(form.fechaInicio);
           const cita = await apiSend<{ id: string }>(
             "POST",
             "/api/tenant/citas",
@@ -238,10 +240,13 @@ export function NuevaVentaWizard({
           rubroData.cita_id = cita.id;
           rubroData.fecha_inicio = ts.toISOString();
         } catch (e) {
-          // No bloquear el cobro si falló la cita: avisamos pero continuamos.
-          // Es preferible que el dinero quede registrado a quedarse a medias.
-          // eslint-disable-next-line no-console
-          console.warn("No se pudo crear la cita:", e);
+          setErr(
+            e instanceof ApiError
+              ? `No se pudo guardar la cita: ${e.message}`
+              : "No se pudo guardar la cita. Revisa fecha y hora.",
+          );
+          setBusy(false);
+          return;
         }
       }
 
@@ -254,6 +259,9 @@ export function NuevaVentaWizard({
             monto: parsed.data.monto,
             concepto,
             clienteFinalId: parsed.data.clienteFinalId,
+            // Top-level: el endpoint /pagos-qr/confirmar usa metadata.cita_id
+            // para marcar la cita como `completado` automáticamente al pagar.
+            citaId,
             rubroData,
           },
         );
@@ -271,7 +279,6 @@ export function NuevaVentaWizard({
         setStep("ok");
         onCompleted?.();
       }
-      void citaId;
     } catch (e) {
       setErr(e instanceof ApiError ? e.message : "No se pudo registrar la venta.");
     } finally {
