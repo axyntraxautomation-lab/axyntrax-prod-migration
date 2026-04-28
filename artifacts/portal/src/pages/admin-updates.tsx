@@ -111,7 +111,7 @@ export default function AdminUpdatesPage() {
             <Label>Módulo</Label>
             <Select value={moduleId} onValueChange={setModuleId}>
               <SelectTrigger data-testid="select-module">
-                <SelectValue placeholder="Elegí un módulo" />
+                <SelectValue placeholder="Elige un módulo" />
               </SelectTrigger>
               <SelectContent>
                 {modules.map((m) => (

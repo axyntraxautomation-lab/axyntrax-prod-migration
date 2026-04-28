@@ -93,7 +93,7 @@ const emailOtpLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     error:
-      "Demasiadas solicitudes de código por correo. Esperá una hora o usá tu app autenticadora.",
+      "Demasiadas solicitudes de código por correo. Espera una hora o usa tu app autenticadora.",
   },
 });
 

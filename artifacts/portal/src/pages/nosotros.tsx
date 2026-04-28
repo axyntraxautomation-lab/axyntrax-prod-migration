@@ -29,7 +29,7 @@ const VALORES = [
   {
     icon: ShieldCheck,
     title: "Transparencia total",
-    body: "Cotizaciones formales con IGV, sin letra chica. Lo que ves es lo que pagás.",
+    body: "Cotizaciones formales con IGV, sin letra chica. Lo que ves es lo que pagas.",
   },
   {
     icon: Lightbulb,
@@ -304,7 +304,7 @@ export default function Nosotros() {
               </h2>
               <p className="mt-4 text-base leading-relaxed text-slate-400">
                 Detrás de AXYNTRAX hay una persona, no un call center. Miguel
-                lidera producto, ventas y soporte. Si tenés dudas, lo escribís
+                lidera producto, ventas y soporte. Si tienes dudas, lo escribes
                 directo a él. Esa es nuestra ventaja: rapidez de un equipo
                 chico con tecnología de empresa grande.
               </p>

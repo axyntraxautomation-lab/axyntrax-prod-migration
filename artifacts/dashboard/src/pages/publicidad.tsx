@@ -70,7 +70,7 @@ export default function Publicidad() {
       toast({
         variant: "destructive",
         title: "Sesión expirada",
-        description: "Volvé a iniciar sesión en JARVIS.",
+        description: "Vuelve a iniciar sesión en JARVIS.",
       });
       setLocation("/login");
       return true;
@@ -213,7 +213,7 @@ export default function Publicidad() {
       ) : rows.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-muted-foreground">
-            JARVIS aún no generó avisos. Apretá "Generar ahora" o esperá a la
+            JARVIS aún no generó avisos. Apretá "Generar ahora" o espera a la
             próxima ronda automática.
           </CardContent>
         </Card>

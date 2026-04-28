@@ -280,7 +280,7 @@ export async function renderQuotePdf(input: QuotePdfInput): Promise<Buffer> {
       .fontSize(9)
       .text(
         "Precios mensuales recurrentes. Activación inmediata al aceptar la cotización. " +
-          "Para coordinar el alta del servicio respondé este correo o ingresá al portal AXYNTRAX.",
+          "Para coordinar el alta del servicio responde este correo o ingresa al portal AXYNTRAX.",
         48,
         720,
         { width: 499, align: "left" },

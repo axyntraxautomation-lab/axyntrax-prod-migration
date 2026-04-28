@@ -104,7 +104,7 @@ export default function Keygen() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.clientId) {
-      toast({ variant: "destructive", title: "Seleccioná un cliente" });
+      toast({ variant: "destructive", title: "Selecciona un cliente" });
       return;
     }
     createMutation.mutate(
@@ -170,7 +170,7 @@ export default function Keygen() {
                   onValueChange={(v) => setForm({ ...form, clientId: v })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccioná un cliente" />
+                    <SelectValue placeholder="Selecciona un cliente" />
                   </SelectTrigger>
                   <SelectContent>
                     {clients?.map((c) => (
@@ -292,7 +292,7 @@ export default function Keygen() {
           ) : filtered.length === 0 ? (
             <div className="text-center text-muted-foreground py-12">
               <Key className="mx-auto h-10 w-10 opacity-30 mb-3" />
-              No hay licencias todavía. Generá la primera con el botón superior.
+              No hay licencias todavía. Genera la primera con el botón superior.
             </div>
           ) : (
             <div className="overflow-x-auto">

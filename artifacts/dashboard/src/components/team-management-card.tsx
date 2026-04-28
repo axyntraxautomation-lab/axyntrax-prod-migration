@@ -219,7 +219,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
             Gestión de equipo ({users?.length ?? 0})
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Cambiá roles, reseteá la verificación en dos pasos o asigná una
+            Cambia roles, reseteá la verificación en dos pasos o asigná una
             contraseña nueva. Las acciones sobre administradores disparan
             alertas de seguridad.
           </p>
@@ -274,7 +274,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
                         disabled={isSelf}
                         title={
                           isSelf
-                            ? "No podés cambiar tu propio rol"
+                            ? "No puedes cambiar tu propio rol"
                             : "Cambiar rol"
                         }
                         data-testid={`button-change-role-${u.id}`}

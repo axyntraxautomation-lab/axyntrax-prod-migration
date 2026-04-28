@@ -134,7 +134,7 @@ export default function ClientModulesPage() {
       toast({
         variant: "destructive",
         title: "No se pudo copiar",
-        description: "Copiá manualmente la clave del módulo.",
+        description: "Copia manualmente la clave del módulo.",
       });
     }
   };
@@ -201,7 +201,7 @@ export default function ClientModulesPage() {
       toast({
         variant: "destructive",
         title: "No se pudo aplicar",
-        description: err instanceof Error ? err.message : "Reintentá",
+        description: err instanceof Error ? err.message : "Reintenta",
       });
     }
   }
@@ -286,7 +286,7 @@ export default function ClientModulesPage() {
       toast({
         variant: "destructive",
         title: "No se pudo solicitar",
-        description: err instanceof Error ? err.message : "Reintentá",
+        description: err instanceof Error ? err.message : "Reintenta",
       });
     } finally {
       setBusyId(null);
@@ -322,7 +322,7 @@ export default function ClientModulesPage() {
       >
         <div className="flex-1 min-w-[220px]">
           <div className="font-medium text-foreground">
-            Para activar módulos pagos depositá por Yape
+            Para activar módulos pagos deposita por Yape
           </div>
           <div className="text-xs text-muted-foreground">
             Titular: Miguel Angel Montero Garcia · Después de pagar avisanos por
@@ -344,7 +344,7 @@ export default function ClientModulesPage() {
             data-testid="banner-updates"
           >
             <div className="font-medium">
-              Tenés {pending.length} actualización
+              Tienes {pending.length} actualización
               {pending.length === 1 ? "" : "es"} pendiente
               {pending.length === 1 ? "" : "s"}
             </div>
@@ -393,8 +393,8 @@ export default function ClientModulesPage() {
           <div className="space-y-1">
             <div className="font-medium">
               {expiringSoon.length === 1
-                ? "Tenés 1 demo por vencer"
-                : `Tenés ${expiringSoon.length} demos por vencer`}
+                ? "Tienes 1 demo por vencer"
+                : `Tienes ${expiringSoon.length} demos por vencer`}
             </div>
             <ul className="list-disc list-inside text-xs space-y-0.5">
               {expiringSoon.map((r) => {
@@ -422,8 +422,8 @@ export default function ClientModulesPage() {
             <CardContent className="py-8 flex items-center gap-3 text-muted-foreground">
               <Info className="h-5 w-5" />
               <span>
-                Todavía no tenés demos activas. Explorá el catálogo abajo y
-                solicitá los módulos que querés probar.
+                Todavía no tienes demos activas. Explora el catálogo abajo y
+                solicita los módulos que quieres probar.
               </span>
             </CardContent>
           </Card>
@@ -539,7 +539,7 @@ export default function ClientModulesPage() {
                           </Button>
                         </div>
                         <p className="text-[11px] text-muted-foreground">
-                          Usá esta clave para descargar y activar el módulo.
+                          Usa esta clave para descargar y activar el módulo.
                         </p>
                       </div>
                     ) : null}
@@ -620,7 +620,7 @@ export default function ClientModulesPage() {
                         data-testid={`button-quote-${m.slug}`}
                       >
                         {blocked
-                          ? "Ya tenés este módulo"
+                          ? "Ya tienes este módulo"
                           : checked
                             ? "Quitar de la cotización"
                             : "Agregar a cotización"}
@@ -746,7 +746,7 @@ export default function ClientModulesPage() {
             <DialogDescription>
               {createdQuoteAccepted ? (
                 <>
-                  Solicitud creada. Pagá ahora con Yape (escaneá el QR o usá el
+                  Solicitud creada. Paga ahora con Yape (escanea el QR o usa el
                   número 991 740 590) y avisanos por el chat de JARVIS para
                   activar los módulos en minutos.
                 </>
@@ -757,7 +757,7 @@ export default function ClientModulesPage() {
                   (incluye IGV).
                   {createdQuote?.emailSent
                     ? " Te enviamos el PDF al correo."
-                    : " No pudimos enviar el correo, igual podés descargar el PDF acá."}
+                    : " No pudimos enviar el correo, igual puedes descargar el PDF acá."}
                 </>
               )}
             </DialogDescription>
@@ -807,7 +807,7 @@ export default function ClientModulesPage() {
                       variant: "destructive",
                       title: "No se pudo aceptar",
                       description:
-                        err instanceof Error ? err.message : "Intentá de nuevo",
+                        err instanceof Error ? err.message : "Intenta de nuevo",
                     });
                   } finally {
                     setAcceptingCreated(false);

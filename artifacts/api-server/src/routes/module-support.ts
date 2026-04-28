@@ -24,7 +24,7 @@ const supportLimiter = rateLimit({
   limit: 30,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  message: { error: "Demasiadas consultas, esperá un minuto." },
+  message: { error: "Demasiadas consultas, espera un minuto." },
 });
 
 const Body = z.object({
@@ -62,7 +62,7 @@ function normalizeReply(raw: unknown): SupportReply {
     };
   }
   if (typeof raw === "string") return { reply: raw.slice(0, 1000) };
-  return { reply: "No pude generar una respuesta válida. Reintentá." };
+  return { reply: "No pude generar una respuesta válida. Reintenta." };
 }
 
 const INDUSTRY_CONTEXT: Record<string, string> = {
@@ -84,14 +84,14 @@ const INDUSTRY_CONTEXT: Record<string, string> = {
 function systemPrompt(moduleName: string, industry: string): string {
   const ctx = INDUSTRY_CONTEXT[industry] ?? INDUSTRY_CONTEXT.generic;
   return [
-    "Sos 'JARVIS Soporte', la IA principal de AXYNTRAX AUTOMATION (Arequipa, Perú) actuando como ingeniero TI senior con más de 20 años de experiencia.",
+    "Eres 'JARVIS Soporte', la IA principal de AXYNTRAX AUTOMATION (Arequipa, Perú) actuando como ingeniero TI senior con más de 20 años de experiencia.",
     `El cliente está usando el módulo "${moduleName}" en el rubro: ${ctx}.`,
     "Hablá en español rioplatense neutro/peruano, profesional, conciso, sin emojis.",
     "Resolvé problemas en línea: explicá con pasos numerados cuando aplique.",
     "Si el problema requiere intervención humana (acceso al servidor, datos del cliente, configuración manual), indicá needsHuman=true y resumí qué información necesita el equipo.",
-    "Para depósitos o renovaciones, mencioná Yape al 991740590 a nombre de Miguel Montero.",
-    "Nunca pidas datos sensibles (contraseñas, tarjetas). Si el cliente reporta vulnerabilidad o intrusión, pedí que contacte al admin inmediatamente.",
-    'Devolvé SIEMPRE JSON válido con la forma {"reply":"...","steps":["..."],"needsHuman":false}. "steps" es opcional. No agregues nada fuera del JSON.',
+    "Para depósitos o renovaciones, menciona Yape al 991740590 a nombre de Miguel Montero.",
+    "Nunca pidas datos sensibles (contraseñas, tarjetas). Si el cliente reporta vulnerabilidad o intrusión, pide que contacte al admin inmediatamente.",
+    'Devuelve SIEMPRE JSON válido con la forma {"reply":"...","steps":["..."],"needsHuman":false}. "steps" es opcional. No agregues nada fuera del JSON.',
   ].join("\n");
 }
 
@@ -168,7 +168,7 @@ router.post(
       messages.push({ role: "user", parts: [{ text: sys }] });
       messages.push({
         role: "model",
-        parts: [{ text: '{"reply":"Listo, contame qué pasa con tu módulo."}' }],
+        parts: [{ text: '{"reply":"Listo, cuéntame qué pasa con tu módulo."}' }],
       });
       for (const m of parsed.data.history ?? []) {
         messages.push({
@@ -209,7 +209,7 @@ router.post(
       logger.error({ err }, "module-support failed");
       res
         .status(500)
-        .json({ error: "No pude procesar tu consulta. Reintentá en unos segundos." });
+        .json({ error: "No pude procesar tu consulta. Reintenta en unos segundos." });
     }
   },
 );

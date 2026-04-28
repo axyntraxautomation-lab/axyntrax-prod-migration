@@ -39,14 +39,14 @@ const portalRegisterLimiter = rateLimit({
   limit: 10,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  message: { error: "Demasiados registros desde tu IP, esperá unos minutos." },
+  message: { error: "Demasiados registros desde tu IP, espera unos minutos." },
 });
 const portalLoginLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   limit: 20,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  message: { error: "Demasiados intentos de login, esperá unos minutos." },
+  message: { error: "Demasiados intentos de login, espera unos minutos." },
 });
 
 // Phone: 7-20 digits, optionally a leading "+". Spaces / dashes are stripped.

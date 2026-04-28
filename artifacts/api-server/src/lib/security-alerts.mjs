@@ -325,7 +325,7 @@ function buildTextBody({ action, operator, targetEmail, targetRole, timestamp, e
     }
   }
   lines.push("");
-  lines.push("Si vos no estás detrás de esto, revisá audit_log y rotá credenciales del servidor YA.");
+  lines.push("Si tú no estás detrás de esto, revisa audit_log y rota credenciales del servidor YA.");
   return lines.join("\n");
 }
 

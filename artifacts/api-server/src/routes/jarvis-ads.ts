@@ -50,7 +50,7 @@ router.post(
     if (!created) {
       res
         .status(503)
-        .json({ error: "JARVIS no pudo generar el aviso, reintentá en unos segundos." });
+        .json({ error: "JARVIS no pudo generar el aviso, reintenta en unos segundos." });
       return;
     }
     res.status(201).json(created);

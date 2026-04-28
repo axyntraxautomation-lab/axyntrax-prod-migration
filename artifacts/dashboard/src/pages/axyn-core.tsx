@@ -288,7 +288,7 @@ export default function AxynCore() {
             className="flex gap-2 items-end"
           >
             <Textarea
-              placeholder="Escribí a AXYN CORE… (Enter para enviar, Shift+Enter para nueva línea)"
+              placeholder="Escribe a AXYN CORE… (Enter para enviar, Shift+Enter para nueva línea)"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {

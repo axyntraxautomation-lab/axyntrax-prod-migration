@@ -114,8 +114,8 @@ const PROCESS_STEPS = [
   {
     n: "04",
     icon: Wallet,
-    title: "Pagá por Yape y listo",
-    body: "Depositás vía Yape, Cecilia te activa los módulos en minutos.",
+    title: "Paga por Yape y listo",
+    body: "Depositas vía Yape, Cecilia te activa los módulos en minutos.",
   },
 ];
 
@@ -419,7 +419,7 @@ export default function LandingPage() {
               {
                 icon: Sparkles,
                 title: "Activación inmediata",
-                body: "Aceptás la cotización, depositás por Yape y empezamos a trabajar en minutos, sin trámites bancarios.",
+                body: "Aceptas la cotización, depositas por Yape y empezamos a trabajar en minutos, sin trámites bancarios.",
               },
               {
                 icon: ShieldCheck,
@@ -698,11 +698,11 @@ export default function LandingPage() {
                   Pago seguro vía Yape
                 </StatusPill>
                 <h2 className="font-display text-3xl font-semibold leading-tight text-slate-50 sm:text-4xl">
-                  Pagás por Yape, activamos en{" "}
+                  Pagas por Yape, activamos en{" "}
                   <span className="gradient-text-cyan-violet">minutos</span>
                 </h2>
                 <p className="text-base leading-relaxed text-slate-400">
-                  Aceptás la cotización dentro del portal, depositás por Yape al
+                  Aceptas la cotización dentro del portal, depositas por Yape al
                   titular y Cecilia te activa los módulos casi al instante. Sin
                   tarjetas, sin trámites bancarios, sin tiempos muertos.
                 </p>
@@ -753,7 +753,7 @@ export default function LandingPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400">
               Crea tu cuenta gratis y conversá con Cecilia ahora. Sin compromiso,
-              sin tarjeta. Si no encontrás el módulo que buscás, lo armamos para
+              sin tarjeta. Si no encuentras el módulo que buscás, lo armamos para
               tu rubro.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

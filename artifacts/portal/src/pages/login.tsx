@@ -89,7 +89,7 @@ export default function Login() {
       toast({
         variant: "destructive",
         title: "Contraseña muy corta",
-        description: "Usá al menos 8 caracteres.",
+        description: "Usa al menos 8 caracteres.",
       });
       return;
     }
@@ -97,7 +97,7 @@ export default function Login() {
       toast({
         variant: "destructive",
         title: "Las contraseñas no coinciden",
-        description: "Volvé a escribir la confirmación.",
+        description: "Vuelve a escribir la confirmación.",
       });
       return;
     }
@@ -113,7 +113,7 @@ export default function Login() {
       setSession(s);
       toast({
         title: "Cuenta creada",
-        description: "Bienvenido a AXYNTRAX. Explorá el catálogo de módulos.",
+        description: "Bienvenido a AXYNTRAX. Explora el catálogo de módulos.",
       });
       setLocation("/catalogo");
     } catch (err) {
@@ -154,13 +154,13 @@ export default function Login() {
         setRequiresTwofa(true);
         toast({
           title: "Verificación 2FA",
-          description: "Ingresá el código de tu app de autenticación.",
+          description: "Ingresa el código de tu app de autenticación.",
         });
       } else {
         toast({
           variant: "destructive",
           title: "Credenciales inválidas",
-          description: err instanceof Error ? err.message : "Reintentá",
+          description: err instanceof Error ? err.message : "Reintenta",
         });
       }
     } finally {
@@ -211,7 +211,7 @@ export default function Login() {
                   de tu negocio.
                 </h2>
                 <p className="text-base leading-relaxed text-slate-400">
-                  Activá módulos, generá cotizaciones formales y dejá que JARVIS
+                  Activa módulos, genera cotizaciones formales y deja que JARVIS
                   responda a tus clientes 24/7 desde un solo panel.
                 </p>
               </div>
@@ -341,7 +341,7 @@ export default function Login() {
                       Entrar a mi portal
                     </GradientButton>
                     <p className="pt-1 text-center text-xs text-slate-400">
-                      ¿Aún no tenés cuenta?{" "}
+                      ¿Aún no tienes cuenta?{" "}
                       <button
                         type="button"
                         className="font-medium text-cyan-300 underline-offset-2 transition-colors hover:text-cyan-200 hover:underline"
@@ -460,7 +460,7 @@ export default function Login() {
                       />
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      Mínimo 8 caracteres. Usá una contraseña única.
+                      Mínimo 8 caracteres. Usa una contraseña única.
                     </p>
                     <GradientButton
                       type="submit"
@@ -540,7 +540,7 @@ export default function Login() {
                               data-testid="input-twofa-code"
                             />
                           }
-                          hint="Ingresá el código de 6 dígitos de tu app de autenticación."
+                          hint="Ingresa el código de 6 dígitos de tu app de autenticación."
                         />
                       </div>
                     )}

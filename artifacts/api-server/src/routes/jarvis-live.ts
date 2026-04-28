@@ -229,7 +229,7 @@ Tono: directo, profesional peruano, sin emojis, sin markdown, máximo 8 líneas 
 - Cuando preguntan por un cliente o módulo, contestá con cifras concretas si están en el contexto.
 - Si algo es preocupante (alertas de seguridad, errores, cotizaciones vencidas), señalalo primero.
 - Si no hay datos suficientes para responder, decilo y sugerí dónde encontrarlos en el dashboard.
-- Nunca inventes números: usá solo lo que viene en el CONTEXTO ACTUAL.`;
+- Nunca inventes números: usa solo lo que viene en el CONTEXTO ACTUAL.`;
 
 router.post("/jarvis/ask", requireAuth, async (req, res): Promise<void> => {
   const parsed = AskBody.safeParse(req.body);
@@ -319,7 +319,7 @@ ${knowledge}`;
     res.json({ reply });
   } catch (err) {
     logger.error({ err }, "jarvis ask failed");
-    res.status(500).json({ error: "JARVIS no pudo responder. Reintentá en unos segundos." });
+    res.status(500).json({ error: "JARVIS no pudo responder. Reintenta en unos segundos." });
   }
 });
 

@@ -53,7 +53,7 @@ export function YapeQR({ size = 96, showCaption = true, className }: YapeQRProps
             Paga con Yape · Miguel Angel Montero Garcia
           </DialogTitle>
           <DialogDescription className="text-purple-100">
-            Escaneá este código desde la app Yape o usá el número 991 740 590.
+            Escanea este código desde la app Yape o usa el número 991 740 590.
             Después avisanos por el chat de JARVIS para activar tu módulo.
           </DialogDescription>
         </DialogHeader>

@@ -29,7 +29,7 @@ const WEB_FORM_TOKEN = process.env.WEB_FORM_TOKEN;
 router.post("/webhooks/web", async (req, res) => {
   if (!WEB_FORM_TOKEN) {
     res.status(503).json({
-      error: "WEB_FORM_TOKEN not configured on the server",
+      error: "WEB_FORM_TOKEN no está configurado en el servidor",
     });
     return;
   }

@@ -89,7 +89,7 @@ function RequestList({ status }: { status: string }) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: err instanceof Error ? err.message : "Reintentá",
+        description: err instanceof Error ? err.message : "Reintenta",
       });
     } finally {
       setBusyId(null);

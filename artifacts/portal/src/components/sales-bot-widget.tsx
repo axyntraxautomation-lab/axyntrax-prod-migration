@@ -35,7 +35,7 @@ interface Props {
 const GREETING: Msg = {
   role: "assistant",
   content:
-    "Hola, soy Cecilia, la asesora IA de AXYNTRAX. Contame de tu negocio y te recomiendo módulos de automatización con cotización al instante. Si querés reservar tu módulo, depositá por Yape al 991 740 590 (Miguel Montero).",
+    "Hola, soy Cecilia, la asesora IA de AXYNTRAX. Cuéntame de tu negocio y te recomiendo módulos de automatización con cotización al instante. Si quieres reservar tu módulo, deposita por Yape al 991 740 590 (Miguel Montero).",
 };
 
 export function SalesBotWidget({ scope, initialOpen = false }: Props) {
@@ -107,7 +107,7 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
           content:
             err instanceof Error
               ? `No pude responder: ${err.message}`
-              : "No pude responder ahora, intentá más tarde.",
+              : "No pude responder ahora, intenta más tarde.",
         },
       ]);
     } finally {
@@ -268,7 +268,7 @@ export function SalesBotWidget({ scope, initialOpen = false }: Props) {
                 void send();
               }
             }}
-            placeholder="Contame qué hace tu negocio…"
+            placeholder="Cuéntame qué hace tu negocio…"
             rows={2}
             className="min-h-[44px] resize-none rounded-xl border-white/10 bg-white/[0.03] text-sm text-slate-100 placeholder:text-slate-500 focus-visible:border-cyan-400/40 focus-visible:ring-cyan-400/20"
             data-testid="sales-bot-input"

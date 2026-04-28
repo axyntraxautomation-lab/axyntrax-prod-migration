@@ -42,7 +42,7 @@ export function TwofaCard({ enabled }: Props) {
         toast({
           variant: "destructive",
           title: "No se pudo iniciar 2FA",
-          description: "Reintentá en unos instantes.",
+          description: "Reintenta en unos instantes.",
         }),
     });
   };
@@ -131,7 +131,7 @@ export function TwofaCard({ enabled }: Props) {
             <p className="text-sm text-muted-foreground">
               Tu cuenta requiere un código de 6 dígitos de tu aplicación
               autenticadora cada vez que iniciás sesión. Para desactivar la
-              verificación ingresá un código actual.
+              verificación ingresa un código actual.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
               <div className="flex-1 space-y-1">
@@ -197,8 +197,8 @@ export function TwofaCard({ enabled }: Props) {
               )}
               <div className="space-y-2 text-sm">
                 <p className="text-muted-foreground">
-                  Escaneá el código QR con tu app autenticadora. Si no podés
-                  escanearlo, ingresá la clave manualmente:
+                  Escanea el código QR con tu app autenticadora. Si no puedes
+                  escanearlo, ingresa la clave manualmente:
                 </p>
                 <code className="block break-all rounded bg-muted px-2 py-1 font-mono text-xs">
                   {secret}

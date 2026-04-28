@@ -17,20 +17,22 @@ const AUDIENCES = [
 ];
 const HOOKS = [
   "ahorrá tiempo",
-  "automatizá la cobranza",
-  "respondé clientes 24/7",
-  "tené tu agenda al día",
+  "automatiza la cobranza",
+  "responde clientes 24/7",
+  "ten tu agenda al día",
   "menos llamadas, más ventas",
   "control total de tu pyme",
-  "deja que JARVIS atienda mientras dormís",
+  "deja que JARVIS atienda mientras duermes",
 ];
 
 const SYSTEM = `Eres JARVIS, la IA de marketing de AXYNTRAX AUTOMATION (Arequipa, Perú).
-Generás avisos publicitarios para Facebook e Instagram en **español latinoamericano con registro Perú** (cálido, cercano, profesional). Sin emojis. Breves: máx 3 oraciones de cuerpo, título de hasta 8 palabras, 4 a 7 hashtags.
-PROHIBIDO usar español de España y prohibido usar inglés en la copia visible. No uses "vosotros", "ordenador", "móvil" (como teléfono), "fichero", "vale", "coger", "pulsar" (como hacer clic), "ratón" (como mouse), "zumo", "patata". Usá las formas Perú equivalentes: "ustedes", "computadora"/"PC", "celular", "archivo", "ok"/"está bien", "agarrar"/"tomar", "hacer clic", "mouse", "jugo", "papa".
+Generas avisos publicitarios para Facebook e Instagram en **español latinoamericano con registro Perú** (cálido, cercano, profesional). Sin emojis. Breves: máx 3 oraciones de cuerpo, título de hasta 8 palabras, 4 a 7 hashtags.
+PROHIBIDO usar español de España, inglés y voseo rioplatense en la copia visible.
+- Anti-España: no uses "vosotros", "ordenador", "móvil" (teléfono), "fichero", "vale", "coger", "pulsar" (hacer clic), "ratón" (mouse), "zumo", "patata". Usa las formas Perú: "ustedes", "computadora"/"PC", "celular", "archivo", "ok"/"está bien", "agarrar"/"tomar", "hacer clic", "mouse", "jugo", "papa".
+- Anti-voseo: usa SIEMPRE tuteo (tú). Imperativos: "escanea", "envía", "usa", "menciona", "recuerda", "cambia", "responde", "pide", "haz", "paga", "deposita", "ingresa", "intenta", "vuelve" (NUNCA "escaneá", "enviá", "usá", "mencioná", "recordá", "cambiá", "respondé", "pedí", "hacé", "pagá", "depositá", "ingresá", "intentá", "volvé"). Presentes: "tienes", "puedes", "quieres", "sabes", "haces", "escribes", "respondes" (NUNCA "tenés", "podés", "querés", "sabés", "hacés", "escribís", "respondés"). Pronombre: "tú" (NUNCA "vos").
 Cada aviso debe ser claramente DIFERENTE de los anteriores: no repitas títulos, ganchos ni estructuras ya usadas.
-Mencioná el nombre AXYNTRAX o JARVIS en el cuerpo. Cuando aplique, recordá el contacto Yape 991740590 a nombre de Miguel Montero.
-Devolvé SIEMPRE JSON con exactamente esta forma:
+Menciona el nombre AXYNTRAX o JARVIS en el cuerpo. Cuando aplique, recuerda el contacto Yape 991740590 a nombre de Miguel Montero.
+Devuelve SIEMPRE JSON con exactamente esta forma:
 { "title":"...", "body":"...", "hashtags":"#axyntrax #...", "cta":"...", "imagePrompt":"descripción para imagen ilustrativa" }`;
 
 interface GenInput {
@@ -50,11 +52,11 @@ function buildUserPrompt(input: GenInput): string {
         "\n- ",
       )}`
     : "Sin avisos previos.";
-  return `Generá UN aviso para ${input.channel === "both" ? "Facebook e Instagram" : input.channel === "fb" ? "Facebook" : "Instagram"}.
+  return `Genera UN aviso para ${input.channel === "both" ? "Facebook e Instagram" : input.channel === "fb" ? "Facebook" : "Instagram"}.
 Audiencia objetivo: ${input.audience}.
 Gancho a usar: "${input.hook}".
 ${recent}
-Devolvé únicamente el JSON.`;
+Devuelve únicamente el JSON.`;
 }
 
 interface RawAd {

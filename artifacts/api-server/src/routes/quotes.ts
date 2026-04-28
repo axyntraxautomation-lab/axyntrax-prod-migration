@@ -73,7 +73,7 @@ router.post(
     if (currencies.size > 1) {
       res.status(400).json({
         error:
-          "No se puede cotizar módulos de monedas distintas en una sola cotización. Generá una cotización por moneda.",
+          "No se puede cotizar módulos de monedas distintas en una sola cotización. Genera una cotización por moneda.",
         currencies: Array.from(currencies),
       });
       return;
@@ -171,7 +171,7 @@ router.post(
             `Total mensual: ${currency} ${total.toFixed(2)} (incluye IGV).`,
             `Esta cotización es válida hasta el ${validUntil.toLocaleDateString("es-PE")}.`,
             "",
-            "Para activar el servicio podés aceptar la cotización desde el portal AXYNTRAX o respondernos por este medio.",
+            "Para activar el servicio puedes aceptar la cotización desde el portal AXYNTRAX o respondernos por este medio.",
             "",
             "Equipo AXYNTRAX AUTOMATION",
             "Arequipa, Perú",

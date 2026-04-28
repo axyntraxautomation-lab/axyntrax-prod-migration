@@ -55,7 +55,7 @@ export async function issueEmailOtp(userId: number, toEmail: string): Promise<Is
     "",
     `Vence en 10 minutos (${expiresAt.toLocaleString("es-PE", { timeZone: "America/Lima" })} hora Perú).`,
     "",
-    "Si no fuiste vos, ignorá este correo y cambiá tu contraseña.",
+    "Si no fuiste tú, ignora este correo y cambia tu contraseña.",
     "",
     "— AXYNTRAX Automation · Arequipa, Perú",
   ].join("\n");
@@ -65,11 +65,11 @@ export async function issueEmailOtp(userId: number, toEmail: string): Promise<Is
   <div style="max-width:480px;margin:0 auto;background:#0b1220;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px;">
     <div style="text-align:center;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#22d3ee;">AXYNTRAX · JARVIS</div>
     <h1 style="margin:16px 0 8px;font-size:22px;color:#f8fafc;text-align:center;">Tu código de acceso</h1>
-    <p style="margin:0 0 24px;text-align:center;color:#94a3b8;font-size:14px;">Usalo en la pantalla de doble factor de JARVIS.</p>
+    <p style="margin:0 0 24px;text-align:center;color:#94a3b8;font-size:14px;">Úsalo en la pantalla de doble factor de JARVIS.</p>
     <div style="margin:24px auto;text-align:center;font-family:'JetBrains Mono',Menlo,monospace;font-size:36px;letter-spacing:0.5em;color:#22d3ee;background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.25);border-radius:12px;padding:18px 12px;">
       ${code}
     </div>
-    <p style="margin:0;text-align:center;color:#64748b;font-size:12px;">Vence en 10 minutos. Si no fuiste vos, ignorá este correo y cambiá tu contraseña.</p>
+    <p style="margin:0;text-align:center;color:#64748b;font-size:12px;">Vence en 10 minutos. Si no fuiste tú, ignora este correo y cambia tu contraseña.</p>
     <hr style="margin:24px 0;border:0;border-top:1px solid rgba(255,255,255,0.06);">
     <p style="margin:0;text-align:center;color:#475569;font-size:11px;">AXYNTRAX Automation · Arequipa, Perú</p>
   </div>
@@ -79,7 +79,7 @@ export async function issueEmailOtp(userId: number, toEmail: string): Promise<Is
 
   if (!result.ok) {
     logger.warn({ userId, error: result.error }, "auth.email_otp.send_failed");
-    return { ok: false, error: "No pudimos enviar el correo. Intentá con tu app autenticadora o reintentá." };
+    return { ok: false, error: "No pudimos enviar el correo. Intenta con tu app autenticadora o reintenta." };
   }
 
   logger.info({ userId, to: maskEmail(toEmail) }, "auth.email_otp.sent");

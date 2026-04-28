@@ -63,7 +63,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
       const qrDataUrl = await QRCode.toDataURL(otpauth);
       res.status(401).json({
         error:
-          "JARVIS requiere doble factor obligatorio. Escaneá el QR con tu app autenticadora y enviá el primer código.",
+          "JARVIS requiere doble factor obligatorio. Escanea el QR con tu app autenticadora y envía el primer código.",
         requiresTwofaSetup: true,
         secret,
         otpauth,
@@ -74,7 +74,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     const valid = authenticator.verify({ token: code, secret });
     if (!valid) {
       res.status(401).json({
-        error: "Código 2FA inválido. Reintentá con el código actual.",
+        error: "Código 2FA inválido. Reintenta con el código actual.",
         requiresTwofaSetup: true,
       });
       return;

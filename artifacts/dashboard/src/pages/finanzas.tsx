@@ -147,7 +147,7 @@ export default function Finanzas() {
       toast({
         variant: "destructive",
         title: "Monto inválido",
-        description: "Ingresá un monto positivo.",
+        description: "Ingresa un monto positivo.",
       });
       return;
     }
@@ -185,7 +185,7 @@ export default function Finanzas() {
       toast({
         variant: "destructive",
         title: "Monto inválido",
-        description: "Ingresá un monto positivo.",
+        description: "Ingresa un monto positivo.",
       });
       return;
     }
@@ -887,7 +887,7 @@ function AxiaPanel({
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") send();
           }}
           rows={2}
-          placeholder="Pedile a AXIA un análisis financiero..."
+          placeholder="Pídele a AXIA un análisis financiero..."
           disabled={streaming}
           data-testid="input-axia"
         />

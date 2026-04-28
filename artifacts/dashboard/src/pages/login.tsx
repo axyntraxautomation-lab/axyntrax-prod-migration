@@ -59,7 +59,7 @@ export default function Login() {
         variant: "destructive",
         title: "Datos incompletos",
         description:
-          "Volvé al primer paso e ingresá tu correo y contraseña primero.",
+          "Vuelve al primer paso e ingresa tu correo y contraseña primero.",
       });
       return;
     }
@@ -80,7 +80,7 @@ export default function Login() {
         toast({
           variant: "destructive",
           title: "No se pudo enviar el código",
-          description: data.error ?? "Reintentá en un momento.",
+          description: data.error ?? "Reintenta en un momento.",
         });
         return;
       }
@@ -88,13 +88,13 @@ export default function Login() {
       setTwofaCode("");
       toast({
         title: "Código enviado",
-        description: `Revisá tu bandeja en ${data.sentTo ?? email}. El código vence en 10 minutos.`,
+        description: `Revisa tu bandeja en ${data.sentTo ?? email}. El código vence en 10 minutos.`,
       });
     } catch (err) {
       toast({
         variant: "destructive",
         title: "Error de red",
-        description: "No se pudo contactar al servidor. Reintentá.",
+        description: "No se pudo contactar al servidor. Reintenta.",
       });
     } finally {
       setSendingEmailOtp(false);
@@ -128,13 +128,13 @@ export default function Login() {
           toast({
             title: "JARVIS exige doble factor",
             description:
-              "Escaneá el QR con Google Authenticator o Authy y enviá el primer código.",
+              "Escanea el QR con Google Authenticator o Authy y envía el primer código.",
           });
         } else {
           toast({
             variant: "destructive",
             title: "Código 2FA inválido",
-            description: data.error ?? "Reintentá con el código actual.",
+            description: data.error ?? "Reintenta con el código actual.",
           });
         }
         return;
@@ -145,7 +145,7 @@ export default function Login() {
         toast({
           title: "Verificación 2FA requerida",
           description:
-            "Ingresá el código de 6 dígitos de tu app autenticadora.",
+            "Ingresa el código de 6 dígitos de tu app autenticadora.",
         });
         return;
       }
@@ -159,7 +159,7 @@ export default function Login() {
       toast({
         variant: "destructive",
         title: "Error de red",
-        description: "No se pudo contactar al servidor. Reintentá.",
+        description: "No se pudo contactar al servidor. Reintenta.",
       });
     } finally {
       setSubmitting(false);
@@ -231,7 +231,7 @@ export default function Login() {
                         Verificación 2FA
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        Ingresá el código de 6 dígitos
+                        Ingresa el código de 6 dígitos
                       </div>
                     </div>
                   </>
@@ -304,7 +304,7 @@ export default function Login() {
                       </div>
                     </div>
                     <p className="text-center text-[11px] text-slate-400">
-                      Si no podés escanear, usá esta clave secreta:
+                      Si no puedes escanear, usa esta clave secreta:
                     </p>
                     <p className="break-all text-center font-mono text-sm font-semibold tracking-widest text-cyan-200">
                       {twofaSetup.secret}
@@ -357,7 +357,7 @@ export default function Login() {
                               Código enviado a {emailOtpSent.sentTo}
                             </div>
                             <p className="text-[11px] text-slate-400">
-                              Revisá tu bandeja (incluye spam). Vence en 10 min.
+                              Revisa tu bandeja (incluye spam). Vence en 10 min.
                             </p>
                             <button
                               type="button"
@@ -373,7 +373,7 @@ export default function Login() {
                         ) : (
                           <div className="space-y-2 text-center">
                             <p className="text-[11px] text-slate-400">
-                              ¿No tenés acceso a tu app autenticadora?
+                              ¿No tienes acceso a tu app autenticadora?
                             </p>
                             <button
                               type="button"
