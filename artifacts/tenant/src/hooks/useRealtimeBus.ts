@@ -9,7 +9,6 @@
  * tormentas si llegan muchos eventos seguidos).
  */
 import { useEffect, useRef } from "react";
-import { useTenant } from "@/providers/TenantProvider";
 import {
   getSupabaseRealtime,
   setSupabaseAuth,
