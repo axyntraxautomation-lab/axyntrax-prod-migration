@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type FormEvent,
 } from "react";
 import { apiGet, type CeciliaMessage, type FaqItem } from "@/lib/api";
@@ -74,12 +75,9 @@ export function CeciliaFloatingChat() {
     el.scrollTop = el.scrollHeight;
   }, [turns, streaming]);
 
-  const handleSend = useCallback(
-    async (e?: FormEvent) => {
-      e?.preventDefault();
-      const text = input.trim();
+  const sendMessage = useCallback(
+    async (text: string) => {
       if (!text || streaming) return;
-      setInput("");
       const userTurn: ChatTurn = {
         id: `u-${Date.now()}`,
         role: "user",
@@ -197,8 +195,26 @@ export function CeciliaFloatingChat() {
         abortRef.current = null;
       }
     },
-    [input, streaming, faqs],
+    [streaming, faqs],
   );
+
+  const handleSend = useCallback(
+    (e?: FormEvent) => {
+      e?.preventDefault();
+      const text = input.trim();
+      if (!text) return;
+      setInput("");
+      void sendMessage(text);
+    },
+    [input, sendMessage],
+  );
+
+  // Sugerencias proactivas: las primeras 3 FAQs disponibles. Se muestran
+  // arriba del input mientras no haya mensajes del usuario, así Cecilia
+  // ofrece respuestas antes de que el cliente tenga que escribir.
+  const suggestedFaqs = useMemo(() => faqs.slice(0, 3), [faqs]);
+  const hasUserTurn = turns.some((t) => t.role === "user");
+  const showSuggestions = !hasUserTurn && !streaming && suggestedFaqs.length > 0;
 
   const headerStyle = useMemo(
     () => ({
@@ -289,6 +305,30 @@ export function CeciliaFloatingChat() {
           ))}
         </ul>
       </div>
+      {showSuggestions ? (
+        <div
+          className="border-t border-gray-100 px-3 pt-2"
+          data-testid="cecilia-suggestions"
+        >
+          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            Preguntas frecuentes
+          </div>
+          <ul className="flex flex-wrap gap-1.5">
+            {suggestedFaqs.map((f) => (
+              <li key={f.id}>
+                <button
+                  type="button"
+                  onClick={() => void sendMessage(f.pregunta)}
+                  className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                  data-testid={`cecilia-suggestion-${f.id}`}
+                >
+                  {f.pregunta}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <form onSubmit={handleSend} className="flex gap-2 border-t border-gray-100 p-3">
         <input
           type="text"
@@ -297,10 +337,7 @@ export function CeciliaFloatingChat() {
           placeholder="Escribe tu pregunta..."
           aria-label="Mensaje para Cecilia"
           className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2"
-          style={{
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ["--tw-ring-color" as any]: "var(--color-primario)",
-          }}
+          style={{ "--tw-ring-color": "var(--color-primario)" } as CSSProperties}
           disabled={streaming}
           data-testid="cecilia-input"
         />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { BrandingHeader } from "@/components/BrandingHeader";
 import { CeciliaFloatingChat } from "@/components/CeciliaFloatingChat";
 import { apiGet, type FaqItem } from "@/lib/api";
@@ -62,10 +62,7 @@ export function Faq() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar..."
           className="mt-3 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2"
-          style={{
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ["--tw-ring-color" as any]: "var(--color-primario)",
-          }}
+          style={{ "--tw-ring-color": "var(--color-primario)" } as CSSProperties}
           data-testid="faq-search"
         />
         {loading ? <p className="mt-4 text-sm text-gray-500">Cargando...</p> : null}
