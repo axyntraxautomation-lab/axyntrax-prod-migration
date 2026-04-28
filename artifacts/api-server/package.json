@@ -9,7 +9,8 @@
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "reset-2fa": "node ./scripts/reset-2fa.mjs",
-    "smoke-tenant": "tsx ./scripts/smoke-tenant.mjs"
+    "smoke-tenant": "tsx ./scripts/smoke-tenant.mjs",
+    "test:tenant": "tsx --test src/__tests__/tenant-bridge.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

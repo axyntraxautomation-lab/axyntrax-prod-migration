@@ -8,6 +8,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { rubrosRegistryTable } from "./rubros-registry";
 
 export const tenantsTable = pgTable(
   "tenants",
@@ -15,7 +16,9 @@ export const tenantsTable = pgTable(
     id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
     slug: varchar("slug", { length: 64 }).notNull(),
     nombreEmpresa: text("nombre_empresa").notNull(),
-    rubroId: varchar("rubro_id", { length: 64 }).notNull(),
+    rubroId: varchar("rubro_id", { length: 64 })
+      .notNull()
+      .references(() => rubrosRegistryTable.rubroId, { onUpdate: "cascade" }),
     ownerEmail: varchar("owner_email", { length: 255 }).notNull(),
     ownerName: text("owner_name"),
     moneda: varchar("moneda", { length: 8 }).notNull().default("PEN"),

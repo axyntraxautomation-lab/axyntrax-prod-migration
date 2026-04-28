@@ -13,7 +13,7 @@
  *   4. Los 3 endpoints `/api/tenant/{signup,me,jwt}` están registrados y
  *      responden 401 sin cookie de portal (gate de autenticación activo).
  *   5. `signTenantJwt` produce un token HS256 con los claims correctos
- *      (sub, tenant_id, tenant_role, role, aud, exp=1h).
+ *      del spec (sub, tenant_id, role='tenant_owner', exp=1h).
  *
  * Uso: pnpm --filter @workspace/api-server run smoke-tenant
  */
@@ -113,7 +113,7 @@ async function main() {
 
   // 4. Endpoints registrados (gate auth devuelve 401 sin cookie)
   for (const path of ["/api/tenant/signup", "/api/tenant/me", "/api/tenant/jwt"]) {
-    const method = path === "/api/tenant/me" ? "GET" : "POST";
+    const method = path === "/api/tenant/signup" ? "POST" : "GET";
     const r = await fetch(`${BASE}${path}`, {
       method,
       headers: { "content-type": "application/json" },
@@ -126,28 +126,32 @@ async function main() {
     ok(`${method} ${path} → 401 (gate auth activo)`);
   }
 
-  // 5. signTenantJwt produce HS256 con claims correctos
+  // 5. signTenantJwt produce HS256 con claims exactos del spec
   const fakeTenantId = "00000000-0000-0000-0000-000000000001";
-  const fakeEmail = "smoke@axyntrax-test.local";
+  const fakeClientId = "42";
   const token = signTenantJwt({
-    sub: fakeEmail,
+    sub: fakeClientId,
     tenant_id: fakeTenantId,
     role: "tenant_owner",
   });
   const payload = decodeJwtPayload(token);
   if (!payload) fail("no se pudo decodificar payload del JWT");
-  if (payload.sub !== fakeEmail) fail(`JWT sub=${payload.sub} esperado=${fakeEmail}`);
+  if (payload.sub !== fakeClientId) fail(`JWT sub=${payload.sub} esperado=${fakeClientId}`);
   if (payload.tenant_id !== fakeTenantId) fail(`JWT tenant_id incorrecto`);
-  if (payload.tenant_role !== "tenant_owner") {
-    fail(`JWT tenant_role=${payload.tenant_role} esperado=tenant_owner`);
+  if (payload.role !== "tenant_owner") {
+    fail(`JWT role=${payload.role} esperado=tenant_owner`);
   }
-  if (payload.role !== "authenticated") fail(`JWT role=${payload.role}`);
-  if (payload.aud !== "authenticated") fail(`JWT aud=${payload.aud}`);
+  if (payload.tenant_role !== undefined) {
+    fail(`JWT tenant_role=${payload.tenant_role} debería estar ausente`);
+  }
+  if (payload.aud !== undefined) {
+    fail(`JWT aud=${payload.aud} debería estar ausente`);
+  }
   const ttl = payload.exp - payload.iat;
   if (ttl !== 3600) fail(`JWT ttl=${ttl}s esperado=3600s`);
   const header = JSON.parse(Buffer.from(token.split(".")[0], "base64url").toString());
   if (header.alg !== "HS256") fail(`JWT alg=${header.alg} esperado=HS256`);
-  ok(`signTenantJwt → HS256 con claims correctos (exp=1h)`);
+  ok(`signTenantJwt → HS256 claims exactos del spec (sub=client_id, role=tenant_owner, exp=1h)`);
 
   console.log(`\n[smoke] ✓ TODOS LOS CHECKS DE FUNDACIONES PASARON`);
   await pool.end();

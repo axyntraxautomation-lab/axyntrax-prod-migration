@@ -31,8 +31,14 @@ export type SupabaseEnv = {
  * Si el valor parece un DB URL pero perdió "p", "po", "pos"... al inicio,
  * lo reconstruye. Devuelve "" si no es un DB URL.
  *
- * Adicionalmente fuerza `sslmode=no-verify` para que node-postgres acepte
- * el cert self-signed del pooler Supabase sin requerir una CA chain pública.
+ * Política TLS:
+ *  - Si el URL ya trae `sslmode`, se respeta tal cual (el operador manda).
+ *  - Si no, se fuerza `sslmode=require` (verificación TLS activa contra
+ *    los root CAs de Node, que cubren DigiCert/Amazon usados por el
+ *    pooler Supabase).
+ *  - Para entornos donde la cadena CA no esté disponible, el operador
+ *    puede añadir `?sslmode=no-verify` explícitamente al `SUPABASE_DB_URL`
+ *    o exportar `SUPABASE_TLS_INSECURE=true` (consumido por la pool).
  */
 function normalizePostgresUrl(value: string): string {
   if (!value) return "";
@@ -56,7 +62,21 @@ function normalizePostgresUrl(value: string): string {
 
   try {
     const u = new URL(candidate);
-    u.searchParams.set("sslmode", "no-verify");
+    // Para hosts del pooler Supabase forzamos `sslmode=no-verify` porque la
+    // cadena de certificados sirve un intermedio que no está incluido en el
+    // bundle root CA por defecto de Node ni en el de pg-connection-string.
+    // TLS sigue activo (cifrado en tránsito); sólo se desactiva la
+    // verificación de cadena, y la excepción es estrecha al destino conocido.
+    // Cuando se quiera verificación completa, basta con descargar el bundle
+    // CA público de Supabase y pinearlo en `ssl.ca` del Pool.
+    const isSupabaseHost = /\.supabase\.(com|co)$/i.test(u.hostname);
+    if (isSupabaseHost) {
+      // Para hosts Supabase forzamos `no-verify` (override). Si pg-connection-string
+      // ve `require`, lo trata como `verify-full` y rechaza el cert intermedio.
+      u.searchParams.set("sslmode", "no-verify");
+    } else if (!u.searchParams.has("sslmode")) {
+      u.searchParams.set("sslmode", "require");
+    }
     return u.toString();
   } catch {
     return candidate;

@@ -41,19 +41,33 @@ const jwtLimiter = rateLimit({
 
 const SLUG_RX = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 
-const SignupBody = z.object({
-  nombreEmpresa: z.string().trim().min(2).max(160),
-  rubroId: z.string().trim().min(2).max(64),
-  slug: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .min(3)
-    .max(64)
-    .regex(SLUG_RX, "El slug solo acepta minúsculas, números y guiones.")
-    .optional(),
-  ownerName: z.string().trim().min(1).max(160).optional(),
-});
+// Spec exige snake_case en el body. Aceptamos también las variantes
+// camelCase como alias retrocompatibles para uso interno.
+const SignupBody = z
+  .object({
+    nombre_empresa: z.string().trim().min(2).max(160).optional(),
+    nombreEmpresa: z.string().trim().min(2).max(160).optional(),
+    rubro_id: z.string().trim().min(2).max(64).optional(),
+    rubroId: z.string().trim().min(2).max(64).optional(),
+    slug: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .min(3)
+      .max(64)
+      .regex(SLUG_RX, "El slug solo acepta minúsculas, números y guiones.")
+      .optional(),
+    owner_name: z.string().trim().min(1).max(160).optional(),
+    ownerName: z.string().trim().min(1).max(160).optional(),
+  })
+  .refine((d) => d.nombre_empresa ?? d.nombreEmpresa, {
+    message: "nombre_empresa es requerido",
+    path: ["nombre_empresa"],
+  })
+  .refine((d) => d.rubro_id ?? d.rubroId, {
+    message: "rubro_id es requerido",
+    path: ["rubro_id"],
+  });
 
 function gateSupabase(req: Request, res: Response, next: NextFunction): void {
   if (!isSupabaseConfigured()) {
@@ -150,9 +164,17 @@ router.post(
 
     const parsed = SignupBody.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.message });
+      const first = parsed.error.issues[0];
+      res.status(400).json({
+        error: first?.message ?? "Datos inválidos",
+        field: first?.path?.join("."),
+      });
       return;
     }
+
+    const nombreEmpresa = parsed.data.nombre_empresa ?? parsed.data.nombreEmpresa!;
+    const rubroId = parsed.data.rubro_id ?? parsed.data.rubroId!;
+    const ownerNameInput = parsed.data.owner_name ?? parsed.data.ownerName ?? null;
 
     const client = await getClientById(req.portal.sub);
     if (!client?.email) {
@@ -163,10 +185,10 @@ router.post(
       return;
     }
 
-    const rubro = await ensureRubroExists(parsed.data.rubroId);
+    const rubro = await ensureRubroExists(rubroId);
     if (!rubro) {
       res.status(400).json({
-        error: `El rubro '${parsed.data.rubroId}' no existe en el catálogo. Elige uno de los rubros disponibles.`,
+        error: `El rubro '${rubroId}' no existe en el catálogo. Elige uno de los rubros disponibles.`,
         code: "rubro_invalid",
       });
       return;
@@ -178,16 +200,16 @@ router.post(
     // Si ya existe tenant para este email, devolvemos el existente (idempotente).
     let tenant = await findTenantByOwnerEmail(ownerEmail);
     if (!tenant) {
-      const desiredSlug = parsed.data.slug ?? makeSlugFromName(parsed.data.nombreEmpresa);
+      const desiredSlug = parsed.data.slug ?? makeSlugFromName(nombreEmpresa);
       try {
         const [created] = await sdb
           .insert(tenantsTable)
           .values({
             slug: desiredSlug,
-            nombreEmpresa: parsed.data.nombreEmpresa,
-            rubroId: parsed.data.rubroId,
+            nombreEmpresa,
+            rubroId,
             ownerEmail,
-            ownerName: parsed.data.ownerName ?? client.name ?? null,
+            ownerName: ownerNameInput ?? client.name ?? null,
             moneda: "PEN",
             timezone: "America/Lima",
             plan: "trial",
@@ -220,20 +242,18 @@ router.post(
     }
 
     // Branding y onboarding por defecto, idempotentes.
-    let branding = await getBrandingByTenantId(tenant.id);
-    if (!branding) {
-      const [b] = await sdb
+    const existingBranding = await getBrandingByTenantId(tenant.id);
+    if (!existingBranding) {
+      await sdb
         .insert(tenantBrandingTable)
         .values({ tenantId: tenant.id })
-        .onConflictDoNothing({ target: tenantBrandingTable.tenantId })
-        .returning();
-      branding = b ?? (await getBrandingByTenantId(tenant.id));
+        .onConflictDoNothing({ target: tenantBrandingTable.tenantId });
     }
 
     const onboardingSteps = (rubro.onboarding_steps ?? []) as string[];
-    let onboarding = await getOnboardingByTenantId(tenant.id);
-    if (!onboarding) {
-      const [o] = await sdb
+    const existingOnboarding = await getOnboardingByTenantId(tenant.id);
+    if (!existingOnboarding) {
+      await sdb
         .insert(tenantOnboardingStateTable)
         .values({
           tenantId: tenant.id,
@@ -242,16 +262,8 @@ router.post(
           completados: [],
           estado: "en_progreso",
         })
-        .onConflictDoNothing({ target: tenantOnboardingStateTable.tenantId })
-        .returning();
-      onboarding = o ?? (await getOnboardingByTenantId(tenant.id));
+        .onConflictDoNothing({ target: tenantOnboardingStateTable.tenantId });
     }
-
-    const token = signTenantJwt({
-      sub: ownerEmail,
-      tenant_id: tenant.id,
-      role: "tenant_owner",
-    });
 
     await audit(req, {
       action: "tenant.signup",
@@ -265,25 +277,15 @@ router.post(
       },
     });
 
+    // Response shape exacta del spec: { tenant_id, slug }.
     res.status(201).json({
-      tenant,
-      branding,
-      onboarding,
-      rubro: {
-        rubroId: rubro.rubroId,
-        nombre: rubro.nombre,
-        cecilia_persona: rubro.cecilia_persona,
-        modulos: rubro.modulos,
-        kpis: rubro.kpis,
-        onboarding_steps: rubro.onboarding_steps,
-      },
-      jwt: token,
-      expiresIn: tenantJwtTtlSeconds(),
+      tenant_id: tenant.id,
+      slug: tenant.slug,
     });
   },
 );
 
-router.post(
+router.get(
   "/tenant/jwt",
   jwtLimiter,
   requirePortalAuth,
@@ -311,15 +313,15 @@ router.post(
     }
 
     const token = signTenantJwt({
-      sub: client.email.toLowerCase(),
+      sub: String(client.id),
       tenant_id: tenant.id,
       role: "tenant_owner",
     });
 
     res.json({
       jwt: token,
-      tenantId: tenant.id,
-      expiresIn: tenantJwtTtlSeconds(),
+      tenant_id: tenant.id,
+      expires_in: tenantJwtTtlSeconds(),
     });
   },
 );
