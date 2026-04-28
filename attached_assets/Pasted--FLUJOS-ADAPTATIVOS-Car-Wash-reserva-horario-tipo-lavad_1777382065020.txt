@@ -1,0 +1,107 @@
+
+FLUJOS ADAPTATIVOS:
+- Car Wash: reserva horario → tipo lavado → pago → confirmación
+- Restaurante: ver menú → pedido → delivery/mesa → pago
+- Salón: elegir servicio → estilista → fecha/hora → recordatorio
+- Taller: tipo problema → diagnóstico → presupuesto → aprobación
+
+PAGOS QR DINÁMICO:
+```javascript
+// Genera QR Yape o Plin según preferencia cliente
+async function generarQR(monto, metodo, concepto) {
+  const qr = await QRCode.toDataURL(
+    `${metodo}://pay?amount=${monto}&note=${concepto}`
+  );
+  return { qr, monto, metodo, concepto };
+}
+// Confirma pago → actualiza DB automáticamente
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗄️ MÓDULO 3: BASE DE DATOS UNIVERSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Stack: PostgreSQL + Supabase free tier + Prisma ORM
+
+TABLAS BASE (comunes a todos los rubros):
+```sql
+-- Empresa/Negocio
+CREATE TABLE empresa (
+  id UUID PRIMARY KEY,
+  nombre TEXT,
+  rubro TEXT,
+  logo_url TEXT,
+  config JSONB,   -- colores, dominio, credenciales Yape/Plin
+  created_at TIMESTAMP
+);
+
+-- Clientes del negocio
+CREATE TABLE clientes (
+  id UUID PRIMARY KEY,
+  nombre TEXT,
+  telefono TEXT UNIQUE,
+  email TEXT,
+  rubro_data JSONB,  -- datos específicos del rubro
+  historial JSONB,
+  created_at TIMESTAMP
+);
+
+-- Servicios/Productos (adaptable)
+CREATE TABLE catalogo (
+  id UUID PRIMARY KEY,
+  empresa_id UUID REFERENCES empresa,
+  nombre TEXT,
+  tipo TEXT,       -- "servicio" | "producto"
+  precio DECIMAL,
+  duracion INT,    -- minutos (para servicios)
+  stock INT,       -- unidades (para productos)
+  activo BOOLEAN DEFAULT true
+);
+
+-- Transacciones unificadas
+CREATE TABLE transacciones (
+  id UUID PRIMARY KEY,
+  empresa_id UUID REFERENCES empresa,
+  cliente_id UUID REFERENCES clientes,
+  tipo TEXT,       -- "venta" | "gasto" | "pago"
+  monto DECIMAL,
+  metodo_pago TEXT,-- "yape"|"plin"|"efectivo"|"tarjeta"
+  estado TEXT,     -- "pendiente"|"confirmado"|"cancelado"
+  metadata JSONB,  -- datos específicos del rubro
+  created_at TIMESTAMP
+);
+
+-- Agenda/Citas/Órdenes
+CREATE TABLE agenda (
+  id UUID PRIMARY KEY,
+  empresa_id UUID REFERENCES empresa,
+  cliente_id UUID REFERENCES clientes,
+  servicio_id UUID REFERENCES catalogo,
+  fecha TIMESTAMP,
+  estado TEXT,
+  notas TEXT,
+  recordatorio_enviado BOOLEAN DEFAULT false
+);
+
+-- Stock/Inventario
+CREATE TABLE inventario (
+  id UUID PRIMARY KEY,
+  empresa_id UUID REFERENCES empresa,
+  producto TEXT,
+  cantidad DECIMAL,
+  unidad TEXT,
+  minimo_alerta DECIMAL,
+  updated_at TIMESTAMP
+);
+```
+
+Backup automático a Google Drive cada 24h.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎓 MÓDULO 4: ONBOARDING GUIADO POR CECILIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este módulo es OBLIGATORIO. Cecilia guía al cliente
+paso a paso según su rubro desde el primer acceso.
+
+FLUJO DE ONBOARDING:
