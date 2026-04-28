@@ -156,7 +156,7 @@ export default function CRMList() {
           toast({
             variant: "destructive",
             title: "No se pudo crear",
-            description: "Verificá los campos e intentá nuevamente.",
+            description: "Verifica los campos e intenta nuevamente.",
           }),
       },
     );
@@ -193,7 +193,7 @@ export default function CRMList() {
             <DialogHeader>
               <DialogTitle>Nuevo Cliente</DialogTitle>
               <DialogDescription>
-                Agregá un cliente o prospecto al funnel.
+                Agrega un cliente o prospecto al funnel.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">

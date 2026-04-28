@@ -99,7 +99,7 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Cerrá sesión en este dispositivo.
+              Cierra sesión en este dispositivo.
             </p>
             <Button
               variant="destructive"
@@ -212,7 +212,7 @@ function PushNotificationsCard() {
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              Recibí avisos de mensajes nuevos, pagos y eventos de Cecilia
+              Recibe avisos de mensajes nuevos, pagos y eventos de Cecilia
               incluso con la pestaña cerrada.
             </p>
             <Button

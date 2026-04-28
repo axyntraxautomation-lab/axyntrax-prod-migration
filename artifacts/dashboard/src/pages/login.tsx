@@ -153,7 +153,7 @@ export default function Login() {
         variant: "destructive",
         title: "Error de autenticación",
         description:
-          data.error ?? "Credenciales incorrectas. Verificá los datos.",
+          data.error ?? "Credenciales incorrectas. Verifica los datos.",
       });
     } catch (err) {
       toast({
@@ -214,7 +214,7 @@ export default function Login() {
                     </span>
                     <div>
                       <div className="font-display text-base font-semibold text-slate-50">
-                        Configurá doble factor
+                        Configura doble factor
                       </div>
                       <div className="text-[11px] text-slate-400">
                         Obligatorio para entrar a JARVIS

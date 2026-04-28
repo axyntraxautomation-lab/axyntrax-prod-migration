@@ -311,8 +311,8 @@ export default function ClientModulesPage() {
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           {clientCompany
-            ? `${clientCompany} · Gestioná tus módulos AXYNTRAX`
-            : "Gestioná tus módulos AXYNTRAX"}
+            ? `${clientCompany} · Gestiona tus módulos AXYNTRAX`
+            : "Gestiona tus módulos AXYNTRAX"}
         </p>
       </div>
 

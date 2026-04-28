@@ -219,7 +219,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
             Gestión de equipo ({users?.length ?? 0})
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Cambia roles, reseteá la verificación en dos pasos o asigná una
+            Cambia roles, resetea la verificación en dos pasos o asigna una
             contraseña nueva. Las acciones sobre administradores disparan
             alertas de seguridad.
           </p>
@@ -391,7 +391,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Confirmás el cambio de rol?</AlertDialogTitle>
+            <AlertDialogTitle>¿Confirmas el cambio de rol?</AlertDialogTitle>
             <AlertDialogDescription>
               {roleTarget ? (
                 <>
@@ -489,7 +489,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
             <DialogDescription>
               {pwdTarget ? (
                 <>
-                  Asigná una contraseña nueva para{" "}
+                  Asigna una contraseña nueva para{" "}
                   <span className="font-semibold text-foreground">
                     {pwdTarget.name}
                   </span>{" "}
@@ -565,7 +565,7 @@ export function TeamManagementCard({ users, loading, currentUserId }: Props) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              ¿Confirmás el reseteo de contraseña?
+              ¿Confirmas el reseteo de contraseña?
             </AlertDialogTitle>
             <AlertDialogDescription>
               {pwdTarget ? (

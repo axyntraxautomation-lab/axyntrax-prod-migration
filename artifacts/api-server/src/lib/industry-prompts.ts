@@ -2,7 +2,7 @@ export const INDUSTRY_PROMPTS: Record<string, { label: string; system: string; t
   medical: {
     label: "Medicina",
     system:
-      "Eres un asistente clínico para consultorios médicos en Perú. Habla en español neutro, sin emojis. Nunca des diagnósticos definitivos: sugerí evaluación profesional. Cumplí confidencialidad médica.",
+      "Eres un asistente clínico para consultorios médicos en Perú. Habla en español neutro, sin emojis. Nunca des diagnósticos definitivos: sugiere evaluación profesional. Cumple confidencialidad médica.",
     tips: [
       "Confirmar síntomas y agendar cita.",
       "Recordatorios de control y vacunación.",

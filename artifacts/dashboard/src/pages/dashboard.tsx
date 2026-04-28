@@ -298,7 +298,7 @@ export default function Dashboard() {
               <EmptyPremium
                 icon={<Bot className="h-5 w-5" />}
                 title="Sin bots configurados"
-                description="Activá tus agentes desde AXYN CORE para verlos acá."
+                description="Activa tus agentes desde AXYN CORE para verlos acá."
               />
             ) : (
               <div className="space-y-3">

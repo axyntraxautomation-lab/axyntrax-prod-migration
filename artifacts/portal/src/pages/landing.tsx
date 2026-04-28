@@ -102,13 +102,13 @@ const PROCESS_STEPS = [
   {
     n: "02",
     icon: Bot,
-    title: "Hablá con Cecilia",
-    body: "Contale tu rubro y recibí los módulos justos para tu operación.",
+    title: "Habla con Cecilia",
+    body: "Contale tu rubro y recibe los módulos justos para tu operación.",
   },
   {
     n: "03",
     icon: FileText,
-    title: "Recibí tu cotización",
+    title: "Recibe tu cotización",
     body: "Cotización formal con IGV 18 % en PDF, descargable y por correo.",
   },
   {
@@ -753,7 +753,7 @@ export default function LandingPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400">
               Crea tu cuenta gratis y conversá con Cecilia ahora. Sin compromiso,
-              sin tarjeta. Si no encuentras el módulo que buscás, lo armamos para
+              sin tarjeta. Si no encuentras el módulo que buscas, lo armamos para
               tu rubro.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

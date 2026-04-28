@@ -72,7 +72,7 @@ export function TwofaCard({ enabled }: Props) {
           toast({
             variant: "destructive",
             title: "Código inválido",
-            description: "Verificá el código en tu app autenticadora.",
+            description: "Verifica el código en tu app autenticadora.",
           }),
       },
     );
@@ -100,7 +100,7 @@ export function TwofaCard({ enabled }: Props) {
           toast({
             variant: "destructive",
             title: "Código inválido",
-            description: "Verificá el código actual de tu app autenticadora.",
+            description: "Verifica el código actual de tu app autenticadora.",
           }),
       },
     );

@@ -76,7 +76,7 @@ export default function Login() {
       toast({
         variant: "destructive",
         title: "No pudimos iniciar sesión",
-        description: err instanceof Error ? err.message : "Verificá tus datos",
+        description: err instanceof Error ? err.message : "Verifica tus datos",
       });
     } finally {
       setBusy(false);
