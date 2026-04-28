@@ -5,6 +5,7 @@ export * from "./tenant-rubro-overrides";
 export * from "./tenant-inventario";
 export * from "./tenant-servicios";
 export * from "./tenant-clientes-finales";
+export * from "./tenant-empleados";
 export * from "./tenant-citas-servicios";
 export * from "./tenant-finanzas-movimientos";
 export * from "./tenant-alertas";

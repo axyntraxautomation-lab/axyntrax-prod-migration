@@ -5,11 +5,17 @@ import {
   apiGet,
   apiSend,
   type ClienteFinal,
+  type Empleado,
   type PagoQr,
   type ServicioItem,
 } from "@/lib/api";
 import { useTenantReady } from "@/providers/TenantProvider";
 import { getTerminologia } from "@/lib/rubro-terminologia";
+import {
+  getWizardConfig,
+  type RubroWizardConfig,
+  type WizardField,
+} from "@/lib/rubros/wizards";
 
 const CANALES = [
   "yape",
@@ -28,6 +34,7 @@ const Schema = z.object({
   conceptoLibre: z.string().trim().max(200).optional(),
   monto: z.number({ message: "Monto inválido" }).positive(),
   clienteFinalId: z.string().uuid().optional(),
+  empleadoId: z.string().uuid().optional(),
   canal: z.enum(CANALES),
 });
 
@@ -36,7 +43,9 @@ type FormState = {
   conceptoLibre: string;
   monto: string;
   clienteFinalId: string;
+  empleadoId: string;
   canal: Canal;
+  rubroData: Record<string, string>;
 };
 
 const EMPTY: FormState = {
@@ -44,13 +53,16 @@ const EMPTY: FormState = {
   conceptoLibre: "",
   monto: "",
   clienteFinalId: "",
+  empleadoId: "",
   canal: "yape",
+  rubroData: {},
 };
 
 /**
  * Wizard adaptativo de "Nueva venta": pregunta qué se vendió,
- * a quién, y cómo se cobra. Para Yape/Plin genera QR vivo y luego
- * confirma; para otros canales registra el ingreso directo.
+ * a quién, y cómo se cobra. La secuencia y los campos extra cambian
+ * por rubro (placa para car_wash, modalidad/mesa para restaurante,
+ * estilista para salón, diagnóstico para taller, etc.).
  */
 export function NuevaVentaWizard({
   open,
@@ -63,10 +75,15 @@ export function NuevaVentaWizard({
 }) {
   const me = useTenantReady();
   const term = getTerminologia(me.tenant.rubroId);
+  const cfg = useMemo(
+    () => getWizardConfig(me.tenant.rubroId),
+    [me.tenant.rubroId],
+  );
   const [step, setStep] = useState<Step>("que");
   const [form, setForm] = useState<FormState>({ ...EMPTY });
   const [servicios, setServicios] = useState<ServicioItem[]>([]);
   const [clientes, setClientes] = useState<ClienteFinal[]>([]);
+  const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [pago, setPago] = useState<PagoQr | null>(null);
@@ -74,36 +91,58 @@ export function NuevaVentaWizard({
   useEffect(() => {
     if (!open) return;
     setStep("que");
-    setForm({ ...EMPTY });
+    setForm({ ...EMPTY, rubroData: {} });
     setErr(null);
     setPago(null);
-    Promise.all([
-      apiGet<{ items: ServicioItem[] }>("/api/tenant/servicios").then(
-        (d) => d.items,
+    const promesas: Promise<unknown>[] = [
+      apiGet<{ items: ServicioItem[] }>("/api/tenant/servicios").then((d) =>
+        setServicios(d.items),
       ),
-      apiGet<{ items: ClienteFinal[] }>("/api/tenant/clientes").then(
-        (d) => d.items,
+      apiGet<{ items: ClienteFinal[] }>("/api/tenant/clientes").then((d) =>
+        setClientes(d.items),
       ),
-    ])
-      .then(([srv, cls]) => {
-        setServicios(srv);
-        setClientes(cls);
-      })
-      .catch((e: unknown) => {
-        setErr(e instanceof Error ? e.message : "No se pudo preparar la venta.");
-      });
-  }, [open]);
+    ];
+    if (cfg.pideEmpleado) {
+      promesas.push(
+        apiGet<{ items: Empleado[] }>("/api/tenant/empleados").then((d) =>
+          setEmpleados(d.items.filter((e) => e.activo)),
+        ),
+      );
+    }
+    Promise.all(promesas).catch((e: unknown) => {
+      setErr(e instanceof Error ? e.message : "No se pudo preparar la venta.");
+    });
+  }, [open, cfg.pideEmpleado]);
 
   const servicioSel = useMemo(
     () => servicios.find((s) => s.id === form.servicioId) ?? null,
     [form.servicioId, servicios],
   );
 
+  function setRubro(key: string, value: string) {
+    setForm((f) => ({ ...f, rubroData: { ...f.rubroData, [key]: value } }));
+  }
+
+  function validateExtra(fields: WizardField[]): string | null {
+    for (const f of fields) {
+      if (f.required) {
+        const v = (form.rubroData[f.key] ?? "").trim();
+        if (!v) return `Falta ${f.label.toLowerCase()}.`;
+      }
+    }
+    return null;
+  }
+
   function next() {
     setErr(null);
     if (step === "que") {
       if (!form.servicioId && !form.conceptoLibre.trim()) {
         setErr("Elige un servicio o describe lo vendido.");
+        return;
+      }
+      const extraErr = validateExtra(cfg.camposQue);
+      if (extraErr) {
+        setErr(extraErr);
         return;
       }
       if (servicioSel && !form.monto) {
@@ -113,6 +152,11 @@ export function NuevaVentaWizard({
       return;
     }
     if (step === "cliente") {
+      const extraErr = validateExtra(cfg.camposCliente);
+      if (extraErr) {
+        setErr(extraErr);
+        return;
+      }
       setStep("cobro");
       return;
     }
@@ -124,6 +168,7 @@ export function NuevaVentaWizard({
       conceptoLibre: form.conceptoLibre || undefined,
       monto: Number(form.monto),
       clienteFinalId: form.clienteFinalId || undefined,
+      empleadoId: form.empleadoId || undefined,
       canal: form.canal,
     });
     if (!parsed.success) {
@@ -132,6 +177,7 @@ export function NuevaVentaWizard({
     }
     const concepto =
       parsed.data.conceptoLibre ?? servicioSel?.nombre ?? term.venta;
+    const rubroData = collectRubroData(form, cfg, empleados);
     setBusy(true);
     setErr(null);
     try {
@@ -144,6 +190,7 @@ export function NuevaVentaWizard({
             monto: parsed.data.monto,
             concepto,
             clienteFinalId: parsed.data.clienteFinalId,
+            rubroData,
           },
         );
         setPago(generado);
@@ -155,6 +202,7 @@ export function NuevaVentaWizard({
           monto: parsed.data.monto,
           metodoPago: parsed.data.canal,
           clienteFinalId: parsed.data.clienteFinalId,
+          rubroData,
         });
         setStep("ok");
         onCompleted?.();
@@ -200,7 +248,7 @@ export function NuevaVentaWizard({
             Cerrar
           </button>
         </header>
-        <Stepper step={step} />
+        <Stepper step={step} cfg={cfg} />
         {err && (
           <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
             {err}
@@ -265,6 +313,12 @@ export function NuevaVentaWizard({
                 data-testid="venta-monto"
               />
             </label>
+            <ExtraFields
+              fields={cfg.camposQue}
+              values={form.rubroData}
+              onChange={setRubro}
+              testidPrefix="venta-extra-que"
+            />
           </div>
         )}
 
@@ -290,6 +344,40 @@ export function NuevaVentaWizard({
                 ))}
               </select>
             </label>
+            {cfg.pideEmpleado && (
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                  Atiende
+                </span>
+                <select
+                  value={form.empleadoId}
+                  onChange={(e) =>
+                    setForm({ ...form, empleadoId: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  data-testid="venta-empleado"
+                >
+                  <option value="">— Sin asignar —</option>
+                  {empleados.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.nombre}
+                      {e.rol ? ` · ${e.rol}` : ""}
+                    </option>
+                  ))}
+                </select>
+                {empleados.length === 0 && (
+                  <span className="mt-1 block text-[10px] text-gray-500">
+                    Aún no registras empleados. Anda a la Agenda para añadir uno.
+                  </span>
+                )}
+              </label>
+            )}
+            <ExtraFields
+              fields={cfg.camposCliente}
+              values={form.rubroData}
+              onChange={setRubro}
+              testidPrefix="venta-extra-cliente"
+            />
             <p className="text-[11px] text-gray-500">
               Asociar un cliente te ayuda a ver su historial y volver a contactarlo.
             </p>
@@ -382,7 +470,7 @@ export function NuevaVentaWizard({
               style={{ background: "var(--color-primario)" }}
               data-testid="venta-cobrar"
             >
-              {busy ? "Procesando…" : "Cobrar"}
+              {busy ? "Procesando…" : (cfg.ctaCobro ?? "Cobrar")}
             </button>
           )}
           {step === "qr" && (
@@ -413,10 +501,84 @@ export function NuevaVentaWizard({
   );
 }
 
-function Stepper({ step }: { step: Step }) {
+function ExtraFields({
+  fields,
+  values,
+  onChange,
+  testidPrefix,
+}: {
+  fields: WizardField[];
+  values: Record<string, string>;
+  onChange: (key: string, value: string) => void;
+  testidPrefix: string;
+}) {
+  if (fields.length === 0) return null;
+  return (
+    <>
+      {fields.map((f) => (
+        <label key={f.key} className="block">
+          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            {f.label}
+            {f.required && <span className="ml-1 text-red-500">*</span>}
+          </span>
+          {f.type === "select" ? (
+            <select
+              value={values[f.key] ?? ""}
+              onChange={(e) => onChange(f.key, e.target.value)}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+              data-testid={`${testidPrefix}-${f.key}`}
+            >
+              <option value="">—</option>
+              {(f.options ?? []).map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={values[f.key] ?? ""}
+              onChange={(e) => onChange(f.key, e.target.value)}
+              placeholder={f.placeholder}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+              data-testid={`${testidPrefix}-${f.key}`}
+            />
+          )}
+        </label>
+      ))}
+    </>
+  );
+}
+
+function collectRubroData(
+  form: FormState,
+  cfg: RubroWizardConfig,
+  empleados: Empleado[],
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const f of [...cfg.camposQue, ...cfg.camposCliente]) {
+    const v = (form.rubroData[f.key] ?? "").trim();
+    if (v) out[f.key] = v;
+  }
+  if (cfg.pideEmpleado && form.empleadoId) {
+    const emp = empleados.find((e) => e.id === form.empleadoId);
+    if (emp) {
+      out.empleado_id = emp.id;
+      out.empleado_nombre = emp.nombre;
+    }
+  }
+  return out;
+}
+
+function Stepper({ step, cfg }: { step: Step; cfg: RubroWizardConfig }) {
   const order: Step[] = ["que", "cliente", "cobro"];
   const idx = order.indexOf(step);
-  const labels = ["Qué", "Quién", "Cómo cobrar"];
+  const labels = [
+    cfg.stepLabels.que ?? "Qué",
+    cfg.stepLabels.cliente ?? "Quién",
+    cfg.stepLabels.cobro ?? "Cómo cobrar",
+  ];
   return (
     <ol className="mt-3 flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-400">
       {labels.map((l, i) => {

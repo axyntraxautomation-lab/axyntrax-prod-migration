@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { tenantsTable } from "./tenants";
 import { tenantClientesFinalesTable } from "./tenant-clientes-finales";
+import { tenantEmpleadosTable } from "./tenant-empleados";
 import { tenantServiciosTable } from "./tenant-servicios";
 
 export const tenantCitasServiciosTable = pgTable(
@@ -27,10 +28,16 @@ export const tenantCitasServiciosTable = pgTable(
     servicioId: uuid("servicio_id").references(() => tenantServiciosTable.id, {
       onDelete: "set null",
     }),
+    // Empleado asignado a la cita (estilista, técnico, mesero...). Null si el
+    // negocio no usa modelo de staff o si la cita aún no fue asignada.
+    empleadoId: uuid("empleado_id").references(() => tenantEmpleadosTable.id, {
+      onDelete: "set null",
+    }),
     titulo: text("titulo"),
     fechaInicio: timestamp("fecha_inicio", { withTimezone: true }).notNull(),
     fechaFin: timestamp("fecha_fin", { withTimezone: true }),
-    estado: varchar("estado", { length: 32 }).notNull().default("agendada"),
+    // Valores posibles: pendiente | confirmado | completado | cancelado | no_asistio.
+    estado: varchar("estado", { length: 32 }).notNull().default("pendiente"),
     notas: text("notas"),
     recordatorioEnviado: boolean("recordatorio_enviado").notNull().default(false),
     metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),

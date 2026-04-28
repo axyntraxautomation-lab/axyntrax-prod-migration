@@ -9,21 +9,42 @@ import {
   apiSend,
   type Cita,
   type ClienteFinal,
+  type Empleado,
   type ServicioItem,
 } from "@/lib/api";
 import { getTerminologia } from "@/lib/rubro-terminologia";
 
 const ESTADOS = [
-  "agendada",
   "pendiente",
-  "en_curso",
-  "completada",
-  "cancelada",
+  "confirmado",
+  "completado",
+  "cancelado",
+  "no_asistio",
 ] as const;
+type Estado = (typeof ESTADOS)[number];
+
+const ESTADO_LABEL: Record<Estado, string> = {
+  pendiente: "Pendiente",
+  confirmado: "Confirmado",
+  completado: "Completado",
+  cancelado: "Cancelado",
+  no_asistio: "No asistió",
+};
+
+const ESTADO_COLOR: Record<Estado, string> = {
+  pendiente: "bg-amber-100 text-amber-800",
+  confirmado: "bg-sky-100 text-sky-800",
+  completado: "bg-emerald-100 text-emerald-800",
+  cancelado: "bg-gray-100 text-gray-600",
+  no_asistio: "bg-red-100 text-red-800",
+};
+
+type Vista = "lista" | "calendario";
 
 const FormSchema = z.object({
   clienteFinalId: z.string().uuid().optional(),
   servicioId: z.string().uuid().optional(),
+  empleadoId: z.string().uuid().optional(),
   titulo: z.string().trim().max(200).optional(),
   fechaInicio: z.string().min(1, "Fecha obligatoria"),
   duracionMin: z.number().int().min(0).max(24 * 60).optional(),
@@ -35,28 +56,32 @@ type FormState = {
   id: string | null;
   clienteFinalId: string;
   servicioId: string;
+  empleadoId: string;
   titulo: string;
-  fechaInicio: string; // datetime-local
+  fechaInicio: string;
   duracionMin: string;
-  estado: (typeof ESTADOS)[number];
+  estado: Estado;
   notas: string;
 };
 
-const EMPTY: FormState = {
-  id: null,
-  clienteFinalId: "",
-  servicioId: "",
-  titulo: "",
-  fechaInicio: defaultDateTimeLocal(),
-  duracionMin: "30",
-  estado: "agendada",
-  notas: "",
-};
-
-function defaultDateTimeLocal(): string {
-  const d = new Date();
+function defaultDateTimeLocal(fecha?: Date): string {
+  const d = fecha ? new Date(fecha) : new Date();
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
   return d.toISOString().slice(0, 16);
+}
+
+function makeEmpty(): FormState {
+  return {
+    id: null,
+    clienteFinalId: "",
+    servicioId: "",
+    empleadoId: "",
+    titulo: "",
+    fechaInicio: defaultDateTimeLocal(),
+    duracionMin: "30",
+    estado: "pendiente",
+    notas: "",
+  };
 }
 
 export function Agenda() {
@@ -65,10 +90,12 @@ export function Agenda() {
   const [items, setItems] = useState<Cita[]>([]);
   const [clientes, setClientes] = useState<ClienteFinal[]>([]);
   const [servicios, setServicios] = useState<ServicioItem[]>([]);
+  const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [form, setForm] = useState<FormState | null>(null);
   const [busy, setBusy] = useState(false);
+  const [vista, setVista] = useState<Vista>("lista");
 
   async function load() {
     setLoading(true);
@@ -76,16 +103,18 @@ export function Agenda() {
     try {
       const desde = new Date();
       desde.setDate(desde.getDate() - 7);
-      const [citas, cls, srvs] = await Promise.all([
+      const [citas, cls, srvs, emps] = await Promise.all([
         apiGet<{ items: Cita[] }>(
           `/api/tenant/citas?desde=${encodeURIComponent(desde.toISOString())}`,
         ),
         apiGet<{ items: ClienteFinal[] }>("/api/tenant/clientes"),
         apiGet<{ items: ServicioItem[] }>("/api/tenant/servicios"),
+        apiGet<{ items: Empleado[] }>("/api/tenant/empleados"),
       ]);
       setItems(citas.items);
       setClientes(cls.items);
       setServicios(srvs.items);
+      setEmpleados(emps.items);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "No se pudo cargar la agenda.");
     } finally {
@@ -102,6 +131,7 @@ export function Agenda() {
     const parsed = FormSchema.safeParse({
       clienteFinalId: form.clienteFinalId || undefined,
       servicioId: form.servicioId || undefined,
+      empleadoId: form.empleadoId || undefined,
       titulo: form.titulo || undefined,
       fechaInicio: form.fechaInicio,
       duracionMin: form.duracionMin === "" ? undefined : Number(form.duracionMin),
@@ -127,6 +157,7 @@ export function Agenda() {
       const body = {
         clienteFinalId: parsed.data.clienteFinalId,
         servicioId: parsed.data.servicioId,
+        empleadoId: parsed.data.empleadoId,
         titulo: parsed.data.titulo,
         fechaInicio: inicio.toISOString(),
         fechaFin: fin ? fin.toISOString() : null,
@@ -157,11 +188,34 @@ export function Agenda() {
     }
   }
 
+  async function nuevoEmpleado() {
+    const nombre = window.prompt("Nombre del nuevo empleado");
+    if (!nombre || !nombre.trim()) return;
+    const rol = window.prompt("Rol (opcional, ej. estilista, técnico)") ?? "";
+    try {
+      await apiSend("POST", "/api/tenant/empleados", {
+        nombre: nombre.trim(),
+        rol: rol.trim() || null,
+      });
+      await load();
+    } catch (e) {
+      setErr(
+        e instanceof Error ? e.message : "No se pudo crear el empleado.",
+      );
+    }
+  }
+
+  const sorted = useMemo(
+    () =>
+      [...items].sort(
+        (a, b) =>
+          new Date(a.fechaInicio).getTime() -
+          new Date(b.fechaInicio).getTime(),
+      ),
+    [items],
+  );
+
   const groups = useMemo(() => {
-    const sorted = [...items].sort(
-      (a, b) =>
-        new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime(),
-    );
     const map = new Map<string, Cita[]>();
     for (const c of sorted) {
       const k = c.fechaInicio.slice(0, 10);
@@ -170,7 +224,7 @@ export function Agenda() {
       else map.set(k, [c]);
     }
     return Array.from(map.entries());
-  }, [items]);
+  }, [sorted]);
 
   const clienteName = (id: string | null) =>
     id ? clientes.find((c) => c.id === id)?.nombre ?? "Cliente" : "Sin cliente";
@@ -178,6 +232,34 @@ export function Agenda() {
     id
       ? servicios.find((s) => s.id === id)?.nombre ?? "Servicio"
       : "Sin servicio";
+  const empleadoName = (id: string | null) =>
+    id ? empleados.find((e) => e.id === id)?.nombre ?? "Empleado" : null;
+
+  function openEdit(c: Cita) {
+    const inicio = new Date(c.fechaInicio);
+    setForm({
+      id: c.id,
+      clienteFinalId: c.clienteFinalId ?? "",
+      servicioId: c.servicioId ?? "",
+      empleadoId: c.empleadoId ?? "",
+      titulo: c.titulo ?? "",
+      fechaInicio: defaultDateTimeLocal(inicio),
+      duracionMin: c.fechaFin
+        ? String(
+            Math.max(
+              0,
+              Math.round(
+                (new Date(c.fechaFin).getTime() - inicio.getTime()) / 60_000,
+              ),
+            ),
+          )
+        : "",
+      estado: (ESTADOS.includes(c.estado as Estado)
+        ? c.estado
+        : "pendiente") as Estado,
+      notas: c.notas ?? "",
+    });
+  }
 
   return (
     <>
@@ -192,7 +274,7 @@ export function Agenda() {
           </div>
           <button
             type="button"
-            onClick={() => setForm({ ...EMPTY })}
+            onClick={() => setForm(makeEmpty())}
             className="rounded-xl px-3 py-2 text-sm font-semibold text-white"
             style={{ background: "var(--color-primario)" }}
             data-testid="btn-nueva-cita"
@@ -200,6 +282,45 @@ export function Agenda() {
             Nueva
           </button>
         </header>
+
+        <div
+          className="mt-3 flex items-center justify-between gap-2"
+          data-testid="agenda-toolbar"
+        >
+          <div className="inline-flex rounded-lg border border-gray-200 bg-white p-0.5 text-xs">
+            {(["lista", "calendario"] as Vista[]).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setVista(v)}
+                className={
+                  "rounded-md px-3 py-1 font-medium " +
+                  (vista === v
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-600 hover:bg-gray-50")
+                }
+                data-testid={`vista-${v}`}
+              >
+                {v === "lista" ? "Lista" : "Calendario"}
+              </button>
+            ))}
+          </div>
+          <div className="text-[11px] text-gray-500">
+            {empleados.length > 0 && (
+              <>
+                {empleados.length} empleado{empleados.length === 1 ? "" : "s"} ·{" "}
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => void nuevoEmpleado()}
+              className="font-semibold text-gray-700 underline"
+              data-testid="btn-nuevo-empleado"
+            >
+              + Empleado
+            </button>
+          </div>
+        </div>
 
         {err && (
           <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -216,7 +337,7 @@ export function Agenda() {
           >
             No hay citas agendadas en los últimos 7 días.
           </p>
-        ) : (
+        ) : vista === "lista" ? (
           <div className="mt-3 space-y-4" data-testid="agenda-list">
             {groups.map(([day, list]) => (
               <section key={day}>
@@ -230,6 +351,12 @@ export function Agenda() {
                 <ul className="mt-1 space-y-2">
                   {list.map((c) => {
                     const inicio = new Date(c.fechaInicio);
+                    const estado = (
+                      ESTADOS.includes(c.estado as Estado)
+                        ? c.estado
+                        : "pendiente"
+                    ) as Estado;
+                    const emp = empleadoName(c.empleadoId);
                     return (
                       <li
                         key={c.id}
@@ -243,42 +370,34 @@ export function Agenda() {
                               minute: "2-digit",
                             })}
                           </span>
-                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-700">
-                            {c.estado}
+                          <span
+                            className={
+                              "rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide " +
+                              ESTADO_COLOR[estado]
+                            }
+                            data-testid={`cita-estado-${c.id}`}
+                          >
+                            {ESTADO_LABEL[estado]}
                           </span>
                         </div>
                         <div className="text-sm text-gray-900">
-                          {servicioName(c.servicioId)} · {clienteName(c.clienteFinalId)}
+                          {servicioName(c.servicioId)} ·{" "}
+                          {clienteName(c.clienteFinalId)}
                         </div>
+                        {emp && (
+                          <div className="text-[11px] text-gray-600">
+                            Atiende: <span className="font-medium">{emp}</span>
+                          </div>
+                        )}
                         {c.notas && (
-                          <p className="mt-1 text-[11px] text-gray-600">{c.notas}</p>
+                          <p className="mt-1 text-[11px] text-gray-600">
+                            {c.notas}
+                          </p>
                         )}
                         <div className="mt-2 flex gap-2">
                           <button
                             type="button"
-                            onClick={() =>
-                              setForm({
-                                id: c.id,
-                                clienteFinalId: c.clienteFinalId ?? "",
-                                servicioId: c.servicioId ?? "",
-                                titulo: c.titulo ?? "",
-                                fechaInicio: toLocal(inicio),
-                                duracionMin: c.fechaFin
-                                  ? String(
-                                      Math.max(
-                                        0,
-                                        Math.round(
-                                          (new Date(c.fechaFin).getTime() -
-                                            inicio.getTime()) /
-                                            60_000,
-                                        ),
-                                      ),
-                                    )
-                                  : "",
-                                estado: c.estado as (typeof ESTADOS)[number],
-                                notas: c.notas ?? "",
-                              })
-                            }
+                            onClick={() => openEdit(c)}
                             className="rounded-lg border border-gray-200 px-2 py-1 text-[11px] text-gray-700 hover:bg-gray-100"
                           >
                             Editar
@@ -298,6 +417,14 @@ export function Agenda() {
               </section>
             ))}
           </div>
+        ) : (
+          <CalendarioSemanal
+            citas={sorted}
+            empleados={empleados}
+            servicios={servicios}
+            clientes={clientes}
+            onPick={openEdit}
+          />
         )}
       </main>
       <SideNav />
@@ -352,6 +479,29 @@ export function Agenda() {
                   ))}
                 </select>
               </label>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                  Atiende
+                </span>
+                <select
+                  value={form.empleadoId}
+                  onChange={(e) =>
+                    setForm({ ...form, empleadoId: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  data-testid="cita-input-empleado"
+                >
+                  <option value="">Sin asignar</option>
+                  {empleados
+                    .filter((e) => e.activo)
+                    .map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.nombre}
+                        {e.rol ? ` · ${e.rol}` : ""}
+                      </option>
+                    ))}
+                </select>
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
@@ -391,14 +541,15 @@ export function Agenda() {
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      estado: e.target.value as (typeof ESTADOS)[number],
+                      estado: e.target.value as Estado,
                     })
                   }
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  data-testid="cita-input-estado"
                 >
                   {ESTADOS.map((s) => (
                     <option key={s} value={s}>
-                      {s}
+                      {ESTADO_LABEL[s]}
                     </option>
                   ))}
                 </select>
@@ -442,8 +593,132 @@ export function Agenda() {
   );
 }
 
-function toLocal(d: Date): string {
-  const c = new Date(d);
-  c.setMinutes(c.getMinutes() - c.getTimezoneOffset());
-  return c.toISOString().slice(0, 16);
+/**
+ * Vista calendario semanal: 7 columnas (Dom-Sáb) con las citas del rango
+ * mostrando hora, servicio y empleado. Click en una celda abre el editor.
+ */
+function CalendarioSemanal({
+  citas,
+  empleados,
+  servicios,
+  clientes,
+  onPick,
+}: {
+  citas: Cita[];
+  empleados: Empleado[];
+  servicios: ServicioItem[];
+  clientes: ClienteFinal[];
+  onPick: (c: Cita) => void;
+}) {
+  const dias = useMemo(() => {
+    const hoy = new Date();
+    const inicio = new Date(hoy);
+    inicio.setHours(0, 0, 0, 0);
+    inicio.setDate(hoy.getDate() - hoy.getDay());
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(inicio);
+      d.setDate(inicio.getDate() + i);
+      return d;
+    });
+  }, []);
+
+  const porDia = useMemo(() => {
+    const map = new Map<string, Cita[]>();
+    for (const d of dias) map.set(d.toDateString(), []);
+    for (const c of citas) {
+      const k = new Date(c.fechaInicio).toDateString();
+      const arr = map.get(k);
+      if (arr) arr.push(c);
+    }
+    return map;
+  }, [citas, dias]);
+
+  const empName = (id: string | null) =>
+    id ? empleados.find((e) => e.id === id)?.nombre ?? "" : "";
+  const sName = (id: string | null) =>
+    id ? servicios.find((s) => s.id === id)?.nombre ?? "" : "";
+  const cName = (id: string | null) =>
+    id ? clientes.find((c) => c.id === id)?.nombre ?? "" : "";
+  const empColor = (id: string | null) =>
+    id ? empleados.find((e) => e.id === id)?.color ?? "#10b981" : "#9ca3af";
+
+  return (
+    <div className="mt-3" data-testid="agenda-calendario">
+      <div className="grid grid-cols-7 gap-1">
+        {dias.map((d) => {
+          const esHoy = d.toDateString() === new Date().toDateString();
+          return (
+            <div
+              key={d.toISOString()}
+              className={
+                "min-h-[140px] rounded-lg border p-1.5 text-[11px] " +
+                (esHoy
+                  ? "border-emerald-300 bg-emerald-50"
+                  : "border-gray-200 bg-white")
+              }
+            >
+              <div className="mb-1 flex items-baseline justify-between">
+                <span className="font-semibold text-gray-700">
+                  {d.toLocaleDateString("es-PE", { weekday: "short" })}
+                </span>
+                <span
+                  className={
+                    "text-[10px] " +
+                    (esHoy ? "font-bold text-emerald-700" : "text-gray-500")
+                  }
+                >
+                  {d.getDate()}
+                </span>
+              </div>
+              <div className="space-y-1">
+                {(porDia.get(d.toDateString()) ?? []).map((c) => {
+                  const t = new Date(c.fechaInicio).toLocaleTimeString("es-PE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => onPick(c)}
+                      className="block w-full truncate rounded border-l-2 bg-white px-1 py-0.5 text-left hover:bg-gray-50"
+                      style={{ borderLeftColor: empColor(c.empleadoId) }}
+                      data-testid={`cal-cita-${c.id}`}
+                      title={`${t} · ${sName(c.servicioId) || c.titulo || "Cita"} · ${cName(c.clienteFinalId)}`}
+                    >
+                      <span className="font-semibold">{t}</span>{" "}
+                      <span className="text-gray-700">
+                        {sName(c.servicioId) || c.titulo || "Cita"}
+                      </span>
+                      {c.empleadoId && (
+                        <div className="truncate text-[10px] text-gray-500">
+                          {empName(c.empleadoId)}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {empleados.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+          {empleados.map((e) => (
+            <span
+              key={e.id}
+              className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5"
+            >
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ background: e.color }}
+              />
+              {e.nombre}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }

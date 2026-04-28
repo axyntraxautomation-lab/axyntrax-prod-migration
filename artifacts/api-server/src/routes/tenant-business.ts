@@ -15,6 +15,7 @@ import {
   tenantInventarioTable,
   tenantServiciosTable,
   tenantClientesFinalesTable,
+  tenantEmpleadosTable,
   tenantCitasServiciosTable,
   tenantFinanzasMovimientosTable,
   tenantAlertasTable,
@@ -373,6 +374,7 @@ router.patch(
     if (d.duracionMinutos !== undefined)
       patch.duracionMinutos = d.duracionMinutos ?? null;
     if (d.activo !== undefined) patch.activo = d.activo;
+    if (d.tipo !== undefined) patch.tipo = d.tipo;
     if (Object.keys(patch).length === 0) {
       res.status(400).json({ error: "Sin cambios" });
       return;
@@ -614,23 +616,157 @@ router.delete(
   },
 );
 
+// ----------------- EMPLEADOS -----------------
+
+const EmpleadoCreate = z.object({
+  nombre: z.string().trim().min(1).max(160),
+  rol: z.string().trim().max(64).optional().nullable(),
+  color: z
+    .string()
+    .trim()
+    .regex(/^#?[0-9a-fA-F]{3,8}$/)
+    .max(16)
+    .optional(),
+  activo: z.boolean().optional(),
+});
+const EmpleadoUpdate = EmpleadoCreate.partial();
+
+router.get(
+  "/tenant/empleados",
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const sdb = getSupabaseDb();
+    const rows = await sdb
+      .select()
+      .from(tenantEmpleadosTable)
+      .where(eq(tenantEmpleadosTable.tenantId, ctx.tenant.id))
+      .orderBy(asc(tenantEmpleadosTable.nombre));
+    res.json({ items: rows });
+  },
+);
+
+router.post(
+  "/tenant/empleados",
+  writeLimiter,
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const parsed = EmpleadoCreate.safeParse(req.body);
+    if (!parsed.success) return badRequest(res, parsed.error);
+    const d = parsed.data;
+    const sdb = getSupabaseDb();
+    const [row] = await sdb
+      .insert(tenantEmpleadosTable)
+      .values({
+        tenantId: ctx.tenant.id,
+        nombre: d.nombre,
+        rol: d.rol ?? null,
+        color: d.color ?? "#10b981",
+        activo: d.activo ?? true,
+      })
+      .returning();
+    res.status(201).json(row);
+  },
+);
+
+router.patch(
+  "/tenant/empleados/:id",
+  writeLimiter,
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const params = UuidParam.safeParse(req.params);
+    if (!params.success) return badRequest(res, params.error);
+    const parsed = EmpleadoUpdate.safeParse(req.body);
+    if (!parsed.success) return badRequest(res, parsed.error);
+    const d = parsed.data;
+    const patch: Record<string, unknown> = {};
+    if (d.nombre !== undefined) patch.nombre = d.nombre;
+    if (d.rol !== undefined) patch.rol = d.rol ?? null;
+    if (d.color !== undefined) patch.color = d.color;
+    if (d.activo !== undefined) patch.activo = d.activo;
+    if (Object.keys(patch).length === 0) {
+      res.status(400).json({ error: "Sin cambios" });
+      return;
+    }
+    const sdb = getSupabaseDb();
+    const [row] = await sdb
+      .update(tenantEmpleadosTable)
+      .set(patch)
+      .where(
+        and(
+          eq(tenantEmpleadosTable.id, params.data.id),
+          eq(tenantEmpleadosTable.tenantId, ctx.tenant.id),
+        ),
+      )
+      .returning();
+    if (!row) {
+      res.status(404).json({ error: "Empleado no encontrado" });
+      return;
+    }
+    res.json(row);
+  },
+);
+
+router.delete(
+  "/tenant/empleados/:id",
+  writeLimiter,
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const params = UuidParam.safeParse(req.params);
+    if (!params.success) return badRequest(res, params.error);
+    const sdb = getSupabaseDb();
+    const [row] = await sdb
+      .delete(tenantEmpleadosTable)
+      .where(
+        and(
+          eq(tenantEmpleadosTable.id, params.data.id),
+          eq(tenantEmpleadosTable.tenantId, ctx.tenant.id),
+        ),
+      )
+      .returning({ id: tenantEmpleadosTable.id });
+    if (!row) {
+      res.status(404).json({ error: "Empleado no encontrado" });
+      return;
+    }
+    res.status(204).end();
+  },
+);
+
 // ----------------- AGENDA / CITAS -----------------
 
+// Estados normalizados: pendiente (default al crear) → confirmado → completado.
+// "cancelado" cuando el cliente cancela; "no_asistio" cuando no se presentó.
 const ESTADOS_CITA = [
-  "agendada",
   "pendiente",
-  "en_curso",
-  "completada",
-  "cancelada",
+  "confirmado",
+  "completado",
+  "cancelado",
+  "no_asistio",
 ] as const;
 
 const CitaCreate = z.object({
   clienteFinalId: z.string().uuid().optional().nullable(),
   servicioId: z.string().uuid().optional().nullable(),
+  empleadoId: z.string().uuid().optional().nullable(),
   titulo: z.string().trim().max(200).optional().nullable(),
   fechaInicio: z.string().datetime({ offset: true }),
   fechaFin: z.string().datetime({ offset: true }).optional().nullable(),
-  estado: z.enum(ESTADOS_CITA).default("agendada"),
+  estado: z.enum(ESTADOS_CITA).default("pendiente"),
   notas: z.string().trim().max(2000).optional().nullable(),
 });
 const CitaUpdate = CitaCreate.partial();
@@ -682,6 +818,7 @@ router.post(
         tenantId: ctx.tenant.id,
         clienteFinalId: d.clienteFinalId ?? null,
         servicioId: d.servicioId ?? null,
+        empleadoId: d.empleadoId ?? null,
         titulo: d.titulo ?? null,
         fechaInicio: new Date(d.fechaInicio),
         fechaFin: d.fechaFin ? new Date(d.fechaFin) : null,
@@ -711,6 +848,7 @@ router.patch(
     if (d.clienteFinalId !== undefined)
       patch.clienteFinalId = d.clienteFinalId ?? null;
     if (d.servicioId !== undefined) patch.servicioId = d.servicioId ?? null;
+    if (d.empleadoId !== undefined) patch.empleadoId = d.empleadoId ?? null;
     if (d.titulo !== undefined) patch.titulo = d.titulo ?? null;
     if (d.fechaInicio !== undefined) patch.fechaInicio = new Date(d.fechaInicio);
     if (d.fechaFin !== undefined)
@@ -791,6 +929,10 @@ const FinanzaCreate = z.object({
   fecha: z.string().datetime({ offset: true }).optional(),
   clienteFinalId: z.string().uuid().optional().nullable(),
   citaId: z.string().uuid().optional().nullable(),
+  // Datos extra capturados por el wizard rubro-adaptativo (placa, mesa,
+  // diagnóstico, etc.). Se guardan tal cual en metadata.rubro para
+  // poder reportarlos sin acoplar el schema a cada vertical.
+  rubroData: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 });
 
 router.get(
@@ -855,7 +997,12 @@ router.post(
         estado: d.estado ?? "confirmado",
         fecha,
         clienteFinalId: d.clienteFinalId ?? null,
-        metadata: d.citaId ? { cita_id: d.citaId } : {},
+        metadata: {
+          ...(d.citaId ? { cita_id: d.citaId } : {}),
+          ...(d.rubroData && Object.keys(d.rubroData).length > 0
+            ? { rubro: d.rubroData }
+            : {}),
+        },
       })
       .returning();
     res.status(201).json(row);
@@ -1181,6 +1328,8 @@ const PagoQrGenerar = z.object({
   concepto: z.string().trim().max(200).optional().nullable(),
   clienteFinalId: z.string().uuid().optional().nullable(),
   citaId: z.string().uuid().optional().nullable(),
+  // Datos extra del wizard rubro-adaptativo (placa, mesa, etc.).
+  rubroData: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 });
 
 const PagoQrConfirmar = z.object({
@@ -1263,6 +1412,9 @@ router.post(
           deeplink,
           destino,
           cita_id: d.citaId ?? null,
+          ...(d.rubroData && Object.keys(d.rubroData).length > 0
+            ? { rubro: d.rubroData }
+            : {}),
         },
       })
       .returning();
@@ -1356,7 +1508,7 @@ router.post(
     if (citaId) {
       await sdb
         .update(tenantCitasServiciosTable)
-        .set({ estado: "completada" })
+        .set({ estado: "completado" })
         .where(
           and(
             eq(tenantCitasServiciosTable.id, citaId),

@@ -133,17 +133,31 @@ export type InventarioItem = {
   updatedAt: string;
 };
 
+export type ServicioTipo = "servicio" | "producto" | "menu_item";
+
 export type ServicioItem = {
   id: string;
   tenantId: string;
   nombre: string;
   descripcion: string | null;
   categoria: string | null;
+  tipo: ServicioTipo;
   precio: string;
   moneda: string;
   duracionMinutos: number | null;
   activo: boolean;
   metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Empleado = {
+  id: string;
+  tenantId: string;
+  nombre: string;
+  rol: string | null;
+  color: string;
+  activo: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -168,6 +182,7 @@ export type Cita = {
   tenantId: string;
   clienteFinalId: string | null;
   servicioId: string | null;
+  empleadoId: string | null;
   titulo: string | null;
   fechaInicio: string;
   fechaFin: string | null;

@@ -3,13 +3,41 @@ import { z } from "zod";
 import { BrandingHeader } from "@/components/BrandingHeader";
 import { SideNav } from "@/components/SideNav";
 import { useTenantReady } from "@/providers/TenantProvider";
-import { ApiError, apiGet, apiSend, type ServicioItem } from "@/lib/api";
+import {
+  ApiError,
+  apiGet,
+  apiSend,
+  type ServicioItem,
+  type ServicioTipo,
+} from "@/lib/api";
 import { getTerminologia } from "@/lib/rubro-terminologia";
+
+const TIPOS: ServicioTipo[] = ["servicio", "producto", "menu_item"];
+
+const TIPO_LABEL: Record<ServicioTipo, string> = {
+  servicio: "Servicio",
+  producto: "Producto",
+  menu_item: "Plato / menú",
+};
+
+// Por rubro, qué tipo conviene mostrar por defecto al crear nuevo registro.
+function defaultTipoPorRubro(rubro: string | null | undefined): ServicioTipo {
+  switch (rubro) {
+    case "restaurante":
+      return "menu_item";
+    case "bodega":
+    case "farmacia":
+      return "producto";
+    default:
+      return "servicio";
+  }
+}
 
 const FormSchema = z.object({
   nombre: z.string().trim().min(1, "Pon un nombre"),
   descripcion: z.string().trim().optional(),
   categoria: z.string().trim().max(64).optional(),
+  tipo: z.enum(["servicio", "producto", "menu_item"]),
   precio: z.number({ message: "Precio inválido" }).min(0),
   duracionMinutos: z.number().int().min(0).max(24 * 60).optional(),
   activo: z.boolean(),
@@ -20,19 +48,10 @@ type FormState = {
   nombre: string;
   descripcion: string;
   categoria: string;
+  tipo: ServicioTipo;
   precio: string;
   duracionMinutos: string;
   activo: boolean;
-};
-
-const EMPTY: FormState = {
-  id: null,
-  nombre: "",
-  descripcion: "",
-  categoria: "",
-  precio: "0",
-  duracionMinutos: "30",
-  activo: true,
 };
 
 export function Catalogo() {
@@ -69,6 +88,7 @@ export function Catalogo() {
       nombre: form.nombre,
       descripcion: form.descripcion || undefined,
       categoria: form.categoria || undefined,
+      tipo: form.tipo,
       precio: Number(form.precio),
       duracionMinutos:
         form.duracionMinutos === "" ? undefined : Number(form.duracionMinutos),
@@ -120,7 +140,18 @@ export function Catalogo() {
           </div>
           <button
             type="button"
-            onClick={() => setForm({ ...EMPTY })}
+            onClick={() =>
+              setForm({
+                id: null,
+                nombre: "",
+                descripcion: "",
+                categoria: "",
+                tipo: defaultTipoPorRubro(me.tenant.rubroId),
+                precio: "0",
+                duracionMinutos: "30",
+                activo: true,
+              })
+            }
             className="rounded-xl px-3 py-2 text-sm font-semibold text-white"
             style={{ background: "var(--color-primario)" }}
             data-testid="btn-nuevo-servicio"
@@ -176,6 +207,7 @@ export function Catalogo() {
                         nombre: s.nombre,
                         descripcion: s.descripcion ?? "",
                         categoria: s.categoria ?? "",
+                        tipo: s.tipo ?? "servicio",
                         precio: s.precio,
                         duracionMinutos:
                           s.duracionMinutos != null
@@ -239,6 +271,29 @@ export function Catalogo() {
                   rows={2}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
                 />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                  Tipo
+                </span>
+                <select
+                  value={form.tipo}
+                  onChange={(e) =>
+                    setForm({ ...form, tipo: e.target.value as ServicioTipo })
+                  }
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  data-testid="serv-input-tipo"
+                >
+                  {TIPOS.map((t) => (
+                    <option key={t} value={t}>
+                      {TIPO_LABEL[t]}
+                    </option>
+                  ))}
+                </select>
+                <span className="mt-1 block text-[10px] text-gray-500">
+                  Marca como "Producto" o "Plato" si descuenta del inventario al
+                  vender. "Servicio" no toca stock.
+                </span>
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <label className="block">
