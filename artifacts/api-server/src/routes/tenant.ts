@@ -150,6 +150,29 @@ async function getOnboardingByTenantId(
   return o ?? null;
 }
 
+router.get(
+  "/tenant/rubros",
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (_req, res): Promise<void> => {
+    const sdb = getSupabaseDb();
+    const rows = await sdb
+      .select({
+        rubroId: rubrosRegistryTable.rubroId,
+        nombre: rubrosRegistryTable.nombre,
+        cecilia_persona: rubrosRegistryTable.cecilia_persona,
+        modulos: rubrosRegistryTable.modulos,
+        kpis: rubrosRegistryTable.kpis,
+        onboarding_steps: rubrosRegistryTable.onboarding_steps,
+      })
+      .from(rubrosRegistryTable)
+      .where(eq(rubrosRegistryTable.activo, true))
+      .orderBy(rubrosRegistryTable.nombre);
+    res.json({ rubros: rows });
+  },
+);
+
 router.post(
   "/tenant/signup",
   signupLimiter,
