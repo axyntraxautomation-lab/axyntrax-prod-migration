@@ -26,6 +26,7 @@ import moduleUpdatesRouter from "./module-updates";
 import moduleSupportRouter from "./module-support";
 import jarvisAdsRouter from "./jarvis-ads";
 import jarvisLiveRouter from "./jarvis-live";
+import tenantRouter from "./tenant";
 
 const router: IRouter = Router();
 
@@ -56,5 +57,6 @@ router.use(moduleUpdatesRouter);
 router.use(moduleSupportRouter);
 router.use(jarvisAdsRouter);
 router.use(jarvisLiveRouter);
+router.use(tenantRouter);
 
 export default router;

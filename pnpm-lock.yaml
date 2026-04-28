@@ -191,6 +191,9 @@ importers:
       '@replit/connectors-sdk':
         specifier: ^0.4.0
         version: 0.4.0
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.104.1
       '@swc/helpers':
         specifier: ^0.5.21
         version: 0.5.21
@@ -200,6 +203,9 @@ importers:
       '@workspace/db':
         specifier: workspace:*
         version: link:../../lib/db
+      '@workspace/db-supabase':
+        specifier: workspace:*
+        version: link:../../lib/db-supabase
       '@workspace/integrations-anthropic-ai':
         specifier: workspace:*
         version: link:../../lib/integrations-anthropic-ai
@@ -904,6 +910,34 @@ importers:
       drizzle-kit:
         specifier: ^0.31.9
         version: 0.31.9
+
+  lib/db-supabase:
+    dependencies:
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.2(@types/pg@8.18.0)(pg@8.20.0)
+      drizzle-zod:
+        specifier: ^0.8.3
+        version: 0.8.3(drizzle-orm@0.45.2(@types/pg@8.18.0)(pg@8.20.0))(zod@3.25.76)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.3.5
+      '@types/pg':
+        specifier: ^8.18.0
+        version: 8.18.0
+      drizzle-kit:
+        specifier: ^0.31.9
+        version: 0.31.9
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
 
   lib/integrations-anthropic-ai:
     dependencies:
