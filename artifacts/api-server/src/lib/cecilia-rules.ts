@@ -18,7 +18,7 @@
  *
  * Toda query a Supabase se hace con tenant_id explícito (defense-in-depth).
  */
-import { and, desc, eq, gt, gte, isNull, lt, sql } from "drizzle-orm";
+import { and, eq, gt, gte, lt, sql } from "drizzle-orm";
 import {
   getSupabaseDb,
   tenantsTable,
@@ -307,8 +307,3 @@ async function rulDiaSinVentas(tenantId: string): Promise<number> {
   });
   return ok ? 1 : 0;
 }
-
-// Marca isNull/desc como usados para evitar warnings del bundler si no se
-// terminan invocando en alguna refactorización futura.
-void isNull;
-void desc;

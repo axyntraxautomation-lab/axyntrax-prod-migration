@@ -17,6 +17,10 @@ import {
   emitRealtimeStatus,
   type RealtimeChannel,
 } from "@/lib/supabase";
+import {
+  REALTIME_LISTEN_TYPES,
+  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
+} from "@supabase/supabase-js";
 
 type TableName =
   | "tenant_alertas"
@@ -113,13 +117,13 @@ function bootstrap(args: {
     return client
       .channel(channelKey)
       .on(
-        "postgres_changes" as unknown as "system",
+        REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
         {
-          event: "*",
+          event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
           schema: "public",
           table,
           filter: `tenant_id=eq.${args.tenantId}`,
-        } as never,
+        },
         () => dispatch(table),
       )
       .subscribe((status) => {

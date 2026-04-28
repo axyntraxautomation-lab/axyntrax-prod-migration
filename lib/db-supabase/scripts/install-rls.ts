@@ -7,13 +7,16 @@
  *  - Frontend tenant usa anon key + JWT firmado con SUPABASE_JWT_SECRET por
  *    /api/tenant/jwt. Ese JWT trae el claim `tenant_id` y `role:tenant_owner`.
  *  - Postgres expone el JWT vía `current_setting('request.jwt.claims')`.
- *  - Para CADA tabla tenant_* se ENABLE RLS + GRANT SELECT a tenant_owner +
- *    POLICY SELECT que filtra por `tenant_id::text = jwt.tenant_id`.
- *  - Tabla `tenants` se restringe a la fila propia.
+ *  - Para CADA tabla tenant_* se ENABLE RLS + GRANT SELECT/INSERT/UPDATE/DELETE
+ *    a tenant_owner, y se crea una POLICY UNIFICADA `*_tenant_isolation`
+ *    `FOR ALL` con el predicado `tenant_id::text = jwt.tenant_id` aplicado a
+ *    USING (filtra reads/updates/deletes) y WITH CHECK (filtra inserts/updates).
+ *    Esto cumple el contrato de policy CRUD por tenant_id; el api-server sigue
+ *    haciendo todos los writes "reales" (encriptación, dedupe, bitácora) pero
+ *    el modelo de RLS queda completo para defense-in-depth.
+ *  - Tabla `tenants` se restringe a la fila propia (solo SELECT; el tenant no
+ *    debería rebrandearse a sí mismo bypassando el api-server).
  *  - Tabla `rubros_registry` queda con SELECT público (registry compartido).
- *  - NO se conceden INSERT/UPDATE/DELETE al rol tenant_owner: TODO write
- *    pasa obligatoriamente por el api-server (que también escribe la
- *    bitácora `tenant_alertas` y respeta encriptación de campos sensibles).
  *
  * Idempotente: re-ejecutarlo no produce cambios destructivos. Las policies
  * se borran y recrean con el mismo nombre para reflejar cambios futuros.
@@ -52,15 +55,33 @@ async function installForTenantTable(
 ): Promise<void> {
   const policyName = `${table}_tenant_isolation`;
   await pool.query(`ALTER TABLE public.${table} ENABLE ROW LEVEL SECURITY;`);
-  await pool.query(`GRANT SELECT ON public.${table} TO tenant_owner;`);
+  await pool.query(
+    `GRANT SELECT, INSERT, UPDATE, DELETE ON public.${table} TO tenant_owner;`,
+  );
+  // Drop legacy split policies si existieran de versiones previas.
   await pool.query(
     `DROP POLICY IF EXISTS ${policyName} ON public.${table};`,
   );
   await pool.query(
+    `DROP POLICY IF EXISTS ${policyName}_select ON public.${table};`,
+  );
+  await pool.query(
+    `DROP POLICY IF EXISTS ${policyName}_insert ON public.${table};`,
+  );
+  await pool.query(
+    `DROP POLICY IF EXISTS ${policyName}_update ON public.${table};`,
+  );
+  await pool.query(
+    `DROP POLICY IF EXISTS ${policyName}_delete ON public.${table};`,
+  );
+  // Policy unificada FOR ALL: USING filtra SELECT/UPDATE/DELETE por owner,
+  // WITH CHECK filtra el tenant_id de filas insertadas/actualizadas.
+  await pool.query(
     `CREATE POLICY ${policyName} ON public.${table}
-       FOR SELECT
+       FOR ALL
        TO tenant_owner
-       USING (tenant_id::text = ${JWT_TENANT_EXPR});`,
+       USING (tenant_id::text = ${JWT_TENANT_EXPR})
+       WITH CHECK (tenant_id::text = ${JWT_TENANT_EXPR});`,
   );
 }
 

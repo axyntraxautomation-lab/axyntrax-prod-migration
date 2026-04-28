@@ -5,12 +5,15 @@
  *  1. Crea 2 tenants A y B en Supabase con service-role (bypass RLS).
  *  2. Inserta data en tablas tenant_inventario / tenant_alertas /
  *     tenant_finanzas_movimientos / tenant_pagos_qr para CADA tenant.
- *  3. Firma un JWT con tenant_id = B (role=tenant_owner) y consulta
- *     PostgREST `/rest/v1/<tabla>?select=*` por cada tabla bajo RLS.
- *  4. Espera 0 filas del tenant A en TODAS las consultas.
- *  5. Espera que CUALQUIER intento de INSERT/UPDATE/DELETE como
- *     tenant_owner falle (solo se concedió SELECT al rol).
- *  6. Limpia ambos tenants al final.
+ *  3. Firma un JWT con tenant_id = B (role=tenant_owner) y verifica:
+ *     - SELECT cross-tenant devuelve 0 filas (USING aplica).
+ *     - SELECT propio sí ve filas del propio tenant.
+ *     - INSERT/UPDATE/DELETE de filas del PROPIO tenant funcionan.
+ *     - INSERT con tenant_id=A (forjado en body) es BLOQUEADO por
+ *       WITH CHECK aunque el JWT sea de B.
+ *     - UPDATE/DELETE filtrado por tenant_id=A no afecta filas
+ *       (USING evalúa false → 0 rows touched).
+ *  4. Limpia ambos tenants al final.
  *
  * Pre-requisito: `pnpm --filter @workspace/db-supabase run bootstrap` y
  * `pnpm --filter @workspace/db-supabase run install-rls` ya ejecutados.
@@ -336,19 +339,71 @@ test("RLS: SIN JWT (anon sin claims) no debe leer tenant_inventario", async (t) 
   }
 });
 
-test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE (solo SELECT)", async (t) => {
+test("RLS: tenant_owner SÍ puede INSERT/UPDATE/DELETE filas de su propio tenant", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
 
+  // INSERT propio: tenant_id=B en el body, JWT de B → debe pasar (WITH CHECK ok).
   const insertStatus = await restMutate({
     table: "tenant_inventario",
     jwt: tokenB,
     method: "POST",
     body: {
       tenant_id: B!.id,
-      sku: "SHOULD-FAIL",
-      nombre: "denied",
+      sku: `OWN-INSERT-${TS}`,
+      nombre: "own insert",
+      cantidad: "3",
+      minimo_alerta: "1",
+      unidad: "u",
+    },
+  });
+  assert.ok(
+    insertStatus >= 200 && insertStatus < 300,
+    `INSERT propio debería pasar (status=${insertStatus})`,
+  );
+
+  // UPDATE propio: cambiar `cantidad` de un row del mismo tenant.
+  const updateStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "PATCH",
+    query: `tenant_id=eq.${B!.id}&sku=eq.OWN-INSERT-${TS}`,
+    body: { cantidad: "9" },
+  });
+  assert.ok(
+    updateStatus >= 200 && updateStatus < 300,
+    `UPDATE propio debería pasar (status=${updateStatus})`,
+  );
+
+  // DELETE propio.
+  const deleteStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "DELETE",
+    query: `tenant_id=eq.${B!.id}&sku=eq.OWN-INSERT-${TS}`,
+  });
+  assert.ok(
+    deleteStatus >= 200 && deleteStatus < 300,
+    `DELETE propio debería pasar (status=${deleteStatus})`,
+  );
+});
+
+test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", async (t) => {
+  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+  const sdb = getSupabaseDb();
+
+  // INSERT con tenant_id=A forjado en body → bloqueado por WITH CHECK.
+  const insertStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "POST",
+    body: {
+      tenant_id: A!.id,
+      sku: `FORGED-${TS}`,
+      nombre: "forged tenant_id",
       cantidad: "1",
       minimo_alerta: "0",
       unidad: "u",
@@ -356,30 +411,66 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE (solo SELECT)", async (t) 
   });
   assert.ok(
     insertStatus >= 400,
-    `INSERT debe fallar (status=${insertStatus})`,
+    `INSERT con tenant_id ajeno debe fallar (status=${insertStatus})`,
   );
+  // Confirma con service-role que no se creó la fila.
+  const forgedRows = await sdb
+    .select({ id: tenantInventarioTable.id })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.sku, `FORGED-${TS}`));
+  assert.equal(forgedRows.length, 0, "no debe existir la fila forjada");
 
-  const updateStatus = await restMutate({
-    table: "tenant_alertas",
+  // UPDATE filtrado por tenant_id=A: USING evalúa false, 0 filas afectadas.
+  // Snapshot de cantidad antes.
+  const inventarioA = await sdb
+    .select({
+      id: tenantInventarioTable.id,
+      cantidad: tenantInventarioTable.cantidad,
+    })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.tenantId, A!.id))
+    .limit(1);
+  assert.ok(inventarioA[0], "fila de A existe");
+  const cantidadAntes = inventarioA[0]!.cantidad;
+
+  await restMutate({
+    table: "tenant_inventario",
     jwt: tokenB,
     method: "PATCH",
-    query: `tenant_id=eq.${B!.id}`,
-    body: { leida: true },
+    query: `tenant_id=eq.${A!.id}`,
+    body: { cantidad: "999" },
   });
-  assert.ok(
-    updateStatus >= 400,
-    `UPDATE debe fallar (status=${updateStatus})`,
+
+  const inventarioADespues = await sdb
+    .select({ cantidad: tenantInventarioTable.cantidad })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.id, inventarioA[0]!.id))
+    .limit(1);
+  assert.equal(
+    inventarioADespues[0]!.cantidad,
+    cantidadAntes,
+    "UPDATE cross-tenant no debió modificar la fila de A",
   );
 
-  const deleteStatus = await restMutate({
+  // DELETE filtrado por tenant_id=A: idem, 0 filas borradas.
+  const alertasACountAntes = await sdb
+    .select({ id: tenantAlertasTable.id })
+    .from(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, A!.id));
+  await restMutate({
     table: "tenant_alertas",
     jwt: tokenB,
     method: "DELETE",
-    query: `tenant_id=eq.${B!.id}`,
+    query: `tenant_id=eq.${A!.id}`,
   });
-  assert.ok(
-    deleteStatus >= 400,
-    `DELETE debe fallar (status=${deleteStatus})`,
+  const alertasACountDespues = await sdb
+    .select({ id: tenantAlertasTable.id })
+    .from(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, A!.id));
+  assert.equal(
+    alertasACountDespues.length,
+    alertasACountAntes.length,
+    "DELETE cross-tenant no debió borrar alertas de A",
   );
 });
 
