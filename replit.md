@@ -118,7 +118,10 @@ The project is built as a pnpm monorepo using Node.js 24 and TypeScript 5.9.
 
 ## External Dependencies
 
-- **Database:** Replit-provisioned PostgreSQL.
+- **Databases:**
+    - Replit-provisioned PostgreSQL (paquete `@workspace/db`, IDs `serial`). Es la DB principal del JARVIS interno (CRM, leads, módulos, finanzas internas, etc).
+    - Supabase PostgreSQL — DB independiente para el SaaS multi-tenant **Cecilia** (paquete `@workspace/db-supabase`, IDs `uuid` nativo). 18 tablas con prefijo `tenant_*` + `tenants` + `rubros_registry`. Conexión vía pooler con `sslmode=no-verify` por certificado self-signed. Nunca se mezcla con la DB Replit (paquetes y schemas separados).
+    - Normalizador de env (`@workspace/db-supabase/env`): tolerante a secrets pegados con prefijos truncados o cruzados, exige los 5 valores Supabase (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `SUPABASE_DB_URL`) y deriva el `publicUrl` desde el project-ref del `DB_URL` cuando hace falta.
 - **AI Integrations:**
     - Anthropic (Claude Sonnet 4.6) via Replit AI integration.
     - Google Gemini (Gemini 2.5 Flash) via Replit AI integration.

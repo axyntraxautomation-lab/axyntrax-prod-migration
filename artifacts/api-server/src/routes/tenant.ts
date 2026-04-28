@@ -60,8 +60,8 @@ function gateSupabase(req: Request, res: Response, next: NextFunction): void {
     res.status(503).json({
       error:
         "El módulo SaaS Cecilia aún no está configurado en este entorno. " +
-        "Falta registrar los secrets SUPABASE_URL, SUPABASE_ANON_KEY, " +
-        "SUPABASE_SERVICE_ROLE_KEY y SUPABASE_JWT_SECRET.",
+        "Falta registrar los secrets SUPABASE_URL, SUPABASE_DB_URL, " +
+        "SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY y SUPABASE_JWT_SECRET.",
       code: "supabase_not_configured",
     });
     return;
