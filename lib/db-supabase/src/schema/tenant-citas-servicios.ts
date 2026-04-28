@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   jsonb,
   pgTable,
@@ -31,9 +32,7 @@ export const tenantCitasServiciosTable = pgTable(
     fechaFin: timestamp("fecha_fin", { withTimezone: true }),
     estado: varchar("estado", { length: 32 }).notNull().default("agendada"),
     notas: text("notas"),
-    recordatorioEnviado: varchar("recordatorio_enviado", { length: 8 })
-      .notNull()
-      .default("false"),
+    recordatorioEnviado: boolean("recordatorio_enviado").notNull().default(false),
     metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })

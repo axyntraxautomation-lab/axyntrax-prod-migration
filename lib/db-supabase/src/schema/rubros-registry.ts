@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { jsonb, pgTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
 /**
  * Catálogo central de rubros baseline (Módulo 0 + Módulo 4 del spec).
@@ -21,7 +21,7 @@ export const rubrosRegistryTable = pgTable(
     onboarding_steps: jsonb("onboarding_steps").notNull().default(sql`'[]'::jsonb`),
     catalogo_sugerido: jsonb("catalogo_sugerido").notNull().default(sql`'[]'::jsonb`),
     faqs: jsonb("faqs").notNull().default(sql`'[]'::jsonb`),
-    activo: varchar("activo", { length: 8 }).notNull().default("true"),
+    activo: boolean("activo").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()

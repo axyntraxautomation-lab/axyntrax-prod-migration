@@ -1,7 +1,8 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   index,
-  jsonb,
+  integer,
   pgTable,
   text,
   timestamp,
@@ -20,8 +21,8 @@ export const tenantFaqOverridesTable = pgTable(
     pregunta: text("pregunta").notNull(),
     respuesta: text("respuesta").notNull(),
     categoria: varchar("categoria", { length: 64 }),
-    orden: jsonb("orden").notNull().default(sql`'0'::jsonb`),
-    activo: varchar("activo", { length: 8 }).notNull().default("true"),
+    orden: integer("orden").notNull().default(0),
+    activo: boolean("activo").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()

@@ -21,7 +21,7 @@ async function main(): Promise<void> {
         onboarding_steps: r.onboarding_steps,
         catalogo_sugerido: r.catalogo_sugerido,
         faqs: r.faqs,
-        activo: "true",
+        activo: true,
       })
       .onConflictDoUpdate({
         target: rubrosRegistryTable.rubroId,
@@ -35,7 +35,7 @@ async function main(): Promise<void> {
           onboarding_steps: r.onboarding_steps,
           catalogo_sugerido: r.catalogo_sugerido,
           faqs: r.faqs,
-          activo: "true",
+          activo: true,
           updatedAt: sql`now()`,
         },
       });

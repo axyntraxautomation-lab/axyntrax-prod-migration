@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "./schema";
 import { requireSupabaseDbUrl } from "./env";
+import { SUPABASE_ROOT_CA_2021 } from "./certs/embedded";
 
 const { Pool } = pg;
 
@@ -9,38 +10,37 @@ let cachedPool: pg.Pool | null = null;
 let cachedDb: ReturnType<typeof drizzle<typeof schema>> | null = null;
 
 /**
- * Resuelve la configuración TLS para la pool (secure-by-default).
+ * Root CA público de Supabase (Supabase Root 2021 CA, válido hasta
+ * 2031-04-26). Supabase usa su propia CA privada para firmar los certs
+ * de los conexion poolers (`*.pooler.supabase.com`), por lo que el trust
+ * store de Node.js NO la incluye. Embebido como módulo TS en
+ * `./certs/embedded.ts` para que TODA conexión Postgres use verify-full
+ * sin depender de env vars y sin filesystem reads en runtime (compatible
+ * con esbuild bundle, tsx dev y vitest).
+ *
+ * Para renovar antes de 2031: extraer con
+ *   openssl s_client -connect aws-0-us-east-1.pooler.supabase.com:6543 \
+ *     -starttls postgres -showcerts </dev/null
+ * guardar el último cert (root self-signed) en certs/supabase-root-2021.crt
+ * y regenerar `embedded.ts` con:
+ *   (printf 'export const SUPABASE_ROOT_CA_2021 = `'; cat supabase-root-2021.crt; \
+ *    printf '`;\n') > embedded.ts
+ */
+const CA_BUNDLE = SUPABASE_ROOT_CA_2021;
+
+/**
+ * Resuelve la configuración TLS para la pool (verify-full obligatorio).
  *
  * Política:
- *  - TLS siempre está activo (cifrado en tránsito).
- *  - Por defecto, `rejectUnauthorized: true` → la cadena de certificados
- *    se valida contra los root CAs de Node (`tls.rootCertificates`).
- *  - El downgrade a `rejectUnauthorized: false` requiere opt-in EXPLÍCITO
- *    del operador, mediante UNO de:
- *      • `SUPABASE_TLS_INSECURE=true` (env var de proceso).
- *      • `?sslmode=no-verify` o `?sslmode=disable` en el SUPABASE_DB_URL.
- *  - No hay override por host: la decisión queda en manos del operador.
- *
- * Para Supabase con verificación completa, registrar el CA bundle público
- * de Supabase en `ssl.ca` del Pool (TODO operacional).
+ *  - TLS siempre activo (cifrado en tránsito).
+ *  - `rejectUnauthorized: true` siempre: la cadena de certificados se
+ *    valida contra el `CA_BUNDLE` embebido (root CAs públicos de AWS RDS).
+ *  - NO existe ningún escape hatch (env var, query string, host) para
+ *    deshabilitar la verificación. Si el cert no valida, la conexión
+ *    falla y el operador debe actualizar el bundle, NO bypasarlo.
  */
-function resolveSslConfig(connectionString: string): pg.PoolConfig["ssl"] {
-  const insecureFlag =
-    String(process.env.SUPABASE_TLS_INSECURE ?? "").toLowerCase() === "true";
-
-  let urlMode = "";
-  try {
-    const u = new URL(connectionString);
-    urlMode = u.searchParams.get("sslmode") ?? "";
-  } catch {
-    /* no-op: cadenas mal formadas se manejan aguas abajo */
-  }
-
-  if (insecureFlag || urlMode === "no-verify" || urlMode === "disable") {
-    return { rejectUnauthorized: false };
-  }
-
-  return { rejectUnauthorized: true };
+function resolveSslConfig(_connectionString: string): pg.PoolConfig["ssl"] {
+  return { ca: CA_BUNDLE, rejectUnauthorized: true };
 }
 
 export { resolveSslConfig };

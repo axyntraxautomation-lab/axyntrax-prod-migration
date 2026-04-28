@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  bigint,
   index,
   jsonb,
   pgTable,
@@ -20,7 +21,7 @@ export const tenantBackupsTable = pgTable(
     destino: varchar("destino", { length: 32 }).notNull().default("google_drive"),
     fileId: text("file_id"),
     fileUrl: text("file_url"),
-    sizeBytes: jsonb("size_bytes").notNull().default(sql`'0'::jsonb`),
+    sizeBytes: bigint("size_bytes", { mode: "number" }).notNull().default(0),
     estado: varchar("estado", { length: 32 }).notNull().default("pendiente"),
     error: text("error"),
     metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),

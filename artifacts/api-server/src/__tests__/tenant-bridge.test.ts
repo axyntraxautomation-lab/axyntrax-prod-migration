@@ -175,7 +175,30 @@ after(async () => {
   if (createdNoTenantId !== null) {
     await db.delete(clientsTable).where(eq(clientsTable.id, createdNoTenantId));
   }
+  await teardownTenantOwnerRole();
 });
+
+/**
+ * Revoca todos los grants e idempotentemente elimina el rol `tenant_owner`
+ * creado por `ensureTenantOwnerRole()`. Garantiza que la corrida del test
+ * NO deja privilegios persistentes en Supabase. Si DROP ROLE falla por
+ * dependencias residuales, se loggea pero no rompe la suite (la próxima
+ * corrida volverá a recrear el rol limpio).
+ */
+async function teardownTenantOwnerRole(): Promise<void> {
+  if (!isSupabaseConfigured()) return;
+  const pool = getSupabasePool();
+  try {
+    await pool.query(`REVOKE SELECT ON public.tenants FROM tenant_owner;`);
+    await pool.query(`REVOKE USAGE ON SCHEMA public FROM tenant_owner;`);
+    await pool.query(`REVOKE tenant_owner FROM authenticator;`);
+    await pool.query(`DROP ROLE IF EXISTS tenant_owner;`);
+  } catch (err) {
+    console.warn(
+      `[tenant-bridge.test] teardown rol tenant_owner falló (no fatal): ${(err as Error).message}`,
+    );
+  }
+}
 
 test("/api/tenant/signup: crea tenant con body snake_case y devuelve { tenant_id, slug }", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");

@@ -48,4 +48,3 @@ run = ["pnpm", "--filter", "@workspace/api-server", "run", "start"]
 [userenv]
 
 [userenv.shared]
-SUPABASE_TLS_INSECURE = "true"
