@@ -365,7 +365,7 @@ export default function JarvisLive() {
                     void send();
                   }
                 }}
-                placeholder="Preguntale a JARVIS: ¿qué pasó hoy? ¿cuántos clientes activos? ¿alguna alerta?"
+                placeholder="Pregúntale a JARVIS: ¿qué pasó hoy? ¿cuántos clientes activos? ¿alguna alerta?"
                 disabled={chatBusy}
                 data-testid="input-chat-jarvis"
               />

@@ -546,7 +546,7 @@ export default function Finanzas() {
                   <Skeleton className="h-32" />
                 ) : !payments || payments.length === 0 ? (
                   <p className="text-muted-foreground text-sm py-8 text-center">
-                    No hay pagos aún. Creá un cobro para empezar.
+                    No hay pagos aún. Crea un cobro para empezar.
                   </p>
                 ) : (
                   <Table>

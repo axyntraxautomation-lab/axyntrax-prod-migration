@@ -245,7 +245,7 @@ export default function Login() {
                         Acceso a JARVIS
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        Iniciá sesión con tus credenciales
+                        Inicia sesión con tus credenciales
                       </div>
                     </div>
                   </>

@@ -16,7 +16,7 @@ const AUDIENCES = [
   "tiendas retail",
 ];
 const HOOKS = [
-  "ahorrá tiempo",
+  "ahorra tiempo",
   "automatiza la cobranza",
   "responde clientes 24/7",
   "ten tu agenda al día",

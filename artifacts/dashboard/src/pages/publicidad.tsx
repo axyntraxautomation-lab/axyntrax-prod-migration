@@ -185,8 +185,8 @@ export default function Publicidad() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
             JARVIS genera automáticamente un nuevo aviso para Facebook e
-            Instagram cada hora. Cada texto es distinto del anterior. Aprobá los
-            que quieras publicar y descartá el resto. Total acumulado:{" "}
+            Instagram cada hora. Cada texto es distinto del anterior. Aprueba los
+            que quieras publicar y descarta el resto. Total acumulado:{" "}
             <span className="font-semibold text-foreground">{total}</span>.
           </p>
         </div>

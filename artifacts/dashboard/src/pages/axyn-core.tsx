@@ -100,7 +100,7 @@ export default function AxynCore() {
       if (!res.ok || !res.body) {
         throw new Error(
           res.status === 401
-            ? "Sesión expirada. Iniciá sesión de nuevo."
+            ? "Sesión expirada. Inicia sesión de nuevo."
             : `Error del servidor (${res.status}).`,
         );
       }

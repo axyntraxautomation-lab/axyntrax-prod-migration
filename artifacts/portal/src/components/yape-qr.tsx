@@ -54,7 +54,7 @@ export function YapeQR({ size = 96, showCaption = true, className }: YapeQRProps
           </DialogTitle>
           <DialogDescription className="text-purple-100">
             Escanea este código desde la app Yape o usa el número 991 740 590.
-            Después avisanos por el chat de JARVIS para activar tu módulo.
+            Después avísanos por el chat de JARVIS para activar tu módulo.
           </DialogDescription>
         </DialogHeader>
         <div className="bg-purple-700 px-6 pb-6 pt-3 flex flex-col items-center gap-3">

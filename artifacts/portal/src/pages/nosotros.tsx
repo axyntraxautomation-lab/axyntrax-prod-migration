@@ -367,7 +367,7 @@ export default function Nosotros() {
           <div className="mt-12 flex justify-center">
             <Link href="/login?tab=register">
               <GradientButton size="lg" variant="primary">
-                Empezá con AXYNTRAX
+                Empieza con AXYNTRAX
                 <ArrowRight className="h-4 w-4" />
               </GradientButton>
             </Link>

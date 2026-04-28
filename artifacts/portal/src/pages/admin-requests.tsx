@@ -167,7 +167,7 @@ export default function AdminRequestsPage() {
           Solicitudes de módulos
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Aprobá nuevas activaciones — todas las activaciones son demos
+          Aprueba nuevas activaciones — todas las activaciones son demos
           gratuitas por 30 días, sin cobro al cliente.
         </p>
       </div>

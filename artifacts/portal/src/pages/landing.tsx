@@ -96,14 +96,14 @@ const PROCESS_STEPS = [
   {
     n: "01",
     icon: CheckCircle2,
-    title: "Creá tu cuenta",
+    title: "Crea tu cuenta",
     body: "Registro gratuito en menos de un minuto. Solo email y celular.",
   },
   {
     n: "02",
     icon: Bot,
     title: "Habla con Cecilia",
-    body: "Contale tu rubro y recibe los módulos justos para tu operación.",
+    body: "Cuéntale tu rubro y recibe los módulos justos para tu operación.",
   },
   {
     n: "03",
@@ -616,7 +616,7 @@ export default function LandingPage() {
           {modules && filtered.length === 0 && (
             <GlassCard tone="default" border="soft" className="px-6 py-12 text-center">
               <p className="text-sm text-slate-400">
-                No hay módulos con esos filtros. Probá con "Todos".
+                No hay módulos con esos filtros. Prueba con "Todos".
               </p>
             </GlassCard>
           )}
@@ -710,7 +710,7 @@ export default function LandingPage() {
                   {[
                     <>Titular: <strong className="text-slate-100">Miguel Angel Montero Garcia</strong></>,
                     <>Yape: <span className="font-mono font-semibold text-cyan-200">991 740 590</span></>,
-                    "Avisanos por el chat de Cecilia y activamos en el momento.",
+                    "Avísanos por el chat de Cecilia y activamos en el momento.",
                     "Toda cotización trae IGV 18 % incluido y comprobante en PDF.",
                   ].map((line, i) => (
                     <li key={i} className="flex items-start gap-2.5">
@@ -752,7 +752,7 @@ export default function LandingPage() {
               ¿Listo para automatizar tu negocio?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-400">
-              Crea tu cuenta gratis y conversá con Cecilia ahora. Sin compromiso,
+              Crea tu cuenta gratis y conversa con Cecilia ahora. Sin compromiso,
               sin tarjeta. Si no encuentras el módulo que buscas, lo armamos para
               tu rubro.
             </p>

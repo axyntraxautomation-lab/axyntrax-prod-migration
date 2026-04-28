@@ -261,7 +261,7 @@ export default function Login() {
                   Acceso al portal
                 </h2>
                 <p className="text-sm text-slate-400">
-                  Creá tu cuenta para activar y descargar los módulos. Cada
+                  Crea tu cuenta para activar y descargar los módulos. Cada
                   módulo entrega su propia clave de licencia tras la aprobación.
                 </p>
               </div>

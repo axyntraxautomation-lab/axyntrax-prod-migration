@@ -128,7 +128,7 @@ export default function ClientModulesPage() {
       setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1800);
       toast({
         title: "Clave copiada",
-        description: "Pegala donde necesités activar el módulo.",
+        description: "Pégala donde necesites activar el módulo.",
       });
     } catch {
       toast({
@@ -325,7 +325,7 @@ export default function ClientModulesPage() {
             Para activar módulos pagos deposita por Yape
           </div>
           <div className="text-xs text-muted-foreground">
-            Titular: Miguel Angel Montero Garcia · Después de pagar avisanos por
+            Titular: Miguel Angel Montero Garcia · Después de pagar avísanos por
             el chat de JARVIS y activamos tu módulo en minutos.
           </div>
           <div className="mt-1 font-mono text-sm font-semibold text-foreground">
@@ -747,7 +747,7 @@ export default function ClientModulesPage() {
               {createdQuoteAccepted ? (
                 <>
                   Solicitud creada. Paga ahora con Yape (escanea el QR o usa el
-                  número 991 740 590) y avisanos por el chat de JARVIS para
+                  número 991 740 590) y avísanos por el chat de JARVIS para
                   activar los módulos en minutos.
                 </>
               ) : (
@@ -859,7 +859,7 @@ export default function ClientModulesPage() {
           >
             {supportHistory.length === 0 ? (
               <p className="text-xs text-muted-foreground">
-                Contale qué problema estás teniendo. No incluyas contraseñas.
+                Cuéntale qué problema estás teniendo. No incluyas contraseñas.
               </p>
             ) : (
               supportHistory.map((m, i) => (

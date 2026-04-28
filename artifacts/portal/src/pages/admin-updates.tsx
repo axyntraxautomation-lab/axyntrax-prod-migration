@@ -97,7 +97,7 @@ export default function AdminUpdatesPage() {
       <div>
         <h1 className="text-2xl font-bold">Actualizaciones de módulos</h1>
         <p className="text-sm text-muted-foreground">
-          Publicá una nueva versión y los clientes con ese módulo activo recibirán la
+          Publica una nueva versión y los clientes con ese módulo activo recibirán la
           notificación inmediatamente.
         </p>
       </div>

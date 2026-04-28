@@ -168,7 +168,7 @@ export function TwofaCard({ enabled }: Props) {
         ) : !secret ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Protegé tu cuenta con un código de 6 dígitos generado por una app
+              Protege tu cuenta con un código de 6 dígitos generado por una app
               autenticadora (Google Authenticator, Authy, 1Password, Microsoft
               Authenticator, etc.).
             </p>

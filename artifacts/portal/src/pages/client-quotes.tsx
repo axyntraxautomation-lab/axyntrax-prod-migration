@@ -105,7 +105,7 @@ export default function ClientQuotesPage() {
           </div>
           <div className="text-xs text-muted-foreground">
             Acepta la cotización y deposita el monto por Yape al titular Miguel
-            Angel Montero Garcia. Avisanos por el chat de JARVIS para activar
+            Angel Montero Garcia. Avísanos por el chat de JARVIS para activar
             tus módulos.
           </div>
           <div className="mt-1 font-mono text-sm font-semibold text-foreground">
