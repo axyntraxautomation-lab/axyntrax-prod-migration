@@ -1,6 +1,38 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useParams } from "wouter";
 import { apiGet, apiSend, type Alerta } from "@/lib/api";
 import { useRealtimeRefetch } from "@/hooks/useRealtimeBus";
+
+/**
+ * Mapea tipo+payload de la alerta a una ruta interna del tenant para que
+ * el usuario pueda saltar al recurso afectado (cita, item de inventario,
+ * pago QR pendiente, etc.).
+ */
+function recursoLink(
+  slug: string,
+  a: Alerta,
+): { href: string; label: string } | null {
+  const p = (a.payload ?? {}) as Record<string, unknown>;
+  switch (a.tipo) {
+    case "stock_bajo":
+      return { href: `/t/${slug}/inventario`, label: "Ver inventario" };
+    case "cita_proxima":
+    case "cita_completada_sin_pago":
+      return { href: `/t/${slug}/agenda`, label: "Ver agenda" };
+    case "pago_pendiente_24h":
+      return { href: `/t/${slug}/pagos`, label: "Ver pago" };
+    case "dia_sin_ventas":
+      return { href: `/t/${slug}/finanzas`, label: "Ver finanzas" };
+    default:
+      if (typeof p.cita_id === "string")
+        return { href: `/t/${slug}/agenda`, label: "Ver agenda" };
+      if (typeof p.item_id === "string")
+        return { href: `/t/${slug}/inventario`, label: "Ver inventario" };
+      if (typeof p.pago_id === "string")
+        return { href: `/t/${slug}/pagos`, label: "Ver pago" };
+      return null;
+  }
+}
 
 const SEVERIDAD_STYLES: Record<string, { dot: string; chip: string; label: string }> = {
   critical: {
@@ -77,6 +109,10 @@ export function AlertasDrawer({
   const [items, setItems] = useState<Alerta[]>([]);
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyAll, setBusyAll] = useState(false);
+  const [, setLocation] = useLocation();
+  const params = useParams<{ slug: string }>();
+  const slug = params.slug ?? "";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -130,6 +166,33 @@ export function AlertasDrawer({
     [items, onCountChange],
   );
 
+  const marcarTodas = useCallback(async () => {
+    if (items.length === 0) return;
+    setBusyAll(true);
+    try {
+      await apiSend<{ marcadas: number }>(
+        "POST",
+        "/api/tenant/alertas/marcar-todas-leidas",
+      );
+      setItems([]);
+      onCountChange?.(0);
+    } catch {
+      // ignore
+    } finally {
+      setBusyAll(false);
+    }
+  }, [items.length, onCountChange]);
+
+  const irRecurso = useCallback(
+    (a: Alerta) => {
+      const link = recursoLink(slug, a);
+      if (!link) return;
+      onClose();
+      setLocation(link.href);
+    },
+    [setLocation, onClose, slug],
+  );
+
   return (
     <>
       <div
@@ -157,6 +220,16 @@ export function AlertasDrawer({
           <h2 className="text-sm font-semibold text-gray-900">
             Bandeja de alertas
           </h2>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void marcarTodas()}
+              disabled={busyAll || items.length === 0}
+              className="rounded-lg px-2 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+              data-testid="btn-marcar-todas"
+            >
+              {busyAll ? "Marcando…" : "Marcar todas"}
+            </button>
           <button
             type="button"
             onClick={onClose}
@@ -179,6 +252,7 @@ export function AlertasDrawer({
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
+          </div>
         </header>
         <div className="flex-1 overflow-y-auto px-3 py-3">
           {loading && items.length === 0 ? (
@@ -232,7 +306,22 @@ export function AlertasDrawer({
                             {a.detalle}
                           </p>
                         ) : null}
-                        <div className="mt-2 flex justify-end">
+                        <div className="mt-2 flex items-center justify-end gap-1">
+                          {(() => {
+                            const link = recursoLink(slug, a);
+                            if (!link) return null;
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => irRecurso(a)}
+                                className="rounded-lg px-2.5 py-1 text-xs font-medium hover:bg-gray-100"
+                                style={{ color: "var(--color-primario)" }}
+                                data-testid={`btn-ver-recurso-${a.id}`}
+                              >
+                                {link.label}
+                              </button>
+                            );
+                          })()}
                           <button
                             type="button"
                             onClick={() => void marcarLeida(a.id)}

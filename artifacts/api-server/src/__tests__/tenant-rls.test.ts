@@ -221,30 +221,75 @@ after(async () => {
   await cleanupByEmail(EMAIL_B);
 });
 
-const TENANT_TABLES_TO_CHECK = [
+// Tablas con seed explícito en seedTenant() — las usamos para verificar
+// además de aislamiento que B SÍ ve sus propias filas.
+const TENANT_TABLES_SEEDED = [
   "tenant_inventario",
   "tenant_alertas",
   "tenant_finanzas_movimientos",
   "tenant_pagos_qr",
 ] as const;
 
-test("RLS: tenant B JWT NO ve filas del tenant A en ninguna tabla tenant_*", async (t) => {
+// Las 17 tablas `tenant_*` que llevan RLS. Para cada una pedimos un SELECT
+// con filtro explícito `tenant_id=eq.<A.id>` desde el JWT de B y esperamos
+// 0 filas — es la única forma de verificar que la policy bloquea aún si
+// la tabla está vacía (sin policy, PostgREST devolvería 401/403).
+const TENANT_TABLES_ALL = [
+  "tenant_branding",
+  "tenant_rubro_overrides",
+  "tenant_inventario",
+  "tenant_servicios",
+  "tenant_clientes_finales",
+  "tenant_empleados",
+  "tenant_citas_servicios",
+  "tenant_finanzas_movimientos",
+  "tenant_alertas",
+  "tenant_chat_cecilia_messages",
+  "tenant_whatsapp_sessions",
+  "tenant_whatsapp_messages",
+  "tenant_kpi_snapshots",
+  "tenant_onboarding_state",
+  "tenant_faq_overrides",
+  "tenant_pagos_qr",
+  "tenant_backups",
+] as const;
+
+test("RLS: tenant B JWT NO ve filas del tenant A en NINGUNA de las 17 tablas tenant_*", async (t) => {
   if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
   assert.ok(A && B, "tenants seed");
   const tokenB = signJwt(B!.id);
 
-  for (const table of TENANT_TABLES_TO_CHECK) {
+  for (const table of TENANT_TABLES_ALL) {
+    // Consulta con filtro explícito por tenant_id=A — si RLS está bien,
+    // PostgREST debe responder 200 con [] aunque haya filas en la tabla.
+    const res = await restGet({
+      table,
+      jwt: tokenB,
+      query: `select=tenant_id&tenant_id=eq.${A!.id}&limit=50`,
+    });
+    assert.ok(
+      res.status === 200,
+      `${table}: SELECT con filtro tenant_id=A debe devolver 200 (status=${res.status}) — policy faltante o mal aplicada`,
+    );
+    assert.equal(
+      res.rows.length,
+      0,
+      `${table}: tenant B vio ${res.rows.length} filas del tenant A (RLS roto)`,
+    );
+  }
+});
+
+test("RLS: tenant B SÍ ve sus propias filas en las tablas seedadas", async (t) => {
+  if (!isSupabaseConfigured()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+
+  for (const table of TENANT_TABLES_SEEDED) {
     const res = await restGet({ table, jwt: tokenB });
     assert.equal(
       res.status,
       200,
       `${table}: tenant_owner debe poder hacer SELECT (status=${res.status})`,
-    );
-    const fromA = res.rows.filter((r) => r.tenant_id === A!.id);
-    assert.equal(
-      fromA.length,
-      0,
-      `${table}: tenant B vio ${fromA.length} filas del tenant A (RLS roto)`,
     );
     const fromB = res.rows.filter((r) => r.tenant_id === B!.id);
     assert.ok(

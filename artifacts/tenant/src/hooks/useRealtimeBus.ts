@@ -14,6 +14,7 @@ import {
   getSupabaseRealtime,
   setSupabaseAuth,
   disposeSupabase,
+  emitRealtimeStatus,
   type RealtimeChannel,
 } from "@/lib/supabase";
 
@@ -44,7 +45,9 @@ const lastDispatchAt = new Map<TableName, number>();
 const pendingTimer = new Map<TableName, number>();
 
 const DEBOUNCE_MS = 200;
-const MAX_PER_SEC = 5;
+// Max 1 invalidación / segundo / canal. Si llegan más eventos seguidos
+// se coalescen al siguiente tick.
+const MAX_PER_SEC = 1;
 
 function dispatch(table: TableName): void {
   const now = Date.now();
@@ -77,6 +80,7 @@ function bootstrap(args: {
   url: string;
   anonKey: string;
   jwt: string;
+  onChannelError?: () => void;
 }): void {
   if (bootstrapped && bootstrappedTenantId === args.tenantId) {
     setSupabaseAuth(args.jwt);
@@ -89,9 +93,25 @@ function bootstrap(args: {
   }
   const client = getSupabaseRealtime({ url: args.url, anonKey: args.anonKey });
   setSupabaseAuth(args.jwt);
-  channels = TABLES.map((table) =>
-    client
-      .channel(`tenant:${args.tenantId}:${table}`)
+  // Estado por canal: tracker para emitir transición ok/reconnecting/down según
+  // el peor estado vigente. Evita que el banner quede atascado tras reconexión.
+  const chanState = new Map<string, "ok" | "err" | "closed">();
+  const recompute = () => {
+    const states = Array.from(chanState.values());
+    if (states.length === 0) return;
+    if (states.some((s) => s === "err")) {
+      emitRealtimeStatus("reconnecting");
+    } else if (states.every((s) => s === "closed")) {
+      emitRealtimeStatus("down");
+    } else if (states.every((s) => s === "ok")) {
+      emitRealtimeStatus("ok");
+    }
+  };
+  channels = TABLES.map((table) => {
+    const channelKey = `tenant:${args.tenantId}:${table}`;
+    chanState.set(channelKey, "closed");
+    return client
+      .channel(channelKey)
       .on(
         "postgres_changes" as unknown as "system",
         {
@@ -102,8 +122,21 @@ function bootstrap(args: {
         } as never,
         () => dispatch(table),
       )
-      .subscribe(),
-  );
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          chanState.set(channelKey, "ok");
+          recompute();
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          // Causa típica: JWT expirado o reconexión sin auth fresco.
+          chanState.set(channelKey, "err");
+          recompute();
+          args.onChannelError?.();
+        } else if (status === "CLOSED") {
+          chanState.set(channelKey, "closed");
+          recompute();
+        }
+      });
+  });
   bootstrapped = true;
   bootstrappedTenantId = args.tenantId;
 }
@@ -118,8 +151,9 @@ export function useTenantRealtimeBootstrap(args: {
   anonKey: string | null;
   tenantId: string | null;
   getJwt: () => string | null;
+  onTokenExpired?: () => void;
 }): void {
-  const { url, anonKey, tenantId, getJwt } = args;
+  const { url, anonKey, tenantId, getJwt, onTokenExpired } = args;
   useEffect(() => {
     if (!url || !anonKey || !tenantId) return;
     let cancelled = false;
@@ -134,7 +168,13 @@ export function useTenantRealtimeBootstrap(args: {
         }
         return;
       }
-      bootstrap({ tenantId, url, anonKey, jwt });
+      bootstrap({
+        tenantId,
+        url,
+        anonKey,
+        jwt,
+        onChannelError: onTokenExpired,
+      });
     };
     tryBoot();
     return () => {
@@ -158,7 +198,7 @@ export function useTenantRealtimeBootstrap(args: {
         pendingTimer.delete(t);
       }
     };
-  }, [url, anonKey, tenantId, getJwt]);
+  }, [url, anonKey, tenantId, getJwt, onTokenExpired]);
 }
 
 /**

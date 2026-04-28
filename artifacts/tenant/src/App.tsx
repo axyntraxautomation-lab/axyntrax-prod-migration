@@ -13,6 +13,7 @@ import { Finanzas } from "@/pages/Finanzas";
 import { Pagos } from "@/pages/Pagos";
 import { LoadingScreen } from "@/pages/LoadingScreen";
 import { ErrorScreen } from "@/pages/ErrorScreen";
+import { RealtimeStatusBanner } from "@/components/RealtimeStatusBanner";
 
 function SlugGate({ children }: { children: React.ReactNode }) {
   const params = useParams<{ slug: string }>();
@@ -104,6 +105,7 @@ function App() {
   return (
     <TenantProvider>
       <BrandingStyles />
+      <RealtimeStatusBanner />
       <WouterRouter base={baseHref}>
         <GatedRoutes />
       </WouterRouter>

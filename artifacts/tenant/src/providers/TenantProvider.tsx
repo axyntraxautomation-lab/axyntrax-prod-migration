@@ -15,6 +15,7 @@ import {
 } from "@/lib/api";
 import { redirectToPortalLogin } from "@/lib/portal-redirect";
 import { useTenantRealtimeBootstrap } from "@/hooks/useRealtimeBus";
+import { setSupabaseAuth } from "@/lib/supabase";
 
 type TenantState =
   | { status: "loading" }
@@ -39,6 +40,8 @@ export function TenantProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<TenantState>({ status: "loading" });
   const jwtRef = useRef<{ token: string; expiresAt: number } | null>(null);
   const refreshTimerRef = useRef<number | null>(null);
+  const rotateInFlightRef = useRef<Promise<void> | null>(null);
+  const lastRotateAtRef = useRef<number>(0);
 
   const scheduleJwtRefresh = useCallback(() => {
     if (refreshTimerRef.current !== null) {
@@ -55,20 +58,42 @@ export function TenantProvider({ children }: { children: ReactNode }) {
     }, wait);
   }, []);
 
-  const rotateJwt = useCallback(async () => {
-    try {
-      const data = await apiGet<TenantJwtResponse>("/api/tenant/jwt");
-      jwtRef.current = {
-        token: data.jwt,
-        expiresAt: Date.now() + data.expires_in * 1000,
-      };
-      scheduleJwtRefresh();
-    } catch (err) {
-      // Si el JWT no se puede rotar (p.ej. tenant aún no creado) no es fatal:
-      // el frontend usará los endpoints proxied del api-server.
-      jwtRef.current = null;
-    }
+  const rotateJwt = useCallback(async (): Promise<void> => {
+    // Dedupe: si ya hay rotación en vuelo, devolvemos la misma promesa.
+    if (rotateInFlightRef.current) return rotateInFlightRef.current;
+    const p = (async () => {
+      try {
+        const data = await apiGet<TenantJwtResponse>("/api/tenant/jwt");
+        jwtRef.current = {
+          token: data.jwt,
+          expiresAt: Date.now() + data.expires_in * 1000,
+        };
+        // Empuja el token nuevo a Supabase Realtime si está activo.
+        setSupabaseAuth(data.jwt);
+        scheduleJwtRefresh();
+      } catch {
+        // Si el JWT no se puede rotar (p.ej. tenant aún no creado) no es fatal:
+        // el frontend usará los endpoints proxied del api-server.
+        jwtRef.current = null;
+      } finally {
+        lastRotateAtRef.current = Date.now();
+        rotateInFlightRef.current = null;
+      }
+    })();
+    rotateInFlightRef.current = p;
+    return p;
   }, [scheduleJwtRefresh]);
+
+  // Llamado por el bus Realtime cuando un canal reporta CHANNEL_ERROR /
+  // TIMED_OUT (típicamente JWT expirado o reconexión sin auth fresco).
+  // Rota el JWT y deja que `setSupabaseAuth` lo aplique automáticamente.
+  // Throttle: si recién rotamos hace <5s o hay rotación en vuelo, no relanza
+  // (los 8 canales del bus pueden disparar el callback en simultáneo).
+  const onTokenExpired = useCallback(() => {
+    if (rotateInFlightRef.current) return;
+    if (Date.now() - lastRotateAtRef.current < 5000) return;
+    void rotateJwt();
+  }, [rotateJwt]);
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
@@ -126,6 +151,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
     anonKey: realtime?.supabaseAnonKey ?? null,
     tenantId,
     getJwt,
+    onTokenExpired,
   });
 
   return <TenantContext.Provider value={value}>{children}</TenantContext.Provider>;

@@ -1265,6 +1265,30 @@ router.get(
   },
 );
 
+router.post(
+  "/tenant/alertas/marcar-todas-leidas",
+  writeLimiter,
+  requirePortalAuth,
+  requirePortalClient,
+  gateSupabase,
+  async (req, res): Promise<void> => {
+    const ctx = await requireTenantCtx(req, res);
+    if (!ctx) return;
+    const sdb = getSupabaseDb();
+    const rows = await sdb
+      .update(tenantAlertasTable)
+      .set({ leida: true, resueltaEn: new Date() })
+      .where(
+        and(
+          eq(tenantAlertasTable.tenantId, ctx.tenant.id),
+          eq(tenantAlertasTable.leida, false),
+        ),
+      )
+      .returning({ id: tenantAlertasTable.id });
+    res.json({ marcadas: rows.length });
+  },
+);
+
 router.patch(
   "/tenant/alertas/:id",
   writeLimiter,

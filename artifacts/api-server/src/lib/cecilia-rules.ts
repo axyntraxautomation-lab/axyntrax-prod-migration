@@ -157,7 +157,7 @@ async function rulCitaProxima(tenantId: string): Promise<number> {
     .select({
       id: tenantCitasServiciosTable.id,
       fechaInicio: tenantCitasServiciosTable.fechaInicio,
-      clienteNombre: tenantCitasServiciosTable.clienteNombre,
+      titulo: tenantCitasServiciosTable.titulo,
       estado: tenantCitasServiciosTable.estado,
     })
     .from(tenantCitasServiciosTable)
@@ -176,7 +176,7 @@ async function rulCitaProxima(tenantId: string): Promise<number> {
       tenantId,
       tipo: "cita_proxima",
       severidad: "warning",
-      titulo: `Cita en menos de 1 hora${c.clienteNombre ? `: ${c.clienteNombre}` : ""}`,
+      titulo: `Cita en menos de 1 hora${c.titulo ? `: ${c.titulo}` : ""}`,
       detalle: `La cita está programada para ${fecha}.`,
       payload: { cita_id: c.id, fecha_inicio: fecha },
       dedupeKey: { key: "cita_id", value: c.id },
@@ -228,7 +228,7 @@ async function rulCitaCompletadaSinPago(tenantId: string): Promise<number> {
   const candidatas = await sdb
     .select({
       id: tenantCitasServiciosTable.id,
-      clienteNombre: tenantCitasServiciosTable.clienteNombre,
+      titulo: tenantCitasServiciosTable.titulo,
       fechaInicio: tenantCitasServiciosTable.fechaInicio,
       updatedAt: tenantCitasServiciosTable.updatedAt,
     })
@@ -259,7 +259,7 @@ async function rulCitaCompletadaSinPago(tenantId: string): Promise<number> {
       tenantId,
       tipo: "cita_completada_sin_pago",
       severidad: "warning",
-      titulo: `Cita completada sin pago registrado${c.clienteNombre ? `: ${c.clienteNombre}` : ""}`,
+      titulo: `Cita completada sin pago registrado${c.titulo ? `: ${c.titulo}` : ""}`,
       detalle: `La cita se cerró pero no hay ingreso enlazado.`,
       payload: { cita_id: c.id },
       dedupeKey: { key: "cita_id", value: c.id },

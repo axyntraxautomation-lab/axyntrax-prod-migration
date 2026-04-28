@@ -13,6 +13,34 @@ import { createClient, type RealtimeChannel, type SupabaseClient } from "@supaba
 let cached: SupabaseClient | null = null;
 let cachedJwt: string | null = null;
 
+export type RealtimeStatus = "ok" | "reconnecting" | "down";
+type StatusListener = (s: RealtimeStatus) => void;
+const statusListeners = new Set<StatusListener>();
+let lastStatus: RealtimeStatus = "ok";
+
+export function emitRealtimeStatus(s: RealtimeStatus): void {
+  if (s === lastStatus) return;
+  lastStatus = s;
+  for (const l of statusListeners) {
+    try {
+      l(s);
+    } catch {
+      // ignore listener errors
+    }
+  }
+}
+
+export function getRealtimeStatus(): RealtimeStatus {
+  return lastStatus;
+}
+
+export function onRealtimeStatus(cb: StatusListener): () => void {
+  statusListeners.add(cb);
+  return () => {
+    statusListeners.delete(cb);
+  };
+}
+
 export function getSupabaseRealtime(args: {
   url: string;
   anonKey: string;

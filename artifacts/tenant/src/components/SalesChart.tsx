@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { apiGet, type FinanzaMov } from "@/lib/api";
+import { useRealtimeRefetch } from "@/hooks/useRealtimeBus";
 import {
   Chart,
   LineController,
@@ -26,8 +28,73 @@ const LABELS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
  * Gráfico de ventas semanal. Por ahora arranca vacío (zeros) — cuando se
  * conecten los movimientos finanzas se reemplaza el dataset.
  */
+function buildWeekBuckets(movs: FinanzaMov[]): { labels: string[]; data: number[] } {
+  // Lun..Dom de la semana actual basado en hoy.
+  const now = new Date();
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  // En JS getDay(): dom=0..sab=6. Queremos lunes como inicio.
+  const offset = (monday.getDay() + 6) % 7;
+  monday.setDate(monday.getDate() - offset);
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+  const buckets = days.map(() => 0);
+  for (const m of movs) {
+    if (m.tipo !== "ingreso") continue;
+    const dt = new Date(m.fecha);
+    const idx = days.findIndex(
+      (d) =>
+        dt.getFullYear() === d.getFullYear() &&
+        dt.getMonth() === d.getMonth() &&
+        dt.getDate() === d.getDate(),
+    );
+    if (idx >= 0) buckets[idx] += parseFloat(m.monto || "0") || 0;
+  }
+  return { labels: LABELS, data: buckets };
+}
+
 export function SalesChart() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const chartRef = useRef<Chart | null>(null);
+  const [series, setSeries] = useState<{ labels: string[]; data: number[] }>({
+    labels: LABELS,
+    data: [0, 0, 0, 0, 0, 0, 0],
+  });
+
+  const refetch = useCallback(async () => {
+    try {
+      const monday = new Date();
+      monday.setHours(0, 0, 0, 0);
+      const offset = (monday.getDay() + 6) % 7;
+      monday.setDate(monday.getDate() - offset);
+      const next = new Date(monday);
+      next.setDate(next.getDate() + 7);
+      const r = await apiGet<{ items: FinanzaMov[] }>(
+        `/api/tenant/finanzas?desde=${encodeURIComponent(monday.toISOString())}&hasta=${encodeURIComponent(next.toISOString())}&tipo=ingreso&limit=500`,
+      );
+      setSeries(buildWeekBuckets(r.items));
+    } catch {
+      // mantener serie previa
+    }
+  }, []);
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  useRealtimeRefetch(["tenant_finanzas_movimientos"], () => {
+    void refetch();
+  });
+
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.data.datasets[0]!.data = series.data;
+      chartRef.current.update("none");
+    }
+  }, [series]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,7 +114,7 @@ export function SalesChart() {
         datasets: [
           {
             label: "Ventas (S/)",
-            data: [0, 0, 0, 0, 0, 0, 0],
+            data: series.data,
             borderColor: primario,
             backgroundColor: gradient,
             pointBackgroundColor: secundario,
@@ -80,7 +147,12 @@ export function SalesChart() {
         },
       },
     });
-    return () => chart.destroy();
+    chartRef.current = chart;
+    return () => {
+      chart.destroy();
+      chartRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
