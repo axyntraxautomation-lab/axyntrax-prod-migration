@@ -166,8 +166,7 @@ export async function handleInbound(msg: InboundMessage): Promise<{ replied: boo
     rubro: ctx.rubro,
   });
   if (!resp.ok || !resp.reply) {
-    const fb =
-      "Te leemos. Pronto un asesor humano te escribe. Mientras tanto, escribe 'menu' para ver opciones.";
+    const fb = "Cecilia está atendiendo a varios clientes, dame un momento";
     await sendText(tenantId, fromNumber, fb);
     await persistMessage(tenantId, ctx.sessionId, "out", null, fromNumber, fb);
     return { replied: true, reply: fb };

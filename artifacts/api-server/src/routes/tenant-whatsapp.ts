@@ -109,16 +109,55 @@ interface FaqEntry {
   respuesta: string;
 }
 
-async function findFaqMatch(
+interface FaqCandidatesCacheEntry {
+  candidates: { entry: FaqEntry; tokens: Set<string> }[];
+  expiresAt: number;
+}
+
+// LRU + TTL cache de candidatos FAQ por tenant+rubro. Evita ir a Supabase a
+// leer overrides en cada mensaje WhatsApp y precomputa la tokenización de cada
+// pregunta. Tamaño acotado para no fugar memoria.
+const FAQ_CACHE_TTL_MS = 5 * 60_000;
+const FAQ_CACHE_MAX = 200;
+const faqCandidatesCache = new Map<string, FaqCandidatesCacheEntry>();
+
+function cacheGet(key: string): FaqCandidatesCacheEntry | null {
+  const hit = faqCandidatesCache.get(key);
+  if (!hit) return null;
+  if (Date.now() > hit.expiresAt) {
+    faqCandidatesCache.delete(key);
+    return null;
+  }
+  // Refresh recency (LRU): re-insert at the tail.
+  faqCandidatesCache.delete(key);
+  faqCandidatesCache.set(key, hit);
+  return hit;
+}
+
+function cacheSet(key: string, value: FaqCandidatesCacheEntry): void {
+  if (faqCandidatesCache.has(key)) faqCandidatesCache.delete(key);
+  faqCandidatesCache.set(key, value);
+  while (faqCandidatesCache.size > FAQ_CACHE_MAX) {
+    const oldest = faqCandidatesCache.keys().next().value;
+    if (!oldest) break;
+    faqCandidatesCache.delete(oldest);
+  }
+}
+
+/** Test-only: limpiar el cache (no exportado en runtime de producción). */
+export function _resetFaqCache(): void {
+  faqCandidatesCache.clear();
+}
+
+async function loadFaqCandidates(
   tenantId: string,
   rubro: RubroRegistry | null,
-  text: string,
-  threshold = 0.5,
-): Promise<{ respuesta: string; score: number; pregunta: string } | null> {
-  const userTokens = new Set(tokenize(text));
-  if (userTokens.size === 0) return null;
-  const candidates: FaqEntry[] = [];
-  // Base FAQs del rubro
+): Promise<{ entry: FaqEntry; tokens: Set<string> }[]> {
+  const cacheKey = `${tenantId}:${rubro?.rubroId ?? "_"}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached.candidates;
+
+  const out: { entry: FaqEntry; tokens: Set<string> }[] = [];
   if (rubro && Array.isArray(rubro.faqs)) {
     for (const f of rubro.faqs as unknown[]) {
       if (
@@ -127,13 +166,11 @@ async function findFaqMatch(
         typeof (f as FaqEntry).pregunta === "string" &&
         typeof (f as FaqEntry).respuesta === "string"
       ) {
-        candidates.push(f as FaqEntry);
+        const entry = f as FaqEntry;
+        out.push({ entry, tokens: new Set(tokenize(entry.pregunta)) });
       }
     }
   }
-  // Overrides del tenant (tienen prioridad: se evalúan también y ganan por
-  // score; un override con la misma pregunta tendrá igualdad de tokens y
-  // ganará en el desempate por orden inverso).
   try {
     const sdb = getSupabaseDb();
     const overrides = await sdb
@@ -146,18 +183,31 @@ async function findFaqMatch(
         ),
       );
     for (const ov of overrides) {
-      candidates.push({ pregunta: ov.pregunta, respuesta: ov.respuesta });
+      const entry: FaqEntry = { pregunta: ov.pregunta, respuesta: ov.respuesta };
+      out.push({ entry, tokens: new Set(tokenize(entry.pregunta)) });
     }
   } catch (err) {
     logger.warn({ err, tenantId }, "faq overrides load failed");
   }
 
+  cacheSet(cacheKey, { candidates: out, expiresAt: Date.now() + FAQ_CACHE_TTL_MS });
+  return out;
+}
+
+async function findFaqMatch(
+  tenantId: string,
+  rubro: RubroRegistry | null,
+  text: string,
+  threshold = 0.5,
+): Promise<{ respuesta: string; score: number; pregunta: string } | null> {
+  const userTokens = new Set(tokenize(text));
+  if (userTokens.size === 0) return null;
+  const candidates = await loadFaqCandidates(tenantId, rubro);
   let best: { respuesta: string; score: number; pregunta: string } | null = null;
   for (const c of candidates) {
-    const tokens = new Set(tokenize(c.pregunta));
-    const s = jaccard(userTokens, tokens);
+    const s = jaccard(userTokens, c.tokens);
     if (s >= threshold && (!best || s >= best.score)) {
-      best = { respuesta: c.respuesta, score: s, pregunta: c.pregunta };
+      best = { respuesta: c.entry.respuesta, score: s, pregunta: c.entry.pregunta };
     }
   }
   return best;
