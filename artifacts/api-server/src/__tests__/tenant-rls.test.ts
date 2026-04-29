@@ -447,6 +447,10 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
     },
   ];
 
+  // PostgREST traduce violación WITH CHECK de RLS a 401/403 (permission
+  // denied). Aceptamos cualquiera de los dos pero NO 2xx ni 409 ni 500
+  // — el contrato es "deny por permiso", no "deny por constraint".
+  const PERMISSION_DENIED = new Set([401, 403]);
   for (const fi of FORGED_INSERTS) {
     const status = await restMutate({
       table: fi.table,
@@ -455,8 +459,8 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
       body: fi.body,
     });
     assert.ok(
-      status >= 400,
-      `${fi.table}: INSERT con tenant_id ajeno debe fallar (status=${status})`,
+      PERMISSION_DENIED.has(status),
+      `${fi.table}: INSERT con tenant_id ajeno debe devolver 401/403 (status=${status})`,
     );
   }
 
@@ -467,7 +471,13 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
     .where(eq(tenantInventarioTable.sku, `FORGED-${TS}`));
   assert.equal(forgedRows.length, 0, "no debe existir la fila forjada");
 
-  // UPDATE filtrado por tenant_id=A: USING evalúa false, 0 filas afectadas.
+  // UPDATE/DELETE filtrados por tenant_id=A: el predicado USING de la
+  // policy evalúa false para esas filas desde el punto de vista del
+  // tenant B, así que PostgREST devuelve 200/204 con 0 filas tocadas
+  // (NO un 401/403, porque el WHERE simplemente no matchea ninguna fila
+  // visible). El test verifica el comportamiento por efecto: la cantidad
+  // y el conteo de A no cambian post-mutación.
+
   // Snapshot de cantidad antes.
   const inventarioA = await sdb
     .select({

@@ -5,7 +5,7 @@
  * temporales por tenant activo:
  *
  *  1. cita_proxima            (warning) Cita en menos de 1h sin alerta abierta.
- *  2. pago_pendiente_24h      (warning) Pago QR pendiente con >24h.
+ *  2. pago_pendiente           (warning) Pago QR pendiente con >24h.
  *  3. cita_completada_sin_pago (warning) Cita completada hace >2h sin movimiento ingreso enlazado.
  *  4. dia_sin_ventas          (info)    Tenant onboarding completado, 0 ingresos en 24h.
  *
@@ -209,7 +209,7 @@ async function rulPagoPendiente24h(tenantId: string): Promise<number> {
   for (const p of pagos) {
     const ok = await insertIfNotOpen({
       tenantId,
-      tipo: "pago_pendiente_24h",
+      tipo: "pago_pendiente",
       severidad: "warning",
       titulo: `Pago QR pendiente hace más de 24h`,
       detalle: `Monto ${p.moneda} ${p.monto} sigue sin confirmar.`,

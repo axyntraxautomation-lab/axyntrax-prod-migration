@@ -3,7 +3,8 @@
   "version": "3.0.0",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "check": "pnpm --filter @workspace/tenant run typecheck && pnpm --filter @workspace/api-server run test:rls"
   },
   "dependencies": {
     "@google/generative-ai": "^0.1.3",

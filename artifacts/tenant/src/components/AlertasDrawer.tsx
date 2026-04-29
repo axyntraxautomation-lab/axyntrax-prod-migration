@@ -19,7 +19,7 @@ function recursoLink(
     case "cita_proxima":
     case "cita_completada_sin_pago":
       return { href: `/t/${slug}/agenda`, label: "Ver agenda" };
-    case "pago_pendiente_24h":
+    case "pago_pendiente":
       return { href: `/t/${slug}/pagos`, label: "Ver pago" };
     case "dia_sin_ventas":
       return { href: `/t/${slug}/finanzas`, label: "Ver finanzas" };
@@ -55,7 +55,7 @@ const SEVERIDAD_STYLES: Record<string, { dot: string; chip: string; label: strin
 const TIPO_LABEL: Record<string, string> = {
   stock_bajo: "Stock bajo",
   cita_proxima: "Cita próxima",
-  pago_pendiente_24h: "Pago pendiente",
+  pago_pendiente: "Pago pendiente",
   cita_completada_sin_pago: "Cita sin pago",
   dia_sin_ventas: "Sin ventas hoy",
 };
