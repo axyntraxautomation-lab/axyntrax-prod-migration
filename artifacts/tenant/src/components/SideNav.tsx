@@ -44,6 +44,11 @@ export function SideNav() {
       label: "Finanzas",
       testid: "nav-finanzas",
     },
+    {
+      href: (s) => `/t/${s}/whatsapp`,
+      label: "WhatsApp",
+      testid: "nav-whatsapp",
+    },
   ];
 
   return (
@@ -52,7 +57,7 @@ export function SideNav() {
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm"
         data-testid="side-nav"
       >
-        <ul className="mx-auto grid max-w-3xl grid-cols-5">
+        <ul className="mx-auto grid max-w-3xl grid-cols-6">
           {items.map((it) => {
             const href = it.href(slug);
             const active = loc === href || loc.startsWith(`${href}/`);

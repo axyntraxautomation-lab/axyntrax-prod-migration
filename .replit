@@ -23,6 +23,10 @@ localPort = 8082
 externalPort = 3002
 
 [[ports]]
+localPort = 8099
+externalPort = 8099
+
+[[ports]]
 localPort = 23183
 externalPort = 3000
 
@@ -43,6 +47,27 @@ timeoutMs = 180000
 
 [workflows]
 runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/wa-worker: worker"
+
+[[workflows.workflow]]
+name = "artifacts/wa-worker: worker"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=8099 WA_WORKER_MOCK=true pnpm --filter @workspace/wa-worker run dev"
+waitForPort = 8099
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [deployment]
 deploymentTarget = "autoscale"

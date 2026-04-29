@@ -11,6 +11,7 @@ import { Clientes } from "@/pages/Clientes";
 import { Agenda } from "@/pages/Agenda";
 import { Finanzas } from "@/pages/Finanzas";
 import { Pagos } from "@/pages/Pagos";
+import { Whatsapp } from "@/pages/Whatsapp";
 import { LoadingScreen } from "@/pages/LoadingScreen";
 import { ErrorScreen } from "@/pages/ErrorScreen";
 import { RealtimeStatusBanner } from "@/components/RealtimeStatusBanner";
@@ -70,6 +71,9 @@ function GatedRoutes() {
       </Route>
       <Route path="/t/:slug/pagos">
         <SlugGate><Pagos /></SlugGate>
+      </Route>
+      <Route path="/t/:slug/whatsapp">
+        <SlugGate><Whatsapp /></SlugGate>
       </Route>
       <Route path="/t/:slug/faq/editar">
         <SlugGate><FaqEditor /></SlugGate>
