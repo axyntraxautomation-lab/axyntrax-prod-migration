@@ -471,6 +471,24 @@ test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", asy
     .where(eq(tenantInventarioTable.sku, `FORGED-${TS}`));
   assert.equal(forgedRows.length, 0, "no debe existir la fila forjada");
 
+  // Cobertura defensiva en TODAS las tablas tenant_*: un INSERT mínimo
+  // con tenant_id ajeno debe ser bloqueado por la policy WITH CHECK
+  // ANTES de que Postgres evalúe NOT NULL constraints. Si la respuesta
+  // es 400 (NOT NULL violation), significa que la policy NO se aplicó,
+  // lo cual sería un fallo crítico. Esperamos siempre 401/403.
+  for (const table of TENANT_TABLES_ALL) {
+    const status = await restMutate({
+      table,
+      jwt: tokenB,
+      method: "POST",
+      body: { tenant_id: A!.id },
+    });
+    assert.ok(
+      PERMISSION_DENIED.has(status),
+      `${table}: INSERT mínimo con tenant_id ajeno debe devolver 401/403 (status=${status}); cualquier otro status indica que la policy NO bloqueó antes de evaluar constraints`,
+    );
+  }
+
   // UPDATE/DELETE filtrados por tenant_id=A: el predicado USING de la
   // policy evalúa false para esas filas desde el punto de vista del
   // tenant B, así que PostgREST devuelve 200/204 con 0 filas tocadas
