@@ -127,7 +127,12 @@ export async function handleInbound(msg: InboundMessage): Promise<{ replied: boo
   }
 
   // 2. Flujo por rubro
-  const flujo = matchFlujo(ctx.rubro, text, ctx.flujoState);
+  const flujo = await matchFlujo(
+    { tenantId, fromNumber },
+    ctx.rubro,
+    text,
+    ctx.flujoState,
+  );
   if (flujo.reply) {
     const out = filterCeciliaOutput(flujo.reply);
     await sendText(tenantId, fromNumber, out);

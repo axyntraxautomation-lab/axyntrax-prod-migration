@@ -4,8 +4,11 @@
  *
  * El router consulta `matchFlujo` con el rubro y el último mensaje. Si el
  * flujo devuelve un `reply`, ese se envía al cliente sin pasar por Cecilia.
- * Si el flujo termina (`done: true`), se borra el estado.
+ * Cuando el flujo termina (`done: true`) los handlers crean la cita /
+ * pedido / pago real en la DB del tenant antes de devolver la confirmación.
  */
+import { getSupabase } from "./supabase";
+import { logger } from "./logger";
 
 export interface FlujoState {
   rubro: string;
@@ -20,37 +23,139 @@ export interface FlujoTurnResult {
   done: boolean;
 }
 
-type Handler = (state: FlujoState, text: string) => FlujoTurnResult;
+interface FlujoCtx {
+  tenantId: string;
+  fromNumber: string;
+}
+
+type Handler = (
+  ctx: FlujoCtx,
+  state: FlujoState,
+  text: string,
+) => Promise<FlujoTurnResult>;
 
 const handlers: Record<string, Handler> = {
   "car wash": carWashHandler,
-  "carwash": carWashHandler,
-  "restaurante": restauranteHandler,
-  "salon": salonHandler,
+  carwash: carWashHandler,
+  car_wash: carWashHandler,
+  restaurante: restauranteHandler,
+  salon: salonHandler,
   "salón": salonHandler,
-  "taller": tallerHandler,
+  taller: tallerHandler,
 };
 
 export function newFlujoState(rubro: string): FlujoState {
   return { rubro, paso: "inicio", data: {}, startedAt: Date.now() };
 }
 
-export function matchFlujo(
+export async function matchFlujo(
+  ctx: FlujoCtx,
   rubro: string | null | undefined,
   text: string,
   current: FlujoState | null,
-): FlujoTurnResult {
+): Promise<FlujoTurnResult> {
   const norm = (rubro ?? "").trim().toLowerCase();
   const handler = handlers[norm];
   if (!handler) {
     return { reply: null, next: null, done: false };
   }
   const state = current ?? newFlujoState(norm);
-  return handler(state, text.trim());
+  return handler(ctx, state, text.trim());
+}
+
+// ---------- helpers ----------
+
+/**
+ * Asegura un cliente final para `fromNumber`. Si no existe, crea uno mínimo
+ * (sin nombre, sólo número). Devuelve el id o null si la inserción falla.
+ */
+async function ensureClienteFinal(
+  tenantId: string,
+  fromNumber: string,
+): Promise<string | null> {
+  try {
+    const supabase = getSupabase();
+    // Intento de búsqueda por número. La columna `telefono` está cifrada en
+    // reposo; aquí filtramos por `metadata.whatsappFrom` que el wa-worker
+    // popula en cada cliente nuevo.
+    const { data: existing } = await supabase
+      .from("tenant_clientes_finales")
+      .select("id")
+      .eq("tenant_id", tenantId)
+      .filter("rubro_data->>whatsappFrom", "eq", fromNumber)
+      .limit(1);
+    const found = (existing ?? [])[0] as { id?: string } | undefined;
+    if (found?.id) return found.id;
+
+    const { data: inserted, error } = await supabase
+      .from("tenant_clientes_finales")
+      .insert({
+        tenant_id: tenantId,
+        nombre: `WhatsApp +${fromNumber}`,
+        rubro_data: { whatsappFrom: fromNumber, source: "wa-worker" },
+      })
+      .select("id")
+      .single();
+    if (error) {
+      logger.warn({ error, tenantId }, "ensureClienteFinal insert failed");
+      return null;
+    }
+    return (inserted as { id?: string } | null)?.id ?? null;
+  } catch (err) {
+    logger.warn({ err, tenantId }, "ensureClienteFinal threw");
+    return null;
+  }
+}
+
+/**
+ * Crea una `tenant_citas_servicios` minima a partir del flujo. La fecha se
+ * toma como "hoy + 1h" si no se pudo parsear; el operador del negocio luego
+ * confirma. Devuelve el id de la cita o null si la inserción falla.
+ */
+async function createCita(
+  tenantId: string,
+  fromNumber: string,
+  titulo: string,
+  metadata: Record<string, unknown>,
+): Promise<string | null> {
+  try {
+    const supabase = getSupabase();
+    const clienteId = await ensureClienteFinal(tenantId, fromNumber);
+    const fecha = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const { data, error } = await supabase
+      .from("tenant_citas_servicios")
+      .insert({
+        tenant_id: tenantId,
+        cliente_final_id: clienteId,
+        titulo,
+        fecha_inicio: fecha,
+        estado: "pendiente",
+        metadata: { ...metadata, source: "wa-worker", whatsappFrom: fromNumber },
+      })
+      .select("id")
+      .single();
+    if (error) {
+      logger.warn({ error, tenantId, fromNumber }, "createCita insert failed");
+      return null;
+    }
+    return (data as { id?: string } | null)?.id ?? null;
+  } catch (err) {
+    logger.warn({ err, tenantId, fromNumber }, "createCita threw");
+    return null;
+  }
+}
+
+function shortCode(id: string | null): string {
+  if (!id) return "";
+  return id.replace(/-/g, "").slice(0, 6).toUpperCase();
 }
 
 // ---------- car wash ----------
-function carWashHandler(state: FlujoState, text: string): FlujoTurnResult {
+async function carWashHandler(
+  ctx: FlujoCtx,
+  state: FlujoState,
+  text: string,
+): Promise<FlujoTurnResult> {
   const lower = text.toLowerCase();
   switch (state.paso) {
     case "inicio":
@@ -97,25 +202,40 @@ function carWashHandler(state: FlujoState, text: string): FlujoTurnResult {
         done: false,
       };
     }
-    case "hora":
+    case "hora": {
+      const titulo = `Lavado ${state.data["servicio"] ?? ""} - ${state.data["vehiculo"] ?? ""}`.trim();
+      const citaId = await createCita(ctx.tenantId, ctx.fromNumber, titulo, {
+        rubro: "car_wash",
+        vehiculo: state.data["vehiculo"],
+        servicio: state.data["servicio"],
+        horaTexto: text,
+      });
+      const codigo = shortCode(citaId);
       return {
-        reply: `Listo. Reservo ${state.data["servicio"]} para ${state.data["vehiculo"]} a ${text}. Te confirmamos en breve.`,
+        reply:
+          `Listo. Reservé tu lavado ${state.data["servicio"]} para ${state.data["vehiculo"]} a ${text}.` +
+          (codigo ? ` Tu código de reserva es ${codigo}.` : "") +
+          " Te confirmamos en breve.",
         next: null,
         done: true,
       };
+    }
   }
   return { reply: null, next: null, done: false };
 }
 
 // ---------- restaurante ----------
-function restauranteHandler(state: FlujoState, text: string): FlujoTurnResult {
+async function restauranteHandler(
+  ctx: FlujoCtx,
+  state: FlujoState,
+  text: string,
+): Promise<FlujoTurnResult> {
   const lower = text.toLowerCase();
   switch (state.paso) {
     case "inicio":
       if (/reserv|mesa|pedido|delivery/.test(lower)) {
         return {
-          reply:
-            "Hola, soy Cecilia. ¿Quieres reservar mesa o pedir delivery?",
+          reply: "Hola, soy Cecilia. ¿Quieres reservar mesa o pedir delivery?",
           next: { ...state, paso: "tipo" },
           done: false,
         };
@@ -138,24 +258,50 @@ function restauranteHandler(state: FlujoState, text: string): FlujoTurnResult {
       }
       return { reply: "Dime mesa o delivery.", next: state, done: false };
     }
-    case "mesa":
+    case "mesa": {
+      const citaId = await createCita(
+        ctx.tenantId,
+        ctx.fromNumber,
+        `Reserva mesa - ${text}`,
+        { rubro: "restaurante", tipo: "mesa", detalle: text },
+      );
+      const codigo = shortCode(citaId);
       return {
-        reply: `Anotado. Reserva: ${text}. Te confirmamos en breve.`,
+        reply:
+          `Anotado. Reserva: ${text}.` +
+          (codigo ? ` Código ${codigo}.` : "") +
+          " Te confirmamos en breve.",
         next: null,
         done: true,
       };
-    case "delivery":
+    }
+    case "delivery": {
+      const citaId = await createCita(
+        ctx.tenantId,
+        ctx.fromNumber,
+        `Pedido delivery`,
+        { rubro: "restaurante", tipo: "delivery", detalle: text },
+      );
+      const codigo = shortCode(citaId);
       return {
-        reply: `Pedido tomado: ${text}. Te confirmamos costo y tiempo.`,
+        reply:
+          `Pedido tomado: ${text}.` +
+          (codigo ? ` Código ${codigo}.` : "") +
+          " Te confirmamos costo y tiempo.",
         next: null,
         done: true,
       };
+    }
   }
   return { reply: null, next: null, done: false };
 }
 
 // ---------- salón de belleza ----------
-function salonHandler(state: FlujoState, text: string): FlujoTurnResult {
+async function salonHandler(
+  ctx: FlujoCtx,
+  state: FlujoState,
+  text: string,
+): Promise<FlujoTurnResult> {
   const lower = text.toLowerCase();
   switch (state.paso) {
     case "inicio":
@@ -185,18 +331,33 @@ function salonHandler(state: FlujoState, text: string): FlujoTurnResult {
         done: false,
       };
     }
-    case "hora":
+    case "hora": {
+      const titulo = `Cita ${state.data["servicio"] ?? ""}`.trim();
+      const citaId = await createCita(ctx.tenantId, ctx.fromNumber, titulo, {
+        rubro: "salon",
+        servicio: state.data["servicio"],
+        horaTexto: text,
+      });
+      const codigo = shortCode(citaId);
       return {
-        reply: `Anotado: ${state.data["servicio"]} para ${text}. Te confirmamos.`,
+        reply:
+          `Anotado: ${state.data["servicio"]} para ${text}.` +
+          (codigo ? ` Código ${codigo}.` : "") +
+          " Te confirmamos.",
         next: null,
         done: true,
       };
+    }
   }
   return { reply: null, next: null, done: false };
 }
 
 // ---------- taller mecánico ----------
-function tallerHandler(state: FlujoState, text: string): FlujoTurnResult {
+async function tallerHandler(
+  ctx: FlujoCtx,
+  state: FlujoState,
+  text: string,
+): Promise<FlujoTurnResult> {
   const lower = text.toLowerCase();
   switch (state.paso) {
     case "inicio":
@@ -211,7 +372,8 @@ function tallerHandler(state: FlujoState, text: string): FlujoTurnResult {
       return { reply: null, next: null, done: false };
     case "vehiculo":
       return {
-        reply: "Bien. ¿Qué necesitas? (revisión, cambio de aceite, frenos, otro)",
+        reply:
+          "Bien. ¿Qué necesitas? (revisión, cambio de aceite, frenos, otro)",
         next: { ...state, paso: "servicio", data: { vehiculo: text } },
         done: false,
       };
@@ -221,12 +383,24 @@ function tallerHandler(state: FlujoState, text: string): FlujoTurnResult {
         next: { ...state, paso: "hora", data: { ...state.data, servicio: text } },
         done: false,
       };
-    case "hora":
+    case "hora": {
+      const titulo = `Taller: ${state.data["servicio"] ?? ""} - ${state.data["vehiculo"] ?? ""}`.trim();
+      const citaId = await createCita(ctx.tenantId, ctx.fromNumber, titulo, {
+        rubro: "taller",
+        vehiculo: state.data["vehiculo"],
+        servicio: state.data["servicio"],
+        horaTexto: text,
+      });
+      const codigo = shortCode(citaId);
       return {
-        reply: `Anotado: ${state.data["servicio"]} para ${state.data["vehiculo"]} el ${text}. Te confirmamos.`,
+        reply:
+          `Anotado: ${state.data["servicio"]} para ${state.data["vehiculo"]} el ${text}.` +
+          (codigo ? ` Código ${codigo}.` : "") +
+          " Te confirmamos.",
         next: null,
         done: true,
       };
+    }
   }
   return { reply: null, next: null, done: false };
 }

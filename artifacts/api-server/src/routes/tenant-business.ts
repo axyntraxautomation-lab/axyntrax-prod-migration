@@ -26,8 +26,67 @@ import { db, clientsTable } from "@workspace/db";
 import { requirePortalAuth, requirePortalClient } from "../lib/auth";
 import { isSupabaseConfigured } from "../lib/supabase-admin";
 import { encryptField, decryptField, searchHash, normalizePhone } from "../lib/crypto";
+import { sendOutbound } from "../lib/wa-worker-client";
+import { logger as appLogger } from "../lib/logger";
 
 const router: IRouter = Router();
+
+/**
+ * Resuelve un número de WhatsApp para el cliente final asociado a la cita.
+ * Prioridad: metadata.whatsappFrom (cliente nacido en wa-worker) > telefono
+ * descifrado. Devuelve sólo dígitos. Null si no hay número usable.
+ */
+async function resolveClienteWhatsapp(
+  clienteFinalId: string | null,
+  tenantId: string,
+): Promise<string | null> {
+  if (!clienteFinalId) return null;
+  try {
+    const sdb = getSupabaseDb();
+    const [c] = await sdb
+      .select()
+      .from(tenantClientesFinalesTable)
+      .where(
+        and(
+          eq(tenantClientesFinalesTable.id, clienteFinalId),
+          eq(tenantClientesFinalesTable.tenantId, tenantId),
+        ),
+      )
+      .limit(1);
+    if (!c) return null;
+    const meta = (c.rubroData ?? {}) as Record<string, unknown>;
+    const fromMeta =
+      typeof meta["whatsappFrom"] === "string" ? (meta["whatsappFrom"] as string) : null;
+    if (fromMeta) return fromMeta.replace(/\D+/g, "") || null;
+    if (c.telefono) {
+      try {
+        const plain = await decryptField(c.telefono);
+        if (plain) return plain.replace(/\D+/g, "") || null;
+      } catch {
+        // ignore - cipher unreadable
+      }
+    }
+    return null;
+  } catch (err) {
+    appLogger.warn({ err, clienteFinalId, tenantId }, "resolveClienteWhatsapp failed");
+    return null;
+  }
+}
+
+/** Envia mensaje al cliente vía wa-worker; non-throwing. */
+async function notifyCliente(
+  tenantId: string,
+  clienteFinalId: string | null,
+  text: string,
+): Promise<void> {
+  const to = await resolveClienteWhatsapp(clienteFinalId, tenantId);
+  if (!to) return;
+  try {
+    await sendOutbound({ tenantId, to, text });
+  } catch (err) {
+    appLogger.warn({ err, tenantId, to }, "auto outbound failed");
+  }
+}
 
 const writeLimiter = rateLimit({
   windowMs: 60_000,
@@ -920,6 +979,27 @@ router.patch(
       res.status(404).json({ error: "Cita no encontrada" });
       return;
     }
+    // Auto-outbound al cliente cuando la cita transiciona a completado /
+    // confirmado / cancelado. Non-blocking, errores se loguean.
+    if (d.estado === "completado") {
+      void notifyCliente(
+        ctx.tenant.id,
+        row.clienteFinalId,
+        `Tu servicio fue completado. Gracias por confiar en ${ctx.tenant.nombreEmpresa}.`,
+      );
+    } else if (d.estado === "confirmado") {
+      void notifyCliente(
+        ctx.tenant.id,
+        row.clienteFinalId,
+        `Tu reserva fue confirmada. Te esperamos en ${ctx.tenant.nombreEmpresa}.`,
+      );
+    } else if (d.estado === "cancelado") {
+      void notifyCliente(
+        ctx.tenant.id,
+        row.clienteFinalId,
+        `Tu reserva fue cancelada. Si fue por error, escríbenos para reagendar.`,
+      );
+    }
     res.json(row);
   },
 );
@@ -1649,7 +1729,7 @@ router.post(
       .returning();
 
     if (citaId) {
-      await sdb
+      const [citaRow] = await sdb
         .update(tenantCitasServiciosTable)
         .set({ estado: "completado" })
         .where(
@@ -1657,7 +1737,21 @@ router.post(
             eq(tenantCitasServiciosTable.id, citaId),
             eq(tenantCitasServiciosTable.tenantId, ctx.tenant.id),
           ),
+        )
+        .returning();
+      if (citaRow) {
+        void notifyCliente(
+          ctx.tenant.id,
+          citaRow.clienteFinalId,
+          `Recibimos tu pago. ¡Gracias! Tu servicio queda confirmado.`,
         );
+      }
+    } else if (updated.clienteFinalId) {
+      void notifyCliente(
+        ctx.tenant.id,
+        updated.clienteFinalId,
+        `Recibimos tu pago. ¡Gracias!`,
+      );
     }
 
     res.json({ pago: updated, movimiento });

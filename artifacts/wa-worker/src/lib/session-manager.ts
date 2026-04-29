@@ -172,7 +172,87 @@ async function startMockSession(entry: SessionEntry): Promise<SessionPublicState
     qrCode: dataUrl,
   });
   logger.info({ tenantId: entry.tenantId }, "mock QR issued");
+
+  // Wire a synthetic inbound dispatcher so _emitMockInbound delivers messages
+  // through the real router pipeline.
+  void import("./message-router").then((m) => {
+    _setMockInboundHandler(entry.tenantId, async (from, text) => {
+      await m.handleInbound({ tenantId: entry.tenantId, fromNumber: from, text });
+    });
+  });
+
   return getSessionState(entry.tenantId)!;
+}
+
+/**
+ * Inserta una alerta `whatsapp_listo` (severidad info) la primera vez que la
+ * sesión queda conectada. Dedupe contra `tipo='whatsapp_listo'` + `leida=false`.
+ */
+async function emitWhatsappListoAlert(
+  tenantId: string,
+  phone: string | null,
+): Promise<void> {
+  try {
+    const supabase = getSupabase();
+    const { data: existing } = await supabase
+      .from("tenant_alertas")
+      .select("id")
+      .eq("tenant_id", tenantId)
+      .eq("tipo", "whatsapp_listo")
+      .eq("leida", false)
+      .limit(1);
+    if (existing && existing.length > 0) return;
+    await supabase.from("tenant_alertas").insert({
+      tenant_id: tenantId,
+      tipo: "whatsapp_listo",
+      severidad: "info",
+      titulo: "WhatsApp del bot conectado",
+      detalle: phone
+        ? `Número vinculado: +${phone}. Cecilia ya recibe y responde.`
+        : "Cecilia ya recibe y responde mensajes.",
+      payload: { phone },
+    });
+  } catch (err) {
+    logger.warn({ err, tenantId }, "whatsapp_listo alert insert failed");
+  }
+}
+
+/**
+ * Boot-time rehydration: lee sesiones marcadas como `conectado` (o
+ * `qr_pendiente`) en la DB y las reanuda. Recupera credenciales cifradas
+ * desde Storage automáticamente vía startSession→restoreAuthState.
+ */
+export async function restoreActiveSessions(): Promise<number> {
+  let count = 0;
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("tenant_whatsapp_sessions")
+      .select("tenant_id, status")
+      .eq("provider", "baileys")
+      .in("status", ["conectado", "qr_pendiente"])
+      .limit(500);
+    if (error) {
+      logger.warn({ error }, "restoreActiveSessions select failed");
+      return 0;
+    }
+    for (const row of data ?? []) {
+      const tid = (row as { tenant_id?: string }).tenant_id;
+      if (!tid) continue;
+      try {
+        await startSession(tid);
+        count++;
+      } catch (err) {
+        logger.warn({ err, tenantId: tid }, "restoreActiveSessions session failed");
+      }
+    }
+    if (count > 0) {
+      logger.info({ count }, "restoreActiveSessions rehydrated sessions");
+    }
+  } catch (err) {
+    logger.warn({ err }, "restoreActiveSessions threw");
+  }
+  return count;
 }
 
 async function startRealSession(entry: SessionEntry): Promise<SessionPublicState> {
@@ -217,6 +297,12 @@ async function startRealSession(entry: SessionEntry): Promise<SessionPublicState
   entry.sock = sock;
   entry.saveCreds = saveCreds;
 
+  // Wire inbound message router via dynamic import to avoid circular dep with
+  // message-router (which imports sendText from this module).
+  void import("./message-router").then((m) => {
+    m.attachInboundListener(entry.tenantId, sock);
+  });
+
   sock.ev.on("creds.update", () => {
     saveCreds()
       .then(() => persistAuthState(entry.tenantId))
@@ -252,6 +338,7 @@ async function startRealSession(entry: SessionEntry): Promise<SessionPublicState
         phoneNumber: entry.phone,
       });
       void persistAuthState(entry.tenantId);
+      void emitWhatsappListoAlert(entry.tenantId, entry.phone);
     }
     if (u.connection === "close") {
       const code = u.lastDisconnect?.error?.output?.statusCode;

@@ -1,8 +1,8 @@
 import { logger } from "./logger";
+import { getInternalToken } from "./internal-token";
 
 const API_BASE =
   process.env["API_SERVER_INTERNAL_URL"] ?? "http://localhost:8080";
-const INTERNAL_TOKEN = process.env["WA_WORKER_INTERNAL_TOKEN"] ?? "";
 
 export interface CeciliaAskInput {
   tenantId: string;
@@ -22,12 +22,19 @@ export interface CeciliaAskResult {
  */
 export async function askCecilia(input: CeciliaAskInput): Promise<CeciliaAskResult> {
   const url = `${API_BASE}/api/internal/cecilia/whatsapp`;
+  let token: string;
+  try {
+    token = getInternalToken();
+  } catch (err) {
+    logger.warn({ err, tenantId: input.tenantId }, "cecilia bridge token missing");
+    return { ok: false, reply: null };
+  }
   try {
     const r = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-wa-worker-token": INTERNAL_TOKEN,
+        "x-wa-worker-token": token,
       },
       body: JSON.stringify({
         tenant_id: input.tenantId,

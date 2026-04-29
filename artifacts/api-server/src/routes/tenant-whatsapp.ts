@@ -11,6 +11,7 @@ import { ai as gemini } from "@workspace/integrations-gemini-ai";
 import {
   getSupabaseDb,
   rubrosRegistryTable,
+  tenantFaqOverridesTable,
   tenantsTable,
   tenantWhatsappSessionsTable,
   tenantWhatsappMessagesTable,
@@ -72,6 +73,94 @@ async function loadRubro(rubroId: string): Promise<RubroRegistry | null> {
     .where(eq(rubrosRegistryTable.rubroId, rubroId))
     .limit(1);
   return r ?? null;
+}
+
+// ---- FAQ fuzzy matching (Jaccard sobre tokens normalizados) ----
+
+const STOPWORDS = new Set([
+  "el","la","los","las","un","una","unos","unas","de","del","y","o","u","a","ante",
+  "con","sin","por","para","que","qué","cómo","como","cuándo","cuando","dónde",
+  "donde","es","son","ser","estoy","esta","está","están","mi","tu","su","sus","me",
+  "te","se","lo","le","les","en","al","por","sobre","entre","hay","no","sí","si",
+  "muy","más","menos","ya","aún","tan","ese","esa","este","esta","eso","esto",
+]);
+
+function tokenize(input: string): string[] {
+  return input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9áéíóúñü\s]/gi, " ")
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
+}
+
+function jaccard(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter++;
+  const union = a.size + b.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+
+interface FaqEntry {
+  pregunta: string;
+  respuesta: string;
+}
+
+async function findFaqMatch(
+  tenantId: string,
+  rubro: RubroRegistry | null,
+  text: string,
+  threshold = 0.5,
+): Promise<{ respuesta: string; score: number; pregunta: string } | null> {
+  const userTokens = new Set(tokenize(text));
+  if (userTokens.size === 0) return null;
+  const candidates: FaqEntry[] = [];
+  // Base FAQs del rubro
+  if (rubro && Array.isArray(rubro.faqs)) {
+    for (const f of rubro.faqs as unknown[]) {
+      if (
+        f &&
+        typeof f === "object" &&
+        typeof (f as FaqEntry).pregunta === "string" &&
+        typeof (f as FaqEntry).respuesta === "string"
+      ) {
+        candidates.push(f as FaqEntry);
+      }
+    }
+  }
+  // Overrides del tenant (tienen prioridad: se evalúan también y ganan por
+  // score; un override con la misma pregunta tendrá igualdad de tokens y
+  // ganará en el desempate por orden inverso).
+  try {
+    const sdb = getSupabaseDb();
+    const overrides = await sdb
+      .select()
+      .from(tenantFaqOverridesTable)
+      .where(
+        and(
+          eq(tenantFaqOverridesTable.tenantId, tenantId),
+          eq(tenantFaqOverridesTable.activo, true),
+        ),
+      );
+    for (const ov of overrides) {
+      candidates.push({ pregunta: ov.pregunta, respuesta: ov.respuesta });
+    }
+  } catch (err) {
+    logger.warn({ err, tenantId }, "faq overrides load failed");
+  }
+
+  let best: { respuesta: string; score: number; pregunta: string } | null = null;
+  for (const c of candidates) {
+    const tokens = new Set(tokenize(c.pregunta));
+    const s = jaccard(userTokens, tokens);
+    if (s >= threshold && (!best || s >= best.score)) {
+      best = { respuesta: c.respuesta, score: s, pregunta: c.pregunta };
+    }
+  }
+  return best;
 }
 
 // ---- Tenant-portal endpoints (called by the tenant frontend) ----
@@ -266,6 +355,19 @@ router.post(
       return;
     }
     const rubro = await loadRubro(tenant.rubroId);
+
+    // FAQ fuzzy match antes de Gemini: ahorra tokens y responde inmediato.
+    const faqHit = await findFaqMatch(
+      parsed.data.tenant_id,
+      rubro,
+      parsed.data.text,
+    );
+    if (faqHit) {
+      const reply = sanitizeCeciliaText(faqHit.respuesta).slice(0, 1024);
+      res.json({ reply, fromFaq: true, faqScore: faqHit.score });
+      return;
+    }
+
     const persona = rubro?.cecilia_persona ?? "asistente de negocio";
     const nombreRubro = rubro?.nombre ?? "tu rubro";
     const system = `${CECILIA_DISGUISE_SYSTEM}

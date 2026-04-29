@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { startAlertasWatcher } from "./lib/alertas-watcher";
+import { restoreActiveSessions } from "./lib/session-manager";
 
 const rawPort = process.env["PORT"];
 if (!rawPort) {
@@ -22,4 +23,9 @@ app.listen(port, (err?: Error) => {
   } catch (err) {
     logger.warn({ err }, "alertas watcher not started");
   }
+  // Boot-time rehydration of sessions that were marked active in DB. Failures
+  // here are non-fatal: tenants can re-trigger /sesion/iniciar from the UI.
+  void restoreActiveSessions().catch((err) =>
+    logger.warn({ err }, "restoreActiveSessions threw"),
+  );
 });
