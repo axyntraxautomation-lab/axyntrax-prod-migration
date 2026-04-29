@@ -3,6 +3,8 @@ import { logger } from "./lib/logger";
 import { ensureSeedData } from "./lib/seed";
 import { startJarvisAdScheduler } from "./lib/jarvis-ads-generator";
 import { startCeciliaRulesScheduler } from "./lib/cecilia-rules";
+import { startTenantBackupScheduler } from "./lib/backup/scheduler";
+import { startHealthWatcher } from "./lib/health-watcher";
 
 const rawPort = process.env["PORT"];
 
@@ -28,4 +30,6 @@ app.listen(port, async (err) => {
   await ensureSeedData();
   startJarvisAdScheduler();
   startCeciliaRulesScheduler();
+  startTenantBackupScheduler();
+  startHealthWatcher();
 });

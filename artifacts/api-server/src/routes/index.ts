@@ -30,6 +30,7 @@ import tenantRouter from "./tenant";
 import tenantCeciliaRouter from "./tenant-cecilia";
 import tenantBusinessRouter from "./tenant-business";
 import tenantWhatsappRouter from "./tenant-whatsapp";
+import tenantBackupRouter from "./tenant-backup";
 
 const router: IRouter = Router();
 
@@ -64,5 +65,6 @@ router.use(tenantRouter);
 router.use(tenantCeciliaRouter);
 router.use(tenantBusinessRouter);
 router.use(tenantWhatsappRouter);
+router.use(tenantBackupRouter);
 
 export default router;

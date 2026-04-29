@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "reset-2fa": "node ./scripts/reset-2fa.mjs",
     "smoke-tenant": "tsx ./scripts/smoke-tenant.mjs",
+    "smoke-backup": "tsx ./scripts/smoke-backup.ts",
     "test:tenant": "tsx --test src/__tests__/tenant-bridge.test.ts",
     "test:rls": "tsx --test src/__tests__/tenant-rls.test.ts"
   },
