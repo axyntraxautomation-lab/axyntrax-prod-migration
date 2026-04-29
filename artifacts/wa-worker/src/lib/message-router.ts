@@ -25,7 +25,7 @@ async function loadContext(tenantId: string, from: string): Promise<RouterContex
   const supabase = getSupabase();
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("rubro")
+    .select("rubro_id")
     .eq("id", tenantId)
     .maybeSingle();
 
@@ -40,7 +40,10 @@ async function loadContext(tenantId: string, from: string): Promise<RouterContex
     (sess?.metadata as { flujos?: Record<string, FlujoState> } | null)?.flujos ??
     {};
   return {
-    rubro: (tenant?.rubro as string | null) ?? null,
+    rubro:
+      ((tenant as { rubro_id?: string | null } | null)?.rubro_id ?? null) as
+        | string
+        | null,
     sessionId: (sess?.id as string | null) ?? null,
     flujoState: flujosAll[from] ?? null,
     flujosAll,
@@ -149,7 +152,7 @@ export async function handleInbound(msg: InboundMessage): Promise<{ replied: boo
 
   // 3. Rate limit antes de llamar al modelo
   if (!allowModelCall(tenantId)) {
-    const msg = "Recibido. En un momento te respondemos.";
+    const msg = "Cecilia está atendiendo a varios clientes, dame un momento";
     await sendText(tenantId, fromNumber, msg);
     await persistMessage(tenantId, ctx.sessionId, "out", null, fromNumber, msg);
     return { replied: true, reply: msg };

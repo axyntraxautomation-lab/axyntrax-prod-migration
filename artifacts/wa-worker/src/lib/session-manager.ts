@@ -181,6 +181,27 @@ async function startMockSession(entry: SessionEntry): Promise<SessionPublicState
     });
   });
 
+  // Auto-transición mock: tras unos segundos pasa a "conectado" para que el
+  // dashboard pueda completar la pasada qr_pendiente → conectado sin requerir
+  // un escaneo real. Cancelable si la sesión se detiene antes.
+  const delayMs = Number(process.env["WA_WORKER_MOCK_CONNECT_DELAY_MS"] ?? 4000);
+  const phone = `5199${String(Math.floor(Math.random() * 9000000) + 1000000)}`;
+  const t = setTimeout(() => {
+    if (entry.status !== "qr_pendiente") return;
+    entry.status = "conectado";
+    entry.qrDataUrl = null;
+    entry.phone = phone;
+    void dbUpsertStatus(entry.tenantId, {
+      status: "conectado",
+      qrCode: null,
+      phoneNumber: phone,
+    });
+    void emitWhatsappListoAlert(entry.tenantId, phone);
+    logger.info({ tenantId: entry.tenantId, phone }, "mock connected");
+  }, delayMs);
+  // No bloquear el cierre del proceso por este timer.
+  if (typeof t.unref === "function") t.unref();
+
   return getSessionState(entry.tenantId)!;
 }
 
