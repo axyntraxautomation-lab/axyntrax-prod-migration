@@ -47,6 +47,12 @@ async function call<T>(
     } catch {
       body = null;
     }
+    if (r.status >= 500) {
+      logger.warn(
+        { path, baseUrl: BASE_URL, status: r.status, body },
+        "wa-worker call returned 5xx",
+      );
+    }
     return { ok: r.ok, status: r.status, body: body as T };
   } catch (err) {
     logger.warn({ err, path, baseUrl: BASE_URL }, "wa-worker call failed");
