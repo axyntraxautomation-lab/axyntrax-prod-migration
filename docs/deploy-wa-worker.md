@@ -32,7 +32,11 @@ bien.
      - `WA_WORKER_MOCK`
      - `WA_WORKER_MOCK_CONNECT_DELAY_MS`
 6. Variables de entorno (copiar desde el deployment principal autoscale,
-   pestaña Settings → Environment, los mismos valores):
+   pestaña Settings → Environment, los mismos valores). Algunas las lee
+   directamente el código en `artifacts/wa-worker/src` y otras las usa a
+   través del helper compartido de env del monorepo (Supabase, encryption
+   key); en cualquier caso todas tienen que estar seteadas en el
+   deployment del wa-worker:
    - `SESSION_SECRET` — obligatoria (deriva el internal token).
    - `SUPABASE_URL` — obligatoria.
    - `SUPABASE_SERVICE_ROLE_KEY` — obligatoria.
