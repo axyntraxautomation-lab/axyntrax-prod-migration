@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
-const WA_BASE = process.env["WA_WORKER_URL"] ?? "http://localhost:8099";
+const WA_BASE =
+  process.env["WA_WORKER_BASE_URL"] ?? "http://localhost:8099";
 const API_BASE = process.env["API_BASE"] ?? "http://localhost:80";
 
 function deriveToken(): string | null {

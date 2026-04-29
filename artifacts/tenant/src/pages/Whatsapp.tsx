@@ -157,7 +157,17 @@ export function Whatsapp() {
       setInfo("Sesión iniciada. Escanea el QR desde tu WhatsApp.");
       await refresh();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "No se pudo iniciar.");
+      // 503 wa_worker_offline → mostrar inmediatamente el banner amarillo
+      // de offline, sin esperar al próximo poll que confirma workerOnline.
+      if (e instanceof ApiError && e.code === "wa_worker_offline") {
+        setEstado((prev) =>
+          prev
+            ? { ...prev, workerOnline: false }
+            : { session: null, live: null, workerOnline: false },
+        );
+      } else {
+        setErr(e instanceof Error ? e.message : "No se pudo iniciar.");
+      }
     } finally {
       setBusy(null);
     }

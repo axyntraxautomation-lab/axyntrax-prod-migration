@@ -1932,3 +1932,53 @@ components:
       properties:
         durationMonths: { type: integer, minimum: 1, maximum: 60, default: 1 }
         createPayment: { type: boolean, default: true }
+
+    # NOTA: los endpoints /api/tenant/whatsapp/* (estado, sesion/iniciar,
+    # sesion/detener, mensajes, enviar) NO están documentados como `paths`
+    # en este contrato porque el frontend tenant los consume con apiGet/
+    # apiSend directos (no usa hooks tipados). Documentamos solo los
+    # schemas de los responses + códigos de error que son parte del
+    # contrato compartido con el cliente, para futuras integraciones.
+
+    TenantWhatsappEstadoResponse:
+      type: object
+      description: |
+        Respuesta de GET /api/tenant/whatsapp/estado. El campo `workerOnline`
+        refleja un probe en vivo (con cache 30s) al wa-worker (Reserved VM
+        en producción). Cuando es `false`, el frontend muestra un banner
+        amarillo al usuario y debe evitar acciones que dependan del worker.
+      properties:
+        session:
+          type: ["object", "null"]
+          properties:
+            id: { type: string }
+            status: { type: string }
+            qr_code: { type: ["string", "null"] }
+            phone_number: { type: ["string", "null"] }
+            updated_at: { type: ["string", "null"], format: date-time }
+        live:
+          type: ["object", "null"]
+          description: Estado vivo reportado por el wa-worker, o null si el worker está offline.
+          properties:
+            state: { type: string }
+        workerOnline:
+          type: boolean
+          description: |
+            true si el wa-worker respondió OK al probe /healthz; false si está
+            caído, en deploy, o el deployment Reserved VM no está creado.
+      required: [session, live, workerOnline]
+
+    TenantWhatsappOfflineError:
+      type: object
+      description: |
+        Body devuelto con HTTP 503 por POST /api/tenant/whatsapp/sesion/iniciar
+        cuando el wa-worker está offline. El cliente debe renderizar el banner
+        amarillo y NO mostrar un error rojo genérico.
+      properties:
+        error:
+          type: string
+          example: "El servicio de WhatsApp está temporalmente offline. Intentá en unos minutos."
+        code:
+          type: string
+          enum: ["wa_worker_offline"]
+      required: [error, code]
