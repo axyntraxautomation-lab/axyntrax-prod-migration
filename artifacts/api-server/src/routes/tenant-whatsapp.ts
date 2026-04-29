@@ -27,6 +27,7 @@ import {
 import {
   getSessionState as workerGetState,
   isInternalRequestAuthorized,
+  isWorkerOnline,
   sendOutbound,
   startSession as workerStart,
   stopSession as workerStop,
@@ -226,6 +227,16 @@ router.post(
       res.status(404).json({ error: "Tenant no encontrado" });
       return;
     }
+    // Bypass de cache: en sesion/iniciar queremos chequear en vivo para no
+    // devolver 503 hasta 30s después de que el worker recupere.
+    if (!(await isWorkerOnline({ fresh: true }))) {
+      res.status(503).json({
+        error:
+          "El servicio de WhatsApp está temporalmente offline. Intentá en unos minutos.",
+        code: "wa_worker_offline",
+      });
+      return;
+    }
     const r = await workerStart(ctx.tenant.id);
     if (!r.ok) {
       res
@@ -281,9 +292,12 @@ router.get(
         ),
       )
       .limit(1);
+    const workerOnline = await isWorkerOnline();
     let liveState: unknown = null;
-    const w = await workerGetState(ctx.tenant.id);
-    if (w.ok) liveState = w.body?.state ?? null;
+    if (workerOnline) {
+      const w = await workerGetState(ctx.tenant.id);
+      if (w.ok) liveState = w.body?.state ?? null;
+    }
     res.json({
       session: row
         ? {
@@ -295,6 +309,7 @@ router.get(
           }
         : null,
       live: liveState,
+      workerOnline,
     });
   },
 );

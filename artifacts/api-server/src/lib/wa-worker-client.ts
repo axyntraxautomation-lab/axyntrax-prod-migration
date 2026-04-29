@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { logger } from "./logger";
 
-const BASE_URL = process.env["WA_WORKER_URL"] ?? "http://localhost:8099";
+const BASE_URL =
+  process.env["WA_WORKER_BASE_URL"] ?? "http://localhost:8099";
 
 function getInternalToken(): string | null {
   const explicit = process.env["WA_WORKER_INTERNAL_TOKEN"];
@@ -48,9 +49,48 @@ async function call<T>(
     }
     return { ok: r.ok, status: r.status, body: body as T };
   } catch (err) {
-    logger.warn({ err, path }, "wa-worker call failed");
+    logger.warn({ err, path, baseUrl: BASE_URL }, "wa-worker call failed");
     return { ok: false, status: 0, body: null, error: String(err) };
   }
+}
+
+let healthCache: { online: boolean; checkedAt: number } | null = null;
+const HEALTH_TTL_MS = 30_000;
+
+/**
+ * Probe rápido al wa-worker (`GET /healthz`) con cache 30s en memoria y
+ * timeout 2s. Devuelve `false` si está caído / no responde / no contesta a
+ * tiempo. NO requiere internal token: `/healthz` es público.
+ *
+ * Pasar `{ fresh: true }` desde rutas críticas (p.ej. POST sesion/iniciar)
+ * para saltar la cache y evitar falsos negativos hasta 30s después de que
+ * el worker recupere.
+ */
+export async function isWorkerOnline(opts?: { fresh?: boolean }): Promise<boolean> {
+  const now = Date.now();
+  if (
+    !opts?.fresh &&
+    healthCache &&
+    now - healthCache.checkedAt < HEALTH_TTL_MS
+  ) {
+    return healthCache.online;
+  }
+  let online = false;
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 2_000);
+    try {
+      const r = await fetch(`${BASE_URL}/healthz`, { signal: ctl.signal });
+      online = r.ok;
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch (err) {
+    logger.warn({ err, baseUrl: BASE_URL }, "wa-worker healthz probe failed");
+    online = false;
+  }
+  healthCache = { online, checkedAt: now };
+  return online;
 }
 
 export function startSession(tenantId: string) {

@@ -22,6 +22,7 @@ type SesionRow = {
 type EstadoResponse = {
   session: SesionRow | null;
   live: { state?: EstadoSesion | string } | null;
+  workerOnline?: boolean;
 };
 
 type Mensaje = {
@@ -205,6 +206,7 @@ export function Whatsapp() {
   const tag = statusLabel(effectiveStatus);
   const conectado = effectiveStatus === "conectado";
   const qr = sesion?.qr_code ?? null;
+  const workerOffline = estado?.workerOnline === false;
 
   return (
     <>
@@ -218,6 +220,15 @@ export function Whatsapp() {
           </p>
         </header>
 
+        {workerOffline && (
+          <div
+            className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+            data-testid="wa-worker-offline"
+          >
+            El servicio de WhatsApp está temporalmente offline. Intentá en unos
+            minutos. Si el problema persiste, contactá al soporte AXYNTRAX.
+          </div>
+        )}
         {err && (
           <div
             className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
