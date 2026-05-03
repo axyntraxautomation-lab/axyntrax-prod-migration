@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: axyntrax-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python axia_api.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: API_PORT
+        fromEnv: PORT

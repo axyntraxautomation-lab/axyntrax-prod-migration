@@ -1,0 +1,41 @@
+
+--- ERROR DE ARRANQUE [2026-04-22 19:00:11] ---
+ERROR DE ARRANQUE INESPERADO: The default Firebase app does not exist. Make sure to initialize the SDK by calling initialize_app().
+Traceback (most recent call last):
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\AXIA_MAESTRO.py", line 39, in launch
+    main()
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\main.py", line 42, in main
+    orch = get_orchestrator()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\orchestrator.py", line 64, in get_orchestrator
+    return AXIAOrchestrator()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\orchestrator.py", line 16, in __init__
+    self.marketing = get_axia_marketing()
+                     ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\marketing.py", line 114, in get_axia_marketing
+    return AXIAMarketingManager()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\marketing.py", line 15, in __init__
+    self.axia = get_brain()
+                ^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\brain.py", line 293, in get_brain
+    _instance = AXIABrain()
+                ^^^^^^^^^^^
+  File "C:\Users\YARVIS\Desktop\AXYNTRAX_AUTOMATION_Suite\suite_diamante\logic\axia\brain.py", line 29, in __init__
+    self.db = firestore.client()
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\AppData\Local\Programs\Python\Python311\Lib\site-packages\firebase_admin\firestore.py", line 64, in client
+    fs_service = _utils.get_app_service(app, _FIRESTORE_ATTRIBUTE, _FirestoreService)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\AppData\Local\Programs\Python\Python311\Lib\site-packages\firebase_admin\_utils.py", line 103, in get_app_service
+    app = _get_initialized_app(app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\AppData\Local\Programs\Python\Python311\Lib\site-packages\firebase_admin\_utils.py", line 87, in _get_initialized_app
+    return firebase_admin.get_app()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\YARVIS\AppData\Local\Programs\Python\Python311\Lib\site-packages\firebase_admin\__init__.py", line 137, in get_app
+    raise ValueError(
+ValueError: The default Firebase app does not exist. Make sure to initialize the SDK by calling initialize_app().
+
+------------------------------------------
