@@ -22,7 +22,7 @@ if os.path.exists(STATIC_DIR):
 # ── 2. Middleware: redirección WWW (solo en producción) ──────────────────────
 @app.middleware("http")
 async def redirect_to_www(request: Request, call_next):
-    if IS_PROD:
+    if os.getenv("ENVIRONMENT") == "production":
         host = request.headers.get("host", "")
         if host in ("axyntrax-automation.net", "axyntrax-automation.net:443"):
             url = f"https://www.axyntrax-automation.net{request.url.path}"
