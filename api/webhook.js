@@ -1,16 +1,15 @@
-module.exports = (req, res) => {
+module.exports = function(req, res) {
   if (req.method === 'GET') {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
-    if (mode === 'subscribe' && token === process.env.VERIFY_TOKEN) {
+    if (mode === 'subscribe' && token === 'robotcito') {
       return res.status(200).send(challenge);
     }
-    return res.sendStatus(403);
+    return res.status(403).send('Forbidden');
   }
   if (req.method === 'POST') {
-    console.log('Mensaje:', JSON.stringify(req.body));
-    return res.sendStatus(200);
+    return res.status(200).send('OK');
   }
-  res.sendStatus(405);
+  res.status(405).send('Method Not Allowed');
 };
