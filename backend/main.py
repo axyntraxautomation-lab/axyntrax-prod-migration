@@ -1,45 +1,64 @@
 import os
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 
-app = FastAPI(docs_url=None, redoc_url=None) # Desactivado en producción
+load_dotenv()
 
-# 1. Servir archivos estáticos (CSS, JS, Imágenes)
-# Asegúrate de que esta carpeta exista
-if not os.path.exists("frontend/static"):
-    os.makedirs("frontend/static", exist_ok=True)
+# ── Apagar Swagger/Redoc en producción ──────────────────────────────────────
+IS_PROD = os.getenv("ENVIRONMENT") == "production"
+app = FastAPI(
+    title="AXYNTRAX Antigravity",
+    docs_url=None if IS_PROD else "/docs",
+    redoc_url=None if IS_PROD else "/redoc",
+)
 
-app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+# ── 1. Montar archivos estáticos ─────────────────────────────────────────────
+STATIC_DIR = "frontend/static"
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-# 2. Middleware de redirección WWW (Solo en Producción)
+# ── 2. Middleware: redirección WWW (solo en producción) ──────────────────────
 @app.middleware("http")
 async def redirect_to_www(request: Request, call_next):
-    host = request.headers.get("host", "")
-    # Redirigir de axyntrax-automation.net a www.axyntrax-automation.net
-    if os.getenv("ENVIRONMENT") == "production" and host == "axyntrax-automation.net":
-        return RedirectResponse(
-            url=f"https://www.axyntrax-automation.net{request.url.path}", 
-            status_code=301
-        )
+    if IS_PROD:
+        host = request.headers.get("host", "")
+        # Si llega sin www → 301 permanente hacia www
+        if host in ("axyntrax-automation.net", "axyntrax-automation.net:443"):
+            url = f"https://www.axyntrax-automation.net{request.url.path}"
+            if request.url.query:
+                url += f"?{request.url.query}"
+            return RedirectResponse(url=url, status_code=301)
     return await call_next(request)
 
-# 3. Rutas de Frontend (Sirviendo archivos HTML)
-@app.get("/")
+# ── 3. Rutas de frontend ─────────────────────────────────────────────────────
+
+# Landing pública
+@app.get("/", response_class=HTMLResponse)
 async def serve_landing():
     path = "frontend/landing/index.html"
     if os.path.exists(path):
         return FileResponse(path)
-    return {"message": "Landing page no encontrada. Sube tus archivos a frontend/landing/"}
+    raise HTTPException(status_code=404, detail="Landing page no encontrada")
 
-@app.get("/jarvis")
+# Dashboard J.A.R.V.I.S (protección JWT debe hacerse desde el frontend o
+# en el endpoint /api/auth — el HTML se sirve siempre, el JS verifica el token)
+@app.get("/jarvis", response_class=HTMLResponse)
 async def serve_jarvis():
     path = "frontend/jarvis/index.html"
     if os.path.exists(path):
         return FileResponse(path)
-    return {"message": "Dashboard J.A.R.V.I.S no encontrado. Sube tus archivos a frontend/jarvis/"}
+    raise HTTPException(status_code=404, detail="Dashboard JARVIS no encontrado")
 
-# 4. Ejemplo de API básica
+# ── 4. API endpoints ─────────────────────────────────────────────────────────
+
 @app.get("/api/health")
-async def health_check():
-    return {"status": "online", "system": "AXYNTRAX Antigravity"}
+async def health():
+    return {
+        "status": "online",
+        "system": "AXYNTRAX Antigravity",
+        "environment": os.getenv("ENVIRONMENT", "development"),
+    }
+
+# Aquí agregar más rutas: /api/auth, /api/leads, /api/clientes, etc.
