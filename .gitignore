@@ -3,3 +3,8 @@ axia-core/build/
 dist/
 *.exe
 *.asar
+
+node_modules/
+.netlify/
+functions/node_modules/
+axia-core/node_modules/
