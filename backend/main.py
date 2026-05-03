@@ -24,11 +24,8 @@ if os.path.exists(STATIC_DIR):
 async def redirect_to_www(request: Request, call_next):
     if IS_PROD:
         host = request.headers.get("host", "")
-        # Si llega sin www → 301 permanente hacia www
         if host in ("axyntrax-automation.net", "axyntrax-automation.net:443"):
             url = f"https://www.axyntrax-automation.net{request.url.path}"
-            if request.url.query:
-                url += f"?{request.url.query}"
             return RedirectResponse(url=url, status_code=301)
     return await call_next(request)
 
