@@ -1,0 +1,50 @@
+# AXYNTRAX AUTOMATION SUITE — Dependencias Oficiales v2.0
+# Instalación: pip install -r requirements.txt
+
+# ── GUI ──────────────────────────────────────────────────────────────────────
+customtkinter
+CTkTable
+tkcalendar
+darkdetect
+packaging
+
+# ── Backend / Web ─────────────────────────────────────────────────────────────
+flask
+flask-cors
+python-dotenv
+requests
+
+# ── Firebase ──────────────────────────────────────────────────────────────────
+firebase-admin
+
+# ── IA ────────────────────────────────────────────────────────────────────────
+openai
+google-generativeai
+
+# ── PDF / Documentos ──────────────────────────────────────────────────────────
+fpdf2
+reportlab
+
+# ── QR ────────────────────────────────────────────────────────────────────────
+qrcode[pil]
+pillow
+
+# ── Base de datos / Utilidades ────────────────────────────────────────────────
+bcrypt
+colorama
+pandas
+openpyxl
+apscheduler
+keyring
+
+# ── Email ─────────────────────────────────────────────────────────────────────
+# (usar smtplib nativo de Python, ya integrado)
+
+# ── Google / Microsoft (Opcional) ────────────────────────────────────────────
+google-api-python-client
+google-auth-oauthlib
+msal
+
+# ── Empaquetado ───────────────────────────────────────────────────────────────
+pyinstaller
+wmi

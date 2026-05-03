@@ -1,0 +1,57 @@
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "C:\\Users\\YARVIS\\Desktop\\AXYNTRAX_AUTOMATION_Suite\\axia-core\\dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
+base = "C:\\Users\\YARVIS\\Desktop\\AXYNTRAX_AUTOMATION_Suite\\axia-core"
+
+[build.environment]
+NODE_VERSION = "20"
+VITE_API_URL = "https://satisfied-alignment-production-0eeb.up.railway.app"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+for = "/assets/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

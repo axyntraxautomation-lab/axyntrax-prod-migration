@@ -1,0 +1,5 @@
+
+axia-core/build/
+dist/
+*.exe
+*.asar
