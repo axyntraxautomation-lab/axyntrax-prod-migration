@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axyntrax Automation — IA que vende, atiende y crece 24/7</title>
+  <meta name="description" content="Cecilia, tu agente de IA, atiende clientes en WhatsApp, Facebook e Instagram 24/7. Automatiza ventas, soporte y reportes con inteligencia artificial." />
+  <meta property="og:title" content="Axyntrax Automation — IA 24/7 para tu negocio" />
+  <meta property="og:description" content="Automatización de atención al cliente con IA. WhatsApp + Facebook + Instagram, sin pausas." />
+  <meta property="og:image" content="https://www.axyntrax-automation.net/og-image.png" />
+  <meta property="og:url" content="https://www.axyntrax-automation.net" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan: #00f5ff;
+      --purple: #8b5cf6;
+      --bg: #050508;
+      --surface: #0d0d14;
+      --surface2: #13131e;
+      --text: #e8e8f0;
+      --muted: #8888aa;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+    /* ── Utilities ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .gradient-text { background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn-primary {
+      display: inline-block; padding: 14px 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #000; font-weight: 700; font-size: 1rem; text-decoration: none;
+      cursor: pointer; border: none; transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,245,255,.35); }
+    .btn-outline {
+      display: inline-block; padding: 13px 30px; border-radius: 8px;
+      border: 1.5px solid var(--cyan); color: var(--cyan);
+      font-weight: 600; font-size: 1rem; text-decoration: none;
+      cursor: pointer; background: transparent; transition: background .2s, color .2s;
+    }
+    .btn-outline:hover { background: var(--cyan); color: #000; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0; backdrop-filter: blur(16px);
+      background: rgba(5,5,8,.75); border-bottom: 1px solid rgba(139,92,246,.15);
+    }
+    nav .inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--cyan); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding-top: 80px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,255,.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,.1) 0%, transparent 60%);
+    }
+    #hero .inner { text-align: center; }
+    .hero-tag {
+      display: inline-block; margin-bottom: 24px; padding: 6px 18px;
+      border: 1px solid rgba(0,245,255,.3); border-radius: 100px;
+      font-size: .8rem; font-weight: 600; color: var(--cyan); letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    #hero h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 24px; }
+    #hero p { font-size: 1.15rem; color: var(--muted); max-width: 620px; margin: 0 auto 40px; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 48px; justify-content: center; margin-top: 72px; flex-wrap: wrap; }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 2.4rem; font-weight: 900; }
+    .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── SECTIONS ── */
+    section { padding: 100px 0; }
+    .section-label { font-size: .75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
+    .section-title { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px; }
+    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 560px; line-height: 1.7; }
+
+    /* ── SERVICES ── */
+    #servicios { background: var(--surface); }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 56px; }
+    .card {
+      background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px;
+      padding: 36px; transition: border-color .3s, transform .3s;
+    }
+    .card:hover { border-color: var(--cyan); transform: translateY(-4px); }
+    .card-icon { font-size: 2.5rem; margin-bottom: 20px; }
+    .card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+    .card p { color: var(--muted); font-size: .95rem; line-height: 1.7; }
+
+    /* ── HOW ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-top: 56px; }
+    .step { display: flex; gap: 20px; align-items: flex-start; }
+    .step-num {
+      min-width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1.1rem; color: #000;
+    }
+    .step-content h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .step-content p { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+
+    /* ── TESTIMONIOS ── */
+    #testimonios { background: var(--surface); }
+    .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 56px; }
+    .testi-card {
+      background: var(--surface2); border: 1px solid rgba(0,245,255,.1); border-radius: 16px; padding: 32px;
+    }
+    .testi-card blockquote { font-size: .95rem; color: var(--text); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 14px; }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1rem; color: #000;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+    }
+    .author-name { font-weight: 700; font-size: .9rem; }
+    .author-role { font-size: .8rem; color: var(--muted); }
+    .testi-stat { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(139,92,246,.2); font-size: .85rem; color: var(--cyan); font-weight: 700; }
+
+    /* ── PRICING ── */
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 56px; }
+    .plan {
+      background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px;
+      padding: 36px; position: relative; transition: transform .3s, border-color .3s;
+    }
+    .plan:hover { transform: translateY(-4px); }
+    .plan.featured { border-color: var(--cyan); background: linear-gradient(135deg, rgba(0,245,255,.06), rgba(139,92,246,.06)); }
+    .plan-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #000; font-size: .7rem; font-weight: 800; padding: 4px 16px; border-radius: 100px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .plan-name { font-size: 1.1rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .plan-price { font-size: 2.8rem; font-weight: 900; margin-bottom: 4px; }
+    .plan-period { font-size: .85rem; color: var(--muted); margin-bottom: 28px; }
+    .plan-features { list-style: none; margin-bottom: 32px; }
+    .plan-features li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; color: var(--muted); margin-bottom: 12px; }
+    .plan-features li::before { content: "✓"; color: var(--cyan); font-weight: 800; min-width: 16px; }
+
+    /* ── CTA FINAL ── */
+    #cta { background: var(--surface); }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(0,245,255,.07), rgba(139,92,246,.07));
+      border: 1px solid rgba(0,245,255,.2); border-radius: 24px; padding: 64px 40px; text-align: center;
+    }
+    .cta-box h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 16px; }
+    .cta-box p { color: var(--muted); font-size: 1rem; margin-bottom: 40px; }
+    form.demo-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; margin: 0 auto; }
+    form.demo-form input {
+      grid-column: span 1; padding: 14px 18px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid rgba(139,92,246,.3);
+      color: var(--text); font-size: .95rem; outline: none; transition: border-color .2s;
+    }
+    form.demo-form input:focus { border-color: var(--cyan); }
+    form.demo-form input::placeholder { color: var(--muted); }
+    form.demo-form .full { grid-column: span 2; }
+    form.demo-form button { grid-column: span 2; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg); border-top: 1px solid rgba(139,92,246,.15);
+      padding: 48px 0 32px;
+    }
+    .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+    .footer-logo { font-size: 1.1rem; font-weight: 900; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: .85rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--cyan); }
+    .footer-copy { color: var(--muted); font-size: .8rem; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+    .fade-up { animation: fadeUp .7s ease both; }
+    .delay-1 { animation-delay: .15s; }
+    .delay-2 { animation-delay: .3s; }
+    .delay-3 { animation-delay: .45s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      form.demo-form { grid-template-columns: 1fr; }
+      form.demo-form .full, form.demo-form button { grid-column: span 1; }
+      .nav-links { display: none; }
+      .hero-stats { gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container inner">
+    <span class="nav-logo gradient-text">Axyntrax</span>
+    <ul class="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#pricing">Precios</a></li>
+      <li><a href="#cta">Demo</a></li>
+    </ul>
+    <a href="#cta" class="btn-primary" style="padding:10px 22px;font-size:.85rem;">Quiero una demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container inner">
+    <div class="hero-tag fade-up">🤖 IA Conversacional · WhatsApp · Facebook · Instagram</div>
+    <h1 class="fade-up delay-1">Tu negocio atiende<br /><span class="gradient-text">24/7 sin parar.</span></h1>
+    <p class="fade-up delay-2">Cecilia, tu agente de IA, responde clientes, cierra ventas y genera reportes en WhatsApp, Facebook e Instagram — mientras tú duermes.</p>
+    <div class="hero-btns fade-up delay-3">
+      <a href="#cta" class="btn-primary">Quiero una demo gratuita</a>
+      <a href="#como-funciona" class="btn-outline">¿Cómo funciona?</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item fade-up delay-1">
+        <div class="stat-num gradient-text">+3,200</div>
+        <div class="stat-label">Conversaciones / mes</div>
+      </div>
+      <div class="stat-item fade-up delay-2">
+        <div class="stat-num gradient-text">94%</div>
+        <div class="stat-label">Satisfacción cliente</div>
+      </div>
+      <div class="stat-item fade-up delay-3">
+        <div class="stat-num gradient-text">24/7</div>
+        <div class="stat-label">Sin interrupciones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-label">Servicios · Services</div>
+    <h2 class="section-title">Todo lo que Cecilia hace<br /><span class="gradient-text">por tu empresa</span></h2>
+    <p class="section-sub">Automatización real, no chatbots de menús. Cecilia entiende, razona y actúa como tu mejor agente.</p>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h3>Atención 24/7 Multicanal</h3>
+        <p>Responde en WhatsApp, Messenger e Instagram al instante. Cero tiempo de espera, cero clientes perdidos por horarios.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>Ventas con IA</h3>
+        <p>Califica leads, presenta productos, envía cotizaciones y cierra ventas automáticamente. Tu pipeline funciona solo.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Reportes Inteligentes</h3>
+        <p>Dashboard en tiempo real con conversaciones, conversiones y KPIs. Toma decisiones con datos, no con intuición.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="container">
+    <div class="section-label">Proceso · How it works</div>
+    <h2 class="section-title">En 3 pasos estás<br /><span class="gradient-text">operando con IA</span></h2>
+    <p class="section-sub">Sin código, sin instalaciones complicadas. Cecilia se integra en menos de 48 horas.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Conecta tus canales</h3>
+          <p>Vinculamos tu cuenta de WhatsApp Business, Facebook e Instagram en menos de 10 minutos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Configuramos a Cecilia</h3>
+          <p>Entrenamos a Cecilia con la información de tu negocio: productos, precios, FAQs y tono de marca.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>¡A vender!</h3>
+          <p>Tu negocio empieza a atender, vender y reportar de forma autónoma. Tú supervisas desde el dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section id="testimonios">
+  <div class="container">
+    <div class="section-label">Testimonios · Reviews</div>
+    <h2 class="section-title">Empresas latinas que<br /><span class="gradient-text">ya automatizaron</span></h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <blockquote>"Cecilia atiende a mis clientes mejor que mis propios vendedores. En el primer mes recuperé la inversión y cerré 47 ventas mientras dormía."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">MC</div>
+          <div>
+            <div class="author-name">Marcela Cifuentes</div>
+            <div class="author-role">CEO · TiendaMC, Colombia</div>
+          </div>
+        </div>
+        <div class="testi-stat">↑ 340% en ventas por WhatsApp en 60 días</div>
+      </div>
+      <div class="testi-card">
+        <blockquote>"Antes perdíamos leads porque no podíamos responder rápido. Ahora Cecilia responde en segundos y agenda citas automáticamente. Increíble."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">RV</div>
+          <div>
+            <div class="author-name">Rodrigo Valenzuela</div>
+            <div class="author-role">Fundador · AutoMax, México</div>
+          </div>
+        </div>
+        <div class="testi-stat">↑ 218 leads calificados en el primer mes</div>
+      </div>
+      <div class="testi-card">
+        <blockquote>"El ROI fue inmediato. Cecilia maneja 400+ conversaciones al día sin errores. Mi equipo ahora se enfoca en cerrar, no en responder mensajes."</blockquote>
+        <div class="testi-author">
+          <div class="avatar">LP</div>
+          <div>
+            <div class="author-name">Lorena Paredes</div>
+            <div class="author-role">Directora · SalónLux, Perú</div>
+          </div>
+        </div>
+        <div class="testi-stat">↑ 5x más citas agendadas en 30 días</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">Planes · Pricing</div>
+    <h2 class="section-title">Inversión que se paga<br /><span class="gradient-text">sola desde el día 1</span></h2>
+    <p class="section-sub">Sin contratos anuales, sin costos ocultos. Cancela cuando quieras.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price gradient-text">$297</div>
+        <div class="plan-period">USD / mes</div>
+        <ul class="plan-features">
+          <li>1 canal (WhatsApp o Instagram)</li>
+          <li>Hasta 1,000 conversaciones/mes</li>
+          <li>Respuestas automáticas 24/7</li>
+          <li>Dashboard básico</li>
+          <li>Soporte por email</li>
+        </ul>
+        <a href="#cta" class="btn-outline" style="width:100%;text-align:center;">Empezar</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">Más popular</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price gradient-text">$597</div>
+        <div class="plan-period">USD / mes</div>
+        <ul class="plan-features">
+          <li>3 canales (WA + FB + IG)</li>
+          <li>Hasta 5,000 conversaciones/mes</li>
+          <li>IA de ventas y calificación de leads</li>
+          <li>Reportes avanzados</li>
+          <li>Integraciones CRM</li>
+          <li>Soporte prioritario 24/7</li>
+        </ul>
+        <a href="#cta" class="btn-primary" style="width:100%;text-align:center;">Quiero una demo</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price gradient-text">A medida</div>
+        <div class="plan-period">Contactar ventas</div>
+        <ul class="plan-features">
+          <li>Canales ilimitados</li>
+          <li>Conversaciones ilimitadas</li>
+          <li>IA personalizada con tu marca</li>
+          <li>API access completo</li>
+          <li>SLA garantizado 99.9%</li>
+          <li>Gerente de cuenta dedicado</li>
+        </ul>
+        <a href="#cta" class="btn-outline" style="width:100%;text-align:center;">Contactar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-box">
+      <div class="section-label" style="text-align:center;">Demo gratuita · Free Demo</div>
+      <h2>Activa a Cecilia en<br /><span class="gradient-text">tu negocio hoy</span></h2>
+      <p>Déjanos tus datos y te contactamos en menos de 2 horas para configurar tu demo personalizada — sin compromiso.</p>
+      <form class="demo-form" onsubmit="handleSubmit(event)">
+        <input type="text" placeholder="Tu nombre completo" required id="nombre" />
+        <input type="email" placeholder="Email corporativo" required id="email" />
+        <input type="tel" placeholder="WhatsApp (con código de país)" required id="whatsapp" />
+        <input type="text" placeholder="Nombre de tu empresa" required id="empresa" class="full" />
+        <button type="submit" class="btn-primary">Quiero mi demo gratuita →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-logo gradient-text">Axyntrax Automation</div>
+    <div class="footer-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#pricing">Precios</a>
+      <a href="#testimonios">Testimonios</a>
+      <a href="mailto:hola@axyntrax-automation.net">Contacto</a>
+      <a href="#cta">Demo</a>
+    </div>
+    <p class="footer-copy">© 2025 Axyntrax Automation. Todos los derechos reservados. · Powered by Cecilia AI ✦</p>
+  </div>
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = '✓ ¡Solicitud enviada! Te contactamos pronto.';
+    btn.style.background = 'linear-gradient(135deg, #00f5ff, #8b5cf6)';
+    btn.disabled = true;
+  }
+
+  // Intersection Observer for fade-up on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.card, .step, .testi-card, .plan').forEach(el => {
+    el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity .6s ease, transform .6s ease';
+    observer.observe(el);
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const style = document.createElement('style');
+    style.textContent = '.visible { opacity: 1 !important; transform: none !important; }';
+    document.head.appendChild(style);
+  });
+</script>
+</body>
+</html>
