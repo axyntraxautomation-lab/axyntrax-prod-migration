@@ -43,7 +43,10 @@ app.post('/api', async (req, res) => {
       const text = message.text.body;
 
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `Eres Cecilia IA de Axyntrax Automation. Responde en español. Cliente dice: ${text}`;
+      const prompt = `Eres Cecilia IA de Axyntrax Automation. Responde en español de forma humana y cálida.
+      Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
+      Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
+      Cliente dice: ${text}`;
       
       const result = await model.generateContent(prompt);
       const responseText = result.response.text();
@@ -63,6 +66,7 @@ app.post('/api', async (req, res) => {
     }
     res.sendStatus(200);
   } catch (error) {
+    console.error('WA Error:', error.message);
     res.sendStatus(200);
   }
 });
@@ -71,26 +75,37 @@ app.post('/api', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
-    // Intentamos con el nombre corto si el largo falla
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
-    Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
-    Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
+    Eres el chatbot embebido en la web. Sabe todo el sitio:
+    - Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
+    - Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
+    - Cecilia atiende WA/FB/IG 24/7. ATLAS es soporte. JARVIS es el dashboard.
     Visitor ID: ${visitorId}
+    Rubro: ${rubro || 'No especificado'}
     Mensaje: ${message}`;
 
     const result = await model.generateContent(prompt);
     res.json({ response: result.response.text() });
   } catch (error) {
-    // Si falla, devolvemos un mensaje amigable
-    res.json({ response: "¡Hola! Estoy experimentando una alta demanda. ¿Podrías contactarme por WhatsApp haciendo clic en el botón de abajo? Estaré encantada de ayudarte." });
+    console.error('Chat Error:', error.message);
+    res.json({ response: "¡Hola! Estoy experimentando una alta demanda. ¿Podrías contactarme por WhatsApp haciendo clic en el botón de abajo? Estaré encantada de ayudarte. 😊" });
   }
 });
 
 // LOG EVENT
 app.post('/api/log-event', async (req, res) => {
   try {
-    console.log('EVENTO JARVIS:', req.body);
+    const event = req.body;
+    console.log('EVENTO JARVIS:', JSON.stringify(event));
+    
+    // Optional: Log to Supabase audit_logs table if it exists
+    await supabase.from('audit_logs').insert([{
+      event_type: event.evento,
+      details: event,
+      created_at: new Date().toISOString()
+    }]).catch(() => {});
+
     res.json({ status: 'logged' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -101,7 +116,10 @@ app.post('/api/log-event', async (req, res) => {
 app.post('/api/registro-demo', async (req, res) => {
   try {
     const { nombre, whatsapp, email, empresa, rubro } = req.body;
-    await supabase.from('demo_registrations').insert([{ nombre, whatsapp, email, empresa, rubro, created_at: new Date().toISOString() }]);
+    await supabase.from('demo_registrations').insert([{ 
+      nombre, whatsapp, email, empresa, rubro, 
+      created_at: new Date().toISOString() 
+    }]);
     res.status(200).json({ status: 'ok' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -110,7 +128,11 @@ app.post('/api/registro-demo', async (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ONLINE', gemini: !!genAI });
+  res.json({ 
+    status: 'ONLINE', 
+    gemini: !!genAI,
+    version: '3.1.2' 
+  });
 });
 
 module.exports = app;
