@@ -1,0 +1,5570 @@
+[
+  {
+    "id": "CLI-TALLER-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-001",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-002",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-003",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-004",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-005",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-006",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-007",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-008",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-009",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-010",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-011",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-012",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-013",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-014",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-015",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-016",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-017",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-018",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-019",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-020",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-021",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-022",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-023",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-024",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-025",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-026",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-027",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-028",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-029",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-030",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-031",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-032",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-033",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "FAIL",
+        "detail": "Keygen inválido/expirado"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-034",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-035",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-036",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-037",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-038",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-039",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-040",
+    "fase": 3,
+    "steps": [
+      {
+        "step": "3.1 Instalación",
+        "status": "PASS",
+        "time": "8 min"
+      },
+      {
+        "step": "3.2 Tour Guiado",
+        "status": "PASS"
+      },
+      {
+        "step": "3.2 Primera Transacción",
+        "status": "PASS"
+      }
+    ]
+  }
+]
