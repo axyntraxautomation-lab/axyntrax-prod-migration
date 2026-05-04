@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axyntrax Link | Automatización Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile img {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            padding: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .profile h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .profile p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .links-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .link-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .link-card.featured {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+        }
+
+        .link-card.featured:hover {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Cecilia Float */
+        #cecilia-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 12px;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <img src="https://axyntrax-prod-migration.vercel.app/artifacts/logo_axyntrax.png" alt="Axyntrax Logo" onerror="this.src='https://ui-avatars.com/api/?name=Axyntrax&background=6366f1&color=fff'">
+        <h1>Axyntrax Automation</h1>
+        <p>IAs que trabajan por ti 24/7 🚀</p>
+    </div>
+
+    <div class="links-container">
+        <a href="https://api.whatsapp.com/send?phone=51991740590&text=Hola%20Axyntrax,%20vengo%20desde%20su%20enlace%20de%20Instagram" class="link-card featured">
+            💬 WhatsApp Directo
+        </a>
+        <a href="#" onclick="openCecilia('agendar')" class="link-card">
+            📅 Agendar Demo de 5 min
+        </a>
+        <a href="https://axyntrax-prod-migration.vercel.app/#planes" class="link-card">
+            💳 Ver Planes y Precios
+        </a>
+        <a href="https://axyntrax-prod-migration.vercel.app/docs/guia-inicio" class="link-card">
+            📖 Guía de Inicio Rápido
+        </a>
+    </div>
+
+    <div class="footer">
+        © 2026 Axyntrax Automation · Made with ❤️ in Peru
+    </div>
+
+    <!-- El widget de Cecilia se cargará aquí -->
+    <div id="cecilia-trigger" onclick="openCecilia()">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </div>
+
+    <script>
+        function openCecilia(intent = '') {
+            // Lógica para abrir el widget de Cecilia y pasarle el contexto
+            console.log('Abriendo Cecilia con intención:', intent);
+            // Si el widget ya está embebido en el index.html principal, 
+            // aquí lo activaríamos vía postMessage o evento global.
+            alert('¡Hola! Soy Cecilia. ¿En qué rubro está tu negocio? Te ayudaré a elegir el mejor plan.');
+        }
+    </script>
+</body>
+</html>
