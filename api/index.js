@@ -42,7 +42,7 @@ app.post('/api', async (req, res) => {
       const from = message.from;
       const text = message.text.body;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const prompt = `Eres Cecilia IA de Axyntrax Automation. Responde en español. Cliente dice: ${text}`;
       
       const result = await model.generateContent(prompt);
@@ -71,7 +71,7 @@ app.post('/api', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
     Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
     Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
