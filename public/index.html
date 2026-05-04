@@ -420,6 +420,67 @@
   </div>
 </footer>
 
+<!-- Botón Flotante Cecilia -->
+<a href="https://wa.me/51991740590?text=Hola%20Cecilia,%20vengo%20de%20la%20web" class="cecilia-fab" id="cecilia-btn">
+  <div class="cecilia-tooltip">Habla con Cecilia 2.0 🤖</div>
+  <img src="https://img.icons8.com/color/96/whatsapp--v1.png" alt="Cecilia AI">
+</a>
+
+<style>
+.cecilia-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 65px;
+  height: 65px;
+  background: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(37,211,102,0.4);
+  z-index: 9999;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+}
+.cecilia-fab:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 15px 30px rgba(37,211,102,0.6);
+}
+.cecilia-fab img {
+  width: 35px;
+  height: 35px;
+}
+.cecilia-tooltip {
+  position: absolute;
+  right: 80px;
+  background: white;
+  color: #333;
+  padding: 8px 15px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.cecilia-fab:hover .cecilia-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(37,211,102, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(37,211,102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37,211,102, 0); }
+}
+.cecilia-fab {
+  animation: pulse-green 2s infinite;
+}
+</style>
+
 <script>
   // Scroll animations
   const obs = new IntersectionObserver(entries => {
