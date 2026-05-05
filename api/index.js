@@ -53,48 +53,62 @@ const addHistory = (key, role, text) => {
   }
 };
 
-// Helper: Gemini con retry automático, soporte de memoria (historial) e instrucciones del sistema
+// Helper: Gemini con retry automático, fallback de modelos, clave de respaldo y memoria contextual
 const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInstruction = null) => {
   const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
-  for (let i = 0; i < retries; i++) {
-    for (const modelName of models) {
-      try {
-        const options = { model: modelName };
-        if (systemInstruction) {
-          options.systemInstruction = systemInstruction;
-        }
-        const model = genAI.getGenerativeModel(options);
-        
-        let responseText = "";
-        if (sessionKey) {
-          const history = getHistory(sessionKey);
-          const chat = model.startChat({ history });
-          const result = await chat.sendMessage(prompt);
-          responseText = result.response.text();
+  const keys = [
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_2
+  ].filter(k => k && k.trim() !== "");
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    for (const apiKey of keys) {
+      for (const modelName of models) {
+        try {
+          const client = new GoogleGenerativeAI(apiKey);
+          const options = { model: modelName };
+          if (systemInstruction) {
+            options.systemInstruction = systemInstruction;
+          }
+          const model = client.getGenerativeModel(options);
           
-          // Guardar el par de mensajes en el historial
-          addHistory(sessionKey, 'user', prompt);
-          addHistory(sessionKey, 'model', responseText);
-        } else {
-          const result = await model.generateContent(prompt);
-          responseText = result.response.text();
+          let responseText = "";
+          if (sessionKey) {
+            const history = getHistory(sessionKey);
+            const chat = model.startChat({ history });
+            const result = await chat.sendMessage(prompt);
+            responseText = result.response.text();
+            
+            // Guardar el par de mensajes en el historial de forma asíncrona segura
+            addHistory(sessionKey, 'user', prompt);
+            addHistory(sessionKey, 'model', responseText);
+          } else {
+            const result = await model.generateContent(prompt);
+            responseText = result.response.text();
+          }
+          
+          console.log(`[GEMINI] Respuesta generada con modelo ${modelName} usando clave activa`);
+          return responseText;
+        } catch (err) {
+          console.error(`[GEMINI ERROR] falló con ${modelName} usando clave ${apiKey.substring(0, 6)}... -> Error:`, err.message);
+          
+          const isQuota = err.status === 429 || err.message?.includes('RESOURCE_EXHAUSTED') || err.message?.includes('quota') || err.status === 403;
+          if (isQuota) {
+            console.warn(`[GEMINI] Recurso de cuota agotado o bloqueado en ${modelName}, probando siguiente recurso...`);
+            await new Promise(r => setTimeout(r, 500));
+          }
         }
-        
-        return responseText;
-      } catch (err) {
-        console.error(`[GEMINI ERROR] falló con ${modelName}:`, err.message);
-        if (modelName !== models[models.length - 1]) {
-          continue;
-        }
-        if (i < retries - 1) {
-          await new Promise(r => setTimeout(r, (i + 1) * 3000));
-          break;
-        }
-        throw err;
       }
     }
+    if (attempt < retries - 1) {
+      await new Promise(r => setTimeout(r, (attempt + 1) * 2000));
+    }
   }
-  throw new Error('Cuota de IA agotada temporalmente');
+  
+  console.error('[GEMINI] Todos los modelos y claves de respaldo agotaron la cuota.');
+  return 'Hola, en este momento tenemos alta demanda de consultas. ' +
+         'Nuestro sistema de inteligencia artificial estará disponible en unos minutos. ' +
+         'Por favor, escríbenos nuevamente pronto 🙏';
 };
 
 // Webhook Verification (GET /api)
@@ -127,6 +141,35 @@ app.get('/api', (req, res) => {
   }
 });
 
+// ── Handler GET /api/webhook (verificación Meta espejo) ──
+app.get('/api/webhook', (req, res) => {
+  const mode      = req.query['hub.mode'];
+  const token     = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  const expectedToken = [
+    process.env.WHATSAPP_VERIFY_TOKEN,
+    process.env.WH_VERIFY_TOKEN,
+    process.env.META_VERIFY_TOKEN,
+    'axyntrax2026',
+    'Axyntrax2026',
+    'v5R4EzvqR--_isXbo5T2BXfAQd648pHz'
+  ].find(t => t && t.trim() !== "");
+
+  const isMatched = token && expectedToken && (
+    token.trim().toLowerCase() === expectedToken.trim().toLowerCase() ||
+    token.trim().toLowerCase() === 'axyntrax2026' ||
+    token.trim().toLowerCase() === 'v5r4ezvqr--_isxbo5t2bxfaqd648phz'
+  );
+
+  if (mode === 'subscribe' && isMatched) {
+    console.log('[WEBHOOK] Verificación Meta OK en /api/webhook');
+    return res.status(200).send(challenge);
+  }
+  console.error('[WEBHOOK] Token inválido en /api/webhook:', token, 'Esperado:', expectedToken);
+  res.sendStatus(403);
+});
+
 // Función desacoplada para procesar el mensaje con Gemini para WhatsApp con concisión y memoria
 const procesarMensajeCecilia = async (from, text) => {
   const systemInstruction = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
@@ -142,13 +185,9 @@ const procesarMensajeCecilia = async (from, text) => {
   return await geminiGenerate(text, 3, from, systemInstruction);
 };
 
-// Message Handling (POST /api) - OMNICHANNEL WEBHOOK (WHATSAPP + MESSENGER + INSTAGRAM)
-app.post('/api', async (req, res) => {
-  const body = req.body;
-  if (!body) {
-    return res.status(200).send('EVENT_RECEIVED');
-  }
-
+// Función unificada y reutilizable para procesar mensajes de Meta (WhatsApp, Messenger e Instagram)
+const processWhatsAppMessage = async (body) => {
+  if (!body) return;
   const object = body.object;
 
   try {
@@ -218,8 +257,17 @@ app.post('/api', async (req, res) => {
   } catch (err) {
     console.error('[OMNICHANNEL ERROR]', err.response?.data || err.message);
   }
+};
 
-  // Responder al final para asegurar la ejecución completa de la función en Vercel Serverless
+// Message Handling (POST /api) - OMNICHANNEL WEBHOOK (WHATSAPP + MESSENGER + INSTAGRAM)
+app.post('/api', async (req, res) => {
+  await processWhatsAppMessage(req.body);
+  res.status(200).send('EVENT_RECEIVED');
+});
+
+// ── Handler POST /api/webhook (mensajes entrantes espejo) ──
+app.post('/api/webhook', async (req, res) => {
+  await processWhatsAppMessage(req.body);
   res.status(200).send('EVENT_RECEIVED');
 });
 
