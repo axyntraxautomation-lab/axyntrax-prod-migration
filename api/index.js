@@ -142,58 +142,86 @@ const procesarMensajeCecilia = async (from, text) => {
   return await geminiGenerate(text, 3, from, systemInstruction);
 };
 
-// Message Handling (POST /api) - WHATSAPP WEBHOOK ASÍNCRONO MULTI-NÚMERO
+// Message Handling (POST /api) - OMNICHANNEL WEBHOOK (WHATSAPP + MESSENGER + INSTAGRAM)
 app.post('/api', (req, res) => {
-  // CRÍTICO: Responder a Meta en menos de 1 segundo
+  // CRÍTICO: Responder a Meta en menos de 1 segundo para prevenir timeouts
   res.status(200).send('EVENT_RECEIVED');
 
-  // Extraer mensaje de forma segura
   const body = req.body;
-  const entry = body?.entry?.[0];
-  const changes = entry?.changes?.[0];
-  const value = changes?.value;
-  const message = value?.messages?.[0];
+  if (!body) return;
 
-  if (!message || message.type !== 'text') return; // ignorar status updates y otros eventos
+  const object = body.object;
 
-  const from = message.from;         // número del usuario
-  const text = message?.text?.body;  // texto del mensaje
-  const phoneNumberId = value?.metadata?.phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.PHONE_NUMBER_ID;
-
-  if (!text || !from || !phoneNumberId) return;
-
-  // Procesar en background (NO bloquea el response)
   setImmediate(async () => {
     try {
-      console.log(`[CECILIA] Mensaje de ${from}: ${text}`);
-      
-      let respuesta = "";
-      try {
-        respuesta = await procesarMensajeCecilia(from, text);
-      } catch (aiError) {
-        console.error('AI Error en WA:', aiError.message);
-        respuesta = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
-      }
-      
-      // Enviar respuesta al usuario via Meta API
-      await axios.post(
-        `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
-        {
-          messaging_product: 'whatsapp',
-          to: from,
-          type: 'text',
-          text: { body: respuesta }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
-            'Content-Type': 'application/json'
+      if (object === 'whatsapp_business_account') {
+        // --- WHATSAPP FLOW ---
+        const entry = body?.entry?.[0];
+        const changes = entry?.changes?.[0];
+        const value = changes?.value;
+        const message = value?.messages?.[0];
+
+        if (!message || message.type !== 'text') return;
+
+        const from = message.from;
+        const text = message?.text?.body;
+        const phoneNumberId = value?.metadata?.phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.PHONE_NUMBER_ID || PHONE_NUMBER_ID;
+
+        if (!text || !from || !phoneNumberId) return;
+
+        console.log(`[WHATSAPP] Mensaje de ${from}: ${text}`);
+        const respuesta = await procesarMensajeCecilia(from, text);
+
+        await axios.post(
+          `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+          {
+            messaging_product: 'whatsapp',
+            to: from,
+            type: 'text',
+            text: { body: respuesta }
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
           }
-        }
-      );
-      console.log(`[CECILIA] Respuesta enviada a ${from}`);
+        );
+        console.log(`[WHATSAPP] Respuesta enviada a ${from}`);
+
+      } else if (object === 'page' || object === 'instagram') {
+        // --- MESSENGER & INSTAGRAM FLOW ---
+        const entry = body?.entry?.[0];
+        const messaging = entry?.messaging?.[0];
+        const senderId = messaging?.sender?.id;
+        const text = messaging?.message?.text;
+
+        // Evitar bucles de autoreplicación si el mensaje es un echo de la propia página
+        if (messaging?.message?.is_echo) return;
+
+        if (!text || !senderId) return;
+
+        console.log(`[${object.toUpperCase()}] Mensaje de ${senderId}: ${text}`);
+        const respuesta = await procesarMensajeCecilia(senderId, text);
+
+        await axios.post(
+          `https://graph.facebook.com/v20.0/me/messages`,
+          {
+            recipient: { id: senderId },
+            messaging_type: 'RESPONSE',
+            message: { text: respuesta }
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${process.env.META_PAGE_TOKEN || process.env.META_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        console.log(`[${object.toUpperCase()}] Respuesta enviada a ${senderId}`);
+      }
     } catch (err) {
-      console.error('[CECILIA ERROR]', err.response?.data || err.message);
+      console.error('[OMNICHANNEL ERROR]', err.response?.data || err.message);
     }
   });
 });
