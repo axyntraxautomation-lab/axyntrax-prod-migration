@@ -423,5 +423,14 @@ app.get('/api/keygen/list', async (req, res) => {
   }
 });
 
+app.get('/api/status', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    agents: { ATLAS: 'active', CECILIA: 'active', JARVIS: 'active' },
+    timestamp: new Date().toISOString(),
+    version: 'Axyntrax V5.0'
+  });
+});
+
 module.exports = app;
 
