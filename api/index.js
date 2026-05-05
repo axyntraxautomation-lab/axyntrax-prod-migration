@@ -7,13 +7,14 @@ const app = express();
 app.use(express.json());
 
 const {
-  WHATSAPP_TOKEN,
-  META_VERIFY_TOKEN = 'axyntrax2026',
+  WHATSAPP_TOKEN = 'EAAOEfgGZC6gEBRfNuqlouZAF7XmqAt2DEtcKrAMxzcenf6LZBcExIKRGMHYG69sWVBbdVK90fKn0WaKJxpousOts7qiAZBsPYxBZBNXTV3xHZCrO1euilpogpuIsrLN2WgKUIXtnpi42PaouDJ8klZBMoGcrYHFkzRV2Eyn8FEDVTyZAiuBfjgISpvlk2Od3UEBiwTT4IujM4czUl4IaZCmZAYgQ0F7dfKrztqyLZBlEWvXozQUm8z7ovC4EgezYKQLSAvZBkrCwB3gIPiKu6FUSeMKV',
+  META_VERIFY_TOKEN = 'axyntrax_diamante_2026',
   PHONE_NUMBER_ID = '1156622220859055',
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
   GEMINI_API_KEY
 } = process.env;
+
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -30,7 +31,7 @@ app.get('/api', (req, res) => {
   res.sendStatus(403);
 });
 
-// Message Handling (POST /api)
+// Message Handling (POST /api) - WHATSAPP WEBHOOK
 app.post('/api', async (req, res) => {
   try {
     const entry = req.body.entry?.[0];
@@ -42,14 +43,26 @@ app.post('/api', async (req, res) => {
       const from = message.from;
       const text = message.text.body;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `Eres Cecilia IA de Axyntrax Automation. Responde en español de forma humana y cálida.
-      Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
-      Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
-      Cliente dice: ${text}`;
-      
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text();
+      console.log(`[WA] Mensaje recibido de ${from}: ${text}`);
+
+      let responseText = "";
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `IDENTIDAD: Eres Cecilia, asistente de Axyntrax Automation.
+        PERSONALIDAD: Peruana de Arequipa, 28 años, profesional, empática y proactiva.
+        CONTEXTO: Estás en el WhatsApp de la empresa del cliente.
+        MÓDULOS: Cecilia (Ventas), ATLAS (Soporte), JARVIS (Dashboard).
+        REGLA: NUNCA digas que eres una IA. Habla con calidez peruana.
+        PLANES: Trial (45 días), Basic (S/99), Pro (S/199), Enterprise (S/299).
+        RUBROS: Car Wash, Veterinaria, Talleres, Clínicas, Restaurantes.
+        CLIENTE PREGUNTA: ${text}`;
+        
+        const result = await model.generateContent(prompt);
+        responseText = result.response.text();
+      } catch (aiError) {
+        console.error('AI Error en WA:', aiError.message);
+        responseText = "¡Hola! Soy Cecilia. He recibido tu mensaje, pero mi módulo de análisis está en mantenimiento por un momento. ¿Te gustaría que un especialista de ATLAS te contacte o prefieres esperar unos minutos? ¡Mil disculpas!";
+      }
 
       await axios.post(
         `https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`,
@@ -63,13 +76,15 @@ app.post('/api', async (req, res) => {
           headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
         }
       );
+      console.log(`[WA] Respuesta enviada a ${from}`);
     }
-    res.sendStatus(200);
+    res.status(200).send('EVENT_RECEIVED');
   } catch (error) {
-    console.error('WA Error:', error.message);
-    res.sendStatus(200);
+    console.error('WA Critical Error:', error.message);
+    res.status(200).send('EVENT_RECEIVED');
   }
 });
+
 
 // CECILIA WEB CHAT (POST /api/chat)
 app.post('/api/chat', async (req, res) => {
@@ -77,13 +92,16 @@ app.post('/api/chat', async (req, res) => {
     const { message, visitorId, rubro } = req.body;
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
+    IDENTIDAD: Peruana de Arequipa, 28 años, profesional y cálida.
     Eres el chatbot embebido en la web. Sabe todo el sitio:
-    - Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
-    - Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
-    - Cecilia atiende WA/FB/IG 24/7. ATLAS es soporte. JARVIS es el dashboard.
+    - Planes: Trial (45 días gratis), Basic (S/99), Pro (S/199), Enterprise (S/299).
+    - Rubros: Car Wash, Veterinaria, Dentista, Clínica, Retail, Restaurante.
+    - Cecilia atiende WA/FB/IG 24/7. ATLAS es soporte técnico. JARVIS es el dashboard.
+    - Módulos: Axyntrax Boot Optimizer (.bat), Axyntrax Voice (Llamadas IA).
     Visitor ID: ${visitorId}
     Rubro: ${rubro || 'No especificado'}
     Mensaje: ${message}`;
+
 
     const result = await model.generateContent(prompt);
     res.json({ response: result.response.text() });
