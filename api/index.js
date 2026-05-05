@@ -61,74 +61,86 @@ const geminiGenerate = async (prompt, retries = 3) => {
 
 // Webhook Verification (GET /api)
 app.get('/api', (req, res) => {
-  const mode = req.query['hub.mode'];
-  const token = req.query['hub.verify_token'];
+  const mode    = req.query['hub.mode'];
+  const token   = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  if (mode === 'subscribe' && token === META_VERIFY_TOKEN) {
-    return res.status(200).set('Content-Type', 'text/plain').send(challenge);
+  if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+    console.log('[WEBHOOK] Verificación Meta exitosa');
+    res.status(200).send(challenge);
+  } else {
+    console.error('[WEBHOOK] Token inválido:', token);
+    res.sendStatus(403);
   }
-  res.sendStatus(403);
 });
 
-// Función desacoplada para procesar el mensaje en segundo plano
-const processWhatsAppMessage = async (body) => {
-  const entry = body.entry?.[0];
+// Función desacoplada para procesar el mensaje con Gemini sin alterar prompts
+const procesarMensajeCecilia = async (from, text) => {
+  const prompt = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
+  Eres Cecilia, asistente IA de Axyntrax. Adapta tu tono al rubro del cliente:
+  - Clínica/Dentista: formal, usa "usted", empática.
+  - Car Wash/Retail: juvenil, usa emojis, tú.
+  - Legal/Logística: profesional, concisa, ejecutiva.
+  - Veterinaria/Restaurante: cálida, familiar.
+  PLANES: Trial 45 días, Basic S/99, Pro S/199, Enterprise S/299.
+  NUNCA digas que eres IA. Eres la asistente de esta empresa.
+  MENSAJE DEL CLIENTE: ${text}`;
+
+  return await geminiGenerate(prompt);
+};
+
+// Message Handling (POST /api) - WHATSAPP WEBHOOK ASÍNCRONO MULTI-NÚMERO
+app.post('/api', (req, res) => {
+  // CRÍTICO: Responder a Meta en menos de 1 segundo
+  res.status(200).send('EVENT_RECEIVED');
+
+  // Extraer mensaje de forma segura
+  const body = req.body;
+  const entry = body?.entry?.[0];
   const changes = entry?.changes?.[0];
   const value = changes?.value;
   const message = value?.messages?.[0];
 
-  if (message?.type === 'text') {
-    const from = message.from;
-    const text = message.text.body;
+  if (!message || message.type !== 'text') return; // ignorar status updates y otros eventos
 
-    console.log(`[WA] Mensaje recibido de ${from}: ${text}`);
+  const from = message.from;         // número del usuario
+  const text = message?.text?.body;  // texto del mensaje
+  const phoneNumberId = value?.metadata?.phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.PHONE_NUMBER_ID;
 
-    let responseText = "";
-    try {
-      const prompt = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
-      Eres Cecilia, asistente IA de Axyntrax. Adapta tu tono al rubro del cliente:
-      - Clínica/Dentista: formal, usa "usted", empática.
-      - Car Wash/Retail: juvenil, usa emojis, tú.
-      - Legal/Logística: profesional, concisa, ejecutiva.
-      - Veterinaria/Restaurante: cálida, familiar.
-      PLANES: Trial 45 días, Basic S/99, Pro S/199, Enterprise S/299.
-      NUNCA digas que eres IA. Eres la asistente de esta empresa.
-      MENSAJE DEL CLIENTE: ${text}`;
+  if (!text || !from || !phoneNumberId) return;
 
-      responseText = await geminiGenerate(prompt);
-    } catch (aiError) {
-      console.error('AI Error en WA:', aiError.message);
-      responseText = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
-    }
-
-    await axios.post(
-      `https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        to: from,
-        type: 'text',
-        text: { body: responseText }
-      },
-      {
-        headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
-      }
-    );
-    console.log(`[WA] Respuesta enviada a ${from}`);
-  }
-};
-
-// Message Handling (POST /api) - WHATSAPP WEBHOOK
-app.post('/api', (req, res) => {
-  // 1. Responder a Meta INMEDIATAMENTE
-  res.status(200).send('EVENT_RECEIVED');
-
-  // 2. Procesar en background (no bloquea el response)
+  // Procesar en background (NO bloquea el response)
   setImmediate(async () => {
     try {
-      await processWhatsAppMessage(req.body);
+      console.log(`[CECILIA] Mensaje de ${from}: ${text}`);
+      
+      let respuesta = "";
+      try {
+        respuesta = await procesarMensajeCecilia(from, text);
+      } catch (aiError) {
+        console.error('AI Error en WA:', aiError.message);
+        respuesta = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
+      }
+      
+      // Enviar respuesta al usuario via Meta API
+      await axios.post(
+        `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+        {
+          messaging_product: 'whatsapp',
+          to: from,
+          type: 'text',
+          text: { body: respuesta }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(`[CECILIA] Respuesta enviada a ${from}`);
     } catch (err) {
-      console.error('[WEBHOOK ERROR]', err.message);
+      console.error('[CECILIA ERROR]', err.response?.data || err.message);
     }
   });
 });
