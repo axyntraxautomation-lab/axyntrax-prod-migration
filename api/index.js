@@ -56,57 +56,66 @@ app.get('/api', (req, res) => {
   res.sendStatus(403);
 });
 
-// Message Handling (POST /api) - WHATSAPP WEBHOOK
-app.post('/api', async (req, res) => {
-  try {
-    const entry = req.body.entry?.[0];
-    const changes = entry?.changes?.[0];
-    const value = changes?.value;
-    const message = value?.messages?.[0];
+// Función desacoplada para procesar el mensaje en segundo plano
+const processWhatsAppMessage = async (body) => {
+  const entry = body.entry?.[0];
+  const changes = entry?.changes?.[0];
+  const value = changes?.value;
+  const message = value?.messages?.[0];
 
-    if (message?.type === 'text') {
-      const from = message.from;
-      const text = message.text.body;
+  if (message?.type === 'text') {
+    const from = message.from;
+    const text = message.text.body;
 
-      console.log(`[WA] Mensaje recibido de ${from}: ${text}`);
+    console.log(`[WA] Mensaje recibido de ${from}: ${text}`);
 
-      let responseText = "";
-      try {
-        const prompt = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
-        Eres Cecilia, asistente IA de Axyntrax. Adapta tu tono al rubro del cliente:
-        - Clínica/Dentista: formal, usa "usted", empática.
-        - Car Wash/Retail: juvenil, usa emojis, tú.
-        - Legal/Logística: profesional, concisa, ejecutiva.
-        - Veterinaria/Restaurante: cálida, familiar.
-        PLANES: Trial 45 días, Basic S/99, Pro S/199, Enterprise S/299.
-        NUNCA digas que eres IA. Eres la asistente de esta empresa.
-        MENSAJE DEL CLIENTE: ${text}`;
+    let responseText = "";
+    try {
+      const prompt = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
+      Eres Cecilia, asistente IA de Axyntrax. Adapta tu tono al rubro del cliente:
+      - Clínica/Dentista: formal, usa "usted", empática.
+      - Car Wash/Retail: juvenil, usa emojis, tú.
+      - Legal/Logística: profesional, concisa, ejecutiva.
+      - Veterinaria/Restaurante: cálida, familiar.
+      PLANES: Trial 45 días, Basic S/99, Pro S/199, Enterprise S/299.
+      NUNCA digas que eres IA. Eres la asistente de esta empresa.
+      MENSAJE DEL CLIENTE: ${text}`;
 
-        responseText = await geminiGenerate(prompt);
-      } catch (aiError) {
-        console.error('AI Error en WA:', aiError.message);
-        responseText = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
-      }
-
-      await axios.post(
-        `https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`,
-        {
-          messaging_product: 'whatsapp',
-          to: from,
-          type: 'text',
-          text: { body: responseText }
-        },
-        {
-          headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
-        }
-      );
-      console.log(`[WA] Respuesta enviada a ${from}`);
+      responseText = await geminiGenerate(prompt);
+    } catch (aiError) {
+      console.error('AI Error en WA:', aiError.message);
+      responseText = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
     }
-    res.status(200).send('EVENT_RECEIVED');
-  } catch (error) {
-    console.error('WA Critical Error:', error.message);
-    res.status(200).send('EVENT_RECEIVED');
+
+    await axios.post(
+      `https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        to: from,
+        type: 'text',
+        text: { body: responseText }
+      },
+      {
+        headers: { Authorization: `Bearer ${WHATSAPP_TOKEN}` }
+      }
+    );
+    console.log(`[WA] Respuesta enviada a ${from}`);
   }
+};
+
+// Message Handling (POST /api) - WHATSAPP WEBHOOK
+app.post('/api', (req, res) => {
+  // 1. Responder a Meta INMEDIATAMENTE
+  res.status(200).send('EVENT_RECEIVED');
+
+  // 2. Procesar en background (no bloquea el response)
+  setImmediate(async () => {
+    try {
+      await processWhatsAppMessage(req.body);
+    } catch (err) {
+      console.error('[WEBHOOK ERROR]', err.message);
+    }
+  });
 });
 
 
