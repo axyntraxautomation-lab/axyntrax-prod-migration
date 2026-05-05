@@ -143,64 +143,58 @@ const procesarMensajeCecilia = async (from, text) => {
 };
 
 // Message Handling (POST /api) - OMNICHANNEL WEBHOOK (WHATSAPP + MESSENGER + INSTAGRAM)
-app.post('/api', (req, res) => {
-  // CRÍTICO: Responder a Meta en menos de 1 segundo para prevenir timeouts
-  res.status(200).send('EVENT_RECEIVED');
-
+app.post('/api', async (req, res) => {
   const body = req.body;
-  if (!body) return;
+  if (!body) {
+    return res.status(200).send('EVENT_RECEIVED');
+  }
 
   const object = body.object;
 
-  setImmediate(async () => {
-    try {
-      if (object === 'whatsapp_business_account') {
-        // --- WHATSAPP FLOW ---
-        const entry = body?.entry?.[0];
-        const changes = entry?.changes?.[0];
-        const value = changes?.value;
-        const message = value?.messages?.[0];
+  try {
+    if (object === 'whatsapp_business_account') {
+      // --- WHATSAPP FLOW ---
+      const entry = body?.entry?.[0];
+      const changes = entry?.changes?.[0];
+      const value = changes?.value;
+      const message = value?.messages?.[0];
 
-        if (!message || message.type !== 'text') return;
-
+      if (message && message.type === 'text') {
         const from = message.from;
         const text = message?.text?.body;
         const phoneNumberId = value?.metadata?.phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.PHONE_NUMBER_ID || PHONE_NUMBER_ID;
 
-        if (!text || !from || !phoneNumberId) return;
+        if (text && from && phoneNumberId) {
+          console.log(`[WHATSAPP] Mensaje de ${from}: ${text}`);
+          const respuesta = await procesarMensajeCecilia(from, text);
 
-        console.log(`[WHATSAPP] Mensaje de ${from}: ${text}`);
-        const respuesta = await procesarMensajeCecilia(from, text);
-
-        await axios.post(
-          `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
-          {
-            messaging_product: 'whatsapp',
-            to: from,
-            type: 'text',
-            text: { body: respuesta }
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
-              'Content-Type': 'application/json'
+          await axios.post(
+            `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+            {
+              messaging_product: 'whatsapp',
+              to: from,
+              type: 'text',
+              text: { body: respuesta }
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
+                'Content-Type': 'application/json'
+              }
             }
-          }
-        );
-        console.log(`[WHATSAPP] Respuesta enviada a ${from}`);
+          );
+          console.log(`[WHATSAPP] Respuesta enviada a ${from}`);
+        }
+      }
 
-      } else if (object === 'page' || object === 'instagram') {
-        // --- MESSENGER & INSTAGRAM FLOW ---
-        const entry = body?.entry?.[0];
-        const messaging = entry?.messaging?.[0];
-        const senderId = messaging?.sender?.id;
-        const text = messaging?.message?.text;
+    } else if (object === 'page' || object === 'instagram') {
+      // --- MESSENGER & INSTAGRAM FLOW ---
+      const entry = body?.entry?.[0];
+      const messaging = entry?.messaging?.[0];
+      const senderId = messaging?.sender?.id;
+      const text = messaging?.message?.text;
 
-        // Evitar bucles de autoreplicación si el mensaje es un echo de la propia página
-        if (messaging?.message?.is_echo) return;
-
-        if (!text || !senderId) return;
-
+      if (text && senderId && !messaging?.message?.is_echo) {
         console.log(`[${object.toUpperCase()}] Mensaje de ${senderId}: ${text}`);
         const respuesta = await procesarMensajeCecilia(senderId, text);
 
@@ -220,10 +214,13 @@ app.post('/api', (req, res) => {
         );
         console.log(`[${object.toUpperCase()}] Respuesta enviada a ${senderId}`);
       }
-    } catch (err) {
-      console.error('[OMNICHANNEL ERROR]', err.response?.data || err.message);
     }
-  });
+  } catch (err) {
+    console.error('[OMNICHANNEL ERROR]', err.response?.data || err.message);
+  }
+
+  // Responder al final para asegurar la ejecución completa de la función en Vercel Serverless
+  res.status(200).send('EVENT_RECEIVED');
 });
 
 // CECILIA WEB CHAT (POST /api/chat)
