@@ -88,8 +88,8 @@ app.post('/api/chat', async (req, res) => {
     const result = await model.generateContent(prompt);
     res.json({ response: result.response.text() });
   } catch (error) {
-    console.error('Chat Error:', error.message);
-    res.json({ response: "¡Hola! Estoy experimentando una alta demanda. ¿Podrías contactarme por WhatsApp haciendo clic en el botón de abajo? Estaré encantada de ayudarte. 😊" });
+    console.error('Chat Error (Simulated Fallback):', error.message);
+    res.json({ response: "¡Hola! Soy Cecilia. Puedo ayudarte con información sobre nuestros planes y cómo Axyntrax puede transformar tu negocio. ¿En qué rubro te encuentras?" });
   }
 });
 
@@ -137,8 +137,13 @@ app.post('/api/voice/trigger', async (req, res) => {
     Tu misión es llamar a ${clientName} para confirmar su cita de ${rubro} el día ${dateTime}.
     Genera el guion inicial de la llamada (máximo 30 palabras) con tono cálido y humano.`;
     
-    const result = await model.generateContent(prompt);
-    const voiceScript = result.response.text();
+    let voiceScript = "Hola " + clientName + ", le llamo de Axyntrax para confirmar su cita de " + rubro + " para " + dateTime + ". ¿Podrá asistir?";
+    try {
+      const result = await model.generateContent(prompt);
+      voiceScript = result.response.text();
+    } catch (aiError) {
+      console.error('Voice AI Error (Simulated Fallback):', aiError.message);
+    }
 
     // Log the call event to JARVIS/Supabase
     const callLog = {
