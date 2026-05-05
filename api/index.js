@@ -307,8 +307,9 @@ app.post('/api/keygen/generate', async (req, res) => {
 
     // Guardar en Supabase (compatible con todas las versiones del cliente JS)
     try {
+      const hashedKey = crypto.createHash('sha256').update(key).digest('hex');
       await supabase.from('keygens').insert([{
-        key, rubro, plan, submodulos: submodulos.join(','),
+        key: hashedKey, rubro, plan, submodulos: submodulos.join(','),
         empresa: empresa || 'Sin registrar',
         contacto: contacto || '',
         estado: 'ACTIVO',
@@ -336,14 +337,16 @@ app.post('/api/keygen/validate', async (req, res) => {
     const { key, machineId } = req.body;
     if (!key) return res.status(400).json({ valid: false, error: 'Key requerido.' });
 
+    const hashedKey = crypto.createHash('sha256').update(key).digest('hex');
+
     // Buscar en Supabase
     const { data, error } = await supabase
-      .from('keygens').select('*').eq('key', key).single();
+      .from('keygens').select('*').eq('key', hashedKey).single();
 
     if (error || !data) return res.json({ valid: false, error: 'Key no encontrado. Contacta a Axyntrax.' });
     if (data.estado !== 'ACTIVO') return res.json({ valid: false, error: `Key ${data.estado}. Contacta soporte.` });
     if (new Date(data.expiry_date) < new Date()) {
-      await supabase.from('keygens').update({ estado: 'EXPIRADO' }).eq('key', key);
+      await supabase.from('keygens').update({ estado: 'EXPIRADO' }).eq('key', hashedKey);
       return res.json({ valid: false, error: 'Licencia expirada. Renueva tu plan en axyntrax-automation.net' });
     }
     if (data.activaciones >= data.max_activaciones) {
@@ -355,7 +358,7 @@ app.post('/api/keygen/validate', async (req, res) => {
       activaciones: data.activaciones + 1,
       last_machine: machineId || 'unknown',
       last_activation: new Date().toISOString()
-    }).eq('key', key);
+    }).eq('key', hashedKey);
 
     console.log(`[KEYGEN] Validado OK: ${key} — ${data.empresa}`);
     res.json({
