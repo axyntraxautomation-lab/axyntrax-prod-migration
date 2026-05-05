@@ -288,7 +288,8 @@ app.post('/api/keygen/generate', async (req, res) => {
   try {
     const { masterToken, rubro, plan, empresa, contacto, submodulos = ['A'], diasTrial = 45 } = req.body;
     
-    if (masterToken !== process.env.JARVIS_MASTER_TOKEN && masterToken !== 'AXYNTRAX_CEO_2026') {
+    if (!process.env.JARVIS_MASTER_TOKEN) { return res.status(500).json({ error: 'Token maestro no configurado' }); }
+    if (masterToken !== process.env.JARVIS_MASTER_TOKEN) {
       return res.status(401).json({ error: 'Acceso denegado. Token maestro inválido.' });
     }
     if (!rubro || !plan) return res.status(400).json({ error: 'Rubro y plan son obligatorios.' });
@@ -367,7 +368,8 @@ app.post('/api/keygen/validate', async (req, res) => {
 app.get('/api/keygen/list', async (req, res) => {
   try {
     const { token } = req.query;
-    if (token !== process.env.JARVIS_MASTER_TOKEN && token !== 'AXYNTRAX_CEO_2026') {
+    if (!process.env.JARVIS_MASTER_TOKEN) { return res.status(500).json({ error: 'Token maestro no configurado' }); }
+    if (token !== process.env.JARVIS_MASTER_TOKEN) {
       return res.status(401).json({ error: 'Acceso denegado.' });
     }
     const { data } = await supabase.from('keygens').select('*').order('created_at', { ascending: false });

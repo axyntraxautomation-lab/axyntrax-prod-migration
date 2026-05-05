@@ -48,7 +48,7 @@ select:focus,input:focus{border-color:var(--cyan)}
   <div class="panel">
     <h2>🔑 Generar Nueva Licencia</h2>
     <label>Token Maestro CEO</label>
-    <input type="password" id="masterToken" placeholder="AXYNTRAX_CEO_2026" value="AXYNTRAX_CEO_2026">
+    <input type="password" id="masterToken" placeholder="Token CEO">
     
     <label>Empresa Cliente</label>
     <input type="text" id="empresa" placeholder="Ej: Clínica San Miguel SAC">
@@ -165,7 +165,8 @@ async function validarKey() {
 async function cargarKeys() {
   const div = document.getElementById('keysList');
   try {
-    const r = await fetch('/api/keygen/list?token=AXYNTRAX_CEO_2026');
+    const token = document.getElementById('masterToken').value;
+    const r = await fetch(`/api/keygen/list?token=${token}`);
     const d = await r.json();
     if (!d.keys?.length) { div.innerHTML = '<p style="color:var(--muted)">Sin licencias generadas aún.</p>'; return; }
     div.innerHTML = `<table class="keys-table">
