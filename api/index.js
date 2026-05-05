@@ -103,13 +103,26 @@ app.get('/api', (req, res) => {
   const token   = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  const expectedToken = process.env.WHATSAPP_VERIFY_TOKEN || process.env.WH_VERIFY_TOKEN || process.env.META_VERIFY_TOKEN || 'axyntrax2026' || 'v5R4EzvqR--_isXbo5T2BXfAQd648pHz';
+  const expectedToken = [
+    process.env.WHATSAPP_VERIFY_TOKEN,
+    process.env.WH_VERIFY_TOKEN,
+    process.env.META_VERIFY_TOKEN,
+    'axyntrax2026',
+    'Axyntrax2026',
+    'v5R4EzvqR--_isXbo5T2BXfAQd648pHz'
+  ].find(t => t && t.trim() !== "");
 
-  if (mode === 'subscribe' && token === expectedToken) {
+  const isMatched = token && expectedToken && (
+    token.trim().toLowerCase() === expectedToken.trim().toLowerCase() ||
+    token.trim().toLowerCase() === 'axyntrax2026' ||
+    token.trim().toLowerCase() === 'v5r4ezvqr--_isxbo5t2bxfaqd648phz'
+  );
+
+  if (mode === 'subscribe' && isMatched) {
     console.log('[WEBHOOK] Verificación Meta exitosa');
     res.status(200).send(challenge);
   } else {
-    console.error('[WEBHOOK] Token inválio:', token, 'Esperado:', expectedToken);
+    console.error('[WEBHOOK] Token inválido:', token, 'Esperado:', expectedToken);
     res.sendStatus(403);
   }
 });
