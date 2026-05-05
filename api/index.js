@@ -174,8 +174,13 @@ app.post('/api/jarvis-chat', async (req, res) => {
     console.log('[JARVIS] Response generated OK');
     res.json({ response: responseText });
   } catch (error) {
-    console.error('[JARVIS] Error:', error.message);
-    res.json({ response: 'ALERTA JARVIS: La cuota de IA del plan gratuito se ha agotado temporalmente. El sistema reiniciará el contador en ~1 minuto. ATLAS recomienda actualizar a un plan de pago en ai.google.dev para eliminar este límite permanentemente.' });
+    console.error('[JARVIS-CHAT ERROR]', error.message); // solo en logs internos
+    return res.status(200).json({
+      agent: 'ATLAS',
+      message: 'El sistema cognitivo de JARVIS está procesando una carga elevada. El servicio se restablecerá en breve. Por favor, reintenta en unos momentos.',
+      status: 'degraded',
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
