@@ -16,126 +16,154 @@
             --success: #10b981;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 40px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid rgba(139,92,246,0.2); padding-bottom: 20px; }
-        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--success); }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 30px; display: flex; gap: 30px; height: 100vh; overflow: hidden; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 40px; }
-        .stat-card { background: var(--surface); border: 1px solid rgba(139,92,246,0.1); border-radius: 16px; padding: 24px; position: relative; overflow: hidden; }
-        .stat-card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
-        .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 2rem; font-weight: 900; margin-top: 8px; }
-        .stat-sub { font-size: 0.75rem; color: var(--success); margin-top: 4px; }
+        .main-content { flex: 1; overflow-y: auto; padding-right: 10px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(139,92,246,0.2); padding-bottom: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .admin-email { font-size: 0.75rem; color: var(--primary); font-family: monospace; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--surface); border: 1px solid rgba(139,92,246,0.1); border-radius: 12px; padding: 20px; }
+        .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 1.5rem; font-weight: 900; margin-top: 5px; }
 
-        .table-container { background: var(--surface); border-radius: 16px; padding: 24px; border: 1px solid rgba(139,92,246,0.1); }
-        h2 { font-size: 1.2rem; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; color: var(--muted); font-size: 0.8rem; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        td { padding: 12px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .badge-type { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; background: rgba(255,255,255,0.05); }
+        .section-box { background: var(--surface); border-radius: 16px; padding: 20px; border: 1px solid rgba(139,92,246,0.1); margin-bottom: 20px; }
+        h2 { font-size: 1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; color: var(--muted); padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        .agent-status { display: flex; gap: 20px; margin-top: 40px; }
-        .agent-card { flex: 1; background: rgba(255,255,255,0.02); border: 1px dashed rgba(139,92,246,0.3); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; }
-        .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* JARVIS CHAT PANEL */
+        .side-panel { width: 400px; background: var(--surface); border: 1px solid rgba(0,245,255,0.2); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,245,255,0.05); }
+        .chat-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 15px; color: #000; font-weight: 900; font-size: 0.9rem; }
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-input { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
+        .chat-input input { flex: 1; background: var(--bg); border: 1px solid rgba(0,245,255,0.2); border-radius: 8px; color: white; padding: 10px; outline: none; font-size: 0.85rem; }
+        .chat-input button { background: var(--primary); border: none; border-radius: 8px; width: 40px; cursor: pointer; font-weight: bold; }
+        
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; }
+        .msg.jarvis { align-self: flex-start; background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.1); color: var(--text); }
+        .msg.admin { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; }
+
+        .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; display: inline-block; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div>
-            <div class="logo">J.A.R.V.I.S.</div>
-            <p style="font-size: 0.8rem; color: var(--muted);">Central Nervous System v4.0.1</p>
+    <div class="main-content">
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo">J.A.R.V.I.S.</div>
+                <div class="admin-email">axyntraxautomation@gmail.com</div>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--muted);">Protocolo: Central de Mando Activo</div>
         </div>
-        <div class="status-badge">SYSTEM ONLINE</div>
-    </div>
 
-    <div class="grid">
-        <div class="stat-card">
-            <div class="stat-label">Leads Totales</div>
-            <div class="stat-value" id="leads-count">--</div>
-            <div class="stat-sub">↑ 12% vs ayer</div>
-        </div>
-        <div class="stat-card" style="border-color: var(--secondary);">
-            <div class="stat-label">Interacciones Cecilia</div>
-            <div class="stat-value" id="chat-count">--</div>
-            <div class="stat-sub">Promedio: 14 msgs/lead</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Tickets ATLAS</div>
-            <div class="stat-value">0</div>
-            <div class="stat-sub">Resolución: 100%</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Tasa de Conversión</div>
-            <div class="stat-value">6.8%</div>
-            <div class="stat-sub">Optimizando...</div>
-        </div>
-    </div>
-
-    <div class="table-container">
-        <h2>Actividad en Tiempo Real</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>HORA</th>
-                    <th>EVENTO</th>
-                    <th>DETALLE</th>
-                    <th>ID</th>
-                </tr>
-            </thead>
-            <tbody id="event-logs">
-                <tr><td colspan="4" style="text-align:center; color:var(--muted);">Sincronizando con base de datos de producción...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="agent-status">
-        <div class="agent-card">
-            <div class="pulse"></div>
-            <div>
-                <strong>CECILIA IA</strong>
-                <p style="font-size: 0.7rem; color: var(--muted);">Modelo: Gemini 1.5 Flash</p>
+        <div class="grid">
+            <div class="stat-card">
+                <div class="stat-label">Estado ATLAS</div>
+                <div class="stat-value"><div class="pulse"></div> ONLINE</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Emails Analizados</div>
+                <div class="stat-value" id="email-count">24</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Citas Agendadas</div>
+                <div class="stat-value" id="leads-count">142</div>
             </div>
         </div>
-        <div class="agent-card">
-            <div class="pulse" style="background: var(--primary); box-shadow: 0 0 10px var(--primary);"></div>
-            <div>
-                <strong>ATLAS CORE</strong>
-                <p style="font-size: 0.7rem; color: var(--muted);">Status: Monitoring Active</p>
+
+        <div class="section-box">
+            <h2>📩 Análisis de Emails (Prioridad Alta)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DE</th>
+                        <th>ASUNTO</th>
+                        <th>ANÁLISIS JARVIS</th>
+                        <th>ACCIÓN</th>
+                    </tr>
+                </thead>
+                <tbody id="email-logs">
+                    <tr>
+                        <td>Meta Support</td>
+                        <td>Update WhatsApp API v21.0</td>
+                        <td><span style="color:var(--primary);">CRÍTICO</span>: Requiere actualización de tokens.</td>
+                        <td><button style="background:var(--primary); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">Ver detalles</button></td>
+                    </tr>
+                    <tr>
+                        <td>Google Cloud</td>
+                        <td>Billing Statement May 2026</td>
+                        <td>INFO: Consumo dentro del margen.</td>
+                        <td><button style="background:var(--muted); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; color:white;">Archivar</button></td>
+                    </tr>
+                    <tr>
+                        <td>Lead: Clínica Dental</td>
+                        <td>Consulta Presupuesto Enterprise</td>
+                        <td><span style="color:var(--success);">OPORTUNIDAD</span>: Cliente con alto interés.</td>
+                        <td><button style="background:var(--success); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; color:white;">Responder Cecilia</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-box">
+            <h2>🧩 Módulos Activos</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">WhatsApp API ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Gemini 1.5 Flash ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Supabase DB ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Gmail Sync (Simulated) ⏳</span>
             </div>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="chat-header">COMUNICACIÓN DIRECTA CON JARVIS</div>
+        <div class="chat-body" id="jarvis-messages">
+            <div class="msg jarvis">Bienvenido, Miguel. Los sistemas están estables al 99.9%. He analizado tus correos recientes y he marcado una consulta de presupuesto de una Clínica Dental como prioridad alta. ¿Deseas que prepare una propuesta automática?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="jarvis-input" placeholder="Orden de mando..." onkeypress="if(event.key==='Enter') sendJarvis()">
+            <button onclick="sendJarvis()">➔</button>
         </div>
     </div>
 
     <script>
-        // Simulación de carga de datos reales (Se conectaría a /api/health o /api/logs)
-        const updateData = async () => {
-            try {
-                // Mocking values for visual demo
-                document.getElementById('leads-count').innerText = Math.floor(Math.random() * 50) + 120;
-                document.getElementById('chat-count').innerText = Math.floor(Math.random() * 200) + 840;
-                
-                const logs = [
-                    { time: 'Hace 2 min', event: 'CECILIA_CHAT', detail: 'Consulta por rubro Veterinaria', id: 'VIS-482k' },
-                    { time: 'Hace 5 min', event: 'LEAD_REGISTER', detail: 'Nueva Demo: Taller Motorsur', id: 'REG-991j' },
-                    { time: 'Hace 12 min', event: 'ATLAS_SCAN', detail: 'Sincronización exitosa Vercel', id: 'SYS-001' },
-                    { time: 'Hace 15 min', event: 'WSP_SENT', detail: 'Recordatorio enviado a +51991740590', id: 'MSG-wa' }
-                ];
+        const messages = document.getElementById('jarvis-messages');
+        const input = document.getElementById('jarvis-input');
 
-                const tbody = document.getElementById('event-logs');
-                tbody.innerHTML = logs.map(l => `
-                    <tr>
-                        <td style="color: var(--muted);">${l.time}</td>
-                        <td><span class="badge-type">${l.event}</span></td>
-                        <td>${l.detail}</td>
-                        <td style="font-family: monospace; font-size: 0.7rem;">${l.id}</td>
-                    </tr>
-                `).join('');
-            } catch (e) {}
+        const addMsg = (text, type) => {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
         };
 
-        updateData();
-        setInterval(updateData, 10000);
+        const sendJarvis = async () => {
+            const text = input.value.trim();
+            if(!text) return;
+            addMsg(text, 'admin');
+            input.value = '';
+
+            try {
+                const res = await fetch('/api/jarvis-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+                addMsg(data.response, 'jarvis');
+            } catch(e) {
+                addMsg("Error de enlace. ATLAS está revisando la conexión.", "jarvis");
+            }
+        };
     </script>
 </body>
 </html>

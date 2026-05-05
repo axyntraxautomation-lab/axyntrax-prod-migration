@@ -93,6 +93,26 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// JARVIS CENTRAL CHAT (POST /api/jarvis-chat)
+app.post('/api/jarvis-chat', async (req, res) => {
+  try {
+    const { message } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `Eres J.A.R.V.I.S., el sistema operativo central de Axyntrax Automation.
+    Tu personalidad es eficiente, tecnológica y ejecutiva. 
+    Tienes control sobre Cecilia (Ventas) y ATLAS (Soporte).
+    El administrador Miguel está hablando contigo desde la Central de Mando.
+    Responde a sus dudas sobre el sistema, métricas o estrategia de automatización.
+    Mensaje del administrador: ${message}`;
+
+    const result = await model.generateContent(prompt);
+    res.json({ response: result.response.text() });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // LOG EVENT
 app.post('/api/log-event', async (req, res) => {
   try {
