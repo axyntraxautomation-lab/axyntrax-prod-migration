@@ -4,6 +4,7 @@
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/api", "destination": "/api/index.js" },
     { "source": "/link", "destination": "/link.html" },
-    { "source": "/voice", "destination": "/voice.html" }
+    { "source": "/voice", "destination": "/voice.html" },
+    { "source": "/jarvis", "destination": "/jarvis.html" }
   ]
 }
