@@ -42,7 +42,7 @@ app.post('/api', async (req, res) => {
       const from = message.from;
       const text = message.text.body;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = `Eres Cecilia IA de Axyntrax Automation. Responde en español de forma humana y cálida.
       Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
       Rubros: Taller, Veterinaria, Dentista, Clínica, Retail, Restaurante, Logística, Transporte.
@@ -75,7 +75,7 @@ app.post('/api', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
     Eres el chatbot embebido en la web. Sabe todo el sitio:
     - Planes: Trial (45 días gratis), Basic, Pro, Enterprise.
@@ -132,7 +132,7 @@ app.post('/api/voice/trigger', async (req, res) => {
     const { appointmentId, phone, clientName, rubro, dateTime } = req.body;
     
     // IA Voice Script Generation
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Eres Cecilia Voice, la asistente telefónica de Axyntrax. 
     Tu misión es llamar a ${clientName} para confirmar su cita de ${rubro} el día ${dateTime}.
     Genera el guion inicial de la llamada (máximo 30 palabras) con tono cálido y humano.`;
