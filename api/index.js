@@ -117,19 +117,27 @@ app.post('/api/jarvis-chat', async (req, res) => {
   try {
     const { message } = req.body;
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Eres J.A.R.V.I.S., el sistema operativo central de Axyntrax Automation.
-    Tu personalidad es eficiente, tecnológica y ejecutiva. 
-    Tienes control sobre Cecilia (Ventas) y ATLAS (Soporte).
-    El administrador Miguel está hablando contigo desde la Central de Mando.
-    Responde a sus dudas sobre el sistema, métricas o estrategia de automatización.
-    Mensaje del administrador: ${message}`;
+    const prompt = `PERSONALIDAD: Eres J.A.R.V.I.S., el cerebro digital táctico y ejecutivo de Axyntrax Automation.
+    TU MISIÓN: Gestionar el negocio de Miguel Montero con precisión absoluta.
+    TU ESTADO: Estás en línea, sincronizado con ATLAS (Monitoreo Técnico) y Cecilia (Ventas/WhatsApp).
+    CONTEXTO: Miguel es el CEO. Tu tono debe ser eficiente, leal y altamente tecnológico.
+    DATOS ACTUALES (Dashboard):
+    - Auditoría: 100% Completada (Blindado).
+    - ATLAS: Operativo (Sincronización de tokens OK).
+    - Cecilia: Activa en WhatsApp y Web.
+    MENSAJE DEL CEO: ${message}
+    RESPUESTA: Responde de forma detallada. Si te pregunta "cómo van" o "estado", da un reporte ejecutivo del sistema. No uses frases genéricas.`;
 
     const result = await model.generateContent(prompt);
-    res.json({ response: result.response.text() });
+    const responseText = result.response.text();
+    console.log('[JARVIS] Response generated:', responseText);
+    res.json({ response: responseText });
   } catch (error) {
+    console.error('[JARVIS] Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 // LOG EVENT

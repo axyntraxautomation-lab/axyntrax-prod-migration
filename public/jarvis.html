@@ -177,14 +177,17 @@
 
                 if (data.response) {
                     addMsg(data.response, 'jarvis');
+                } else if (data.error) {
+                    addMsg("ALERTA ATLAS: " + data.error, "jarvis");
                 } else {
-                    addMsg("He procesado tu comando, Miguel. La sincronización con Cecilia y ATLAS se ha reforzado exitosamente.", "jarvis");
+                    addMsg("JARVIS: Procesando requerimiento... Enlace estable. Reintenta la orden.", "jarvis");
                 }
             } catch(e) {
                 const loader = document.getElementById('jarvis-loading');
                 if(loader) loader.remove();
-                addMsg("Error de enlace neuronal. ATLAS está reestableciendo la conexión con los servidores de Google.", "jarvis");
+                addMsg("Error de enlace neuronal. ATLAS reporta desconexión con el núcleo Gemini.", "jarvis");
             }
+
         };
 
     </script>
