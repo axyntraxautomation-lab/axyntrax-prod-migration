@@ -1,74 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Axyntrax Automation — IAs para tu micro empresa, 45 días gratis</title>
-  <meta name="description" content="Cecilia atiende tus clientes en WhatsApp, Facebook e Instagram 24/7. Demo gratis 45 días. Sin tarjeta. Sin contrato." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cyan: #00f5ff; --purple: #8b5cf6;
-      --bg: #050508; --surface: #0d0d14; --surface2: #13131e;
-      --text: #e8e8f0; --muted: #8888aa;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-    .gradient-text { background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .btn-primary { display: inline-block; padding: 14px 32px; border-radius: 8px; background: linear-gradient(135deg, var(--cyan), var(--purple)); color: #000; font-weight: 700; font-size: 1rem; text-decoration: none; cursor: pointer; border: none; transition: transform .2s, box-shadow .2s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,245,255,.35); }
-    .btn-outline { display: inline-block; padding: 13px 30px; border-radius: 8px; border: 1.5px solid var(--cyan); color: var(--cyan); font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer; background: transparent; transition: background .2s, color .2s; }
-    .btn-outline:hover { background: var(--cyan); color: #000; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axyntrax | Automatización Inteligente PyME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #6366f1;
+            --cyan: #00f5ff;
+            --bg: #050508;
+            --surface: #0d0d14;
+            --surface2: #161625;
+            --text: #e8e8f0;
+            --muted: #8888aa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .inner { display: flex; align-items: center; justify-content: space-between; height: 100%; }
 
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 18px 0; backdrop-filter: blur(16px); background: rgba(5,5,8,.8); border-bottom: 1px solid rgba(139,92,246,.15); }
-    nav .inner { display: flex; align-items: center; justify-content: space-between; }
-    .nav-logo { font-size: 1.2rem; font-weight: 900; letter-spacing: -.5px; }
-    .nav-links { display: flex; gap: 24px; list-style: none; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
-    .nav-links a:hover { color: var(--cyan); }
+        nav { height: 90px; background: rgba(5,5,8,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(139,92,246,0.1); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+        .nav-links a { color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--cyan); }
 
-    section { padding: 100px 0; }
-    .section-label { font-size: .72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
-    .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 16px; }
-    .section-sub { color: var(--muted); font-size: 1rem; max-width: 540px; line-height: 1.75; }
-    .alt-bg { background: var(--surface); }
+        section { padding: 120px 0; }
+        .alt-bg { background: var(--surface); }
 
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 56px; }
-    .card { background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px; padding: 36px; transition: border-color .3s, transform .3s; }
-    .card:hover { border-color: var(--cyan); transform: translateY(-4px); }
-    .card-icon { font-size: 2.4rem; margin-bottom: 20px; }
+        .section-label { font-size: 0.8rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; text-align: center; }
+        .section-title { font-size: 3rem; font-weight: 900; text-align: center; margin-bottom: 24px; line-height: 1.1; }
+        .section-sub { text-align: center; max-width: 700px; margin: 0 auto 64px; color: var(--muted); font-size: 1.1rem; }
 
-    #hero { min-height: 100vh; display: flex; align-items: center; padding-top: 80px; text-align: center; }
-    
-    footer { background: var(--bg); border-top: 1px solid rgba(139,92,246,.15); padding: 48px 0; text-align: center; }
-    .footer-copy { color: var(--muted); font-size: .78rem; margin-top: 24px; }
+        .gradient-text { background: linear-gradient(135deg, var(--cyan), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* CECILIA WEB WIDGET */
-    #cecilia-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; font-family: 'Inter', sans-serif; }
-    #cecilia-trigger { width: 65px; height: 65px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,245,255,0.3); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    #cecilia-trigger:hover { transform: scale(1.1); }
-    #cecilia-trigger img { width: 35px; height: 35px; filter: invert(1); }
-    
-    #cecilia-chat { position: absolute; bottom: 85px; right: 0; width: 350px; height: 500px; background: var(--surface2); border: 1px solid rgba(0,245,255,0.2); border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; transform-origin: bottom right; transition: all 0.3s ease; }
-    #cecilia-chat.active { display: flex; animation: slideUp 0.3s ease; }
-    
-    .chat-header { background: linear-gradient(135deg, var(--cyan), var(--purple)); padding: 15px 20px; color: #000; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
-    .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-    .chat-input-area { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
-    .chat-input-area input { flex: 1; background: var(--surface); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; color: white; padding: 10px; outline: none; }
-    .chat-input-area button { background: var(--cyan); border: none; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: transform 0.3s, box-shadow 0.3s; border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(139,92,246,0.4); }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: background 0.3s; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
-    .msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
-    .msg.bot { align-self: flex-start; background: rgba(255,255,255,0.05); color: var(--text); border-bottom-left-radius: 2px; }
-    .msg.user { align-self: flex-end; background: var(--cyan); color: #000; font-weight: 600; border-bottom-right-radius: 2px; }
-    
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: none; } }
-    
-    @media (max-width: 480px) { #cecilia-chat { width: calc(100vw - 60px); height: 450px; } }
-  </style>
+        #hero { padding: 200px 0 120px; text-align: center; position: relative; }
+        .hero-title { font-size: 4.5rem; font-weight: 900; margin-bottom: 24px; line-height: 1; }
+        .hero-sub { font-size: 1.25rem; color: var(--muted); max-width: 800px; margin: 0 auto 48px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+        .card { background: var(--surface2); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.03); transition: transform 0.3s, border-color 0.3s; }
+        .card:hover { transform: translateY(-10px); border-color: rgba(0,245,255,0.3); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 24px; }
+        .card h3 { font-size: 1.5rem; margin-bottom: 16px; }
+
+        /* WSP BUTTON */
+        .wsp-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(37,211,102,0.4); z-index: 1000; transition: transform 0.3s; }
+        .wsp-float:hover { transform: scale(1.1); }
+
+        footer { padding: 80px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .footer-copy { color: var(--muted); font-size: 0.9rem; }
+    </style>
 </head>
 <body>
 
@@ -76,11 +66,10 @@
   <div class="container inner">
     <img src="/logo.png" alt="Axyntrax Logo" style="height: 60px; object-fit: contain;">
     <ul class="nav-links">
-      <li><a href="#problema">El problema</a></li>
-      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#rubros">Soluciones</a></li>
+      <li><a href="#nosotros">Sobre nosotros</a></li>
       <li><a href="#descargas">Descargas</a></li>
       <li><a href="#precios">Precios</a></li>
-      <li><a href="#nosotros">Nosotros</a></li>
       <li><a href="#formulario" class="btn-primary">Prueba Gratis</a></li>
     </ul>
   </div>
@@ -98,95 +87,134 @@
   </div>
 </section>
 
-<section id="descargas" class="alt-bg">
-  <div class="container">
-    <div class="section-label">🛠️ Herramientas Pro</div>
-    <h2 class="section-title">Módulos de <span class="gradient-text">Optimización</span></h2>
-    <p class="section-sub">Descarga nuestras herramientas exclusivas para potenciar tu hardware y red.</p>
-    <div class="cards-grid">
-      <div class="card">
-        <h3>🚀 Boot Optimizer</h3>
-        <p style="color: var(--muted);">Acelera el arranque de Windows y prioriza recursos para Axyntrax.</p>
-        <a href="/downloads/AXYNTRAX_Optimizer.ps1" class="btn-secondary" style="margin-top: 15px; display: inline-block;" download>Descargar .ps1</a>
-      </div>
-      <div class="card">
-        <h3>🛡️ Installer Suite</h3>
-        <p style="color: var(--muted);">Instala todo el ecosistema de dependencias en un solo clic.</p>
-        <a href="/downloads/AXYNTRAX_Installer.bat" class="btn-secondary" style="margin-top: 15px; display: inline-block;" download>Descargar .bat</a>
-      </div>
-      <div class="card">
-        <h3>⚡ Net Booster</h3>
-        <p style="color: var(--muted);">Optimiza tu conexión para que Cecilia responda en milisegundos.</p>
-        <a href="/downloads/AXYNTRAX_Launcher.bat" class="btn-secondary" style="margin-top: 15px; display: inline-block;" download>Descargar .bat</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ... rest of sections (simplified for this update) ... -->
-
 <section id="rubros">
   <div class="container">
-    <div class="section-label">🎯 Nichos Validados</div>
-    <h2 class="section-title">Axyntrax se adapta a <span class="gradient-text">tu rubro</span></h2>
-    <p class="section-sub">Plantillas operativas optimizadas para tu industria desde el día 1.</p>
+    <div class="section-label">🎯 Ecosistema</div>
+    <h2 class="section-title">Soluciones adaptadas a <span class="gradient-text">tu industria</span></h2>
     <div class="cards-grid">
-      <div class="card"><div class="card-icon">🐾</div><h3>Veterinaria</h3></div>
-      <div class="card"><div class="card-icon">🔧</div><h3>Taller Automotriz</h3></div>
-      <div class="card"><div class="card-icon">🩺</div><h3>Clínica Médica</h3></div>
-      <div class="card"><div class="card-icon">🦷</div><h3>Odontología</h3></div>
-      <div class="card"><div class="card-icon">🛍️</div><h3>Retail</h3></div>
-      <div class="card"><div class="card-icon">🍽️</div><h3>Restaurante</h3></div>
-      <div class="card"><div class="card-icon">📦</div><h3>Logística</h3></div>
-      <div class="card"><div class="card-icon">🚚</div><h3>Transporte</h3></div>
+      <div class="card">
+        <div class="card-icon">🏥</div>
+        <h3>Clínicas y Centros Médicos</h3>
+        <p style="color: var(--muted);">Gestión automática de citas, triaje inteligente y atención a pacientes 24/7.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🦷</div>
+        <h3>Odontología (Dentistas)</h3>
+        <p style="color: var(--muted);">Recordatorios automáticos, agendas inteligentes y seguimiento post-tratamiento para tu consultorio.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚚</div>
+        <h3>Logística y Transportes</h3>
+        <p style="color: var(--muted);">Automatización de atención al cliente, seguimiento de envíos y gestión operativa de flotas en tiempo real.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🐾</div>
+        <h3>Veterinarias</h3>
+        <p style="color: var(--muted);">Control de historiales, recordatorios de vacunas y agendamiento automatizado.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛍️</div>
+        <h3>Retail y Comercio</h3>
+        <p style="color: var(--muted);">Flujos de pago automatizados (Yape/Plin/Tarjetas), control de inventario y soporte de ventas con IA.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚖️</div>
+        <h3>Sector Legal</h3>
+        <p style="color: var(--muted);">Clasificación de consultas legales, agendamiento de asesorías y respuestas automáticas de primer nivel.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="nosotros" class="alt-bg">
   <div class="container">
-    <div class="section-label">🏢 Sobre Nosotros</div>
-    <h2 class="section-title">Axyntrax Automation</h2>
-    <p class="section-sub" style="margin-bottom: 40px;">Especialistas en infraestructuras autónomas y ecosistemas de IA para micro y medianas empresas.</p>
-    
-    <div class="cards-grid">
+    <div class="section-label">🏢 Nuestra Esencia</div>
+    <h2 class="section-title">Sobre <span class="gradient-text">Axyntrax</span></h2>
+    <div style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: var(--text); font-size: 1.1rem; text-align: center;">
+      <p>En Axyntrax somos arquitectos de la automatización. Combinamos inteligencia artificial avanzada, como nuestra asistente <strong>Cecilia</strong>, con potentes motores de gestión operativa (<strong>Jarvis</strong>) para crear ecosistemas digitales autónomos. Nuestro equipo de expertos en tecnología está dedicado a transformar negocios tradicionales, liberando a los empresarios de tareas manuales para que puedan enfocarse en lo que realmente importa: escalar y crecer.</p>
+    </div>
+  </div>
+</section>
+
+<section id="mision">
+  <div class="container" style="text-align: center;">
+    <div class="section-label">🎯 Propósito</div>
+    <h2 class="section-title">Nuestra <span class="gradient-text">Misión</span></h2>
+    <p style="max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8;">Democratizar el acceso a la inteligencia artificial y la automatización empresarial. Proveemos herramientas tecnológicas seguras, rápidas y altamente eficientes que transforman la complejidad operativa en procesos simples y autónomos, impulsando la rentabilidad de nuestros clientes.</p>
+  </div>
+</section>
+
+<section id="vision" class="alt-bg">
+  <div class="container" style="text-align: center;">
+    <div class="section-label">🔮 Futuro</div>
+    <h2 class="section-title">Visión a <span class="gradient-text">3 Años</span></h2>
+    <p style="max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8;">Convertirnos en el estándar global y el "cerebro digital" indispensable para la automatización de PyMEs y corporaciones en Latinoamérica. Proyectamos un ecosistema donde cualquier negocio, sin importar su rubro, pueda operar en piloto automático con cero fricción tecnológica.</p>
+  </div>
+</section>
+
+<section id="valores">
+  <div class="container">
+    <div class="section-label">💎 Principios</div>
+    <h2 class="section-title">Nuestros <span class="gradient-text">Valores</span></h2>
+    <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
       <div class="card">
-        <div class="card-icon">🚀</div>
-        <h3>Misión</h3>
-        <p style="color: var(--muted); margin-top: 10px;">Automatizar operaciones repetitivas para escalar ventas y liberar tiempo de las PyMEs en crecimiento.</p>
+        <div style="font-size: 1.5rem; margin-bottom: 15px;">🚀</div>
+        <h4>1. Innovación Continua</h4>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px;">Evolucionamos nuestra IA y sistemas todos los días.</p>
       </div>
       <div class="card">
-        <div class="card-icon">🌍</div>
-        <h3>Visión</h3>
-        <p style="color: var(--muted); margin-top: 10px;">Ser el estándar operativo inteligente y el ecosistema tecnológico líder para negocios en todo LATAM.</p>
+        <div style="font-size: 1.5rem; margin-bottom: 15px;">🤖</div>
+        <h4>2. Autonomía Tecnológica</h4>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px;">Creamos sistemas que trabajan por ti, no para darte más trabajo.</p>
       </div>
       <div class="card">
-        <div class="card-icon">🛡️</div>
-        <h3>Valores</h3>
-        <ul style="color: var(--muted); margin-top: 10px; list-style: none; padding: 0; line-height: 1.8;">
-          <li>✓ Innovación continua</li>
-          <li>✓ Seguridad Zero-Trust</li>
-          <li>✓ Soporte Incondicional</li>
-        </ul>
+        <div style="font-size: 1.5rem; margin-bottom: 15px;">🛡️</div>
+        <h4>3. Seguridad Absoluta</h4>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px;">Protegemos cada dato, licencia y transacción de tus clientes.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 1.5rem; margin-bottom: 15px;">🖱️</div>
+        <h4>4. Simplicidad Operativa</h4>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px;">Hacemos que lo complejo (pagos, IA, bases de datos) sea tan fácil como un clic.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="resenas">
+<section id="resenas" class="alt-bg">
   <div class="container">
-    <div class="section-label">⭐ Historias de Éxito</div>
+    <div class="section-label">⭐ Éxito Comprobado</div>
     <h2 class="section-title">Lo que dicen <span class="gradient-text">nuestros clientes</span></h2>
     <div class="cards-grid">
       <div class="card">
-        <p style="font-style: italic; color: var(--text);">"Axyntrax redujo nuestras inasistencias en un 80%. Cecilia confirma todas nuestras citas por WhatsApp de manera automática. Es como tener una recepcionista 24/7."</p>
-        <p style="margin-top: 20px; font-weight: bold; color: var(--cyan);">— Dr. Pedro Quispe</p>
-        <p style="font-size: 0.8rem; color: var(--muted);">Veterinaria San Marcos (Arequipa)</p>
+        <p style="font-style: italic; color: var(--text);">"Desde que integramos a Cecilia en nuestra clínica, las citas perdidas se redujeron a cero y los pacientes aman la atención inmediata."</p>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: bold;">ER</div>
+          <div>
+            <p style="font-weight: bold; color: var(--cyan);">Dra. Elena R.</p>
+            <p style="font-size: 0.7rem; color: var(--muted);">Directora Médica</p>
+          </div>
+        </div>
       </div>
       <div class="card">
-        <p style="font-style: italic; color: var(--text);">"Mis técnicos ya no pierden tiempo respondiendo dudas en el chat. Cecilia da presupuestos base al instante. Las ventas directas han subido un 35%."</p>
-        <p style="margin-top: 20px; font-weight: bold; color: var(--cyan);">— Luis Torres</p>
-        <p style="font-size: 0.8rem; color: var(--muted);">Taller Automotriz Motorsur</p>
+        <p style="font-style: italic; color: var(--text);">"En el sector transporte el tiempo es dinero. Axyntrax automatizó nuestra logística de atención al cliente y seguimiento de forma increíble."</p>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold;">CM</div>
+          <div>
+            <p style="font-weight: bold; color: var(--cyan);">Carlos M.</p>
+            <p style="font-size: 0.7rem; color: var(--muted);">Gerente de Operaciones Logísticas</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <p style="font-style: italic; color: var(--text);">"La generación de licencias y el flujo de pagos son impecables. Nuestro retail ahora funciona literalmente en piloto automático."</p>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--cyan); display: flex; align-items: center; justify-content: center; font-weight: bold;">AV</div>
+          <div>
+            <p style="font-weight: bold; color: var(--cyan);">Andrea V.</p>
+            <p style="font-size: 0.7rem; color: var(--muted);">CEO Retail</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -194,101 +222,14 @@
 
 <footer>
   <div class="container">
-    <img src="/logo.png" alt="Axyntrax Logo" style="height: 40px; margin-bottom: 20px;">
+    <img src="/logo.png" alt="Axyntrax Logo" style="height: 60px; margin-bottom: 20px; object-fit: contain;">
     <p class="footer-copy">© 2026 Axyntrax. Cecilia, ATLAS & JARVIS ✦</p>
   </div>
 </footer>
 
-<!-- BOTÓN FLOTANTE WHATSAPP -->
-<a href="https://wa.me/51991740590" target="_blank" style="position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(37,211,102,0.3); z-index: 999; transition: transform 0.3s;">
-  <img src="https://img.icons8.com/color/48/ffffff/whatsapp--v1.png" alt="WhatsApp" style="width: 35px;">
+<a href="https://wa.me/51991740590" class="wsp-float" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 35px;">
 </a>
-
-<!-- WIDGET CECILIA WEB -->
-<div id="cecilia-widget">
-  <div id="cecilia-trigger">
-    <img src="https://img.icons8.com/ios-filled/50/ffffff/robot-2.png" alt="Cecilia">
-  </div>
-  <div id="cecilia-chat">
-    <div class="chat-header">
-      <span>Cecilia Web 🤖</span>
-      <span style="cursor:pointer" id="chat-close">✕</span>
-    </div>
-    <div class="chat-body" id="chat-messages">
-      <div class="msg bot">¡Hola! Soy Cecilia de Axyntrax. ¿En qué puedo ayudarte hoy? 😊</div>
-    </div>
-    <div class="chat-input-area">
-      <input type="text" id="chat-input" placeholder="Escribe un mensaje..." />
-      <button id="chat-send">→</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const widget = document.getElementById('cecilia-chat');
-  const trigger = document.getElementById('cecilia-trigger');
-  const closeBtn = document.getElementById('chat-close');
-  const input = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('chat-send');
-  const messages = document.getElementById('chat-messages');
-
-  let visitorId = 'VIS-' + Math.random().toString(36).substr(2, 9);
-
-  trigger.onclick = () => {
-    widget.classList.toggle('active');
-    if(widget.classList.contains('active')) {
-      logEvent('lead', { status: 'opened_chat' });
-    }
-  };
-  closeBtn.onclick = () => widget.classList.remove('active');
-
-  const addMsg = (text, type) => {
-    const div = document.createElement('div');
-    div.className = `msg ${type}`;
-    div.textContent = text;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
-  };
-
-  const logEvent = async (type, details = {}) => {
-    try {
-      await fetch('/api/log-event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ evento: type, visitor_id: visitorId, ...details, timestamp: new Date().toISOString() })
-      });
-    } catch(e) {}
-  };
-
-  const handleSend = async () => {
-    const text = input.value.trim();
-    if(!text) return;
-    addMsg(text, 'user');
-    input.value = '';
-    
-    logEvent('consulta', { mensaje: text });
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, visitorId })
-      });
-      const data = await res.json();
-      addMsg(data.response, 'bot');
-      logEvent('respuesta_entregada', { resuelto_por_cecilia: true });
-    } catch(e) {
-      addMsg('Lo siento, tuve un problema técnico. ¿Podemos seguir por WhatsApp?', 'bot');
-      logEvent('error_chat', { error: e.message });
-    }
-  };
-
-  sendBtn.onclick = handleSend;
-  input.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
-
-  // Initial event
-  logEvent('visit', { page: window.location.pathname });
-</script>
 
 </body>
 </html>
