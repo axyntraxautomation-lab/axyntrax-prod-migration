@@ -306,7 +306,7 @@ app.post('/api/keygen/generate', async (req, res) => {
         activaciones: 0,
         max_activaciones: plan === 'enterprise' ? 999 : plan === 'business' ? 3 : 1,
         created_at: new Date().toISOString()
-      });
+      }]);
     } catch(dbErr) { console.error('[KEYGEN] DB Error:', dbErr.message); }
 
     console.log(`[KEYGEN] Generado: ${key} para ${empresa} (${rubro}/${plan})`);
