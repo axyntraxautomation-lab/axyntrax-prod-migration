@@ -35,9 +35,9 @@ const {
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Helper: Gemini con retry automático ante 429
+// Helper: Gemini con retry automático tolerante a fallos y modelos actualizados (v5.0)
 const geminiGenerate = async (prompt, retries = 3) => {
-  const models = ['gemini-1.5-flash-8b', 'gemini-pro', 'gemini-1.0-pro'];
+  const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
   for (let i = 0; i < retries; i++) {
     for (const modelName of models) {
       try {
@@ -45,12 +45,15 @@ const geminiGenerate = async (prompt, retries = 3) => {
         const result = await model.generateContent(prompt);
         return result.response.text();
       } catch (err) {
-        if (err.message && err.message.includes('429') && modelName !== models[models.length - 1]) {
-          continue; // Intentar siguiente modelo
+        console.error(`[GEMINI ERROR] falló con ${modelName}:`, err.message);
+        // Intentar con el siguiente modelo de la lista en caso de cualquier error (404, 403, 429)
+        if (modelName !== models[models.length - 1]) {
+          continue;
         }
-        if (err.message && err.message.includes('429') && i < retries - 1) {
-          await new Promise(r => setTimeout(r, (i + 1) * 3000)); // Esperar 3s, 6s, 9s
-          break; // Salir del loop de modelos para reintentar
+        // Si toda la lista de modelos falló en este intento, esperar antes de reiniciar la lista
+        if (i < retries - 1) {
+          await new Promise(r => setTimeout(r, (i + 1) * 3000));
+          break;
         }
         throw err;
       }
