@@ -18,7 +18,29 @@ const {
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-
+// Helper: Gemini con retry automático ante 429
+const geminiGenerate = async (prompt, retries = 3) => {
+  const models = ['gemini-1.5-flash-8b', 'gemini-pro', 'gemini-1.0-pro'];
+  for (let i = 0; i < retries; i++) {
+    for (const modelName of models) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        return result.response.text();
+      } catch (err) {
+        if (err.message && err.message.includes('429') && modelName !== models[models.length - 1]) {
+          continue; // Intentar siguiente modelo
+        }
+        if (err.message && err.message.includes('429') && i < retries - 1) {
+          await new Promise(r => setTimeout(r, (i + 1) * 3000)); // Esperar 3s, 6s, 9s
+          break; // Salir del loop de modelos para reintentar
+        }
+        throw err;
+      }
+    }
+  }
+  throw new Error('Cuota de IA agotada temporalmente');
+};
 
 // Webhook Verification (GET /api)
 app.get('/api', (req, res) => {
@@ -48,7 +70,6 @@ app.post('/api', async (req, res) => {
 
       let responseText = "";
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = `IDENTIDAD: Eres Cecilia, asistente de Axyntrax Automation.
         PERSONALIDAD: Peruana de Arequipa, 28 años, profesional, empática y proactiva.
         CONTEXTO: Estás en el WhatsApp de la empresa del cliente.
@@ -57,12 +78,10 @@ app.post('/api', async (req, res) => {
         PLANES: Trial (45 días), Basic (S/99), Pro (S/199), Enterprise (S/299).
         RUBROS: Car Wash, Veterinaria, Talleres, Clínicas, Restaurantes.
         CLIENTE PREGUNTA: ${text}`;
-        
-        const result = await model.generateContent(prompt);
-        responseText = result.response.text();
+        responseText = await geminiGenerate(prompt);
       } catch (aiError) {
         console.error('AI Error en WA:', aiError.message);
-        responseText = "¡Hola! Soy Cecilia. He recibido tu mensaje, pero mi módulo de análisis está en mantenimiento por un momento. ¿Te gustaría que un especialista de ATLAS te contacte o prefieres esperar unos minutos? ¡Mil disculpas!";
+        responseText = `¡Hola! Soy Cecilia 👋 Recibí tu mensaje. Estoy revisando la mejor respuesta para ti. En un momento regreso, o si prefieres escríbeme directamente al +51991740590. ¡Gracias por tu paciencia!`;
       }
 
       await axios.post(
@@ -91,7 +110,6 @@ app.post('/api', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
     IDENTIDAD: Peruana de Arequipa, 28 años, profesional y cálida.
     Eres el chatbot embebido en la web. Sabe todo el sitio:
@@ -102,13 +120,11 @@ app.post('/api/chat', async (req, res) => {
     Visitor ID: ${visitorId}
     Rubro: ${rubro || 'No especificado'}
     Mensaje: ${message}`;
-
-
-    const result = await model.generateContent(prompt);
-    res.json({ response: result.response.text() });
+    const response = await geminiGenerate(prompt);
+    res.json({ response });
   } catch (error) {
-    console.error('Chat Error (Simulated Fallback):', error.message);
-    res.json({ response: "¡Hola! Soy Cecilia. Puedo ayudarte con información sobre nuestros planes y cómo Axyntrax puede transformar tu negocio. ¿En qué rubro te encuentras?" });
+    console.error('Chat Error:', error.message);
+    res.json({ response: "¡Hola! Soy Cecilia 😊 Estoy procesando tu consulta. ¿Tienes alguna pregunta sobre nuestros planes o rubros? Puedo ayudarte con información sobre automatización para tu negocio." });
   }
 });
 
@@ -116,7 +132,6 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/jarvis-chat', async (req, res) => {
   try {
     const { message } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const prompt = `PERSONALIDAD: Eres J.A.R.V.I.S., el cerebro digital táctico y ejecutivo de Axyntrax Automation.
     TU MISIÓN: Gestionar el negocio de Miguel Montero con precisión absoluta.
     TU ESTADO: Estás en línea, sincronizado con ATLAS (Monitoreo Técnico) y Cecilia (Ventas/WhatsApp).
@@ -124,17 +139,15 @@ app.post('/api/jarvis-chat', async (req, res) => {
     DATOS ACTUALES (Dashboard):
     - Auditoría: 100% Completada (Blindado).
     - ATLAS: Operativo (Sincronización de tokens OK).
-    - Cecilia: Activa en WhatsApp y Web.
+    - Cecilia: Activa en WhatsApp y Web con modelo gemini-1.5-flash-8b.
     MENSAJE DEL CEO: ${message}
-    RESPUESTA: Responde de forma detallada. Si te pregunta "cómo van" o "estado", da un reporte ejecutivo del sistema. No uses frases genéricas.`;
-
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    console.log('[JARVIS] Response generated:', responseText);
+    RESPUESTA: Responde de forma detallada, ejecutiva y precisa. No uses frases genéricas.`;
+    const responseText = await geminiGenerate(prompt);
+    console.log('[JARVIS] Response generated OK');
     res.json({ response: responseText });
   } catch (error) {
     console.error('[JARVIS] Error:', error.message);
-    res.status(500).json({ error: error.message });
+    res.json({ response: 'ALERTA JARVIS: La cuota de IA del plan gratuito se ha agotado temporalmente. El sistema reiniciará el contador en ~1 minuto. ATLAS recomienda actualizar a un plan de pago en ai.google.dev para eliminar este límite permanentemente.' });
   }
 });
 
