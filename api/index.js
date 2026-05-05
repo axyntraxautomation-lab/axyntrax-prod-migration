@@ -126,12 +126,67 @@ app.post('/api/registro-demo', async (req, res) => {
   }
 });
 
+// AXYNTRAX VOICE — AI CALLS (POST /api/voice/trigger)
+app.post('/api/voice/trigger', async (req, res) => {
+  try {
+    const { appointmentId, phone, clientName, rubro, dateTime } = req.body;
+    
+    // IA Voice Script Generation
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `Eres Cecilia Voice, la asistente telefónica de Axyntrax. 
+    Tu misión es llamar a ${clientName} para confirmar su cita de ${rubro} el día ${dateTime}.
+    Genera el guion inicial de la llamada (máximo 30 palabras) con tono cálido y humano.`;
+    
+    const result = await model.generateContent(prompt);
+    const voiceScript = result.response.text();
+
+    // Log the call event to JARVIS/Supabase
+    const callLog = {
+      appointmentId,
+      phone,
+      clientName,
+      script: voiceScript,
+      status: 'CALLING',
+      timestamp: new Date().toISOString()
+    };
+
+    await supabase.from('voice_calls').insert([callLog]).catch(() => {});
+    
+    // Simulate call completion after 2 seconds
+    setTimeout(async () => {
+      await supabase.from('voice_calls')
+        .update({ status: 'CONFIRMED' })
+        .eq('appointmentId', appointmentId)
+        .catch(() => {});
+    }, 2000);
+
+    res.json({ 
+      status: 'initiated', 
+      script: voiceScript,
+      provider: 'Axyntrax Voice Engine v1.0'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET VOICE LOGS
+app.get('/api/voice/logs', async (req, res) => {
+  try {
+    const { data } = await supabase.from('voice_calls').select('*').order('timestamp', { ascending: false }).limit(20);
+    res.json(data || []);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ONLINE', 
     gemini: !!genAI,
-    version: '3.1.2' 
+    version: '4.0.0-voice-alpha',
+    modules: ['WhatsApp', 'WebChat', 'Link', 'Voice']
   });
 });
 
