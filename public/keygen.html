@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS | Keygen Engine — Axyntrax V5.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root { --primary:#8b5cf6;--cyan:#00f5ff;--green:#10b981;--red:#ef4444;--bg:#050508;--surface:#0d0d14;--surface2:#161625;--text:#e8e8f0;--muted:#8888aa; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:30px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;border-bottom:1px solid rgba(139,92,246,0.2);padding-bottom:20px}
+.logo{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{font-size:0.7rem;background:rgba(139,92,246,0.2);border:1px solid var(--primary);padding:4px 12px;border-radius:20px;color:var(--primary)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.panel{background:var(--surface);border:1px solid rgba(139,92,246,0.15);border-radius:20px;padding:30px}
+.panel h2{font-size:1rem;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+label{font-size:0.75rem;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+select,input{width:100%;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.9rem;margin-bottom:16px;outline:none;transition:border-color 0.2s}
+select:focus,input:focus{border-color:var(--cyan)}
+.submodulos{display:flex;gap:10px;margin-bottom:16px}
+.sub-btn{flex:1;background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px;color:var(--muted);cursor:pointer;font-size:0.8rem;transition:all 0.2s;text-align:center}
+.sub-btn.active{background:rgba(0,245,255,0.1);border-color:var(--cyan);color:var(--cyan);font-weight:700}
+.btn{width:100%;background:linear-gradient(135deg,var(--primary),#6366f1);border:none;border-radius:12px;padding:14px;color:white;font-weight:700;cursor:pointer;font-size:0.95rem;transition:transform 0.2s}
+.btn:hover{transform:translateY(-2px)}
+.result-box{background:var(--bg);border:1px solid rgba(0,245,255,0.2);border-radius:12px;padding:20px;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:0.85rem;display:none}
+.key-display{font-size:1.4rem;font-weight:700;color:var(--cyan);letter-spacing:2px;text-align:center;padding:16px;background:rgba(0,245,255,0.05);border-radius:8px;margin:12px 0;border:1px dashed var(--cyan)}
+.copy-btn{background:var(--cyan);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.8rem;width:100%;margin-top:8px}
+.keys-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.keys-table th{text-align:left;color:var(--muted);padding:10px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.keys-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700}
+.activo{background:rgba(16,185,129,0.15);color:var(--green)}
+.expirado{background:rgba(239,68,68,0.15);color:var(--red)}
+.validate-result{padding:16px;border-radius:12px;margin-top:16px;font-size:0.9rem;display:none}
+.valid-ok{background:rgba(16,185,129,0.1);border:1px solid var(--green);color:var(--green)}
+.valid-err{background:rgba(239,68,68,0.1);border:1px solid var(--red);color:var(--red)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">⚙️ JARVIS — Keygen Engine V1</div>
+  <span class="badge">AXYNTRAX V5.0 CORPORATIVO</span>
+</div>
+
+<div class="grid">
+  <!-- GENERADOR -->
+  <div class="panel">
+    <h2>🔑 Generar Nueva Licencia</h2>
+    <label>Token Maestro CEO</label>
+    <input type="password" id="masterToken" placeholder="AXYNTRAX_CEO_2026" value="AXYNTRAX_CEO_2026">
+    
+    <label>Empresa Cliente</label>
+    <input type="text" id="empresa" placeholder="Ej: Clínica San Miguel SAC">
+    
+    <label>Contacto / WhatsApp</label>
+    <input type="text" id="contacto" placeholder="+51 999 000 000">
+    
+    <label>Rubro</label>
+    <select id="rubro">
+      <option value="car_wash">🚘 Car Wash</option>
+      <option value="clinica">🏥 Clínica Médica</option>
+      <option value="dentista">🦷 Odontología</option>
+      <option value="logistica">🚚 Logística</option>
+      <option value="veterinaria">🐾 Veterinaria</option>
+      <option value="retail">🛍️ Retail</option>
+      <option value="legal">⚖️ Legal</option>
+    </select>
+    
+    <label>Plan</label>
+    <select id="plan">
+      <option value="starter">Starter — S/99/mes (1 activación)</option>
+      <option value="business" selected>Business — S/199/mes (3 activaciones)</option>
+      <option value="enterprise">Enterprise — S/299/mes (ilimitado)</option>
+    </select>
+    
+    <label>Sub-módulos incluidos</label>
+    <div class="submodulos">
+      <div class="sub-btn active" onclick="toggleSub(this,'A')">A</div>
+      <div class="sub-btn" onclick="toggleSub(this,'B')">B</div>
+      <div class="sub-btn" onclick="toggleSub(this,'C')">C</div>
+    </div>
+    
+    <label>Días de vigencia</label>
+    <input type="number" id="diasTrial" value="45" min="1" max="365">
+    
+    <button class="btn" onclick="generarKey()">⚡ GENERAR KEYGEN</button>
+    
+    <div class="result-box" id="resultBox">
+      <p style="color:var(--muted);font-size:0.75rem;margin-bottom:8px">🔐 LICENCIA GENERADA — ENTREGA AL CLIENTE:</p>
+      <div class="key-display" id="keyDisplay"></div>
+      <p style="color:var(--muted);font-size:0.7rem" id="keyInfo"></p>
+      <button class="copy-btn" onclick="copiarKey()">📋 COPIAR KEYGEN</button>
+    </div>
+  </div>
+  
+  <!-- VALIDADOR + LISTA -->
+  <div>
+    <div class="panel" style="margin-bottom:24px">
+      <h2>🔍 Validar Keygen</h2>
+      <label>Ingresar Key a verificar</label>
+      <input type="text" id="validateKey" placeholder="AXN-VTBIZ-XXXXX-XXXXXXXX" style="font-family:'JetBrains Mono',monospace">
+      <button class="btn" onclick="validarKey()">VERIFICAR</button>
+      <div class="validate-result" id="validateResult"></div>
+    </div>
+    
+    <div class="panel">
+      <h2>📋 Licencias Activas <button onclick="cargarKeys()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted);padding:4px 12px;border-radius:8px;cursor:pointer;font-size:0.7rem;margin-left:auto">Actualizar</button></h2>
+      <div id="keysList" style="color:var(--muted);font-size:0.85rem">Cargando...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let submodulos = ['A'];
+
+function toggleSub(el, sub) {
+  if (submodulos.includes(sub)) { submodulos = submodulos.filter(s => s !== sub); el.classList.remove('active'); }
+  else { submodulos.push(sub); el.classList.add('active'); }
+  if (submodulos.length === 0) { submodulos = ['A']; document.querySelectorAll('.sub-btn')[0].classList.add('active'); }
+}
+
+async function generarKey() {
+  const body = {
+    masterToken: document.getElementById('masterToken').value,
+    empresa: document.getElementById('empresa').value || 'Cliente',
+    contacto: document.getElementById('contacto').value,
+    rubro: document.getElementById('rubro').value,
+    plan: document.getElementById('plan').value,
+    submodulos, diasTrial: +document.getElementById('diasTrial').value
+  };
+  try {
+    const r = await fetch('/api/keygen/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const d = await r.json();
+    if (d.error) return alert('Error: ' + d.error);
+    document.getElementById('keyDisplay').textContent = d.key;
+    document.getElementById('keyInfo').textContent = `Empresa: ${d.empresa} | Plan: ${d.plan.toUpperCase()} | Expira: ${new Date(d.expiry).toLocaleDateString()} | Sub-módulos: ${d.submodulos.join(', ')}`;
+    document.getElementById('resultBox').style.display = 'block';
+    cargarKeys();
+  } catch(e) { alert('Error de conexión: ' + e.message); }
+}
+
+function copiarKey() {
+  navigator.clipboard.writeText(document.getElementById('keyDisplay').textContent);
+  document.querySelector('.copy-btn').textContent = '✅ COPIADO';
+  setTimeout(() => document.querySelector('.copy-btn').textContent = '📋 COPIAR KEYGEN', 2000);
+}
+
+async function validarKey() {
+  const key = document.getElementById('validateKey').value.trim();
+  const div = document.getElementById('validateResult');
+  if (!key) return;
+  const r = await fetch('/api/keygen/validate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ key }) });
+  const d = await r.json();
+  div.style.display = 'block';
+  if (d.valid) {
+    div.className = 'validate-result valid-ok';
+    div.innerHTML = `✅ <strong>VÁLIDO</strong><br>Empresa: ${d.empresa}<br>Rubro: ${d.rubro} | Plan: ${d.plan}<br>Sub-módulos: ${d.submodulos?.join(', ')}<br>Activaciones restantes: ${d.activacionesRestantes}`;
+  } else {
+    div.className = 'validate-result valid-err';
+    div.innerHTML = `❌ <strong>INVÁLIDO</strong><br>${d.error}`;
+  }
+}
+
+async function cargarKeys() {
+  const div = document.getElementById('keysList');
+  try {
+    const r = await fetch('/api/keygen/list?token=AXYNTRAX_CEO_2026');
+    const d = await r.json();
+    if (!d.keys?.length) { div.innerHTML = '<p style="color:var(--muted)">Sin licencias generadas aún.</p>'; return; }
+    div.innerHTML = `<table class="keys-table">
+      <tr><th>KEY</th><th>EMPRESA</th><th>PLAN</th><th>EXP.</th><th>ACTIVAC.</th><th>ESTADO</th></tr>
+      ${d.keys.map(k=>`<tr>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--cyan)">${k.key}</td>
+        <td>${k.empresa}</td>
+        <td>${k.plan}</td>
+        <td>${k.expiry_date?new Date(k.expiry_date).toLocaleDateString():'-'}</td>
+        <td>${k.activaciones}/${k.max_activaciones}</td>
+        <td><span class="status-badge ${k.estado?.toLowerCase()}">${k.estado}</span></td>
+      </tr>`).join('')}
+    </table>`;
+  } catch(e) { div.innerHTML = '<p style="color:var(--red)">Error cargando licencias.</p>'; }
+}
+
+cargarKeys();
+</script>
+</body>
+</html>

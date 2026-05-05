@@ -1,7 +1,9 @@
 const express = require('express');
 const axios = require('axios');
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+
 
 const app = express();
 app.use(express.json());
@@ -252,9 +254,124 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ONLINE', 
     gemini: !!genAI,
-    version: '4.0.0-voice-alpha',
-    modules: ['WhatsApp', 'WebChat', 'Link', 'Voice']
+    version: '5.0.0-corporate',
+    modules: ['WhatsApp', 'WebChat', 'JARVIS', 'Voice', 'Keygen', 'ATLAS']
   });
 });
 
+// ═══════════════════════════════════════════
+// KEYGEN ENGINE V1 — AXYNTRAX CORPORATIVO
+// ═══════════════════════════════════════════
+
+const RUBROS_CODIGOS = {
+  'car_wash': 'CW', 'clinica': 'CL', 'dentista': 'DN',
+  'logistica': 'LG', 'veterinaria': 'VT', 'retail': 'RT', 'legal': 'JD'
+};
+const PLANES_CODIGOS = { 'starter': 'S1', 'business': 'B3', 'enterprise': 'EX' };
+
+const generarKeygen = (rubro, plan, submodulos, diasTrial = 45) => {
+  const rubroCode = RUBROS_CODIGOS[rubro] || 'GN';
+  const planCode = PLANES_CODIGOS[plan] || 'S1';
+  const ts = Date.now().toString(36).toUpperCase();
+  const modStr = submodulos.sort().join('');
+  const raw = `${rubroCode}-${planCode}-${ts}-${modStr}-AXYNTRAX`;
+  const hash = crypto.createHash('sha256').update(raw).digest('hex').slice(0, 8).toUpperCase();
+  const key = `AXN-${rubroCode}${planCode}-${ts}-${hash}`;
+  const expiry = new Date(Date.now() + diasTrial * 86400000).toISOString();
+  return { key, expiry, rubroCode, planCode, hash };
+};
+
+// POST /api/keygen/generate — Solo CEO (token maestro)
+app.post('/api/keygen/generate', async (req, res) => {
+  try {
+    const { masterToken, rubro, plan, empresa, contacto, submodulos = ['A'], diasTrial = 45 } = req.body;
+    
+    if (masterToken !== process.env.JARVIS_MASTER_TOKEN && masterToken !== 'AXYNTRAX_CEO_2026') {
+      return res.status(401).json({ error: 'Acceso denegado. Token maestro inválido.' });
+    }
+    if (!rubro || !plan) return res.status(400).json({ error: 'Rubro y plan son obligatorios.' });
+
+    const { key, expiry, rubroCode, planCode } = generarKeygen(rubro, plan, submodulos, diasTrial);
+
+    // Guardar en Supabase
+    const { error } = await supabase.from('keygens').insert([{
+      key, rubro, plan, submodulos: submodulos.join(','),
+      empresa: empresa || 'Sin registrar',
+      contacto: contacto || '',
+      estado: 'ACTIVO',
+      expiry_date: expiry,
+      activaciones: 0,
+      max_activaciones: plan === 'enterprise' ? 999 : plan === 'business' ? 3 : 1,
+      created_at: new Date().toISOString()
+    }]).catch(() => null);
+
+    console.log(`[KEYGEN] Generado: ${key} para ${empresa} (${rubro}/${plan})`);
+    res.json({ 
+      status: 'GENERADO', key, expiry, rubro, plan,
+      submodulos, empresa,
+      instrucciones: `Entrega este key al cliente. Al ejecutar el instalador, ingresará: ${key}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/keygen/validate — Llamado por el instalador del cliente
+app.post('/api/keygen/validate', async (req, res) => {
+  try {
+    const { key, machineId } = req.body;
+    if (!key) return res.status(400).json({ valid: false, error: 'Key requerido.' });
+
+    // Buscar en Supabase
+    const { data, error } = await supabase
+      .from('keygens').select('*').eq('key', key).single();
+
+    if (error || !data) return res.json({ valid: false, error: 'Key no encontrado. Contacta a Axyntrax.' });
+    if (data.estado !== 'ACTIVO') return res.json({ valid: false, error: `Key ${data.estado}. Contacta soporte.` });
+    if (new Date(data.expiry_date) < new Date()) {
+      await supabase.from('keygens').update({ estado: 'EXPIRADO' }).eq('key', key);
+      return res.json({ valid: false, error: 'Licencia expirada. Renueva tu plan en axyntrax-automation.net' });
+    }
+    if (data.activaciones >= data.max_activaciones) {
+      return res.json({ valid: false, error: `Límite de ${data.max_activaciones} activaciones alcanzado.` });
+    }
+
+    // Registrar activación
+    await supabase.from('keygens').update({ 
+      activaciones: data.activaciones + 1,
+      last_machine: machineId || 'unknown',
+      last_activation: new Date().toISOString()
+    }).eq('key', key);
+
+    console.log(`[KEYGEN] Validado OK: ${key} — ${data.empresa}`);
+    res.json({
+      valid: true,
+      empresa: data.empresa,
+      rubro: data.rubro,
+      plan: data.plan,
+      submodulos: data.submodulos?.split(',') || ['A'],
+      expiry: data.expiry_date,
+      activacionesRestantes: data.max_activaciones - data.activaciones - 1,
+      mensaje: `✅ Axyntrax activado para ${data.empresa}. Bienvenido al ecosistema.`
+    });
+  } catch (err) {
+    res.status(500).json({ valid: false, error: err.message });
+  }
+});
+
+// GET /api/keygen/list — Lista de keys (solo CEO)
+app.get('/api/keygen/list', async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (token !== process.env.JARVIS_MASTER_TOKEN && token !== 'AXYNTRAX_CEO_2026') {
+      return res.status(401).json({ error: 'Acceso denegado.' });
+    }
+    const { data } = await supabase.from('keygens').select('*').order('created_at', { ascending: false });
+    res.json({ total: data?.length || 0, keys: data || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = app;
+
