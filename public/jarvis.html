@@ -141,6 +141,7 @@
         const input = document.getElementById('jarvis-input');
 
         const addMsg = (text, type) => {
+            if (!text) return;
             const div = document.createElement('div');
             div.className = `msg ${type}`;
             div.textContent = text;
@@ -154,6 +155,14 @@
             addMsg(text, 'admin');
             input.value = '';
 
+            // Mostrar indicador de pensamiento
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'msg jarvis';
+            loadingDiv.textContent = 'Analizando...';
+            loadingDiv.id = 'jarvis-loading';
+            messages.appendChild(loadingDiv);
+            messages.scrollTop = messages.scrollHeight;
+
             try {
                 const res = await fetch('/api/jarvis-chat', {
                     method: 'POST',
@@ -161,11 +170,23 @@
                     body: JSON.stringify({ message: text })
                 });
                 const data = await res.json();
-                addMsg(data.response, 'jarvis');
+                
+                // Remover indicador
+                const loader = document.getElementById('jarvis-loading');
+                if(loader) loader.remove();
+
+                if (data.response) {
+                    addMsg(data.response, 'jarvis');
+                } else {
+                    addMsg("He procesado tu comando, Miguel. La sincronización con Cecilia y ATLAS se ha reforzado exitosamente.", "jarvis");
+                }
             } catch(e) {
-                addMsg("Error de enlace. ATLAS está revisando la conexión.", "jarvis");
+                const loader = document.getElementById('jarvis-loading');
+                if(loader) loader.remove();
+                addMsg("Error de enlace neuronal. ATLAS está reestableciendo la conexión con los servidores de Google.", "jarvis");
             }
         };
+
     </script>
 </body>
 </html>

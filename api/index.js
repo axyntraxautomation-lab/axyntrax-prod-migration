@@ -10,14 +10,14 @@ const {
   WHATSAPP_TOKEN = 'EAAOEfgGZC6gEBRfNuqlouZAF7XmqAt2DEtcKrAMxzcenf6LZBcExIKRGMHYG69sWVBbdVK90fKn0WaKJxpousOts7qiAZBsPYxBZBNXTV3xHZCrO1euilpogpuIsrLN2WgKUIXtnpi42PaouDJ8klZBMoGcrYHFkzRV2Eyn8FEDVTyZAiuBfjgISpvlk2Od3UEBiwTT4IujM4czUl4IaZCmZAYgQ0F7dfKrztqyLZBlEWvXozQUm8z7ovC4EgezYKQLSAvZBkrCwB3gIPiKu6FUSeMKV',
   META_VERIFY_TOKEN = 'axyntrax_diamante_2026',
   PHONE_NUMBER_ID = '1156622220859055',
-  SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-  GEMINI_API_KEY
+  SUPABASE_URL = 'https://xyqfujgjkshfkbxlvjpm.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_KwrIIuchHiiTRmMo3Rmdsw_R5f-kNFl',
+  GEMINI_API_KEY = 'AIzaSyCJFA15avVgI7IwjAJbal2CrszwSKZTHSo'
 } = process.env;
-
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
 
 // Webhook Verification (GET /api)
 app.get('/api', (req, res) => {
