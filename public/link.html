@@ -47,6 +47,7 @@
             padding: 5px;
             margin-bottom: 15px;
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            object-fit: cover;
         }
 
         .profile h1 {
@@ -85,6 +86,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            cursor: pointer;
         }
 
         .link-card:hover {
@@ -103,7 +105,50 @@
             box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
         }
 
-        /* Cecilia Float */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        /* Widget Styles (Inlined for simplicity) */
+        #chat-widget {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: #1e293b;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        #chat-header {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+        }
+        #chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; line-height: 1.4; }
+        .cecilia { background: #334155; align-self: flex-start; }
+        .user { background: var(--primary); align-self: flex-end; }
+        #chat-input-area { padding: 15px; background: #0f172a; display: flex; gap: 10px; }
+        #chat-input { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px; color: white; outline: none; }
+        #send-btn { background: var(--primary); border: none; border-radius: 10px; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #cecilia-trigger {
             position: fixed;
             bottom: 30px;
@@ -117,25 +162,13 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            font-size: 12px;
-            color: #475569;
+            z-index: 1001;
         }
     </style>
 </head>
 <body>
     <div class="profile">
-        <img src="https://axyntrax-prod-migration.vercel.app/artifacts/logo_axyntrax.png" alt="Axyntrax Logo" onerror="this.src='https://ui-avatars.com/api/?name=Axyntrax&background=6366f1&color=fff'">
+        <img src="/logo.png" alt="Axyntrax Logo">
         <h1>Axyntrax Automation</h1>
         <p>IAs que trabajan por ti 24/7 🚀</p>
     </div>
@@ -144,13 +177,13 @@
         <a href="https://api.whatsapp.com/send?phone=51991740590&text=Hola%20Axyntrax,%20vengo%20desde%20su%20enlace%20de%20Instagram" class="link-card featured">
             💬 WhatsApp Directo
         </a>
-        <a href="#" onclick="openCecilia('agendar')" class="link-card">
+        <div onclick="openCecilia('agendar')" class="link-card">
             📅 Agendar Demo de 5 min
-        </a>
-        <a href="https://axyntrax-prod-migration.vercel.app/#planes" class="link-card">
+        </div>
+        <a href="/#planes" class="link-card">
             💳 Ver Planes y Precios
         </a>
-        <a href="https://axyntrax-prod-migration.vercel.app/docs/guia-inicio" class="link-card">
+        <a href="/docs/guia-inicio" class="link-card">
             📖 Guía de Inicio Rápido
         </a>
     </div>
@@ -159,18 +192,78 @@
         © 2026 Axyntrax Automation · Made with ❤️ in Peru
     </div>
 
-    <!-- El widget de Cecilia se cargará aquí -->
-    <div id="cecilia-trigger" onclick="openCecilia()">
+    <div id="cecilia-trigger" onclick="toggleChat()">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
     </div>
 
+    <div id="chat-widget">
+        <div id="chat-header">
+            <span>Cecilia Link 🤖</span>
+            <span onclick="toggleChat()" style="cursor:pointer">✕</span>
+        </div>
+        <div id="chat-messages">
+            <div class="msg cecilia">¡Hola! Soy Cecilia. He visto que vienes desde nuestro enlace de Instagram. ¿En qué rubro está tu negocio? Te ayudaré a elegir el mejor plan. 😊</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button id="send-btn" onclick="sendMessage()">➔</button>
+        </div>
+    </div>
+
     <script>
+        const chatWidget = document.getElementById('chat-widget');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        let visitorId = 'VIS-' + Math.random().toString(36).substr(2, 9);
+
+        function toggleChat() {
+            chatWidget.style.display = chatWidget.style.display === 'flex' ? 'none' : 'flex';
+        }
+
         function openCecilia(intent = '') {
-            // Lógica para abrir el widget de Cecilia y pasarle el contexto
-            console.log('Abriendo Cecilia con intención:', intent);
-            // Si el widget ya está embebido en el index.html principal, 
-            // aquí lo activaríamos vía postMessage o evento global.
-            alert('¡Hola! Soy Cecilia. ¿En qué rubro está tu negocio? Te ayudaré a elegir el mejor plan.');
+            toggleChat();
+            if (intent === 'agendar') {
+                addMessage('cecilia', '¡Excelente! Para agendar una demo, primero cuéntame: ¿De qué trata tu empresa y para cuántas personas necesitas el sistema?');
+            }
+        }
+
+        function addMessage(sender, text) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + sender;
+            div.innerText = text;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMessage('user', text);
+            chatInput.value = '';
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, visitorId: visitorId })
+                });
+                const data = await res.json();
+                addMessage('cecilia', data.response);
+
+                // Log Event to JARVIS
+                fetch('/api/log-event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        evento: 'link_interaction', 
+                        visitor_id: visitorId,
+                        message: text
+                    })
+                });
+            } catch (err) {
+                addMessage('cecilia', 'Ups, tengo un problema técnico. ¿Podrías contactarnos por WhatsApp?');
+            }
         }
     </script>
 </body>
