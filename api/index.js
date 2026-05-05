@@ -35,22 +35,57 @@ const {
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Helper: Gemini con retry automático tolerante a fallos y modelos actualizados (v5.0)
-const geminiGenerate = async (prompt, retries = 3) => {
+// --- MOTOR DE MEMORIA CONTEXTUAL NATIVA DE CECILIA (AXYNTRAX MEMORY) ---
+const chatHistory = new Map();
+
+const getHistory = (key) => {
+  if (!chatHistory.has(key)) {
+    chatHistory.set(key, []);
+  }
+  return chatHistory.get(key);
+};
+
+const addHistory = (key, role, text) => {
+  const history = getHistory(key);
+  history.push({ role, parts: [{ text }] });
+  if (history.length > 10) {
+    history.shift(); // Conservar últimos 10 mensajes (5 turnos de conversación)
+  }
+};
+
+// Helper: Gemini con retry automático, soporte de memoria (historial) e instrucciones del sistema
+const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInstruction = null) => {
   const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
   for (let i = 0; i < retries; i++) {
     for (const modelName of models) {
       try {
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent(prompt);
-        return result.response.text();
+        const options = { model: modelName };
+        if (systemInstruction) {
+          options.systemInstruction = systemInstruction;
+        }
+        const model = genAI.getGenerativeModel(options);
+        
+        let responseText = "";
+        if (sessionKey) {
+          const history = getHistory(sessionKey);
+          const chat = model.startChat({ history });
+          const result = await chat.sendMessage(prompt);
+          responseText = result.response.text();
+          
+          // Guardar el par de mensajes en el historial
+          addHistory(sessionKey, 'user', prompt);
+          addHistory(sessionKey, 'model', responseText);
+        } else {
+          const result = await model.generateContent(prompt);
+          responseText = result.response.text();
+        }
+        
+        return responseText;
       } catch (err) {
         console.error(`[GEMINI ERROR] falló con ${modelName}:`, err.message);
-        // Intentar con el siguiente modelo de la lista en caso de cualquier error (404, 403, 429)
         if (modelName !== models[models.length - 1]) {
           continue;
         }
-        // Si toda la lista de modelos falló en este intento, esperar antes de reiniciar la lista
         if (i < retries - 1) {
           await new Promise(r => setTimeout(r, (i + 1) * 3000));
           break;
@@ -68,18 +103,20 @@ app.get('/api', (req, res) => {
   const token   = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+  const expectedToken = process.env.WHATSAPP_VERIFY_TOKEN || process.env.WH_VERIFY_TOKEN || process.env.META_VERIFY_TOKEN || 'axyntrax2026' || 'v5R4EzvqR--_isXbo5T2BXfAQd648pHz';
+
+  if (mode === 'subscribe' && token === expectedToken) {
     console.log('[WEBHOOK] Verificación Meta exitosa');
     res.status(200).send(challenge);
   } else {
-    console.error('[WEBHOOK] Token inválido:', token);
+    console.error('[WEBHOOK] Token inválio:', token, 'Esperado:', expectedToken);
     res.sendStatus(403);
   }
 });
 
-// Función desacoplada para procesar el mensaje con Gemini sin alterar prompts
+// Función desacoplada para procesar el mensaje con Gemini para WhatsApp con concisión y memoria
 const procesarMensajeCecilia = async (from, text) => {
-  const prompt = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
+  const systemInstruction = `SISTEMA AXYNTRAX V5.0 — CECILIA WHITE-LABEL
   Eres Cecilia, asistente IA de Axyntrax. Adapta tu tono al rubro del cliente:
   - Clínica/Dentista: formal, usa "usted", empática.
   - Car Wash/Retail: juvenil, usa emojis, tú.
@@ -87,9 +124,9 @@ const procesarMensajeCecilia = async (from, text) => {
   - Veterinaria/Restaurante: cálida, familiar.
   PLANES: Trial 45 días, Basic S/99, Pro S/199, Enterprise S/299.
   NUNCA digas que eres IA. Eres la asistente de esta empresa.
-  MENSAJE DEL CLIENTE: ${text}`;
+  REGLA DE CONCISIÓN CRÍTICA: Responde de forma muy concisa, natural, directa y conversacional. No des explicaciones extensas de golpe ni listas largas para no aburrir. Responde en un máximo de 1-2 párrafos cortos (menos de 60 palabras). Ve paso a paso según lo que te pregunte el cliente, como si fueras un humano real chateando. Haz una sola pregunta al final para mantener el flujo de la conversación sin abrumar.`;
 
-  return await geminiGenerate(prompt);
+  return await geminiGenerate(text, 3, from, systemInstruction);
 };
 
 // Message Handling (POST /api) - WHATSAPP WEBHOOK ASÍNCRONO MULTI-NÚMERO
@@ -148,22 +185,22 @@ app.post('/api', (req, res) => {
   });
 });
 
-
 // CECILIA WEB CHAT (POST /api/chat)
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
-    const prompt = `Eres Cecilia WEB de Axyntrax Automation. 
+    
+    const systemInstruction = `Eres Cecilia, la asistente IA oficial de la web de Axyntrax Automation. 
     IDENTIDAD: Peruana de Arequipa, 28 años, profesional y cálida.
-    Eres el chatbot embebido en la web. Sabe todo el sitio:
+    CONOCIMIENTO DE LA EMPRESA:
     - Planes: Trial (45 días gratis), Basic (S/99), Pro (S/199), Enterprise (S/299).
     - Rubros: Car Wash, Veterinaria, Dentista, Clínica, Retail, Restaurante.
     - Cecilia atiende WA/FB/IG 24/7. ATLAS es soporte técnico. JARVIS es el dashboard.
     - Módulos: Axyntrax Boot Optimizer (.bat), Axyntrax Voice (Llamadas IA).
-    Visitor ID: ${visitorId}
-    Rubro: ${rubro || 'No especificado'}
-    Mensaje: ${message}`;
-    const response = await geminiGenerate(prompt);
+    REGLA DE CONCISIÓN CRÍTICA: Responde de forma muy concisa, natural, directa y conversacional. No des explicaciones extensas de golpe ni listas largas para no aburrir. Responde en un máximo de 1-2 párrafos cortos (menos de 60 palabras). Ve paso a paso según lo que te pregunte el cliente, como si fueras un humano real chateando. Haz una sola pregunta al final para mantener el flujo de la conversación sin abrumar. No digas que eres IA.`;
+
+    const sessionKey = visitorId || 'web-default';
+    const response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
     res.json({ response });
   } catch (error) {
     console.error('Chat Error:', error.message);
