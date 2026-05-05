@@ -164,11 +164,13 @@ app.post('/api/log-event', async (req, res) => {
     console.log('EVENTO JARVIS:', JSON.stringify(event));
     
     // Optional: Log to Supabase audit_logs table if it exists
-    await supabase.from('audit_logs').insert([{
-      event_type: event.evento,
-      details: event,
-      created_at: new Date().toISOString()
-    }]).catch(() => {});
+    try {
+      await supabase.from('audit_logs').insert([{
+        event_type: event.evento,
+        details: event,
+        created_at: new Date().toISOString()
+      }]);
+    } catch(dbErr) { console.error('Log DB err:', dbErr.message); }
 
     res.json({ status: 'logged' });
   } catch (error) {
@@ -293,17 +295,19 @@ app.post('/api/keygen/generate', async (req, res) => {
 
     const { key, expiry, rubroCode, planCode } = generarKeygen(rubro, plan, submodulos, diasTrial);
 
-    // Guardar en Supabase
-    const { error } = await supabase.from('keygens').insert([{
-      key, rubro, plan, submodulos: submodulos.join(','),
-      empresa: empresa || 'Sin registrar',
-      contacto: contacto || '',
-      estado: 'ACTIVO',
-      expiry_date: expiry,
-      activaciones: 0,
-      max_activaciones: plan === 'enterprise' ? 999 : plan === 'business' ? 3 : 1,
-      created_at: new Date().toISOString()
-    }]).catch(() => null);
+    // Guardar en Supabase (compatible con todas las versiones del cliente JS)
+    try {
+      await supabase.from('keygens').insert([{
+        key, rubro, plan, submodulos: submodulos.join(','),
+        empresa: empresa || 'Sin registrar',
+        contacto: contacto || '',
+        estado: 'ACTIVO',
+        expiry_date: expiry,
+        activaciones: 0,
+        max_activaciones: plan === 'enterprise' ? 999 : plan === 'business' ? 3 : 1,
+        created_at: new Date().toISOString()
+      });
+    } catch(dbErr) { console.error('[KEYGEN] DB Error:', dbErr.message); }
 
     console.log(`[KEYGEN] Generado: ${key} para ${empresa} (${rubro}/${plan})`);
     res.json({ 
