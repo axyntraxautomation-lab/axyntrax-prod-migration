@@ -14,11 +14,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'https://www.axyntrax-automation.net').split(',');
+const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'https://www.axyntrax-automation.net,https://axyntrax-automation.net').split(',');
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || 
+        origin.endsWith('axyntrax-automation.net') || 
+        origin.includes('vercel.app') || 
+        allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('CORS bloqueado: origen no autorizado'));
@@ -574,7 +577,11 @@ app.post('/api/registro', async (req, res) => {
       nombre, apellido, empresa, ruc, dni, correo, password,
       created_at: new Date().toISOString()
     }]);
-    console.log(`[JARVIS STATS] Nuevo registro para descargas: ${nombre} ${apellido} - ${empresa}`);
+    if (error) {
+      console.error('[SUPABASE REGISTER ERROR] No se guardó en BD, usando fallback de sesión:', error.message);
+    } else {
+      console.log(`[JARVIS STATS] Nuevo registro para descargas: ${nombre} ${apellido} - ${empresa}`);
+    }
     res.status(200).json({ success: true, user: { nombre, apellido, empresa, correo } });
   } catch (err) {
     console.error('[JARVIS ERROR] Falló guardar registro, usando fallback:', err.message);
