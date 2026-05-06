@@ -45,12 +45,17 @@ def get_axia_response(history, system_override: str = None):
             chat_history.append({"role": role, "parts": [msg["content"]]})
             
         chat = model.start_chat(history=chat_history)
-        response = chat.send_message(history[-1]["content"])
+        # 1. TEMPERATURA 0.7 configurada
+        response = chat.send_message(
+            history[-1]["content"],
+            generation_config={"temperature": 0.7}
+        )
         
         return response.text.strip()
     except Exception as e:
+        # Re-raise para que el webhook pueda manejar el error y loguearlo
         print(f"[AXIA IA ERR] {e}")
-        return "Disculpa, tengo una breve interrupción técnica. ¿Puedes repetir tu consulta? Te respondo de inmediato. 🙏"
+        raise e
 
 def generate_quote_pdf(lead_name, empresa, plan, precio):
     """Genera una cotización formal en PDF"""

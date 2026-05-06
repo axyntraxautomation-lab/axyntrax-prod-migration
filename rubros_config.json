@@ -1,0 +1,20 @@
+{
+  "salud": {
+    "nombre": "Salud y Bienestar",
+    "especialidad": "gestión de citas médicas, consultas preventivas y seguimiento de pacientes",
+    "modulos_demo": ["Agenda Médica", "Historial Digital", "Recordatorios WhatsApp"],
+    "saludo_inicial": "¡Hola! Soy Cecilia, tu asistente de salud. ¿Deseas agendar una cita o tienes alguna consulta médica?"
+  },
+  "retail": {
+    "nombre": "Comercio Minorista",
+    "especialidad": "ventas minoristas, catálogo de productos y atención al cliente post-venta",
+    "modulos_demo": ["Catálogo IA", "Control de Pedidos", "Cupones de Fidelidad"],
+    "saludo_inicial": "¡Hola! Soy Cecilia. Te ayudo a encontrar lo que buscas en nuestra tienda. ¿Qué producto necesitas hoy?"
+  },
+  "restaurante": {
+    "nombre": "Gastronomía y Restaurantes",
+    "especialidad": "reservas de mesa, consultas del menú del día y pedidos para delivery",
+    "modulos_demo": ["Reservas Online", "Carta Digital", "Gestión de Delivery"],
+    "saludo_inicial": "¡Hola! Soy Cecilia. ¿Te gustaría reservar una mesa para hoy o prefieres ver nuestra carta digital?"
+  }
+}

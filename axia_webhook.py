@@ -168,90 +168,107 @@ def build_cecilia_prompt(modulo: str, history: list, context: dict, empresa: str
 
 # ── Procesamiento principal (en hilo separado) ───────────────────────────────
 def process_message(data: dict):
+    from datetime import datetime
     try:
         entry   = data.get("entry", [{}])[0]
         changes = entry.get("changes", [{}])[0]
         value   = changes.get("value", {})
 
         if "messages" not in value:
-            return  # Solo procesar mensajes entrantes (no status updates)
+            return
 
         message = value["messages"][0]
         if message.get("type") != "text":
-            return  # Solo texto por ahora
+            return
 
         from_number  = message["from"]
         message_body = message["text"]["body"]
         empresa_name = os.getenv("EMPRESA_NOMBRE", "AXYNTRAX AUTOMATION")
 
-        print(f"[CECILIA] Mensaje de {from_number}: {message_body[:80]}")
-
         # ── Operación con Firestore ─────────────────────────────────────────
         if db is None:
-            # Modo sin Firestore: respuesta fija
-            send_whatsapp_message(from_number, (
-                f"¡Hola! Soy CECILIA de {empresa_name} 👋 "
-                "¿En qué puedo ayudarte hoy?"
-            ))
+            send_whatsapp_message(from_number, f"¡Hola! Soy CECILIA de {empresa_name} 👋 ¿En qué puedo ayudarte?")
             return
 
-        lead_ref  = db.collection("leads").document(from_number)
-        lead_snap = lead_ref.get()
+        # 3. MEMORIA: Uso de colección 'clientes' y últimos 20 mensajes
+        cliente_ref = db.collection("clientes").document(from_number)
+        cliente_snap = cliente_ref.get()
 
-        if not lead_snap.exists:
+        if not cliente_snap.exists:
             # Cliente nuevo
-            lead_ref.set({
-                "phone":      from_number,
-                "status":     "nuevo",
-                "modulo":     "general",
-                "history":    [{"role": "user", "content": message_body}],
+            history = [{"role": "user", "content": message_body}]
+            cliente_ref.set({
+                "phone": from_number,
+                "modulo": "general",
+                "history": history,
                 "created_at": firestore.SERVER_TIMESTAMP,
             })
-            response_text = (
-                f"¡Hola! Soy CECILIA, tu asistente de {empresa_name} 👋\n"
-                "¿Con quién tengo el gusto de hablar y en qué puedo ayudarte hoy?"
-            )
+            response_text = f"¡Hola! Soy CECILIA, tu asistente de {empresa_name} 👋\n¿Con quién tengo el gusto de hablar?"
         else:
-            lead_data = lead_snap.to_dict()
-            history   = lead_data.get("history", [])[-10:]  # Últimos 10 turnos
-            modulo    = lead_data.get("modulo", "general")
-            context   = get_client_context(history)
-
+            cliente_data = cliente_snap.to_dict()
+            # Obtener últimos 20 mensajes para memoria
+            history = cliente_data.get("history", [])[-20:]
+            modulo  = cliente_data.get("modulo", "general")
+            context = get_client_context(history)
+            
             system_prompt = build_cecilia_prompt(modulo, history, context, empresa_name)
+            
+            try:
+                # Llamar IA con historial + mensaje actual
+                full_history = history + [{"role": "user", "content": message_body}]
+                response_text = get_axia_response(full_history, system_override=system_prompt)
+            except Exception as ia_err:
+                # 2. MANEJO DE ERROR GEMINI
+                error_msg = "Estoy verificando tu solicitud, te respondo en un momento 🙏"
+                send_whatsapp_message(from_number, error_msg)
+                
+                # Registrar error en Firebase
+                db.collection("errores_cecilia").add({
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "canal": "whatsapp",
+                    "from": from_number,
+                    "error_message": str(ia_err)
+                })
+                return
 
-            # Llamar IA con historial + mensaje actual
-            response_text = get_axia_response(
-                history + [{"role": "user", "content": message_body}],
-                system_override=system_prompt
-            )
+            # 4. DETECCIÓN DE INTERÉS Y CTA
+            interes_triggers = ["precio", "demo", "probar", "quiero", "cuánto", "cuanto", "costo", "valor", "plan"]
+            if any(t in message_body.lower() for t in interes_triggers):
+                response_text += "\n\n👉 Pruébalo gratis 45 días: www.axyntrax-automation.net"
+                
+                # Alerta a JARVIS
+                try:
+                    requests.post(f"{request.url_root}jarvis/alert", json={
+                        "tipo": "nuevo_prospecto",
+                        "nombre": context.get("nombre", "Cliente"),
+                        "canal": "whatsapp",
+                        "mensaje": message_body
+                    }, timeout=5)
+                except: pass
 
-            # Actualizar historial
-            lead_ref.update({
-                "history": firestore.ArrayUnion([{"role": "user", "content": message_body}])
-            })
+            # Actualizar historial localmente para guardar
+            history.append({"role": "user", "content": message_body})
+            history.append({"role": "assistant", "content": response_text})
+            
+            # Guardar últimos 20 mensajes
+            cliente_ref.update({"history": history[-20:]})
 
             # Detección de cotización
             triggers = ["cotización", "cotizacion", "cuánto cuesta", "cuanto cuesta", "precio"]
             if any(t in message_body.lower() for t in triggers):
-                nombre  = context.get("nombre", lead_data.get("nombre", "Cliente"))
-                empresa = lead_data.get("empresa", "Empresa")
+                nombre = context.get("nombre", cliente_data.get("nombre", "Cliente"))
                 plan, precio = "Pro Cloud", 399
-                pdf_path = generate_quote_pdf(nombre, empresa, plan, precio)
-                pdf_url  = upload_quote_to_storage(pdf_path)
+                pdf_path = generate_quote_pdf(nombre, "Empresa", plan, precio)
+                pdf_url = upload_quote_to_storage(pdf_path)
                 if pdf_url:
                     send_whatsapp_document(from_number, pdf_url, f"cotizacion_{nombre}.pdf")
-                    response_text += f"\n\n📄 Te envié tu cotización del Plan {plan}. ¿Qué te parece?"
-                    notify_sales_team({**lead_data, "phone": from_number, "nombre": nombre, "score": 90})
+                    response_text += f"\n\n📄 Te envié tu cotización. ¿Qué te parece?"
 
-        # Enviar respuesta y guardar en historial
-        if send_whatsapp_message(from_number, response_text):
-            if db:
-                lead_ref.update({
-                    "history": firestore.ArrayUnion([{"role": "assistant", "content": response_text}])
-                })
+        # Enviar respuesta final
+        send_whatsapp_message(from_number, response_text)
 
     except Exception as e:
-        print(f"[CECILIA ERR] {e}")
+        print(f"[CECILIA ERR GLOBAL] {e}")
 
 
 # ── Rutas Flask ──────────────────────────────────────────────────────────────
@@ -281,6 +298,21 @@ def webhook():
     # Procesar en segundo plano para responder 200 OK a Meta de inmediato
     threading.Thread(target=process_message, args=(data,), daemon=True).start()
     return jsonify({"status": "ok"}), 200
+
+
+@app.route("/jarvis/alert", methods=["POST"])
+def jarvis_alert():
+    """Endpoint para recibir alertas internas de Cecilia/ATLAS."""
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"status": "no_data"}), 400
+    
+    if db:
+        db.collection("alertas_jarvis").add({
+            **data,
+            "timestamp": firestore.SERVER_TIMESTAMP
+        })
+    return jsonify({"status": "alert_logged"}), 200
 
 
 @app.route("/health", methods=["GET"])
