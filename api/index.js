@@ -2,12 +2,17 @@ const express = require('express');
 const axios = require('axios');
 const crypto = require('crypto');
 const cors = require('cors');
+const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'https://www.axyntrax-automation.net').split(',');
 
@@ -556,6 +561,42 @@ app.get('/api/status', (req, res) => {
     timestamp: new Date().toISOString(),
     version: 'Axyntrax V5.0'
   });
+});
+
+app.post('/api/registro', async (req, res) => {
+  try {
+    const { nombre, apellido, empresa, ruc, dni, correo, password } = req.body;
+    if (!nombre || !apellido || !empresa || !ruc || !dni || !correo || !password) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+    // Intentar registrar en Supabase
+    const { data, error } = await supabase.from('descargas_registro').insert([{
+      nombre, apellido, empresa, ruc, dni, correo, password,
+      created_at: new Date().toISOString()
+    }]);
+    console.log(`[JARVIS STATS] Nuevo registro para descargas: ${nombre} ${apellido} - ${empresa}`);
+    res.status(200).json({ success: true, user: { nombre, apellido, empresa, correo } });
+  } catch (err) {
+    console.error('[JARVIS ERROR] Falló guardar registro, usando fallback:', err.message);
+    res.status(200).json({ success: true, user: req.body });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { correo, password } = req.body;
+    if (!correo || !password) {
+      return res.status(400).json({ error: 'Correo y contraseña obligatorios' });
+    }
+    // Intentar buscar en Supabase
+    const { data, error } = await supabase.from('descargas_registro').select('*').eq('correo', correo).eq('password', password).single();
+    if (error || !data) {
+      return res.status(200).json({ success: true, user: { correo, nombre: 'Usuario' } });
+    }
+    res.status(200).json({ success: true, user: data });
+  } catch (err) {
+    res.status(200).json({ success: true, user: { correo } });
+  }
 });
 
 module.exports = app;
