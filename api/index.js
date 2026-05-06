@@ -37,7 +37,7 @@ const {
 } = process.env;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_2);
 
 // --- MOTOR DE MEMORIA CONTEXTUAL NATIVA DE CECILIA (AXYNTRAX MEMORY) ---
 const chatHistory = new Map();
@@ -600,6 +600,18 @@ app.post(['/auth/login', '/api/login', '/login'], async (req, res) => {
   } catch (err) {
     res.status(200).json({ success: true, user: { correo } });
   }
+});
+
+app.post(['/atlas-auth', '/api/atlas-auth'], (req, res) => {
+  const { token } = req.body;
+  const masterToken = process.env.ATLAS_MASTER_TOKEN;
+  if (!masterToken) {
+    return res.status(500).json({ success: false, error: 'Token no configurado' });
+  }
+  if (token === masterToken) {
+    return res.json({ success: true });
+  }
+  return res.status(401).json({ success: false, error: 'ACCESO DENEGADO' });
 });
 
 module.exports = app;

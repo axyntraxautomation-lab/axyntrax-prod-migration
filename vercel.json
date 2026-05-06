@@ -11,6 +11,7 @@
     { "source": "/link", "destination": "/link.html" },
     { "source": "/voice", "destination": "/voice.html" },
     { "source": "/jarvis", "destination": "/jarvis.html" },
-    { "source": "/keygen", "destination": "/keygen.html" }
+    { "source": "/keygen", "destination": "/keygen.html" },
+    { "source": "/atlas", "destination": "/atlas.html" }
   ]
 }
