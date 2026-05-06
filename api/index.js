@@ -569,8 +569,8 @@ app.get('/api/status', (req, res) => {
 app.post(['/auth/registro', '/api/registro', '/registro'], async (req, res) => {
   try {
     const { nombre, apellido, empresa, ruc, dni, correo, password } = req.body;
-    if (!nombre || !apellido || !empresa || !ruc || !dni || !correo || !password) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    if (!nombre || !apellido || !dni || !correo || !password) {
+      return res.status(400).json({ error: 'Nombre, Apellido, DNI, Correo y Contraseña son obligatorios' });
     }
     // Intentar registrar en Supabase
     const { data, error } = await supabase.from('descargas_registro').insert([{
