@@ -566,7 +566,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-app.post('/auth/registro', async (req, res) => {
+app.post(['/auth/registro', '/api/registro'], async (req, res) => {
   try {
     const { nombre, apellido, empresa, ruc, dni, correo, password } = req.body;
     if (!nombre || !apellido || !empresa || !ruc || !dni || !correo || !password) {
@@ -589,7 +589,7 @@ app.post('/auth/registro', async (req, res) => {
   }
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post(['/auth/login', '/api/login'], async (req, res) => {
   try {
     const { correo, password } = req.body;
     if (!correo || !password) {
