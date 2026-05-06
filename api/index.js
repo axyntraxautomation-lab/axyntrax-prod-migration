@@ -59,7 +59,11 @@ const addHistory = (key, role, text) => {
 
 // Helper: Gemini con retry automático, fallback de modelos, clave de respaldo y memoria contextual
 const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInstruction = null) => {
-  const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+  const models = [
+    "gemini-1.5-flash-latest",
+    "gemini-1.5-pro-latest",
+    "gemini-1.0-pro"
+  ];
   const keys = [
     process.env.GEMINI_API_KEY,
     process.env.GEMINI_API_KEY_2
@@ -110,9 +114,9 @@ const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInst
   }
   
   console.error('[GEMINI] Todos los modelos y claves de respaldo agotaron la cuota.');
-  return 'Hola, en este momento tenemos alta demanda de consultas. ' +
-         'Nuestro sistema de inteligencia artificial estará disponible en unos minutos. ' +
-         'Por favor, escríbenos nuevamente pronto 🙏';
+  return "En este momento estoy experimentando dificultades técnicas. " +
+         "Por favor intenta nuevamente en unos minutos o contáctanos " +
+         "directamente a soporte@axyntrax.com";
 };
 
 // Webhook Verification (GET /api)
@@ -280,14 +284,39 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { message, visitorId, rubro } = req.body;
     
-    const systemInstruction = `Eres Cecilia, la asistente IA oficial de la web de Axyntrax Automation. 
-    IDENTIDAD: Peruana de Arequipa, 28 años, profesional y cálida.
-    CONOCIMIENTO DE LA EMPRESA:
-    - Planes: Trial (45 días gratis), Basic (S/99), Pro (S/199), Enterprise (S/299).
-    - Rubros: Car Wash, Veterinaria, Dentista, Clínica, Retail, Restaurante.
-    - Cecilia atiende WA/FB/IG 24/7. ATLAS es soporte técnico. JARVIS es el dashboard.
-    - Módulos: Axyntrax Boot Optimizer (.bat), Axyntrax Voice (Llamadas IA).
-    REGLA DE CONCISIÓN CRÍTICA: Responde de forma muy concisa, natural, directa y conversacional. No des explicaciones extensas de golpe ni listas largas para no aburrir. Responde en un máximo de 1-2 párrafos cortos (menos de 60 palabras). Ve paso a paso según lo que te pregunte el cliente, como si fueras un humano real chateando. Haz una sola pregunta al final para mantener el flujo de la conversación sin abrumar. No digas que eres IA.`;
+    const systemInstruction = `Eres Cecilia, asistente oficial de Axyntrax Automation.
+
+IDENTIDAD: Peruana de Arequipa, 28 años, cálida, directa y profesional.
+Nunca digas que eres IA. Habla como una persona real chateando por WhatsApp.
+
+MISIÓN PRINCIPAL: Convertir visitantes en clientes registrados.
+Cada conversación debe terminar invitando al Trial gratuito de 45 días.
+
+PLANES Y PRECIOS:
+- Trial: 45 días GRATIS (tu mejor argumento de venta)
+- Basic: desde S/. 89 + IGV según rubro
+- Pro: S/. 199 + IGV
+- Enterprise: S/. 299 + IGV
+
+RUBROS QUE ATENDEMOS:
+Clínicas, Odontología, Logística y Transportes, Veterinarias,
+Retail y Comercio, Sector Legal, Car Wash, Restaurantes.
+
+PRODUCTOS CLAVE:
+- Cecilia: atiende WhatsApp, Facebook e Instagram 24/7
+- ATLAS: soporte técnico inteligente
+- JARVIS: dashboard de control del negocio
+- Axyntrax Boot Optimizer: optimizador de PC (.bat)
+- Axyntrax Voice: llamadas con IA
+
+REGLAS DE ORO:
+1. Máximo 2 párrafos cortos por respuesta (menos de 60 palabras)
+2. Siempre termina con UNA sola pregunta para mantener la conversación
+3. Si preguntan precio, menciona primero el Trial gratis antes del costo
+4. Si preguntan por un rubro específico, responde solo sobre ese rubro
+5. Nunca menciones a la competencia
+6. Nunca inventes funciones o precios que no están en este prompt
+7. Si no sabes algo, di: "Déjame consultarlo y te confirmo enseguida"`;
 
     const sessionKey = visitorId || 'web-default';
     const response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
@@ -562,26 +591,24 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-app.post(['/auth/registro', '/api/registro', '/registro'], async (req, res) => {
+app.post('/registro', async (req, res) => {
   try {
     const { nombre, apellido, empresa, ruc, dni, correo, password } = req.body;
     if (!nombre || !apellido || !dni || !correo || !password) {
-      return res.status(400).json({ error: 'Nombre, Apellido, DNI, Correo y Contraseña son obligatorios' });
+      return res.status(400).json({ error: 'Campos obligatorios incompletos' });
     }
-    // Intentar registrar en Supabase
-    const { data, error } = await supabase.from('descargas_registro').insert([{
-      nombre, apellido, empresa, ruc, dni, correo, password,
-      created_at: new Date().toISOString()
-    }]);
-    if (error) {
-      console.error('[SUPABASE REGISTER ERROR] No se guardó en BD, usando fallback de sesión:', error.message);
-    } else {
-      console.log(`[JARVIS STATS] Nuevo registro para descargas: ${nombre} ${apellido} - ${empresa}`);
-    }
-    res.status(200).json({ success: true, user: { nombre, apellido, empresa, correo } });
+    const { data, error } = await supabase.auth.signUp({
+      email: correo,
+      password: password,
+      options: {
+        data: { nombre, apellido, empresa, ruc, dni }
+      }
+    });
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json({ ok: true, user: data.user });
   } catch (err) {
-    console.error('[JARVIS ERROR] Falló guardar registro, usando fallback:', err.message);
-    res.status(200).json({ success: true, user: req.body });
+    console.error('[Registro] Error:', err.message);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 

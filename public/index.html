@@ -8,7 +8,24 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Axyntrax | Automatización Inteligente PyME</title>
+    <title>Axyntrax Automation | Automatización con IA para PyMEs en Perú</title>
+    <meta name="description" content="Automatiza la atención al cliente de tu negocio con Inteligencia Artificial. Planes desde S/. 89 + IGV. 45 días gratis. Ideal para clínicas, restaurantes, veterinarias, retail y más.">
+    <meta name="keywords" content="automatización PyME Perú, chatbot WhatsApp Arequipa, atención al cliente IA, Axyntrax, chatbot para clínicas, chatbot restaurante Perú">
+    <meta name="author" content="Axyntrax Automation">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://axyntrax-automation.net/">
+
+    <meta property="og:title" content="Axyntrax Automation | IA para tu negocio">
+    <meta property="og:description" content="45 días gratis. Automatiza WhatsApp, Instagram y Facebook con IA. Desde S/. 89 + IGV.">
+    <meta property="og:image" content="https://axyntrax-automation.net/og-image.png">
+    <meta property="og:url" content="https://axyntrax-automation.net/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_PE">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Axyntrax Automation | IA para PyMEs en Perú">
+    <meta name="twitter:description" content="Automatiza la atención al cliente con IA. 45 días gratis.">
+    <meta name="twitter:image" content="https://axyntrax-automation.net/og-image.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -63,23 +80,110 @@
 
         footer { padding: 80px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
         .footer-copy { color: var(--muted); font-size: 0.9rem; }
+
+        /* MOBILE MENU */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    color: var(--text);
+    z-index: 1001;
+}
+.nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+}
+.nav-overlay.active { display: block; }
+
+@media (max-width: 768px) {
+    .hamburger { display: block; }
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 250px;
+        height: 100vh;
+        background: var(--surface);
+        flex-direction: column;
+        padding-top: 90px;
+        transition: right 0.3s ease;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+    .nav-links.active { right: 0; }
+    .hero-title { font-size: 2.5rem; }
+    .hero-btns { flex-direction: column; }
+}
     </style>
 </head>
 <body>
 
 <nav>
-  <div class="container inner">
-    <img src="/logo.png" alt="Axyntrax Logo" style="height: 60px; object-fit: contain;">
-    <ul class="nav-links">
+  <div class="container inner" style="display:flex; justify-content:space-between; align-items:center;">
+    <img src="/logo.png" alt="Axyntrax Logo" style="height:60px; object-fit:contain;">
+
+    <!-- Botón Hamburguesa -->
+    <button class="hamburger" id="hamburger-btn"
+      aria-label="Abrir menú" aria-expanded="false">☰</button>
+
+    <!-- Overlay oscuro -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <ul class="nav-links" id="nav-links">
       <li><a href="#rubros">Soluciones</a></li>
       <li><a href="#nosotros">Sobre nosotros</a></li>
       <li><a href="#descargas">Descargas</a></li>
       <li><a href="#precios">Precios</a></li>
-      <li><a href="#formulario" class="btn-primary">Prueba Gratis</a></li>
-      <li><a href="/atlas" class="nav-atlas-btn" style="color:#00f5ff; font-weight:bold; border:1px solid #00f5ff; padding:6px 14px; border-radius:4px; text-decoration:none;">⚡ ATLAS</a></li>
+      <li><a href="#" onclick="openAuthModal(); return false;" class="btn-primary">Prueba Gratis</a></li>
+      <li>
+        <a href="/atlas" class="nav-atlas-btn"
+          style="color:#00f5ff; font-weight:bold; border:1px solid #00f5ff;
+                 padding:6px 14px; border-radius:4px; text-decoration:none;">
+          ⚡ ATLAS
+        </a>
+      </li>
     </ul>
   </div>
 </nav>
+
+<script>
+  (function() {
+    var btn     = document.getElementById('hamburger-btn');
+    var menu    = document.getElementById('nav-links');
+    var overlay = document.getElementById('nav-overlay');
+
+    function openMenu() {
+      menu.classList.add('active');
+      overlay.classList.add('active');
+      btn.textContent = '✕';
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Cerrar menú');
+    }
+
+    function closeMenu() {
+      menu.classList.remove('active');
+      overlay.classList.remove('active');
+      btn.textContent = '☰';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Abrir menú');
+    }
+
+    btn.addEventListener('click', function() {
+      menu.classList.contains('active') ? closeMenu() : openMenu();
+    });
+
+    overlay.addEventListener('click', closeMenu);
+
+    document.querySelectorAll('#nav-links a').forEach(function(link) {
+      link.addEventListener('click', closeMenu);
+    });
+  })();
+</script>
 
 <section id="hero">
   <div class="container">
@@ -87,7 +191,7 @@
     <h1 class="hero-title">Automatiza tu negocio con <span class="gradient-text">Cecilia, ATLAS & JARVIS</span></h1>
     <p class="hero-sub">El primer ecosistema autónomo para PyMEs en Perú. Cecilia vende, ATLAS soporta y JARVIS controla. Escala tu rubro al siguiente nivel hoy.</p>
     <div class="hero-btns">
-      <a href="#formulario" class="btn-primary">Empieza 45 días Gratis</a>
+      <a href="#" onclick="openAuthModal(); return false;" class="btn-primary">Empieza 45 días Gratis</a>
       <a href="#descargas" class="btn-secondary">Descargar Optimizadores</a>
     </div>
   </div>
@@ -235,7 +339,7 @@
         <ul style="color:var(--muted);list-style:none;line-height:2.2">
           <li>✅ 1 Rubro + 1 Sub-módulo</li><li>✅ Cecilia WhatsApp</li><li>✅ 45 días Trial</li><li>❌ Dashboard JARVIS</li>
         </ul>
-        <a href="#formulario" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Empezar Trial</a>
+        <a href="#" onclick="openAuthModal(); return false;" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Empezar Trial</a>
       </div>
       <div class="card" style="border-color:rgba(0,245,255,0.4);transform:scale(1.04)">
         <div style="background:var(--cyan);color:#000;font-size:0.7rem;font-weight:900;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:10px">MÁS POPULAR</div>
@@ -244,7 +348,7 @@
         <ul style="color:var(--muted);list-style:none;line-height:2.2">
           <li>✅ 1 Rubro + 3 Sub-módulos</li><li>✅ Cecilia White-Label</li><li>✅ Dashboard JARVIS</li><li>✅ 3 Perfiles Empleado</li>
         </ul>
-        <a href="#formulario" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Activar Business</a>
+        <a href="#" onclick="openAuthModal(); return false;" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Activar Business</a>
       </div>
       <div class="card">
         <h3>Enterprise</h3>
@@ -252,7 +356,7 @@
         <ul style="color:var(--muted);list-style:none;line-height:2.2">
           <li>✅ Rubros ilimitados</li><li>✅ White-Label completo</li><li>✅ ATLAS Ciberseguridad</li><li>✅ Asientos ilimitados</li>
         </ul>
-        <a href="#formulario" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Contactar CEO</a>
+        <a href="#" onclick="openAuthModal(); return false;" class="btn-primary" style="display:block;text-align:center;margin-top:24px">Contactar CEO</a>
       </div>
     </div>
   </div>
@@ -363,49 +467,49 @@
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">🏥</span>
         <h4 style="margin: 15px 0;">Clínicas y Médicos</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">🦷</span>
         <h4 style="margin: 15px 0;">Odontología</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">🚚</span>
         <h4 style="margin: 15px 0;">Logística y Transportes</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">🐾</span>
         <h4 style="margin: 15px 0;">Veterinarias</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">🛒</span>
         <h4 style="margin: 15px 0;">Retail y Comercio</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px;">
         <span style="font-size: 2.5rem;">⚖️</span>
         <h4 style="margin: 15px 0;">Sector Legal</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px;">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px; border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.02);">
         <span style="font-size: 2.5rem;">🚗</span>
         <h4 style="margin: 15px 0;">Car Wash <span style="color: #06b6d4; font-size: 0.75rem; font-weight: 900;">(NUEVO)</span></h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px; background: linear-gradient(135deg, #06b6d4, var(--primary));">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px; background: linear-gradient(135deg, #06b6d4, var(--primary));">Descargar .EXE</a>
       </div>
 
       <div class="card" style="text-align: center; padding: 30px; border-color: rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.02);">
         <span style="font-size: 2.5rem;">🍔</span>
         <h4 style="margin: 15px 0;">Restaurantes</h4>
-        <a href="/downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px; background: linear-gradient(135deg, #f43f5e, var(--primary));">Descargar .EXE</a>
+        <a href="https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat" download class="btn-primary" style="display: inline-block; width: 100%; font-size: 0.85rem; padding: 12px 0; text-decoration: none; border-radius: 8px; background: linear-gradient(135deg, #f43f5e, var(--primary));">Descargar .EXE</a>
       </div>
 
     </div>
@@ -640,12 +744,12 @@ async function handleAuthSubmit(e, action) {
   }
 
   try {
-    const res = await fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    const data = await res.json();
+    const data = await response.json();
 
     if (data.error) {
       errorDiv.innerText = data.error;

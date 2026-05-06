@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script>
+      (function() {
+        var JARVIS_TOKEN = localStorage.getItem('jarvis_master_token');
+        var VALID_TOKEN = 'AXY-JARVIS-2025-MASTER';
+        if (!JARVIS_TOKEN || JARVIS_TOKEN !== VALID_TOKEN) {
+          document.documentElement.innerHTML = '';
+          window.location.replace('/');
+        }
+      })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARVIS | Central de Inteligencia Axyntrax</title>
