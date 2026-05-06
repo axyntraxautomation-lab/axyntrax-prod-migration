@@ -624,13 +624,13 @@ async function handleAuthSubmit(e, action) {
       correo: document.getElementById('reg-correo').value.trim(),
       password: document.getElementById('reg-password').value
     };
-    endpoint = '/api/registro';
+    endpoint = '/auth/registro';
   } else {
     body = {
       correo: document.getElementById('log-correo').value.trim(),
       password: document.getElementById('log-password').value
     };
-    endpoint = '/api/login';
+    endpoint = '/auth/login';
   }
 
   try {
