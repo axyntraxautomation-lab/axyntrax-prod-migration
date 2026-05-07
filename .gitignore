@@ -8,3 +8,16 @@ node_modules/
 .netlify/
 functions/node_modules/
 axia-core/node_modules/
+
+# Secretos y datos sensibles (no versionar en GitHub)
+.env
+.env.*
+functions/.env
+keygen/keys_emitidas.json
+serviceAccountKey.json
+**/serviceAccountKey.json
+service-account.json
+**/service-account.json
+**/service-account*.json
+data/axyntrax.db
+*.db
