@@ -397,11 +397,14 @@ Responde breve + redirige a activación
 https://www.axyntrax-automation.net"`;
 
     const sessionKey = visitorId || 'web-default';
-    const response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
+    let response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
+    if (!response || response.includes("dificultades técnicas") || response.includes("soporte@axyntrax.com")) {
+      response = "Estamos recibiendo muchas solicitudes. Puedes continuar tu registro aquí:\nhttps://www.axyntrax-automation.net/api/installer";
+    }
     res.json({ response });
   } catch (error) {
     console.error('Chat Error:', error.message);
-    res.json({ response: "¡Hola! Soy Cecilia 😊 Estoy procesando tu consulta. ¿Tienes alguna pregunta sobre nuestros planes o rubros? Puedo ayudarte con información sobre automatización para tu negocio." });
+    res.json({ response: "Estamos recibiendo muchas solicitudes. Puedes continuar tu registro aquí:\nhttps://www.axyntrax-automation.net/api/installer" });
   }
 });
 
