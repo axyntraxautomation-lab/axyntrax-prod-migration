@@ -51,8 +51,12 @@ const {
   GEMINI_API_KEY
 } = process.env;
 
+function resolveGeminiApiKey() {
+  return String(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '').trim();
+}
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_2);
+const genAI = new GoogleGenerativeAI(resolveGeminiApiKey() || process.env.GEMINI_API_KEY_2 || '');
 
 // --- MOTOR DE MEMORIA CONTEXTUAL NATIVA DE CECILIA (AXYNTRAX MEMORY) ---
 const chatHistory = new Map();
@@ -75,12 +79,13 @@ const addHistory = (key, role, text) => {
 // Helper: Gemini con retry automático, fallback de modelos, clave de respaldo y memoria contextual
 const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInstruction = null) => {
   const models = [
+    process.env.GEMINI_MODEL || "gemini-2.0-flash",
     "gemini-1.5-flash-latest",
     "gemini-1.5-pro-latest",
     "gemini-1.0-pro"
   ];
   const keys = [
-    process.env.GEMINI_API_KEY,
+    resolveGeminiApiKey(),
     process.env.GEMINI_API_KEY_2
   ].filter(k => k && k.trim() !== "");
 
@@ -210,6 +215,37 @@ const procesarMensajeCecilia = async (from, text) => {
   return await geminiGenerate(text, 3, from, systemInstruction);
 };
 
+// Función auxiliar centralizada para el envío de mensajes de WhatsApp por Graph API
+async function graphSendWhatsAppText(phoneNumberId, to, body) {
+  try {
+    const token = process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN || '';
+    if (!token) {
+      console.warn(`[graphSendWhatsAppText] Sin token de WhatsApp configurado, ignorando envío a ${to}`);
+      return false;
+    }
+    await axios.post(
+      `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        to: to,
+        type: 'text',
+        text: { body: body }
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log(`[WHATSAPP] Mensaje enviado exitosamente a ${to}`);
+    return true;
+  } catch (err) {
+    console.error(`[graphSendWhatsAppText ERROR] falló envío a ${to}:`, err.response?.data || err.message);
+    return false;
+  }
+}
+
 // Función unificada y reutilizable para procesar mensajes de Meta (WhatsApp, Messenger e Instagram)
 const processWhatsAppMessage = async (body) => {
   if (!body) return;
@@ -230,24 +266,18 @@ const processWhatsAppMessage = async (body) => {
 
         if (text && from && phoneNumberId) {
           console.log(`[WHATSAPP] Mensaje de ${from}: ${text}`);
-          const respuesta = await procesarMensajeCecilia(from, text);
-
-          await axios.post(
-            `https://graph.facebook.com/v20.0/${phoneNumberId}/messages`,
-            {
-              messaging_product: 'whatsapp',
-              to: from,
-              type: 'text',
-              text: { body: respuesta }
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN || process.env.WSP_ACCESS_TOKEN || WHATSAPP_TOKEN}`,
-                'Content-Type': 'application/json'
-              }
+          let respuesta = "";
+          try {
+            respuesta = await procesarMensajeCecilia(from, text);
+            if (!respuesta || respuesta.includes("dificultades técnicas") || respuesta.includes("soporte@axyntrax.com")) {
+              throw new Error("Respuesta inválida o de contingencia por fallback general");
             }
-          );
-          console.log(`[WHATSAPP] Respuesta enviada a ${from}`);
+          } catch (err) {
+            console.error(`[CECILIA/Gemini] Error en generación de contenido para ${from}:`, err.message);
+            respuesta = `✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer`;
+          }
+
+          await graphSendWhatsAppText(phoneNumberId, from, respuesta);
         }
       }
 
@@ -260,7 +290,16 @@ const processWhatsAppMessage = async (body) => {
 
       if (text && senderId && !messaging?.message?.is_echo) {
         console.log(`[${object.toUpperCase()}] Mensaje de ${senderId}: ${text}`);
-        const respuesta = await procesarMensajeCecilia(senderId, text);
+        let respuesta = "";
+        try {
+          respuesta = await procesarMensajeCecilia(senderId, text);
+          if (!respuesta || respuesta.includes("dificultades técnicas") || respuesta.includes("soporte@axyntrax.com")) {
+            throw new Error("Respuesta inválida o de contingencia por fallback general");
+          }
+        } catch (err) {
+          console.error(`[CECILIA/Gemini] Error en generación de contenido para ${senderId}:`, err.message);
+          respuesta = `✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer`;
+        }
 
         await axios.post(
           `https://graph.facebook.com/v20.0/me/messages`,
@@ -275,7 +314,7 @@ const processWhatsAppMessage = async (body) => {
               'Content-Type': 'application/json'
             }
           }
-        );
+        ).catch(e => console.error(`[OMNICHANNEL MSG SEND ERR]`, e.response?.data || e.message));
         console.log(`[${object.toUpperCase()}] Respuesta enviada a ${senderId}`);
       }
     }
@@ -286,13 +325,21 @@ const processWhatsAppMessage = async (body) => {
 
 // Message Handling (POST /api) - OMNICHANNEL WEBHOOK (WHATSAPP + MESSENGER + INSTAGRAM)
 app.post('/api', async (req, res) => {
-  await processWhatsAppMessage(req.body);
+  try {
+    await processWhatsAppMessage(req.body);
+  } catch (err) {
+    console.error('[API WEBHOOK ERROR GLOBAL]', err.message);
+  }
   res.status(200).send('EVENT_RECEIVED');
 });
 
 // ── Handler POST /api/webhook (mensajes entrantes espejo) ──
 app.post('/api/webhook', async (req, res) => {
-  await processWhatsAppMessage(req.body);
+  try {
+    await processWhatsAppMessage(req.body);
+  } catch (err) {
+    console.error('[API WEBHOOK ERROR GLOBAL]', err.message);
+  }
   res.status(200).send('EVENT_RECEIVED');
 });
 
