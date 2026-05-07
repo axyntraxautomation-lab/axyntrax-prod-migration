@@ -52,7 +52,13 @@ const {
 } = process.env;
 
 function resolveGeminiApiKey() {
-  return String(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '').trim();
+  return String(
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GOOGLE_AI_API_KEY ||
+    ''
+  ).trim();
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
