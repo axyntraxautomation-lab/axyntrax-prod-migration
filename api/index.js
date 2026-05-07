@@ -64,6 +64,20 @@ function resolveGeminiApiKey() {
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const genAI = new GoogleGenerativeAI(resolveGeminiApiKey() || process.env.GEMINI_API_KEY_2 || '');
 
+async function guardarLead({ nombre, whatsapp, email, empresa, rubro }) {
+  try {
+    const { error } = await supabase.from('leads').insert([
+      { nombre, whatsapp, email, empresa, rubro }
+    ]);
+
+    if (error) {
+      console.error("SUPABASE ERROR:", error.message);
+    }
+  } catch (err) {
+    console.error("GUARDAR LEAD ERROR:", err.message);
+  }
+}
+
 // --- MOTOR DE MEMORIA CONTEXTUAL NATIVA DE CECILIA (AXYNTRAX MEMORY) ---
 const chatHistory = new Map();
 
@@ -209,6 +223,45 @@ app.get('/api/webhook', (req, res) => {
   res.sendStatus(403);
 });
 
+// Filtro e interceptor inteligente de Cecilia para capturar leads sin latencia y soportar fallas de la IA
+async function procesarRespuestaCeciliaConFiltro(sessionKey, text) {
+  const cleanText = (text || '').trim().toLowerCase();
+  
+  // 1. SALUDO
+  const saludos = ['hola', 'buenas', 'info', 'informacion', 'hola!', 'hola cecilia', 'ayuda'];
+  if (saludos.some(s => cleanText === s || cleanText.startsWith(s + ' '))) {
+    return "¡Hola! 👋 Soy Cecilia de Axyntrax Automation.\n¿Quieres activar tu sistema o conocer cómo automatizar tu negocio?";
+  }
+  
+  // 2. INTERÉS
+  const interes = ['activar', 'prueba', 'demo', 'precio', 'gratis', 'activarlo', 'probar'];
+  if (interes.some(i => cleanText.includes(i))) {
+    return "Perfecto 🙌 para activarte la prueba gratuita de 45 días necesito unos datos rápidos:\n\n- Nombre\n- WhatsApp\n- Email\n- Empresa\n- Rubro";
+  }
+  
+  // 3. DETECCIÓN DE DATOS Y GUARDADO AUTOMÁTICO
+  const hasEmail = cleanText.includes('@');
+  const hasPhone = /[0-9]{7,15}/.test(cleanText);
+  if (hasEmail || hasPhone || cleanText.length > 40) {
+    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const phoneMatch = text.match(/\+?[0-9]{7,15}/);
+    
+    const email = emailMatch ? emailMatch[0] : 'No proporcionado';
+    const whatsapp = phoneMatch ? phoneMatch[0] : 'No proporcionado';
+    
+    const parts = text.split(/[\n,;]/).map(p => p.trim()).filter(Boolean);
+    const nombre = parts.find(p => !p.includes('@') && !/[0-9]/.test(p)) || 'Interesado Cecilia';
+    const empresa = parts.find(p => p.toLowerCase().includes('empresa') || p.toLowerCase().includes('cia') || p.toLowerCase().includes('sa') || p.toLowerCase().includes('sac')) || 'Independiente';
+    const rubro = parts.find(p => p.toLowerCase().includes('rubro') || p.toLowerCase().includes('clinica') || p.toLowerCase().includes('dentista') || p.toLowerCase().includes('car wash') || p.toLowerCase().includes('legal') || p.toLowerCase().includes('logistica')) || 'Varios';
+    
+    await guardarLead({ nombre, whatsapp, email, empresa, rubro });
+    
+    return "Listo ✅ estoy registrando tus datos...\n\n✅ Registro completado.\n\nDescarga tu sistema aquí:\nhttps://www.axyntrax-automation.net/api/installer\n\nEn breve recibirás tu activación.";
+  }
+  
+  return null; // Dejar pasar a Gemini
+}
+
 // Función desacoplada para procesar el mensaje con Gemini para WhatsApp con concisión y memoria
 const procesarMensajeCecilia = async (from, text) => {
   const systemInstruction = `Eres Cecilia, asistente oficial de Axyntrax Automation.
@@ -283,6 +336,10 @@ IMPORTANTE:
 Tu función NO es informar.
 Tu función es convertir.`;
 
+  const responseFiltro = await procesarRespuestaCeciliaConFiltro(from, text);
+  if (responseFiltro) {
+    return responseFiltro;
+  }
   return await geminiGenerate(text, 3, from, systemInstruction);
 };
 
@@ -492,7 +549,10 @@ Tu función NO es informar.
 Tu función es convertir.`;
 
     const sessionKey = visitorId || 'web-default';
-    let response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
+    let response = await procesarRespuestaCeciliaConFiltro(sessionKey, message);
+    if (!response) {
+      response = await geminiGenerate(message, 3, sessionKey, systemInstruction);
+    }
     if (!response || response.includes("dificultades técnicas") || response.includes("soporte@axyntrax.com")) {
       response = "Estamos recibiendo muchas solicitudes. Puedes continuar tu registro aquí:\nhttps://www.axyntrax-automation.net/api/installer";
     }
