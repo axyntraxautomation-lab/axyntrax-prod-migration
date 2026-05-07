@@ -37,7 +37,8 @@ except Exception:
 # ── Variables de entorno ─────────────────────────────────────────────────────
 ACCESS_TOKEN    = os.getenv("WSP_ACCESS_TOKEN", "")
 PHONE_NUMBER_ID = os.getenv("WSP_PHONE_NUMBER_ID", "")
-VERIFY_TOKEN    = os.getenv("WH_VERIFY_TOKEN", "axyntrax_diamante_2026")
+# Webhook Meta: mismo criterio que api/index.js — META_VERIFY_TOKEN en .env; si falta, valor fijo Axyntrax_2026_Secure.
+VERIFY_TOKEN = (os.getenv("META_VERIFY_TOKEN") or "").strip() or "Axyntrax_2026_Secure"
 APP_SECRET      = os.getenv("WSP_APP_SECRET", "")  # Para validar firma HMAC
 
 

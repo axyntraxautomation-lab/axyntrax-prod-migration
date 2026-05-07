@@ -2,7 +2,11 @@
   "version": 2,
   "builds": [
     { "src": "public/index.html", "use": "@vercel/static" },
-    { "src": "api/index.js", "use": "@vercel/node" }
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": "public/AXYNTRAX_Installer.bat" }
+    }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.js" },

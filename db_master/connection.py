@@ -1,27 +1,39 @@
-import sqlite3
+"""
+Capa de conexión a datos.
+
+- Producción serverless (Vercel): sin SQLite; los leads y la API pública usan Supabase.
+- Desktop / local: SQLite opcional vía db_master._sqlite_backend (deshabilitable).
+"""
 import os
 
-# Configuración Maestra de Base de Datos
-BASE_DIR = os.path.abspath(".")
-DB_PATH = os.path.join(BASE_DIR, "data", "axyntrax.db")
+# Siempre exportado para módulos que resuelven rutas de archivos (pdf, excel, etc.)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-class DBConnection:
-    _instance = None
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DBConnection, cls).__new__(cls)
-            cls._instance.path = DB_PATH
-            os.makedirs(os.path.dirname(cls._instance.path), exist_ok=True)
-        return cls._instance
+def _sqlite_allowed() -> bool:
+    # Vercel inyecta VERCEL=1 y VERCEL_ENV (production|preview|development). Sin sqlite3 en serverless.
+    if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
+        return False
+    if os.environ.get("AXYNTRAX_DISABLE_SQLITE", "").lower() in ("1", "true", "yes"):
+        return False
+    return True
 
-    def get_connection(self):
-        """Devuelve una conexión a la base de datos con soporte para Foreign Keys y Concurrencia WAL."""
-        conn = sqlite3.connect(self.path, timeout=20)
-        conn.execute("PRAGMA journal_mode=WAL;")
-        conn.execute("PRAGMA foreign_keys = ON;")
-        conn.row_factory = sqlite3.Row  # Permite acceso por nombre de columna
-        return conn
 
-def get_db():
-    return DBConnection().get_connection()
+if _sqlite_allowed():
+    from db_master._sqlite_backend import DB_PATH, DBConnection, get_db  # noqa: E402,F401
+else:
+    DB_PATH = None
+
+    class DBConnection:  # noqa: D101
+        def get_connection(self):
+            raise RuntimeError(_SERVERLESS_DB_MSG)
+
+    def get_db():
+        raise RuntimeError(_SERVERLESS_DB_MSG)
+
+
+_SERVERLESS_DB_MSG = (
+    "SQLite no está habilitado en este entorno (VERCEL/VERCEL_ENV o AXYNTRAX_DISABLE_SQLITE). "
+    "La landing y /api/registro-demo usan Supabase vía api/index.js. "
+    "Para suite desktop en local: sin VERCEL/VERCEL_ENV y sin AXYNTRAX_DISABLE_SQLITE."
+)

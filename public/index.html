@@ -11,125 +11,555 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ================
+       AXYNTRAX v6.0 UI
+       ================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --cyan: #00f5ff; --purple: #8b5cf6;
-      --bg: #050508; --surface: #0d0d14; --surface2: #13131e;
-      --text: #e8e8f0; --muted: #8888aa;
+      --bg: #050510;
+      --bg2: #0a0a1f;
+      --card: #0d0d2b;
+      --cyan: #00f5ff;
+      --indigo: #6366f1;
+      --purple: #a855f7;
+      --text: #ffffff;
+      --muted: #94a3b8;
+      --border: rgba(0, 245, 255, 0.15);
+      --hero-gradient: linear-gradient(135deg, #00f5ff, #6366f1, #a855f7);
+      --radius: 16px;
+      --shadow: 0 18px 70px rgba(0, 0, 0, 0.55);
     }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-    .gradient-text { background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .btn-primary { display: inline-block; padding: 14px 32px; border-radius: 8px; background: linear-gradient(135deg, var(--cyan), var(--purple)); color: #000; font-weight: 700; font-size: 1rem; text-decoration: none; cursor: pointer; border: none; transition: transform .2s, box-shadow .2s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,245,255,.35); }
-    .btn-outline { display: inline-block; padding: 13px 30px; border-radius: 8px; border: 1.5px solid var(--cyan); color: var(--cyan); font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer; background: transparent; transition: background .2s, color .2s; }
-    .btn-outline:hover { background: var(--cyan); color: #000; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.7; }
+    a { color: inherit; }
+    ::selection { background: rgba(0, 245, 255, 0.25); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #02020a; }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 245, 255, 0.25); border-radius: 999px; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
-    /* NAV */
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 18px 0; backdrop-filter: blur(16px); background: rgba(5,5,8,.8); border-bottom: 1px solid rgba(139,92,246,.15); }
-    nav .inner { display: flex; align-items: center; justify-content: space-between; }
-    .nav-logo { font-size: 1.2rem; font-weight: 900; letter-spacing: -.5px; }
-    .nav-links { display: flex; gap: 24px; list-style: none; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
-    .nav-links a:hover { color: var(--cyan); }
+    /* Brand text */
+    .display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+    .gradient-text {
+      background: var(--hero-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-animated {
+      background: var(--hero-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: gradient-shift 3s linear infinite;
+    }
+
+    /* Buttons */
+    .btn-primary, .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      user-select: none;
+      will-change: transform;
+    }
+    .btn-primary {
+      background: var(--hero-gradient);
+      color: #050510;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+      animation: pulse-glow 3.2s ease-in-out infinite;
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent;
+      border-color: rgba(0, 245, 255, 0.55);
+      color: var(--cyan);
+      box-shadow: 0 0 0 rgba(0, 245, 255, 0);
+    }
+    .btn-outline:hover {
+      transform: translateY(-2px);
+      background: rgba(0, 245, 255, 0.08);
+      box-shadow: 0 0 26px rgba(0, 245, 255, 0.12);
+    }
+
+    /* Glass cards */
+    .card, .step-card, .plan {
+      background: rgba(13, 13, 43, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover, .step-card:hover, .plan:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 245, 255, 0.35);
+      box-shadow: 0 18px 60px rgba(0, 245, 255, 0.08);
+    }
+
+    /* Neon separators */
+    .neon-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.35), rgba(99,102,241,0.25), transparent);
+      margin: 18px 0 0;
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 14px 0;
+      background: rgba(5, 5, 16, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,245,255,0.1);
+    }
+    nav .inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+    }
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      text-decoration: none;
+      justify-self: start;
+    }
+    .nav-logo .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(0,245,255,0.55);
+      flex: 0 0 auto;
+    }
+    ul.nav-links {
+      list-style: none;
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      justify-content: center;
+      justify-self: center;
+    }
+    ul.nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    ul.nav-links a:hover { color: var(--cyan); }
+    .nav-cta { justify-self: end; display: flex; align-items: center; gap: 12px; }
+    .hamburger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,245,255,0.2);
+      background: rgba(13, 13, 43, 0.35);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-direction: column;
+      box-shadow: 0 0 22px rgba(0,245,255,0.08);
+    }
+    .hamburger span {
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 999px;
+    }
+
+    /* Mobile menu overlay (keeps ids requested) */
+    #menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: none;
+      background: rgba(1, 2, 10, 0.66);
+      backdrop-filter: blur(16px);
+    }
+    #menu-panel {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: min(340px, calc(100vw - 28px));
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(13, 13, 43, 0.92);
+      border: 1px solid rgba(0,245,255,0.18);
+      box-shadow: var(--shadow);
+    }
+    #menu-panel .menu-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    #menu-panel .menu-top strong { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+    #menu-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,245,255,0.18);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+    }
+    #menu-panel a {
+      display: block;
+      padding: 12px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.9);
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    #menu-panel a:hover { background: rgba(0,245,255,0.08); }
+    #menu-panel .menu-cta { margin-top: 12px; }
 
     /* HERO */
-    #hero { min-height: 100vh; display: flex; align-items: center; padding-top: 80px; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,255,.08) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,.1) 0%, transparent 60%); }
-    #hero .inner { text-align: center; }
-    .hero-tag { display: inline-block; margin-bottom: 24px; padding: 6px 18px; border: 1px solid rgba(0,245,255,.3); border-radius: 100px; font-size: .78rem; font-weight: 700; color: var(--cyan); letter-spacing: 1px; text-transform: uppercase; }
-    #hero h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 24px; }
-    #hero p { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto 40px; line-height: 1.75; }
-    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .hero-stats { display: flex; gap: 48px; justify-content: center; margin-top: 72px; flex-wrap: wrap; }
-    .stat-item { text-align: center; }
-    .stat-num { font-size: 1.8rem; font-weight: 900; }
-    .stat-label { font-size: .75rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding-top: 88px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 30%, rgba(0,245,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(168,85,247,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(99,102,241,0.10) 0%, transparent 55%),
+        var(--bg);
+    }
+    #hero::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      opacity: 0.9;
+      background:
+        radial-gradient(circle at 1px 1px, rgba(0,245,255,0.22) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse 55% 45% at 50% 45%, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    #hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(5,5,16,0.0) 0%, rgba(5,5,16,0.88) 85%, rgba(5,5,16,1) 100%);
+      pointer-events: none;
+    }
+    #hero .inner { position: relative; z-index: 1; text-align: center; }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto 18px;
+      padding: 8px 14px;
+      border: 1px solid rgba(0,245,255,0.35);
+      border-radius: 999px;
+      color: rgba(255,255,255,0.92);
+      background: rgba(13,13,43,0.35);
+      backdrop-filter: blur(18px);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    #hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.35rem, 5vw, 3.5rem);
+      line-height: 1.05;
+      margin: 0 auto 18px;
+      max-width: 980px;
+    }
+    #hero p {
+      color: var(--muted);
+      max-width: 760px;
+      margin: 0 auto 26px;
+      font-size: 1rem;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .hero-metric {
+      margin: 26px auto 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,245,255,0.18);
+      background: rgba(13,13,43,0.32);
+      color: rgba(255,255,255,0.92);
+      font-size: 0.92rem;
+      animation: float 6s ease-in-out infinite;
+    }
+    .hero-metric strong { color: var(--cyan); }
 
-    /* SECTIONS */
-    section { padding: 100px 0; }
-    .section-label { font-size: .72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
-    .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 16px; }
-    .section-sub { color: var(--muted); font-size: 1rem; max-width: 540px; line-height: 1.75; }
-    .alt-bg { background: var(--surface); }
+    /* Sections */
+    section { padding: 96px 0; position: relative; }
+    .alt-bg { background: var(--bg2); }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.92);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border: 1px solid rgba(0,245,255,0.18);
+      border-radius: 999px;
+      background: rgba(13, 13, 43, 0.35);
+      backdrop-filter: blur(16px);
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.0rem, 4vw, 2.5rem);
+      line-height: 1.1;
+      margin: 16px 0 12px;
+      letter-spacing: -0.02em;
+    }
+    .section-sub {
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 1rem;
+    }
 
-    /* CARDS GRID */
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 56px; }
-    .card { background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px; padding: 36px; transition: border-color .3s, transform .3s; }
-    .card:hover { border-color: var(--cyan); transform: translateY(-4px); }
-    .card-icon { font-size: 2.4rem; margin-bottom: 20px; }
-    .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
-    .card p { color: var(--muted); font-size: .92rem; line-height: 1.7; }
+    /* Rubros & downloads grids */
+    .cards-grid { margin-top: 40px; display: grid; gap: 18px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card { padding: 22px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+    .card-icon { font-size: 1.6rem; line-height: 1; filter: drop-shadow(0 0 14px rgba(0,245,255,0.16)); }
+    .card h3 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; }
+    .card p { color: var(--muted); font-size: 0.94rem; margin: 0; }
+    .card-price { margin-top: 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .price-from { color: rgba(255,255,255,0.85); font-weight: 700; }
+    .price-from span { color: var(--cyan); font-weight: 900; }
+    .card .mini-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      border: 1px solid rgba(0,245,255,0.22);
+      background: rgba(0,245,255,0.06);
+      color: rgba(255,255,255,0.92);
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+    .card .mini-btn:hover { transform: translateY(-2px); border-color: rgba(0,245,255,0.45); background: rgba(0,245,255,0.10); }
+    .badge-free {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: rgba(34, 197, 94, 0.95);
+      background: rgba(34, 197, 94, 0.08);
+    }
+    .download-ico {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,245,255,0.08);
+      border: 1px solid rgba(0,245,255,0.18);
+      box-shadow: 0 0 28px rgba(0,245,255,0.08);
+      animation: float 5.5s ease-in-out infinite;
+    }
 
-    /* PROBLEMA */
-    #problema .card { border-color: rgba(239,68,68,.2); }
-    #problema .card:hover { border-color: #ef4444; }
+    /* Nosotros 50/50 */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 26px;
+      align-items: start;
+      margin-top: 32px;
+    }
+    .about-visual {
+      padding: 22px;
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-visual::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        radial-gradient(ellipse 70% 70% at 30% 30%, rgba(0,245,255,0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 60% at 70% 70%, rgba(168,85,247,0.18) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(99,102,241,0.12), rgba(0,0,0,0));
+      opacity: 0.95;
+      pointer-events: none;
+    }
+    .about-visual .gridlines {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(0,245,255,0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,245,255,0.06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at 50% 35%, rgba(0,0,0,1), rgba(0,0,0,0) 70%);
+      opacity: 0.7;
+    }
+    .about-visual .visual-content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,245,255,0.14);
+      background: rgba(13,13,43,0.42);
+    }
+    .metric strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; letter-spacing: -0.02em; }
+    .metric span { display: block; color: var(--muted); font-size: 0.86rem; margin-top: 4px; }
 
-    /* PASOS */
-    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 56px; }
-    .step-card { background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px; padding: 32px; position: relative; transition: border-color .3s, transform .3s; }
-    .step-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
-    .step-num { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--purple)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; color: #000; margin-bottom: 20px; }
-    .step-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-    .step-card p { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+    /* PRICING v6 */
+    .pricing-grid { margin-top: 44px; display: grid; gap: 18px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+    .plan { padding: 26px; position: relative; }
+    .plan-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .plan-name { font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+    .plan-price { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; letter-spacing: -0.03em; margin: 10px 0 2px; }
+    .plan-period { color: var(--muted); font-size: 0.92rem; margin-bottom: 14px; }
+    .plan-features { list-style: none; margin: 16px 0 22px; display: grid; gap: 10px; }
+    .plan-features li { display: flex; gap: 10px; color: rgba(255,255,255,0.86); font-size: 0.95rem; }
+    .plan-features li::before { content: "✓"; color: var(--cyan); font-weight: 900; }
+    .plan.featured {
+      border: 1px solid transparent;
+      background:
+        linear-gradient(rgba(13,13,43,0.86), rgba(13,13,43,0.86)) padding-box,
+        linear-gradient(135deg, rgba(0,245,255,0.9), rgba(99,102,241,0.75), rgba(168,85,247,0.8)) border-box;
+    }
+    .plan-badge {
+      position: absolute;
+      top: -12px;
+      left: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 950;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(0,245,255,0.12);
+      border: 1px solid rgba(0,245,255,0.26);
+      color: rgba(255,255,255,0.92);
+      white-space: nowrap;
+    }
+    .plan .btn-primary, .plan .btn-outline { width: 100%; }
 
-    /* PRICING */
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 56px; }
-    .plan { background: var(--surface2); border: 1px solid rgba(139,92,246,.2); border-radius: 16px; padding: 36px; position: relative; transition: transform .3s, border-color .3s; }
-    .plan:hover { transform: translateY(-4px); }
-    .plan.featured { border-color: var(--cyan); background: linear-gradient(135deg, rgba(0,245,255,.05), rgba(139,92,246,.05)); }
-    .plan-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--cyan), var(--purple)); color: #000; font-size: .68rem; font-weight: 800; padding: 4px 16px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
-    .plan-name { font-size: 1rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-    .plan-price { font-size: 2.6rem; font-weight: 900; margin-bottom: 4px; }
-    .plan-period { font-size: .82rem; color: var(--muted); margin-bottom: 28px; }
-    .plan-features { list-style: none; margin-bottom: 32px; }
-    .plan-features li { display: flex; gap: 10px; font-size: .88rem; color: var(--muted); margin-bottom: 10px; }
-    .plan-features li::before { content: "✓"; color: var(--cyan); font-weight: 800; min-width: 16px; }
-
-    /* FORM */
-    #formulario { background: var(--surface); }
-    .form-box { background: linear-gradient(135deg, rgba(0,245,255,.05), rgba(139,92,246,.05)); border: 1px solid rgba(0,245,255,.2); border-radius: 24px; padding: 56px 40px; max-width: 720px; margin: 56px auto 0; }
-    .demo-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .demo-form input, .demo-form select { padding: 13px 16px; border-radius: 8px; background: var(--surface2); border: 1px solid rgba(139,92,246,.3); color: var(--text); font-size: .93rem; outline: none; transition: border-color .2s; font-family: 'Inter', sans-serif; }
-    .demo-form input:focus, .demo-form select:focus { border-color: var(--cyan); }
-    .demo-form input::placeholder { color: var(--muted); }
-    .demo-form select option { background: var(--surface2); }
+    /* FORM v6 */
+    #formulario { background: var(--bg2); }
+    .form-box { margin-top: 32px; padding: 32px; border-radius: 24px; border: 1px solid rgba(0,245,255,0.18); background: rgba(13,13,43,0.7); backdrop-filter: blur(22px); box-shadow: var(--shadow); }
+    .demo-form { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .demo-form input, .demo-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: rgba(10,10,31,0.55);
+      border: 1px solid rgba(0,245,255,0.14);
+      color: var(--text);
+      font-size: 0.98rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .demo-form input::placeholder { color: rgba(148,163,184,0.75); }
+    .demo-form input:focus, .demo-form select:focus { border-color: rgba(0,245,255,0.45); box-shadow: 0 0 0 4px rgba(0,245,255,0.12); }
+    .demo-form select option { background: #0a0a1f; }
     .demo-form .full { grid-column: span 2; }
     .demo-form button { grid-column: span 2; margin-top: 6px; }
-    #form-msg { margin-top: 16px; text-align: center; font-weight: 600; font-size: .95rem; min-height: 24px; }
-    .consent-box { grid-column: span 2; text-align: left; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .consent-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    #form-msg { margin-top: 14px; text-align: center; font-weight: 700; min-height: 24px; }
+    .consent-box { grid-column: span 2; margin-top: 8px; display: grid; gap: 10px; }
+    .consent-item { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
     .consent-item input { margin-top: 4px; accent-color: var(--cyan); width: 16px; height: 16px; cursor: pointer; }
-    .consent-item span { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
-    .consent-item a { color: var(--cyan); text-decoration: none; }
+    .consent-item span { color: var(--muted); font-size: 0.86rem; line-height: 1.4; }
+    .consent-item a { color: var(--cyan); text-decoration: none; font-weight: 800; }
     .consent-item a:hover { text-decoration: underline; }
 
-    /* FOOTER */
-    footer { background: var(--bg); border-top: 1px solid rgba(139,92,246,.15); padding: 48px 0 32px; }
-    .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center; }
-    .footer-logo { font-size: 1.1rem; font-weight: 900; }
-    .footer-links { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
-    .footer-links a { color: var(--muted); text-decoration: none; font-size: .83rem; transition: color .2s; }
-    .footer-links a:hover { color: var(--cyan); }
-    .footer-copy { color: var(--muted); font-size: .78rem; }
+    /* Footer v6 */
+    footer { background: #020208; border-top: 1px solid rgba(0,245,255,0.08); padding: 64px 0 28px; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 22px; align-items: start; }
+    .footer-brand p { color: var(--muted); margin-top: 10px; max-width: 360px; }
+    .footer-col h4 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .footer-col a { display: block; color: rgba(148,163,184,0.92); text-decoration: none; margin: 8px 0; }
+    .footer-col a:hover { color: var(--cyan); }
+    .footer-bottom { margin-top: 28px; padding-top: 18px; border-top: 1px solid rgba(0,245,255,0.08); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: rgba(148,163,184,0.92); font-size: 0.88rem; }
+    .footer-bottom a { color: rgba(148,163,184,0.92); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--cyan); }
 
-    /* FADE ANIM */
-    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
-    .fade-up { animation: fadeUp .7s ease both; }
-    .d1 { animation-delay: .1s; } .d2 { animation-delay: .25s; } .d3 { animation-delay: .4s; }
+    /* Existing fade-up hooks (kept for current JS expectations) */
+    .fade-up { animation: fade-in-up 0.7s ease both; }
+    .d1 { animation-delay: .08s; } .d2 { animation-delay: .18s; } .d3 { animation-delay: .28s; }
 
-    /* RESPONSIVE */
+    /* Required animations */
+    @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(0,245,255,0.3); } 50% { box-shadow: 0 0 40px rgba(0,245,255,0.6); } }
+    @keyframes fade-in-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      nav .inner { grid-template-columns: 1fr auto; }
+      ul.nav-links { display: none; }
+      .nav-cta { justify-self: end; }
+      .hamburger { display: inline-flex; }
+      .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
     @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .hero-stats { gap: 24px; }
+      .cards-grid { grid-template-columns: 1fr; }
       .demo-form { grid-template-columns: 1fr; }
       .demo-form .full, .demo-form button { grid-column: span 1; }
-      .form-box { padding: 36px 20px; }
+      .form-box { padding: 22px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-metric { font-size: 0.88rem; }
     }
   </style>
 </head>
@@ -138,148 +568,330 @@
 <!-- NAV -->
 <nav>
   <div class="container inner">
-    <span class="nav-logo gradient-text">Axyntrax</span>
-    <ul class="nav-links">
-      <li><a href="#problema">El problema</a></li>
-      <li><a href="#como-funciona">Cómo funciona</a></li>
-      <li><a href="#precios">Precios</a></li>
+    <a class="nav-logo" href="#hero" aria-label="Axyntrax Automation">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="display gradient-animated">Axyntrax</span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#problema">Soluciones</a></li>
       <li><a href="#nosotros">Nosotros</a></li>
-      <li><a href="#formulario">Demo gratis</a></li>
+      <li><a href="#descargas">Descargas</a></li>
+      <li><a href="#precios">Precios</a></li>
+      <li><a href="#formulario">Prueba Gratis</a></li>
     </ul>
-    <a href="#formulario" class="btn-primary" style="padding:10px 20px;font-size:.85rem;">45 días gratis</a>
+    <div class="nav-cta">
+      <a href="#formulario" class="btn-primary" onclick="openAuthModal(); return false;">Prueba Gratis</a>
+      <button class="hamburger" id="hamburger-btn" aria-label="Abrir menú" aria-controls="menu-overlay" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </nav>
+
+<!-- Mobile Menu Overlay -->
+<div id="menu-overlay" aria-hidden="true">
+  <div id="menu-panel" role="dialog" aria-modal="true" aria-label="Menú móvil">
+    <div class="menu-top">
+      <strong class="gradient-animated">Axyntrax</strong>
+      <button id="menu-close" aria-label="Cerrar menú">✕</button>
+    </div>
+    <div class="neon-divider"></div>
+    <nav style="position:static;background:transparent;border:none;padding:0;backdrop-filter:none;">
+      <a href="#problema" class="menu-link">Soluciones</a>
+      <a href="#nosotros" class="menu-link">Nosotros</a>
+      <a href="#descargas" class="menu-link">Descargas</a>
+      <a href="#precios" class="menu-link">Precios</a>
+      <a href="#formulario" class="menu-link">Prueba Gratis</a>
+      <div class="menu-cta">
+        <a href="#formulario" class="btn-primary" onclick="openAuthModal(); return false;" style="width:100%;">Prueba Gratis</a>
+      </div>
+    </nav>
+  </div>
+</div>
 
 <!-- HERO -->
 <section id="hero">
   <div class="container inner">
-    <div class="hero-tag fade-up">🤖 Agente IA · WhatsApp · Facebook · Instagram</div>
-    <h1 class="fade-up d1">Tu negocio atiende,<br /><span class="gradient-text">vende y crece solo.</span></h1>
-    <p class="fade-up d2">Cecilia atiende, vende y agenda en tus redes. Tus módulos de gestión listos desde el día 1.</p>
+    <div class="hero-tag fade-up">🚀 Automatización con IA · Perú</div>
+    <h1 class="fade-up d1">Automatiza tu negocio con<br /><span class="gradient-animated">Cecilia, ATLAS & J.A.R.V.I.S</span></h1>
+    <p class="fade-up d2">Tecnología de punta para PyMEs peruanas: atiende, vende y opera 24/7 con un ecosistema de IA confiable y escalable.</p>
     <div class="hero-btns fade-up d3">
-      <a href="#formulario" class="btn-primary">Quiero mis 45 días gratis</a>
-      <a href="#como-funciona" class="btn-outline">¿Cómo funciona?</a>
+      <a href="#formulario" class="btn-primary" onclick="openAuthModal(); return false;">Empieza 45 días Gratis</a>
+      <a href="#problema" class="btn-outline">Ver Soluciones</a>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item fade-up d1">
-        <div class="stat-num gradient-text">45 días</div>
-        <div class="stat-label">DEMO GRATIS</div>
-      </div>
-      <div class="stat-item fade-up d2">
-        <div class="stat-num gradient-text">3 canales</div>
-        <div class="stat-label">WA · FB · IG</div>
-      </div>
-      <div class="stat-item fade-up d3">
-        <div class="stat-num gradient-text">24/7</div>
-        <div class="stat-label">SIN PAUSAS</div>
-      </div>
+    <div class="hero-metric fade-up d3">
+      <strong>45 días gratis</strong> · Sin tarjeta · Cancela cuando quieras
     </div>
   </div>
 </section>
 
-<!-- EL PROBLEMA -->
+<!-- RUBROS / INDUSTRIAS (id conservado: problema) -->
 <section id="problema" class="alt-bg">
   <div class="container">
-    <div class="section-label">El problema</div>
-    <h2 class="section-title">¿Tu negocio pierde ventas<br /><span class="gradient-text">por esto?</span></h2>
-    <p class="section-sub">No es culpa tuya. Es que operás solo, y solos hay un límite.</p>
+    <div class="section-label">ECOSISTEMA</div>
+    <h2 class="section-title">Soluciones adaptadas a tu <span class="gradient-animated">industria</span></h2>
+    <p class="section-sub">Elige tu rubro y activa módulos listos para operar: atención, agenda, cobros y control gerencial.</p>
     <div class="cards-grid">
       <div class="card">
-        <div class="card-icon">😴</div>
-        <h3>Respondés tarde</h3>
-        <p>El cliente pregunta a las 11pm, vos dormís, y a la mañana ya compró en otro lado. Cada mensaje sin respuesta es una venta que se fue.</p>
+        <div class="card-head">
+          <div class="card-icon">🏥</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Clínicas y Médicos</h3>
+        <p>Citas, triaje IA, recordatorios y facturación asistida.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 129</span></div>
+          <div class="badge-free">IA</div>
+        </div>
       </div>
       <div class="card">
-        <div class="card-icon">📊</div>
-        <h3>Sin control real</h3>
-        <p>No sabés cuántos leads llegaron esta semana, cuántos se convirtieron ni qué canal funciona mejor. Tomás decisiones a ciegas.</p>
+        <div class="card-head">
+          <div class="card-icon">🦷</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Odontología</h3>
+        <p>Agenda dental, confirmaciones y cobros automatizados.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 99</span></div>
+          <div class="badge-free">IA</div>
+        </div>
       </div>
       <div class="card">
-        <div class="card-icon">🔄</div>
-        <h3>Todo depende de ti</h3>
-        <p>Si salís de vacaciones, el negocio para. Si te enfermás, se pierde todo. Eso no es libertad, es una trampa disfrazada de independencia.</p>
+        <div class="card-head">
+          <div class="card-icon">🐾</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Veterinarias</h3>
+        <p>Citas, historial, recordatorios y pet shop integrado.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 109</span></div>
+          <div class="badge-free">IA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">🍽️</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Restaurantes</h3>
+        <p>Reservas, pedidos, delivery y stock inteligente.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 109</span></div>
+          <div class="badge-free">IA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">🛒</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Retail y Comercio</h3>
+        <p>POS, caja, inventario y soporte de ventas 24/7.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 139</span></div>
+          <div class="badge-free">IA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">🚚</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Logística y Transportes</h3>
+        <p>Seguimiento, soporte IA y rutas optimizadas.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 149</span></div>
+          <div class="badge-free">IA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">⚖️</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Sector Legal</h3>
+        <p>Filtro de consultas, agenda y cobros de honorarios.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 139</span></div>
+          <div class="badge-free">IA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">🚗</div>
+          <a href="#precios" class="mini-btn">Ver solución</a>
+        </div>
+        <h3>Car Wash</h3>
+        <p>Turnos, membresías, puntos y caja asistida por IA.</p>
+        <div class="card-price">
+          <div class="price-from">Desde <span>S/. 89</span></div>
+          <div class="badge-free">IA</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CÓMO FUNCIONA -->
-<section id="como-funciona">
+<!-- DESCARGAS -->
+<section id="descargas">
   <div class="container">
-    <div class="section-label">El proceso</div>
-    <h2 class="section-title">Así trabaja<br /><span class="gradient-text">Axyntrax</span></h2>
-    <p class="section-sub">Sin código, sin configuraciones complicadas. En 48hs estás operando con IA.</p>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <h3>Te registrás</h3>
-        <p>Creás tu cuenta en segundos. Sin tarjeta de crédito, sin contratos. Solo tu email y tu rubro.</p>
+    <div class="section-label">INSTALADORES</div>
+    <h2 class="section-title">Descarga el módulo para tu <span class="gradient-animated">PC</span></h2>
+    <p class="section-sub">Instaladores locales por industria. Solicita tu clave gratuita de 45 días con Cecilia y activa el módulo correspondiente.</p>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Clínicas y Médicos</h3>
+        <p>Instalador local para gestión clínica + Cecilia.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-clinicas">Descargar</a>
+        </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <h3>Cecilia aprende tu rubro</h3>
-        <p>Le contamos sobre tu negocio: productos, precios, horarios, FAQs. Ella aprende en minutos.</p>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Odontología</h3>
+        <p>Instalador con agenda y flujo dental.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-odontologia">Descargar</a>
+        </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <h3>Activás tus canales</h3>
-        <p>Conectamos tu WhatsApp Business, tu página de Facebook y tu cuenta de Instagram.</p>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Veterinarias</h3>
+        <p>Instalador con recordatorios y pet shop.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-veterinarias">Descargar</a>
+        </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">4</div>
-        <h3>Recibís módulos + dashboard</h3>
-        <p>Tus módulos de gestión según tu rubro quedan activos. J.A.R.V.I.S te muestra todo en tiempo real.</p>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Restaurantes</h3>
+        <p>Instalador para reservas y operación diaria.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-restaurantes">Descargar</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Retail y Comercio</h3>
+        <p>Instalador con caja + inventario.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-retail">Descargar</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Logística y Transportes</h3>
+        <p>Instalador con tracking + soporte IA.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-logistica">Descargar</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Sector Legal</h3>
+        <p>Instalador con expedientes + agenda.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-legal">Descargar</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="download-ico">⬇</div>
+          <div class="badge-free">GRATIS</div>
+        </div>
+        <h3>Car Wash</h3>
+        <p>Instalador con turnos y membresías.</p>
+        <div class="card-price">
+          <div class="price-from"><span>.BAT</span></div>
+          <a href="/api/installer" class="mini-btn" id="gcs-carwash">Descargar</a>
+        </div>
       </div>
     </div>
+    <div class="neon-divider"></div>
+    <p class="section-sub" style="margin-top:14px;">Las descargas usan <code style="color:var(--cyan);">/api/installer</code>: primero el archivo <strong>AXYNTRAX_Installer.bat</strong> en este sitio (<code style="color:var(--cyan);">public/</code>). En Vercel podés usar <code style="color:var(--cyan);">INSTALLER_DOWNLOAD_URL</code> (URL absoluta al objeto en GCS) o <code style="color:var(--cyan);">INSTALLER_GCS_PUBLIC_URL</code> como respaldo cuando no hay <code style="color:var(--cyan);">Host</code> en la petición; la URL debe coincidir exactamente con la ruta del objeto en el bucket (evita errores NoSuchKey).</p>
   </div>
 </section>
 
 <!-- PRECIOS -->
 <section id="precios" class="alt-bg">
   <div class="container">
-    <div class="section-label">Precios</div>
-    <h2 class="section-title">Empezá gratis.<br /><span class="gradient-text">Pagá cuando veas resultados.</span></h2>
-    <p class="section-sub">Sin sorpresas. Sin letra chica. Sin tarjeta para empezar.</p>
+    <div class="section-label">Inversión</div>
+    <h2 class="section-title">Elige tu <span class="gradient-animated">Plan</span></h2>
+    <p class="section-sub">Tres niveles para escalar. Empieza con Trial y sube cuando veas impacto real en tu operación.</p>
     <div class="pricing-grid">
-      <div class="plan featured">
-        <div class="plan-badge">45 días gratis</div>
-        <div class="plan-name">Demo</div>
-        <div class="plan-price gradient-text">$0</div>
-        <div class="plan-period">por 45 días completos</div>
-        <ul class="plan-features">
-          <li>Cecilia activa en WA + FB + IG</li>
-          <li>3 módulos de tu rubro</li>
-          <li>Dashboard J.A.R.V.I.S básico</li>
-          <li>ATLAS de soporte técnico</li>
-          <li>Sin tarjeta de crédito</li>
-        </ul>
-        <a href="#formulario" class="btn-primary" style="width:100%;text-align:center;display:block;">Empezar gratis</a>
-      </div>
       <div class="plan">
-        <div class="plan-name">Básico</div>
-        <div class="plan-price gradient-text">Mensual</div>
-        <div class="plan-period">tras los 45 días demo</div>
+        <div class="plan-header">
+          <div class="plan-name">Trial</div>
+        </div>
+        <div class="plan-price gradient-animated">S/. 0</div>
+        <div class="plan-period">45 días de prueba</div>
         <ul class="plan-features">
-          <li>Módulos ilimitados</li>
-          <li>Cecilia personalizada para tu marca</li>
-          <li>Dashboard completo</li>
-          <li>Reportes semanales automáticos</li>
+          <li>1 rubro + 1 sub-módulo</li>
+          <li>Cecilia WhatsApp</li>
+          <li>Activación guiada</li>
+          <li>Sin tarjeta</li>
+        </ul>
+        <a href="#formulario" class="btn-outline" onclick="openAuthModal(); return false;">Empezar Trial</a>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-badge">MÁS POPULAR</div>
+        <div class="plan-header">
+          <div class="plan-name">Pro</div>
+        </div>
+        <div class="plan-price gradient-animated">S/. 399</div>
+        <div class="plan-period">por mes</div>
+        <ul class="plan-features">
+          <li>1 rubro + 3 sub-módulos</li>
+          <li>Cecilia multicanal (WA + FB + IG)</li>
+          <li>Dashboard J.A.R.V.I.S</li>
           <li>Soporte prioritario</li>
         </ul>
-        <a href="#formulario" class="btn-outline" style="width:100%;text-align:center;display:block;">Consultar precio</a>
+        <a href="#formulario" class="btn-primary" onclick="openAuthModal(); return false;">Activar Pro</a>
       </div>
+
       <div class="plan">
-        <div class="plan-name">Empresa</div>
-        <div class="plan-price gradient-text">A medida</div>
-        <div class="plan-period">varias sucursales</div>
+        <div class="plan-header">
+          <div class="plan-name">Enterprise</div>
+        </div>
+        <div class="plan-price gradient-animated">A medida</div>
+        <div class="plan-period">sucursales + SLA</div>
         <ul class="plan-features">
-          <li>Multi-sucursal centralizado</li>
-          <li>Agentes IA por local</li>
-          <li>API access completo</li>
-          <li>SLA 99.9% garantizado</li>
-          <li>Gerente de cuenta dedicado</li>
+          <li>Rubros ilimitados</li>
+          <li>White-label completo</li>
+          <li>ATLAS ciberseguridad 24/7</li>
+          <li>API & automatizaciones avanzadas</li>
         </ul>
-        <a href="#formulario" class="btn-outline" style="width:100%;text-align:center;display:block;">Contactar ventas</a>
+        <a href="#formulario" class="btn-outline" onclick="openAuthModal(); return false;">Contactar CEO</a>
       </div>
     </div>
   </div>
@@ -309,7 +921,7 @@
         <div class="consent-box">
           <label class="consent-item">
             <input type="checkbox" id="acepta-terminos" required />
-            <span>He leído y acepto la <a href="/politica-privacidad.html" target="_blank">Política de Privacidad</a> y los <a href="/terminos.html" target="_blank">Términos y Condiciones</a> de Axyntrax Automation. Autorizo el tratamiento de mis datos conforme a la Ley N°29733 (Perú) y el GDPR.</span>
+            <span>He leído y acepto la <a href="/politica-privacidad.html" target="_blank" rel="noopener noreferrer">Política de Privacidad</a> y los <a href="/terminos.html" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a> de Axyntrax Automation. Autorizo el tratamiento de mis datos conforme a la Ley N°29733 (Perú) y el GDPR.</span>
           </label>
           <label class="consent-item">
             <input type="checkbox" id="acepta-marketing" />
@@ -326,77 +938,87 @@
 <!-- NOSOTROS -->
 <section id="nosotros">
   <div class="container">
-    <div class="section-label">Quiénes somos</div>
-    <h2 class="section-title">El equipo digital que<br /><span class="gradient-text">trabaja por ti</span></h2>
-    <p class="section-sub" style="max-width: 800px; margin-bottom: 40px;">
-      En Axyntrax Automation creemos que toda empresa, sin importar su tamaño, merece operar con la misma inteligencia y eficiencia que las grandes corporaciones. Por eso construimos un ecosistema de inteligencia artificial que trabaja por ti: atiende tus clientes, gestiona tu operación y te mantiene en control total — las 24 horas, los 7 días de la semana, sin pausas.
-    </p>
-    <p class="section-sub" style="max-width: 800px; margin-bottom: 56px;">
-      Axyntrax Automation es una empresa de tecnología especializada en automatización inteligente para micro y medianas empresas en el mundo hispanohablante. Nacimos con una convicción clara: la inteligencia artificial no debe ser exclusiva de las grandes empresas. Cada negocio que abre sus puertas con esfuerzo merece herramientas que trabajen tan duro como su dueño.
-    </p>
+    <div class="section-label">Sobre nosotros</div>
+    <h2 class="section-title">Tecnología de punta con foco en <span class="gradient-animated">confianza</span></h2>
+    <p class="section-sub">Axyntrax automatiza operaciones para PyMEs peruanas: IA conversacional, gestión empresarial y monitoreo 24/7. Nuestro objetivo es que cada negocio escale sin perder control.</p>
 
-    <!-- Misión y Visión -->
-    <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h3>MISIÓN</h3>
-        <p>Democratizar el acceso a la inteligencia artificial empresarial, poniendo en manos de cada emprendedor las herramientas que antes solo estaban al alcance de corporaciones — para que puedan crecer, competir y prosperar en la economía digital.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🚀</div>
-        <h3>VISIÓN</h3>
-        <p>Ser el sistema operativo inteligente de referencia para las empresas hispanohablantes: el equipo digital que toda organización activa cuando quiere escalar sin perder el control ni la cercanía con sus clientes.</p>
-      </div>
-    </div>
+    <div class="about-grid">
+      <div>
+        <div class="metrics">
+          <div class="metric">
+            <strong class="gradient-animated">+120</strong>
+            <span>Implementaciones guiadas</span>
+          </div>
+          <div class="metric">
+            <strong class="gradient-animated">8</strong>
+            <span>Rubros listos</span>
+          </div>
+          <div class="metric">
+            <strong class="gradient-animated">99.9%</strong>
+            <span>Uptime objetivo</span>
+          </div>
+        </div>
 
-    <!-- Valores -->
-    <div class="section-label" style="margin-top: 100px;">Nuestros Valores</div>
-    <div class="cards-grid">
-      <div class="card">
-        <div class="card-icon">⚡</div>
-        <h3>Adaptabilidad</h3>
-        <p>Cada negocio es único. Nuestras IAs no imponen una forma de trabajar — aprenden la tuya y se moldean a ella. Cecilia no es la misma en una clínica que en un restaurante.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🛡️</div>
-        <h3>Confiabilidad</h3>
-        <p>Un sistema que falla no sirve. ATLAS monitorea cada componente en tiempo real, detecta problemas antes de que sucedan y garantiza que tu operación nunca se detenga.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔍</div>
-        <h3>Transparencia</h3>
-        <p>Tú siempre sabes qué está pasando. J.A.R.V.I.S te entrega reportes claros, alertas en tiempo real y el control total de tu negocio desde un solo lugar. Sin letra pequeña.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🎯</div>
-        <h3>Eficiencia inteligente</h3>
-        <p>No automatizamos por automatizar. Cada proceso digitalizado tiene un propósito claro: ahorrarte tiempo, reducir errores y convertir cada interacción en crecimiento.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🤝</div>
-        <h3>Compromiso real</h3>
-        <p>No desaparecemos después de la venta. ATLAS está siempre activo, Cecilia mejora con cada conversación y tú tienes un sistema que evoluciona junto a tu empresa.</p>
-      </div>
-    </div>
+        <div style="margin-top:18px;" class="card">
+          <div class="card-head">
+            <div class="card-icon">🎯</div>
+            <div class="badge-free">MISIÓN</div>
+          </div>
+          <h3>Automatización accesible para PyMEs</h3>
+          <p>Democratizar el acceso a IA empresarial para que clínicas, restaurantes, veterinarias y comercios operen con eficiencia de nivel corporativo.</p>
+        </div>
 
-    <!-- Qué hacemos -->
-    <div class="section-label" style="margin-top: 100px;">Qué hacemos</div>
-    <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-      <div class="card" style="text-align: center;">
-        <div class="card-icon">💬</div>
-        <h3>IA Conversacional Multicanal</h3>
+        <div style="margin-top:14px;" class="card">
+          <div class="card-head">
+            <div class="card-icon">🛡️</div>
+            <div class="badge-free">CONFIANZA</div>
+          </div>
+          <h3>Seguridad y transparencia</h3>
+          <p>ATLAS monitorea integridad del sistema y J.A.R.V.I.S centraliza métricas para que el dueño tenga control real, siempre.</p>
+        </div>
       </div>
-      <div class="card" style="text-align: center;">
-        <div class="card-icon">📦</div>
-        <h3>Gestión Empresarial Integrada</h3>
-      </div>
-      <div class="card" style="text-align: center;">
-        <div class="card-icon">🔧</div>
-        <h3>Monitoreo 24/7</h3>
-      </div>
-      <div class="card" style="text-align: center;">
-        <div class="card-icon">📊</div>
-        <h3>Panel CEO J.A.R.V.I.S</h3>
+
+      <div class="about-visual card" aria-hidden="true">
+        <div class="gridlines"></div>
+        <div class="visual-content">
+          <div>
+            <div class="section-label" style="display:inline-flex;">TRINIDAD IA</div>
+            <div style="margin-top:10px;">
+              <div class="display" style="font-size:1.35rem;letter-spacing:-0.02em;">Cecilia · ATLAS · J.A.R.V.I.S</div>
+              <p style="color:var(--muted);margin-top:8px;">Tres componentes que trabajan coordinados: atención, protección y control operativo.</p>
+            </div>
+          </div>
+          <div class="neon-divider"></div>
+          <div style="display:grid;gap:10px;">
+            <div class="step-card" style="padding:16px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="card-icon">💬</div>
+                <div>
+                  <strong>Cecilia</strong>
+                  <div style="color:var(--muted);font-size:0.9rem;">Atiende, vende y agenda.</div>
+                </div>
+              </div>
+            </div>
+            <div class="step-card" style="padding:16px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="card-icon">🧠</div>
+                <div>
+                  <strong>J.A.R.V.I.S</strong>
+                  <div style="color:var(--muted);font-size:0.9rem;">Control y dashboard en tiempo real.</div>
+                </div>
+              </div>
+            </div>
+            <div class="step-card" style="padding:16px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="card-icon">🔐</div>
+                <div>
+                  <strong>ATLAS</strong>
+                  <div style="color:var(--muted);font-size:0.9rem;">Ciberseguridad 24/7.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -404,25 +1026,51 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="container footer-inner">
-    <div class="footer-logo gradient-text">Axyntrax Automation</div>
-    <div class="footer-links">
-      <a href="#problema">El problema</a>
-      <a href="#como-funciona">Cómo funciona</a>
-      <a href="#precios">Precios</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="/politica-privacidad.html">Política de Privacidad</a>
-      <a href="/terminos.html">Términos y Condiciones</a>
-      <a href="#formulario">Demo gratis</a>
-      <a href="mailto:hola@axyntrax-automation.net">Contacto</a>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="justify-self:start;">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="display gradient-animated">Axyntrax</span>
+        </div>
+        <p>Automatización con IA para PyMEs peruanas. Tecnología confiable, inteligente y lista para escalar.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Links</h4>
+        <a href="#hero">Inicio</a>
+        <a href="#problema">Soluciones</a>
+        <a href="#descargas">Descargas</a>
+        <a href="#precios">Precios</a>
+        <a href="#formulario">Prueba Gratis</a>
+      </div>
+      <div class="footer-col">
+        <h4>Rubros</h4>
+        <a href="#problema">Clínicas</a>
+        <a href="#problema">Restaurantes</a>
+        <a href="#problema">Veterinarias</a>
+        <a href="#problema">Retail</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <a href="mailto:hola@axyntrax-automation.net">hola@axyntrax-automation.net</a>
+        <a href="https://wa.me/51991740590" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="/politica-privacidad.html">Política de Privacidad</a>
+        <a href="/terminos.html">Términos y Condiciones</a>
+      </div>
     </div>
-    <p class="footer-copy">© 2025 Axyntrax Automation. Todos los derechos reservados. · Cecilia, ATLAS & J.A.R.V.I.S ✦</p>
+    <div class="footer-bottom">
+      <span>© 2026 Axyntrax Automation. Cecilia, ATLAS & J.A.R.V.I.S ✦</span>
+      <span style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="/politica-privacidad.html">Privacidad</a>
+        <a href="/terminos.html">Términos</a>
+      </span>
+    </div>
   </div>
 </footer>
 
 <!-- Botón Flotante Cecilia -->
 <div class="cecilia-container">
-  <a href="https://wa.me/51991740590?text=Hola%2C%20quiero%20saber%20más%20sobre%20AXYNTRAX" class="cecilia-fab" target="_blank" id="cecilia-btn">
+  <a href="https://wa.me/51991740590?text=Hola%2C%20quiero%20saber%20más%20sobre%20AXYNTRAX" class="cecilia-fab" target="_blank" rel="noopener noreferrer" id="cecilia-btn">
     <div class="cecilia-tooltip">Chatea con Cecilia 🤖 - Atención 24/7</div>
     <img src="https://img.icons8.com/color/96/whatsapp--v1.png" alt="WhatsApp Cecilia">
     <div class="cecilia-status">
@@ -524,6 +1172,44 @@
 </style>
 
 <script>
+  // v6.0 UI helpers (additive: no changes to existing logic below)
+  function openAuthModal() {
+    // En esta versión la CTA redirige al formulario existente.
+    const el = document.getElementById('formulario');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  (function initMobileMenu() {
+    const btn = document.getElementById('hamburger-btn');
+    const overlay = document.getElementById('menu-overlay');
+    const closeBtn = document.getElementById('menu-close');
+    if (!btn || !overlay || !closeBtn) return;
+
+    const open = () => {
+      overlay.style.display = 'block';
+      overlay.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    };
+
+    btn.addEventListener('click', () => {
+      const isOpen = overlay.style.display === 'block';
+      if (isOpen) close(); else open();
+    });
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+<script>
   // Scroll animations
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -545,16 +1231,23 @@
   // Toggle submit button
   const termsCheckbox = document.getElementById('acepta-terminos');
   const submitBtn = document.getElementById('submitBtn');
-  termsCheckbox.addEventListener('change', () => {
-    submitBtn.disabled = !termsCheckbox.checked;
-    submitBtn.style.opacity = termsCheckbox.checked ? '1' : '0.5';
-  });
+  if (termsCheckbox && submitBtn) {
+    termsCheckbox.addEventListener('change', () => {
+      submitBtn.disabled = !termsCheckbox.checked;
+      submitBtn.style.opacity = termsCheckbox.checked ? '1' : '0.5';
+    });
+  }
 
-  // Form submit
-  document.getElementById('demoForm').addEventListener('submit', async (e) => {
+  const demoForm = document.getElementById('demoForm');
+  if (!demoForm) {
+    console.warn('[formulario] demoForm no encontrado');
+  } else demoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
     const msg = document.getElementById('form-msg');
+    if (!btn || !msg) return;
+
+    msg.textContent = '';
     btn.textContent = 'Enviando...';
     btn.disabled = true;
 
@@ -581,12 +1274,21 @@
         msg.textContent = '¡Listo! Cecilia te escribe pronto. Revisá tu WhatsApp. 🚀';
         e.target.reset();
         btn.textContent = '✓ ¡Solicitud enviada!';
+        if (termsCheckbox && submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.5';
+        }
       } else {
-        throw new Error('error');
+        let detail = '';
+        try {
+          const j = await res.json();
+          if (j && j.error) detail = ` (${j.error})`;
+        } catch (_) {}
+        throw new Error('error' + detail);
       }
     } catch {
       msg.style.color = '#f87171';
-      msg.innerHTML = 'Algo salló mal. <a href="https://wa.me/51999999999" target="_blank" style="color:#00f5ff;font-weight:700;">Escríbenos directo por WhatsApp →</a>';
+      msg.innerHTML = 'Algo salió mal. <a href="https://wa.me/51991740590" target="_blank" rel="noopener noreferrer" style="color:#00f5ff;font-weight:700;">Escríbenos directo por WhatsApp →</a>';
       btn.textContent = 'Quiero mis 45 días gratis →';
       btn.disabled = false;
     }
