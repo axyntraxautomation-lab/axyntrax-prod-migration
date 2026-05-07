@@ -27,6 +27,21 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
 }));
 
+const FALLBACK_GCS_INSTALLER =
+  'https://storage.googleapis.com/axyntrax-downloads/AXYNTRAX_Installer.bat';
+
+app.get('/api/installer', (req, res) => {
+  const explicit = (process.env.INSTALLER_DOWNLOAD_URL || '').trim();
+  if (explicit) return res.redirect(302, explicit);
+
+  const proto = (req.get('x-forwarded-proto') || 'https').split(',')[0].trim();
+  const host = (req.get('x-forwarded-host') || req.get('host') || '').split(',')[0].trim();
+  if (host) {
+    return res.redirect(302, `${proto}://${host}/AXYNTRAX_Installer.bat`);
+  }
+  return res.redirect(302, FALLBACK_GCS_INSTALLER);
+});
+
 const {
   WHATSAPP_TOKEN,
   META_VERIFY_TOKEN,
@@ -129,6 +144,7 @@ app.get('/api', (req, res) => {
     process.env.WHATSAPP_VERIFY_TOKEN,
     process.env.WH_VERIFY_TOKEN,
     process.env.META_VERIFY_TOKEN,
+    'Axyntrax_2026_Secure',
     'axyntrax2026',
     'Axyntrax2026',
     'v5R4EzvqR--_isXbo5T2BXfAQd648pHz'
@@ -159,6 +175,7 @@ app.get('/api/webhook', (req, res) => {
     process.env.WHATSAPP_VERIFY_TOKEN,
     process.env.WH_VERIFY_TOKEN,
     process.env.META_VERIFY_TOKEN,
+    'Axyntrax_2026_Secure',
     'axyntrax2026',
     'Axyntrax2026',
     'v5R4EzvqR--_isXbo5T2BXfAQd648pHz'
