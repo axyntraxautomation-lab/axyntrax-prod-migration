@@ -85,8 +85,11 @@ const addHistory = (key, role, text) => {
 // Helper: Gemini con retry automático, fallback de modelos, clave de respaldo y memoria contextual
 const geminiGenerate = async (prompt, retries = 3, sessionKey = null, systemInstruction = null) => {
   const models = [
-    process.env.GEMINI_MODEL || "gemini-2.0-flash",
+    process.env.GEMINI_MODEL || "gemini-1.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
     "gemini-1.5-flash-latest",
+    "gemini-1.5-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.0-pro"
   ];
