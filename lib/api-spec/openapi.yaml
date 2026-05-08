@@ -1,0 +1,1984 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: AXYNTRAX Dashboard Supremo — API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: clients
+    description: CRM — clients & prospects
+  - name: licenses
+    description: License management (KeyGen)
+  - name: dashboard
+    description: Dashboard KPIs and summaries
+  - name: twofa
+    description: Two-factor authentication (TOTP)
+  - name: ai
+    description: AXYN CORE AI chat (Claude + Gemini)
+  - name: inbox
+    description: Unified omnichannel inbox (Web · Facebook · Instagram · WhatsApp · Gmail)
+  - name: finance
+    description: Finanzas — movimientos, pagos, Culqi y comprobantes SUNAT
+  - name: axia
+    description: AXIA — asistente financiero (IA)
+  - name: admin
+    description: Acciones administrativas sensibles (gestión de usuarios, auditoría)
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout the current session
+      responses:
+        "204":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get the currently authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/2fa/setup:
+    post:
+      operationId: setupTwofa
+      tags: [twofa]
+      summary: Generate a new TOTP secret and provisioning QR
+      responses:
+        "200":
+          description: Provisioning data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwofaSetupResponse"
+
+  /auth/2fa/enable:
+    post:
+      operationId: enableTwofa
+      tags: [twofa]
+      summary: Verify code and enable 2FA for the current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwofaEnableRequest"
+      responses:
+        "200":
+          description: Enabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/2fa/disable:
+    post:
+      operationId: disableTwofa
+      tags: [twofa]
+      summary: Disable 2FA for the current user (requires current code)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwofaDisableRequest"
+      responses:
+        "200":
+          description: Disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: Stream a chat completion from Claude or Gemini (SSE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatRequest"
+      responses:
+        "200":
+          description: SSE stream of assistant response chunks
+          content:
+            text/event-stream: {}
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}/role:
+    patch:
+      operationId: changeUserRole
+      tags: [users, admin]
+      summary: Cambia el rol de un usuario (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRoleBody"
+      responses:
+        "200":
+          description: Usuario con el rol actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List clients
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /licenses:
+    get:
+      operationId: listLicenses
+      tags: [licenses]
+      summary: List licenses
+      responses:
+        "200":
+          description: List of licenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/License"
+    post:
+      operationId: createLicense
+      tags: [licenses]
+      summary: Generate a new license key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicenseCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/License"
+
+  /dashboard/kpis:
+    get:
+      operationId: getDashboardKpis
+      tags: [dashboard]
+      summary: Get dashboard KPIs
+      responses:
+        "200":
+          description: KPIs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardKpis"
+
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [inbox]
+      summary: List conversations across all channels
+      parameters:
+        - in: query
+          name: channel
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: assignedAgentId
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 100 }
+      responses:
+        "200":
+          description: Conversation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [inbox]
+      summary: Get a conversation with all its messages
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Conversation detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /conversations/{id}/messages:
+    post:
+      operationId: replyConversation
+      tags: [inbox]
+      summary: Send an outbound agent reply on a conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyConversationRequest"
+      responses:
+        "201":
+          description: Message stored (and dispatched if provider connected)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /conversations/{id}/assign:
+    post:
+      operationId: assignConversation
+      tags: [inbox]
+      summary: Assign conversation to an agent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignConversationRequest"
+      responses:
+        "200":
+          description: Assigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/status:
+    post:
+      operationId: setConversationStatus
+      tags: [inbox]
+      summary: Change conversation status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetStatusRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/link-client:
+    post:
+      operationId: linkConversationClient
+      tags: [inbox]
+      summary: Attach (or detach) a CRM client to the conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkClientRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /inbox/gmail/sync:
+    post:
+      operationId: syncGmail
+      tags: [inbox]
+      summary: Pull recent Gmail messages into the unified inbox
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailSyncResult"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Recent activity feed across the system
+      responses:
+        "200":
+          description: Activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /finances:
+    get:
+      operationId: listFinances
+      tags: [finance]
+      summary: Lista movimientos financieros
+      parameters:
+        - in: query
+          name: type
+          schema: { type: string, enum: [ingreso, egreso] }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: Movimientos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Finance"
+    post:
+      operationId: createFinance
+      tags: [finance]
+      summary: Crea un movimiento financiero
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinanceCreate"
+      responses:
+        "201":
+          description: Movimiento creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Finance"
+
+  /finances/{id}:
+    delete:
+      operationId: deleteFinance
+      tags: [finance]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Eliminado
+
+  /finances/summary:
+    get:
+      operationId: getFinanceSummary
+      tags: [finance]
+      summary: Resumen ingresos/egresos del mes en curso
+      responses:
+        "200":
+          description: Resumen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSummary"
+
+  /payments:
+    get:
+      operationId: listPayments
+      tags: [finance]
+      summary: Lista pagos
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: clientId
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Pagos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Payment"
+    post:
+      operationId: createPayment
+      tags: [finance]
+      summary: Registra un pago manual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCreate"
+      responses:
+        "201":
+          description: Pago creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /payments/culqi/charge:
+    post:
+      operationId: culqiCharge
+      tags: [finance]
+      summary: Genera un cargo en Culqi (modo stub si CULQI_SECRET_KEY no existe)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CulqiChargeRequest"
+      responses:
+        "201":
+          description: Cargo creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+
+  /payments/{id}/sunat-comprobante:
+    post:
+      operationId: generateSunatComprobante
+      tags: [finance]
+      summary: Genera el XML UBL 2.1 (boleta/factura) del pago
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SunatComprobanteRequest"
+      responses:
+        "200":
+          description: Comprobante generado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SunatComprobanteResponse"
+
+  /gmail/cecilia/triage:
+    post:
+      operationId: ceciliaTriage
+      summary: Cecilia clasifica una conversación Gmail y propone respuesta
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CeciliaTriageRequest"
+      responses:
+        "200":
+          description: Triage completado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CeciliaTriageResult"
+
+  /gmail/cecilia/draft-reply:
+    post:
+      operationId: ceciliaDraftReply
+      summary: Cecilia redacta un borrador de respuesta
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CeciliaDraftRequest"
+      responses:
+        "200":
+          description: Borrador generado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CeciliaDraftResult"
+
+  /gmail/cecilia/templates:
+    get:
+      operationId: listGmailTemplates
+      summary: Listar plantillas de respuesta
+      tags: [cecilia]
+      responses:
+        "200":
+          description: Listado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GmailTemplate"
+    post:
+      operationId: createGmailTemplate
+      summary: Crear plantilla
+      tags: [cecilia]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GmailTemplateCreate"
+      responses:
+        "201":
+          description: Creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailTemplate"
+
+  /gmail/cecilia/templates/{id}:
+    delete:
+      operationId: deleteGmailTemplate
+      summary: Eliminar plantilla
+      tags: [cecilia]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Eliminada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                required: [ok]
+
+  /analytics/overview:
+    get:
+      operationId: getAnalyticsOverview
+      summary: Métricas globales de los últimos 30 días
+      tags: [analytics]
+      responses:
+        "200":
+          description: Overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsOverview"
+
+  /push/vapid-key:
+    get:
+      operationId: getVapidPublicKey
+      summary: Devuelve la clave pública VAPID para suscripción push
+      tags: [push]
+      responses:
+        "200":
+          description: Clave pública
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  publicKey: { type: string }
+                required: [publicKey]
+
+  /push/subscribe:
+    post:
+      operationId: subscribePush
+      summary: Registra una suscripción Web Push
+      tags: [push]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushSubscribeRequest"
+      responses:
+        "200":
+          description: Suscripción registrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  id: { type: integer }
+                  updated: { type: boolean }
+                required: [ok, id, updated]
+
+  /push/test:
+    post:
+      operationId: sendTestPush
+      summary: Envía notificación push de prueba al usuario actual
+      tags: [push]
+      responses:
+        "200":
+          description: Resultado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent: { type: integer }
+                  removed: { type: integer }
+                required: [sent, removed]
+
+  /modules/catalog:
+    get:
+      operationId: listModulesCatalog
+      summary: Catálogo de módulos disponibles
+      tags: [modules]
+      parameters:
+        - in: query
+          name: industry
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Catálogo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModuleCatalog"
+
+  /modules/industries:
+    get:
+      operationId: listIndustries
+      summary: Lista industrias soportadas
+      tags: [modules]
+      responses:
+        "200":
+          description: Industrias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IndustryInfo"
+
+  /modules/industry-prompt/{industry}:
+    get:
+      operationId: getIndustryPrompt
+      summary: Devuelve el prompt IA y tips para una industria
+      tags: [modules]
+      parameters:
+        - in: path
+          name: industry
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndustryPrompt"
+
+  /modules/client/{clientId}:
+    get:
+      operationId: listClientModules
+      summary: Módulos de un cliente
+      tags: [modules]
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Módulos del cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientModule"
+
+  /modules/requests:
+    get:
+      operationId: listModuleRequests
+      summary: Solicitudes de módulos pendientes (admin)
+      tags: [modules]
+      responses:
+        "200":
+          description: Solicitudes pendientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientModule"
+
+  /modules/request:
+    post:
+      operationId: requestModule
+      summary: Solicitar activación de módulo para un cliente
+      tags: [modules]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleRequestBody"
+      responses:
+        "201":
+          description: Solicitud creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
+  /modules/{id}/approve:
+    post:
+      operationId: approveModule
+      summary: Aprobar y activar un módulo (admin)
+      tags: [modules]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleApproveBody"
+      responses:
+        "200":
+          description: Activado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
+  /modules/{id}/cancel:
+    post:
+      operationId: cancelModule
+      summary: Cancelar módulo (admin)
+      tags: [modules]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Cancelado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientModule"
+
+  /admin/users/{id}/disable-twofa:
+    post:
+      operationId: adminDisableUserTwofa
+      tags: [admin]
+      summary: Desactiva 2FA de un usuario y limpia su secreto/OTP (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: 2FA desactivado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+
+  /admin/users/{id}/reset-password:
+    post:
+      operationId: adminResetUserPassword
+      tags: [admin]
+      summary: Reinicia la contraseña de un usuario (solo admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminResetPasswordBody"
+      responses:
+        "200":
+          description: Contraseña actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+
+  /admin/security/twofa-reset-stats:
+    get:
+      operationId: listTwofaResetStats
+      summary: Top combinaciones operator+target con alertas de reset 2FA en una ventana de tiempo (admin)
+      tags: [admin]
+      parameters:
+        - in: query
+          name: windowHours
+          required: false
+          description: Ventana de tiempo en horas hacia atrás. Permitido 1, 24 o 168 (7 días).
+          schema:
+            type: integer
+            enum: [1, 24, 168]
+            default: 24
+      responses:
+        "200":
+          description: Listado agregado de combos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwofaResetStatsResponse"
+
+  /admin/audit:
+    get:
+      operationId: listAuditLog
+      summary: Lista los últimos eventos del audit log (admin)
+      tags: [admin]
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, default: 100, maximum: 500 }
+        - in: query
+          name: from
+          required: false
+          description: Fecha mínima (inclusive) en ISO 8601 para filtrar por createdAt.
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          required: false
+          description: Fecha máxima (inclusive) en ISO 8601 para filtrar por createdAt.
+          schema: { type: string, format: date-time }
+        - in: query
+          name: action
+          required: false
+          description: Filtra por acción exacta (ej. "auth.2fa.reset_cli").
+          schema: { type: string, maxLength: 64 }
+        - in: query
+          name: actionPrefix
+          required: false
+          description: Filtra por prefijo de acción (ej. "auth.2fa." captura todas las acciones 2FA). Si se envía junto con `action`, manda `action`.
+          schema: { type: string, maxLength: 64 }
+        - in: query
+          name: actionExclude
+          required: false
+          description: Lista separada por comas de prefijos de acción a excluir. Útil para la categoría "Otros".
+          schema: { type: string, maxLength: 256 }
+        - in: query
+          name: q
+          required: false
+          description: Búsqueda case-insensitive en meta.operator, meta.targetEmail, meta.email, meta.actorEmail, meta.userEmail, entityType y entityId.
+          schema: { type: string, maxLength: 200 }
+        - in: query
+          name: before
+          required: false
+          description: Cursor de paginación. Devuelve eventos con id menor (más antiguos) que el id indicado.
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditEntry"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    UserRole:
+      type: string
+      enum: [admin, supervisor, agente]
+
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+
+    UpdateUserRoleBody:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/UserRole"
+      required: [role]
+
+    AdminResetPasswordBody:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 200
+      required: [newPassword]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+        twofaEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, role, twofaEnabled, createdAt]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        twofaCode:
+          type: ["string", "null"]
+      required: [email, password]
+
+    AuthSession:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        requiresTwofa:
+          type: ["boolean", "null"]
+      required: [user]
+
+    Conversation:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: ["integer", "null"] }
+        assignedAgentId: { type: ["integer", "null"] }
+        channel: { type: string }
+        externalId: { type: ["string", "null"] }
+        contactName: { type: ["string", "null"] }
+        contactHandle: { type: ["string", "null"] }
+        subject: { type: ["string", "null"] }
+        label: { type: ["string", "null"] }
+        status: { type: string }
+        unreadCount: { type: integer }
+        lastMessageAt: { type: string, format: date-time }
+        lastMessagePreview: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+      required:
+        [
+          id,
+          channel,
+          status,
+          unreadCount,
+          lastMessageAt,
+          createdAt,
+        ]
+
+    Message:
+      type: object
+      properties:
+        id: { type: integer }
+        conversationId: { type: integer }
+        direction: { type: string, enum: [inbound, outbound, system] }
+        senderUserId: { type: ["integer", "null"] }
+        senderName: { type: ["string", "null"] }
+        externalMessageId: { type: ["string", "null"] }
+        content: { type: string }
+        mediaUrl: { type: ["string", "null"] }
+        status: { type: string }
+        errorMessage: { type: ["string", "null"] }
+        sentAt: { type: string, format: date-time }
+      required: [id, conversationId, direction, content, status, sentAt]
+
+    ConversationDetail:
+      type: object
+      properties:
+        conversation:
+          $ref: "#/components/schemas/Conversation"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+      required: [conversation, messages]
+
+    ReplyConversationRequest:
+      type: object
+      properties:
+        content: { type: string, minLength: 1 }
+      required: [content]
+
+    AssignConversationRequest:
+      type: object
+      properties:
+        agentId: { type: ["integer", "null"] }
+      required: [agentId]
+
+    SetStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [nuevo, en_curso, esperando, resuelto, archivado]
+      required: [status]
+
+    LinkClientRequest:
+      type: object
+      properties:
+        clientId: { type: ["integer", "null"] }
+      required: [clientId]
+
+    GmailSyncResult:
+      type: object
+      properties:
+        fetched: { type: integer }
+        upsertedConversations: { type: integer }
+        insertedMessages: { type: integer }
+        skipped: { type: integer }
+      required:
+        [fetched, upsertedConversations, insertedMessages, skipped]
+
+    TwofaSetupResponse:
+      type: object
+      properties:
+        secret:
+          type: string
+        otpauthUrl:
+          type: string
+        qrCodeDataUrl:
+          type: string
+      required: [secret, otpauthUrl, qrCodeDataUrl]
+
+    TwofaEnableRequest:
+      type: object
+      properties:
+        secret:
+          type: string
+        code:
+          type: string
+      required: [secret, code]
+
+    TwofaDisableRequest:
+      type: object
+      properties:
+        code:
+          type: string
+      required: [code]
+
+    AiChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+      required: [role, content]
+
+    AiChatRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiChatMessage"
+        provider:
+          type: string
+          enum: [claude, gemini]
+      required: [messages]
+
+    ClientStage:
+      type: string
+      enum: [prospecto, demo_activa, negociacion, cliente, renovacion]
+
+    Channel:
+      type: string
+      enum: [web, facebook, instagram, whatsapp, email, otro]
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          $ref: "#/components/schemas/Channel"
+        stage:
+          $ref: "#/components/schemas/ClientStage"
+        score:
+          type: integer
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, channel, stage, score, createdAt]
+
+    ClientCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          $ref: "#/components/schemas/Channel"
+        stage:
+          $ref: "#/components/schemas/ClientStage"
+        score:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+      required: [name, channel]
+
+    ClientUpdate:
+      type: object
+      properties:
+        name:
+          type: ["string", "null"]
+        company:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        channel:
+          oneOf:
+            - $ref: "#/components/schemas/Channel"
+            - type: "null"
+        stage:
+          oneOf:
+            - $ref: "#/components/schemas/ClientStage"
+            - type: "null"
+        score:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+
+    LicenseType:
+      type: string
+      enum: [demo, plan_3m, plan_6m, plan_12m, plan_24m, addon]
+
+    LicenseStatus:
+      type: string
+      enum: [activa, vencida, cancelada, pendiente]
+
+    License:
+      type: object
+      properties:
+        id:
+          type: integer
+        clientId:
+          type: integer
+        clientName:
+          type: ["string", "null"]
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/LicenseType"
+        module:
+          type: ["string", "null"]
+        status:
+          $ref: "#/components/schemas/LicenseStatus"
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        amount:
+          type: ["number", "null"]
+        currency:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, clientId, key, type, status, startDate, endDate, createdAt]
+
+    LicenseCreate:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        type:
+          $ref: "#/components/schemas/LicenseType"
+        module:
+          type: ["string", "null"]
+        amount:
+          type: ["number", "null"]
+        currency:
+          type: ["string", "null"]
+      required: [clientId, type]
+
+    DashboardKpis:
+      type: object
+      properties:
+        leadsToday:
+          type: integer
+        salesMonth:
+          type: number
+        activeDemos:
+          type: integer
+        activeLicenses:
+          type: integer
+        expiringLicenses:
+          type: integer
+        totalClients:
+          type: integer
+        mrr:
+          type: number
+        conversionsByChannel:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelMetric"
+        botStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BotStatus"
+      required:
+        - leadsToday
+        - salesMonth
+        - activeDemos
+        - activeLicenses
+        - expiringLicenses
+        - totalClients
+        - mrr
+        - conversionsByChannel
+        - botStatuses
+
+    ChannelMetric:
+      type: object
+      properties:
+        channel:
+          $ref: "#/components/schemas/Channel"
+        leads:
+          type: integer
+        conversions:
+          type: integer
+      required: [channel, leads, conversions]
+
+    BotStatus:
+      type: object
+      properties:
+        name:
+          type: string
+        channel:
+          $ref: "#/components/schemas/Channel"
+        status:
+          type: string
+          enum: [online, offline, error]
+        lastSeen:
+          type: string
+          format: date-time
+      required: [name, channel, status, lastSeen]
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [lead, message, payment, license, alert]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        channel:
+          oneOf:
+            - $ref: "#/components/schemas/Channel"
+            - type: "null"
+        timestamp:
+          type: string
+          format: date-time
+      required: [id, type, title, timestamp]
+
+    Finance:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [ingreso, egreso] }
+        amount: { type: number }
+        currency: { type: string }
+        category: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        paymentId: { type: ["integer", "null"] }
+        date: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+      required: [id, type, amount, currency, date, createdAt]
+
+    FinanceCreate:
+      type: object
+      properties:
+        type: { type: string, enum: [ingreso, egreso] }
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        category: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        date: { type: ["string", "null"], format: date-time }
+      required: [type, amount]
+
+    FinanceSummary:
+      type: object
+      properties:
+        ingresoMes: { type: number }
+        egresoMes: { type: number }
+        balanceMes: { type: number }
+        mrrActivo: { type: number }
+        pagosPendientes: { type: integer }
+        pagosExitososMes: { type: integer }
+      required:
+        - ingresoMes
+        - egresoMes
+        - balanceMes
+        - mrrActivo
+        - pagosPendientes
+        - pagosExitososMes
+
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        amount: { type: number }
+        currency: { type: string }
+        method: { type: string }
+        status: { type: string, enum: [pendiente, procesando, exitoso, fallido, reembolsado] }
+        reference: { type: ["string", "null"] }
+        externalId: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+        paidAt: { type: ["string", "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+      required: [id, amount, currency, method, status, createdAt]
+
+    PaymentCreate:
+      type: object
+      properties:
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        method: { type: ["string", "null"] }
+        status: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+      required: [amount]
+
+    CulqiChargeRequest:
+      type: object
+      properties:
+        amount: { type: number }
+        currency: { type: ["string", "null"] }
+        clientId: { type: ["integer", "null"] }
+        licenseId: { type: ["integer", "null"] }
+        description: { type: ["string", "null"] }
+        email: { type: ["string", "null"] }
+        culqiToken: { type: ["string", "null"] }
+      required: [amount]
+
+    SunatComprobanteRequest:
+      type: object
+      properties:
+        tipo: { type: string, enum: [boleta, factura] }
+        rucCliente: { type: ["string", "null"] }
+        razonSocial: { type: ["string", "null"] }
+      required: [tipo]
+
+    SunatComprobanteResponse:
+      type: object
+      properties:
+        serie: { type: string }
+        correlativo: { type: integer }
+        tipo: { type: string, enum: [boleta, factura] }
+        xml: { type: string }
+        sentToSunat: { type: boolean }
+        sunatNote: { type: ["string", "null"] }
+      required: [serie, correlativo, tipo, xml, sentToSunat]
+
+    CeciliaTriageRequest:
+      type: object
+      properties:
+        conversationId: { type: integer }
+      required: [conversationId]
+
+    CeciliaTriageResult:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [lead, soporte, factura, personal, spam, otro]
+        priority:
+          type: string
+          enum: [alta, media, baja]
+        summary: { type: string }
+        suggestedReply: { type: string }
+        language:
+          type: string
+          enum: [es, en]
+      required: [category, priority, summary, suggestedReply, language]
+
+    CeciliaDraftRequest:
+      type: object
+      properties:
+        conversationId: { type: integer }
+        intent: { type: ["string", "null"] }
+        tone:
+          type: ["string", "null"]
+          enum: [formal, cordial, directo, null]
+      required: [conversationId]
+
+    CeciliaDraftResult:
+      type: object
+      properties:
+        reply: { type: string }
+      required: [reply]
+
+    GmailTemplate:
+      type: object
+      properties:
+        id: { type: integer }
+        ownerId: { type: ["integer", "null"] }
+        name: { type: string }
+        category: { type: string }
+        subject: { type: ["string", "null"] }
+        body: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, name, category, body, createdAt, updatedAt]
+
+    GmailTemplateCreate:
+      type: object
+      properties:
+        name: { type: string }
+        category: { type: string }
+        subject: { type: ["string", "null"] }
+        body: { type: string }
+      required: [name, body]
+
+    AnalyticsOverview:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from: { type: string, format: date-time }
+            to: { type: string, format: date-time }
+          required: [from, to]
+        conversationsByChannel:
+          type: array
+          items:
+            type: object
+            properties:
+              channel: { type: string }
+              count: { type: integer }
+            required: [channel, count]
+        conversationsByStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              count: { type: integer }
+            required: [status, count]
+        messagesByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              day: { type: string }
+              count: { type: integer }
+              inbound: { type: integer }
+              outbound: { type: integer }
+            required: [day, count, inbound, outbound]
+        aiStats:
+          type: array
+          items:
+            type: object
+            properties:
+              source: { type: string }
+              event: { type: string }
+              count: { type: integer }
+            required: [source, event, count]
+        financeByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              day: { type: string }
+              ingreso: { type: number }
+              egreso: { type: number }
+            required: [day, ingreso, egreso]
+        paymentStats:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              count: { type: integer }
+              total: { type: number }
+            required: [status, count, total]
+        responseTimesByChannel:
+          type: array
+          items:
+            type: object
+            properties:
+              channel: { type: string }
+              avgMinutes: { type: number }
+              samples: { type: integer }
+            required: [channel, avgMinutes, samples]
+        recentAiActivity:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              source: { type: string }
+              event: { type: string }
+              message: { type: ["string", "null"] }
+              createdAt: { type: string, format: date-time }
+            required: [id, source, event, createdAt]
+      required:
+        - range
+        - conversationsByChannel
+        - conversationsByStatus
+        - messagesByDay
+        - aiStats
+        - financeByDay
+        - paymentStats
+        - responseTimesByChannel
+        - recentAiActivity
+
+    PushSubscribeRequest:
+      type: object
+      properties:
+        endpoint: { type: string }
+        keys:
+          type: object
+          properties:
+            p256dh: { type: string }
+            auth: { type: string }
+          required: [p256dh, auth]
+      required: [endpoint, keys]
+
+    AuditEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        userId: { type: ["integer", "null"] }
+        action: { type: string }
+        entityType: { type: ["string", "null"] }
+        entityId: { type: ["string", "null"] }
+        ip: { type: ["string", "null"] }
+        userAgent: { type: ["string", "null"] }
+        meta: { type: ["object", "null"], additionalProperties: true }
+        createdAt: { type: string, format: date-time }
+      required: [id, action, createdAt]
+
+    TwofaResetStatsCombo:
+      type: object
+      properties:
+        operator: { type: string }
+        targetEmail: { type: string }
+        count: { type: integer }
+        sentCount: { type: integer }
+        suppressedCount: { type: integer }
+        lastActivityAt: { type: string, format: date-time }
+      required:
+        [operator, targetEmail, count, sentCount, suppressedCount, lastActivityAt]
+
+    TwofaResetStatsResponse:
+      type: object
+      properties:
+        windowHours: { type: integer }
+        since: { type: string, format: date-time }
+        generatedAt: { type: string, format: date-time }
+        combos:
+          type: array
+          items:
+            $ref: "#/components/schemas/TwofaResetStatsCombo"
+      required: [windowHours, since, generatedAt, combos]
+
+    ModuleCatalog:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        name: { type: string }
+        description: { type: ["string", "null"] }
+        industry: { type: string }
+        monthlyPrice: { type: string }
+        currency: { type: string }
+        active: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [id, slug, name, industry, monthlyPrice, currency, active, createdAt]
+
+    IndustryInfo:
+      type: object
+      properties:
+        slug: { type: string }
+        label: { type: string }
+        tips:
+          type: array
+          items: { type: string }
+      required: [slug, label, tips]
+
+    IndustryPrompt:
+      type: object
+      properties:
+        industry: { type: string }
+        label: { type: string }
+        system: { type: string }
+        tips:
+          type: array
+          items: { type: string }
+      required: [industry, label, system, tips]
+
+    ClientModule:
+      type: object
+      properties:
+        id: { type: integer }
+        clientId: { type: integer }
+        moduleId: { type: integer }
+        status: { type: string }
+        notes: { type: ["string", "null"] }
+        requestedAt: { type: string, format: date-time }
+        activatedAt: { type: ["string", "null"], format: date-time }
+        expiresAt: { type: ["string", "null"], format: date-time }
+        cancelledAt: { type: ["string", "null"], format: date-time }
+        moduleSlug: { type: ["string", "null"] }
+        moduleName: { type: ["string", "null"] }
+        moduleIndustry: { type: ["string", "null"] }
+        monthlyPrice: { type: ["string", "null"] }
+        currency: { type: ["string", "null"] }
+        clientName: { type: ["string", "null"] }
+        clientCompany: { type: ["string", "null"] }
+      required: [id, clientId, moduleId, status, requestedAt]
+
+    ModuleRequestBody:
+      type: object
+      properties:
+        clientId: { type: integer }
+        moduleId: { type: integer }
+        notes: { type: string }
+      required: [clientId, moduleId]
+
+    ModuleApproveBody:
+      type: object
+      properties:
+        durationMonths: { type: integer, minimum: 1, maximum: 60, default: 1 }
+        createPayment: { type: boolean, default: true }
+
+    # NOTA: los endpoints /api/tenant/whatsapp/* (estado, sesion/iniciar,
+    # sesion/detener, mensajes, enviar) NO están documentados como `paths`
+    # en este contrato porque el frontend tenant los consume con apiGet/
+    # apiSend directos (no usa hooks tipados). Documentamos solo los
+    # schemas de los responses + códigos de error que son parte del
+    # contrato compartido con el cliente, para futuras integraciones.
+
+    TenantWhatsappEstadoResponse:
+      type: object
+      description: |
+        Respuesta de GET /api/tenant/whatsapp/estado. El campo `workerOnline`
+        refleja un probe en vivo (con cache 30s) al wa-worker (Reserved VM
+        en producción). Cuando es `false`, el frontend muestra un banner
+        amarillo al usuario y debe evitar acciones que dependan del worker.
+      properties:
+        session:
+          type: ["object", "null"]
+          properties:
+            id: { type: string }
+            status: { type: string }
+            qr_code: { type: ["string", "null"] }
+            phone_number: { type: ["string", "null"] }
+            updated_at: { type: ["string", "null"], format: date-time }
+        live:
+          type: ["object", "null"]
+          description: Estado vivo reportado por el wa-worker, o null si el worker está offline.
+          properties:
+            state: { type: string }
+        workerOnline:
+          type: boolean
+          description: |
+            true si el wa-worker respondió OK al probe /healthz; false si está
+            caído, en deploy, o el deployment Reserved VM no está creado.
+      required: [session, live, workerOnline]
+
+    TenantWhatsappOfflineError:
+      type: object
+      description: |
+        Body devuelto con HTTP 503 por POST /api/tenant/whatsapp/sesion/iniciar
+        cuando el wa-worker está offline. El cliente debe renderizar el banner
+        amarillo y NO mostrar un error rojo genérico.
+      properties:
+        error:
+          type: string
+          example: "El servicio de WhatsApp está temporalmente offline. Intentá en unos minutos."
+        code:
+          type: string
+          enum: ["wa_worker_offline"]
+      required: [error, code]

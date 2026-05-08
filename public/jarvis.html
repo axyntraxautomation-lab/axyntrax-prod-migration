@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>
+      (function() {
+        var JARVIS_TOKEN = localStorage.getItem('jarvis_master_token');
+        var VALID_TOKEN = 'AXY-JARVIS-2025-MASTER';
+        if (!JARVIS_TOKEN || JARVIS_TOKEN !== VALID_TOKEN) {
+          document.documentElement.innerHTML = '';
+          window.location.replace('/');
+        }
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS | Central de Inteligencia Axyntrax</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f5ff;
+            --secondary: #8b5cf6;
+            --bg: #050508;
+            --surface: #0d0d14;
+            --text: #e8e8f0;
+            --muted: #8888aa;
+            --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 30px; display: flex; gap: 30px; height: 100vh; overflow: hidden; }
+        
+        .main-content { flex: 1; overflow-y: auto; padding-right: 10px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(139,92,246,0.2); padding-bottom: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .admin-email { font-size: 0.75rem; color: var(--primary); font-family: monospace; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--surface); border: 1px solid rgba(139,92,246,0.1); border-radius: 12px; padding: 20px; }
+        .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 1.5rem; font-weight: 900; margin-top: 5px; }
+
+        .section-box { background: var(--surface); border-radius: 16px; padding: 20px; border: 1px solid rgba(139,92,246,0.1); margin-bottom: 20px; }
+        h2 { font-size: 1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; color: var(--muted); padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* JARVIS CHAT PANEL */
+        .side-panel { width: 400px; background: var(--surface); border: 1px solid rgba(0,245,255,0.2); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,245,255,0.05); }
+        .chat-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 15px; color: #000; font-weight: 900; font-size: 0.9rem; }
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-input { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; }
+        .chat-input input { flex: 1; background: var(--bg); border: 1px solid rgba(0,245,255,0.2); border-radius: 8px; color: white; padding: 10px; outline: none; font-size: 0.85rem; }
+        .chat-input button { background: var(--primary); border: none; border-radius: 8px; width: 40px; cursor: pointer; font-weight: bold; }
+        
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; }
+        .msg.jarvis { align-self: flex-start; background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.1); color: var(--text); }
+        .msg.admin { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; }
+
+        .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; display: inline-block; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo">J.A.R.V.I.S.</div>
+                <div class="admin-email">axyntraxautomation@gmail.com</div>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--muted);">Protocolo: Central de Mando Activo</div>
+        </div>
+
+        <div class="grid">
+            <div class="stat-card">
+                <div class="stat-label">Estado ATLAS</div>
+                <div class="stat-value"><div class="pulse"></div> ONLINE</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--success);">
+                <div class="stat-label">Auditoría Producción</div>
+                <div class="stat-value">100%</div>
+                <div class="stat-sub">ESTADO: BLINDADO ✅</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Leads Totales</div>
+                <div class="stat-value" id="leads-count">--</div>
+                <div class="stat-sub">Sincronizado con Supabase</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>📩 Análisis de Emails (Prioridad Alta)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DE</th>
+                        <th>ASUNTO</th>
+                        <th>ANÁLISIS JARVIS</th>
+                        <th>ACCIÓN</th>
+                    </tr>
+                </thead>
+                <tbody id="email-logs">
+                    <tr>
+                        <td>Meta Support</td>
+                        <td>Update WhatsApp API v21.0</td>
+                        <td><span style="color:var(--primary);">CRÍTICO</span>: Requiere actualización de tokens.</td>
+                        <td><button style="background:var(--primary); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">Ver detalles</button></td>
+                    </tr>
+                    <tr>
+                        <td>Google Cloud</td>
+                        <td>Billing Statement May 2026</td>
+                        <td>INFO: Consumo dentro del margen.</td>
+                        <td><button style="background:var(--muted); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; color:white;">Archivar</button></td>
+                    </tr>
+                    <tr>
+                        <td>Lead: Clínica Dental</td>
+                        <td>Consulta Presupuesto Enterprise</td>
+                        <td><span style="color:var(--success);">OPORTUNIDAD</span>: Cliente con alto interés.</td>
+                        <td><button style="background:var(--success); border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; color:white;">Responder Cecilia</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-box">
+            <h2>🧩 Módulos Activos</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">WhatsApp API ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Gemini 1.5 Flash ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Supabase DB ✅</span>
+                <span class="badge-type" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">Gmail Sync (Simulated) ⏳</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="chat-header">COMUNICACIÓN DIRECTA CON JARVIS</div>
+        <div class="chat-body" id="jarvis-messages">
+            <div class="msg jarvis">Bienvenido, Miguel. Los sistemas están estables al 99.9%. He analizado tus correos recientes y he marcado una consulta de presupuesto de una Clínica Dental como prioridad alta. ¿Deseas que prepare una propuesta automática?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="jarvis-input" placeholder="Orden de mando..." onkeypress="if(event.key==='Enter') sendJarvis()">
+            <button onclick="sendJarvis()">➔</button>
+        </div>
+    </div>
+
+    <script>
+        const messages = document.getElementById('jarvis-messages');
+        const input = document.getElementById('jarvis-input');
+
+        const addMsg = (text, type) => {
+            if (!text) return;
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        };
+
+        const sendJarvis = async () => {
+            const text = input.value.trim();
+            if(!text) return;
+            addMsg(text, 'admin');
+            input.value = '';
+
+            // Mostrar indicador de pensamiento
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'msg jarvis';
+            loadingDiv.textContent = 'Analizando...';
+            loadingDiv.id = 'jarvis-loading';
+            messages.appendChild(loadingDiv);
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await fetch('/api/jarvis-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+                
+                // Remover indicador
+                const loader = document.getElementById('jarvis-loading');
+                if(loader) loader.remove();
+
+                if (data.response) {
+                    addMsg(data.response, 'jarvis');
+                } else if (data.error) {
+                    addMsg("ALERTA ATLAS: " + data.error, "jarvis");
+                } else {
+                    addMsg("JARVIS: Procesando requerimiento... Enlace estable. Reintenta la orden.", "jarvis");
+                }
+            } catch(e) {
+                const loader = document.getElementById('jarvis-loading');
+                if(loader) loader.remove();
+                addMsg("Error de enlace neuronal. ATLAS reporta desconexión con el núcleo Gemini.", "jarvis");
+            }
+
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "cargas": {
+    "status": "PASS",
+    "time": "120ms"
+  },
+  "import": {
+    "status": "PASS",
+    "time": "1.5s"
+  },
+  "avalanche": {
+    "status": "PASS",
+    "lost": 0
+  },
+  "jarvis": {
+    "status": "PASS",
+    "errors": 0
+  },
+  "recovery": {
+    "status": "PASS",
+    "time": "12 min"
+  }
+}

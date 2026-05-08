@@ -1,0 +1,1177 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useListAuditLog,
+  type AuditEntry,
+  type AuditEntryMeta,
+  type ListAuditLogParams,
+} from "@workspace/api-client-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  History,
+  Loader2,
+  ScrollText,
+  Search,
+  ShieldAlert,
+  Terminal,
+  UserCog,
+  X,
+  XCircle,
+} from "lucide-react";
+
+const CLI_RESET_ACTIONS = new Set([
+  "auth.2fa.reset_cli",
+  "auth.2fa.reset_cli.cancelled",
+  "auth.2fa.reset_cli.failed",
+]);
+
+function isCliResetAction(action: string): boolean {
+  return CLI_RESET_ACTIONS.has(action);
+}
+
+type CategoryValue =
+  | "all"
+  | "auth_2fa"
+  | "reset_cli"
+  | "reset_cli_ok"
+  | "reset_cli_cancelled"
+  | "reset_cli_failed"
+  | "portal"
+  | "modules"
+  | "cecilia"
+  | "security"
+  | "admin"
+  | "other";
+
+// Server-side action filter para una categoría. Cuando el filtro es server-side
+// el componente deja de filtrar las filas en memoria, así no se pide media base
+// solo para descartarla. Mantenemos `match` también para contar localmente las
+// categorías visibles en el dropdown ("(N)").
+//
+// IMPORTANT: El mapping a `actionExclude` para "Otros" debe estar alineado con
+// los `actionPrefix` que usan las demás categorías; si agregamos una nueva
+// categoría con prefijo, hay que excluir el mismo prefijo aquí para que "Otros"
+// siga siendo el complemento real.
+interface CategoryDef {
+  value: CategoryValue;
+  label: string;
+  match: (action: string) => boolean;
+  serverFilter: Pick<
+    ListAuditLogParams,
+    "action" | "actionPrefix" | "actionExclude"
+  >;
+}
+
+const OTHER_EXCLUDE_PREFIXES = [
+  "auth.2fa",
+  "portal.",
+  "module.",
+  "cecilia.",
+  "security.",
+  "admin.",
+] as const;
+
+const CATEGORIES: ReadonlyArray<CategoryDef> = [
+  {
+    value: "all",
+    label: "Todos los eventos",
+    match: () => true,
+    serverFilter: {},
+  },
+  {
+    value: "auth_2fa",
+    label: "2FA (todos)",
+    match: (a) => a.startsWith("auth.2fa"),
+    serverFilter: { actionPrefix: "auth.2fa" },
+  },
+  {
+    value: "reset_cli",
+    label: "Reset 2FA · CLI (todos)",
+    match: (a) => isCliResetAction(a),
+    serverFilter: { actionPrefix: "auth.2fa.reset_cli" },
+  },
+  {
+    value: "reset_cli_ok",
+    label: "Reset 2FA · CLI exitoso",
+    match: (a) => a === "auth.2fa.reset_cli",
+    serverFilter: { action: "auth.2fa.reset_cli" },
+  },
+  {
+    value: "reset_cli_cancelled",
+    label: "Reset 2FA · CLI cancelado",
+    match: (a) => a === "auth.2fa.reset_cli.cancelled",
+    serverFilter: { action: "auth.2fa.reset_cli.cancelled" },
+  },
+  {
+    value: "reset_cli_failed",
+    label: "Reset 2FA · CLI fallido",
+    match: (a) => a === "auth.2fa.reset_cli.failed",
+    serverFilter: { action: "auth.2fa.reset_cli.failed" },
+  },
+  {
+    value: "portal",
+    label: "Portal (logins, registros)",
+    match: (a) => a.startsWith("portal."),
+    serverFilter: { actionPrefix: "portal." },
+  },
+  {
+    value: "modules",
+    label: "Módulos",
+    match: (a) => a.startsWith("module."),
+    serverFilter: { actionPrefix: "module." },
+  },
+  {
+    value: "cecilia",
+    label: "Cecilia",
+    match: (a) => a.startsWith("cecilia."),
+    serverFilter: { actionPrefix: "cecilia." },
+  },
+  {
+    value: "security",
+    label: "Seguridad (alertas/IP)",
+    match: (a) => a.startsWith("security."),
+    serverFilter: { actionPrefix: "security." },
+  },
+  {
+    value: "admin",
+    label: "Admin (backup, etc.)",
+    match: (a) => a.startsWith("admin."),
+    serverFilter: { actionPrefix: "admin." },
+  },
+  {
+    value: "other",
+    label: "Otros",
+    match: (a) => OTHER_EXCLUDE_PREFIXES.every((p) => !a.startsWith(p)),
+    serverFilter: { actionExclude: OTHER_EXCLUDE_PREFIXES.join(",") },
+  },
+];
+
+function getCategoryDef(value: CategoryValue): CategoryDef {
+  return CATEGORIES.find((c) => c.value === value) ?? CATEGORIES[0];
+}
+
+function metaString(meta: AuditEntryMeta, key: string): string | null {
+  if (!meta || typeof meta !== "object") return null;
+  const value = (meta as Record<string, unknown>)[key];
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function actionVariant(
+  action: string,
+): "default" | "secondary" | "destructive" | "outline" {
+  if (action === "auth.2fa.reset_cli.failed") return "destructive";
+  if (action === "auth.2fa.reset_cli.cancelled") return "outline";
+  if (action === "security.alert.throttled") return "outline";
+  if (action.startsWith("auth.2fa")) return "default";
+  return "secondary";
+}
+
+function actionLabel(action: string): string {
+  switch (action) {
+    case "auth.2fa.reset_cli":
+      return "Reset 2FA (CLI)";
+    case "auth.2fa.reset_cli.cancelled":
+      return "Reset 2FA cancelado";
+    case "auth.2fa.reset_cli.failed":
+      return "Reset 2FA falló";
+    case "security.alert.throttled":
+      return "Alerta suprimida (throttle)";
+    default:
+      return action;
+  }
+}
+
+function metaNumber(meta: AuditEntryMeta, key: string): number | null {
+  if (!meta || typeof meta !== "object") return null;
+  const value = (meta as Record<string, unknown>)[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+// Documenta qué claves de meta busca el endpoint server-side. Mantener en sync
+// con `/admin/audit?q=...` (ver artifacts/api-server/src/routes/admin.ts).
+// Se conserva como comentario para futuras referencias / pruebas, no se usa
+// en runtime ya que la búsqueda corre en el servidor.
+// const SEARCHABLE_META_KEYS = [
+//   "operator", "targetEmail", "email", "actorEmail", "userEmail",
+// ];
+
+function AuditRow({ entry }: { entry: AuditEntry }) {
+  const [expanded, setExpanded] = useState(false);
+  const cli = isCliResetAction(entry.action);
+  const throttled = entry.action === "security.alert.throttled";
+  const showsOperatorTarget = cli || throttled;
+  const operator = showsOperatorTarget
+    ? metaString(entry.meta ?? null, "operator")
+    : null;
+  const targetEmail = showsOperatorTarget
+    ? metaString(entry.meta ?? null, "targetEmail")
+    : null;
+  const failed = entry.action === "auth.2fa.reset_cli.failed";
+  const suppressedCount = throttled
+    ? metaNumber(entry.meta ?? null, "suppressedCount")
+    : null;
+  const suppressedAction = throttled
+    ? metaString(entry.meta ?? null, "suppressedAction")
+    : null;
+
+  return (
+    <div
+      className="border border-border rounded-md p-3 space-y-2"
+      data-testid={`audit-row-${entry.id}`}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge
+          variant={actionVariant(entry.action)}
+          className="font-mono text-[11px]"
+          data-testid={`audit-action-${entry.id}`}
+        >
+          {failed ? (
+            <ShieldAlert className="h-3 w-3 mr-1" />
+          ) : throttled ? (
+            <ShieldAlert className="h-3 w-3 mr-1" />
+          ) : cli ? (
+            <Terminal className="h-3 w-3 mr-1" />
+          ) : null}
+          {actionLabel(entry.action)}
+        </Badge>
+        <span className="text-xs text-muted-foreground">
+          {new Date(entry.createdAt).toLocaleString("es-PE")}
+        </span>
+        {throttled && suppressedCount !== null && (
+          <span
+            className="text-xs text-muted-foreground"
+            data-testid={`audit-throttle-count-${entry.id}`}
+          >
+            {suppressedCount} {suppressedCount === 1 ? "alerta" : "alertas"}{" "}
+            silenciada{suppressedCount === 1 ? "" : "s"}
+            {suppressedAction ? ` · ${suppressedAction}` : ""}
+          </span>
+        )}
+      </div>
+
+      {showsOperatorTarget ? (
+        <div className="grid sm:grid-cols-2 gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase text-muted-foreground tracking-wide">
+              Operador
+            </span>
+            {operator ? (
+              <Badge
+                variant="outline"
+                className="gap-1 font-mono text-xs"
+                data-testid={`audit-operator-${entry.id}`}
+              >
+                <UserCog className="h-3 w-3" />
+                {operator}
+              </Badge>
+            ) : (
+              <span className="text-xs text-muted-foreground italic">
+                desconocido
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs uppercase text-muted-foreground tracking-wide">
+              Usuario afectado
+            </span>
+            {targetEmail && (
+              <span
+                className="font-mono text-xs"
+                data-testid={`audit-target-${entry.id}`}
+              >
+                {targetEmail}
+              </span>
+            )}
+            {entry.entityId && (
+              <span
+                className="font-mono text-xs text-muted-foreground"
+                data-testid={`audit-entity-${entry.id}`}
+              >
+                ID {entry.entityId}
+              </span>
+            )}
+            {!targetEmail && !entry.entityId && (
+              <span className="text-xs text-muted-foreground italic">
+                sin dato
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="text-xs text-muted-foreground">
+          {entry.entityType ? (
+            <span>
+              {entry.entityType}
+              {entry.entityId ? ` · ${entry.entityId}` : ""}
+            </span>
+          ) : (
+            <span>Sin entidad asociada</span>
+          )}
+          {entry.ip ? <span> · IP {entry.ip}</span> : null}
+        </div>
+      )}
+
+      {failed && metaString(entry.meta ?? null, "error") && (
+        <div className="flex items-start gap-2 text-xs text-destructive">
+          <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          <span>{metaString(entry.meta ?? null, "error")}</span>
+        </div>
+      )}
+
+      {entry.meta && (
+        <div className="pt-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-[11px] text-muted-foreground"
+            onClick={() => setExpanded((v) => !v)}
+            data-testid={`audit-toggle-${entry.id}`}
+          >
+            {expanded ? (
+              <ChevronUp className="h-3 w-3 mr-1" />
+            ) : (
+              <ChevronDown className="h-3 w-3 mr-1" />
+            )}
+            {expanded ? "Ocultar detalles" : "Ver detalles"}
+          </Button>
+          {expanded && (
+            <pre
+              className="mt-2 max-h-48 overflow-auto rounded bg-muted p-2 text-[11px] font-mono"
+              data-testid={`audit-meta-${entry.id}`}
+            >
+              {JSON.stringify(entry.meta, null, 2)}
+            </pre>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const FILTER_STORAGE_KEY = "axyntrax.security-events.filter";
+const FILTER_QUERY_KEY = "ev";
+const SEARCH_STORAGE_KEY = "axyntrax.security-events.search";
+const SEARCH_QUERY_KEY = "q";
+const SEARCH_MAX_LENGTH = 200;
+const DATE_RANGE_STORAGE_KEY = "axyntrax.security-events.dateRange";
+const DATE_RANGE_QUERY_KEY = "dr";
+const DATE_FROM_STORAGE_KEY = "axyntrax.security-events.dateFrom";
+const DATE_FROM_QUERY_KEY = "df";
+const DATE_TO_STORAGE_KEY = "axyntrax.security-events.dateTo";
+const DATE_TO_QUERY_KEY = "dt";
+
+function isCategoryValue(value: string): value is CategoryValue {
+  return CATEGORIES.some((c) => c.value === value);
+}
+
+function readInitialCategory(): CategoryValue {
+  if (typeof window === "undefined") return "all";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(FILTER_QUERY_KEY);
+    if (fromUrl && isCategoryValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(FILTER_STORAGE_KEY);
+    if (fromStorage && isCategoryValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "all";
+}
+
+function sanitizeSearch(value: string): string {
+  // Cap raw input length to avoid stuffing localStorage or the URL with
+  // arbitrarily long strings. We intentionally do NOT trim here so the user
+  // can keep typing spaces while editing; the persistence effect trims the
+  // value before writing to localStorage / the URL.
+  return value.slice(0, SEARCH_MAX_LENGTH);
+}
+
+function readInitialSearch(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(SEARCH_QUERY_KEY);
+    if (fromUrl !== null) return sanitizeSearch(fromUrl);
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(SEARCH_STORAGE_KEY);
+    if (fromStorage) return sanitizeSearch(fromStorage);
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "";
+}
+
+// Tamaño de página para la paginación con cursor. Antes el componente subía el
+// `limit` (50 → 200 → 500) y filtraba en el cliente. Ahora pedimos páginas de
+// 50 y usamos `before=<id-más-viejo>` para seguir paginando indefinidamente.
+const PAGE_SIZE = 50;
+
+type DateRangeValue = "all" | "today" | "last7" | "thisMonth" | "custom";
+
+const DATE_RANGE_OPTIONS: ReadonlyArray<{
+  value: DateRangeValue;
+  label: string;
+}> = [
+  { value: "all", label: "Cualquier fecha" },
+  { value: "today", label: "Hoy" },
+  { value: "last7", label: "Últimos 7 días" },
+  { value: "thisMonth", label: "Este mes" },
+  { value: "custom", label: "Rango personalizado" },
+];
+
+function isDateRangeValue(value: string): value is DateRangeValue {
+  return DATE_RANGE_OPTIONS.some((o) => o.value === value);
+}
+
+function startOfDay(d: Date): Date {
+  const out = new Date(d);
+  out.setHours(0, 0, 0, 0);
+  return out;
+}
+
+function endOfDay(d: Date): Date {
+  const out = new Date(d);
+  out.setHours(23, 59, 59, 999);
+  return out;
+}
+
+function toDateInputValue(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function parseDateInputValue(s: string): Date | null {
+  if (!s) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+interface DateRange {
+  from: Date | null;
+  to: Date | null;
+}
+
+function readInitialDateRange(): DateRangeValue {
+  if (typeof window === "undefined") return "all";
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(DATE_RANGE_QUERY_KEY);
+    if (fromUrl && isDateRangeValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(DATE_RANGE_STORAGE_KEY);
+    if (fromStorage && isDateRangeValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return "all";
+}
+
+// Reads the persisted custom Desde/Hasta dates. We only honor them when the
+// active preset is "custom"; otherwise the picker UI is hidden anyway and we
+// don't want stale values to silently affect the request.
+function readInitialCustomDate(
+  queryKey: string,
+  storageKey: string,
+  fallback: string,
+): string {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get(queryKey);
+    if (fromUrl && parseDateInputValue(fromUrl)) return fromUrl;
+  } catch {
+    // ignore malformed URL
+  }
+  try {
+    const fromStorage = window.localStorage.getItem(storageKey);
+    if (fromStorage && parseDateInputValue(fromStorage)) return fromStorage;
+  } catch {
+    // localStorage not accessible (private mode, etc.)
+  }
+  return fallback;
+}
+
+function formatCustomDateForDisplay(s: string): string {
+  const d = parseDateInputValue(s);
+  if (!d) return s;
+  return d.toLocaleDateString("es-PE");
+}
+
+// Devuelve un texto legible del rango activo o null si es "Cualquier fecha".
+// Para presets fijos usa el label del select ("Últimos 7 días"); para
+// "custom" formatea Desde/Hasta como "01/04/2026 → 26/04/2026" usando es-PE
+// (DD/MM/YYYY). Si en custom solo hay una de las dos fechas, lo refleja.
+function describeDateRange(
+  preset: DateRangeValue,
+  customFrom: string,
+  customTo: string,
+): string | null {
+  if (preset === "all") return null;
+  if (preset === "custom") {
+    const from = customFrom ? formatCustomDateForDisplay(customFrom) : null;
+    const to = customTo ? formatCustomDateForDisplay(customTo) : null;
+    if (from && to) return `${from} → ${to}`;
+    if (from) return `Desde ${from}`;
+    if (to) return `Hasta ${to}`;
+    return "Rango personalizado";
+  }
+  const opt = DATE_RANGE_OPTIONS.find((o) => o.value === preset);
+  return opt ? opt.label : null;
+}
+
+function computeDateRange(
+  preset: DateRangeValue,
+  customFrom: string,
+  customTo: string,
+): DateRange {
+  const now = new Date();
+  switch (preset) {
+    case "today":
+      return { from: startOfDay(now), to: endOfDay(now) };
+    case "last7": {
+      const from = startOfDay(now);
+      from.setDate(from.getDate() - 6);
+      return { from, to: endOfDay(now) };
+    }
+    case "thisMonth": {
+      const from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      return { from, to: endOfDay(now) };
+    }
+    case "custom": {
+      const fromDate = parseDateInputValue(customFrom);
+      const toDate = parseDateInputValue(customTo);
+      return {
+        from: fromDate ? startOfDay(fromDate) : null,
+        to: toDate ? endOfDay(toDate) : null,
+      };
+    }
+    case "all":
+    default:
+      return { from: null, to: null };
+  }
+}
+
+export function SecurityEventsCard() {
+  const [category, setCategory] = useState<CategoryValue>(readInitialCategory);
+  const [search, setSearch] = useState<string>(readInitialSearch);
+  const [dateRange, setDateRange] = useState<DateRangeValue>(
+    readInitialDateRange,
+  );
+  const today = useMemo(() => toDateInputValue(new Date()), []);
+  const [customFrom, setCustomFrom] = useState<string>(() =>
+    readInitialCustomDate(
+      DATE_FROM_QUERY_KEY,
+      DATE_FROM_STORAGE_KEY,
+      today,
+    ),
+  );
+  const [customTo, setCustomTo] = useState<string>(() =>
+    readInitialCustomDate(DATE_TO_QUERY_KEY, DATE_TO_STORAGE_KEY, today),
+  );
+
+  const { from: rangeFrom, to: rangeTo } = useMemo(
+    () => computeDateRange(dateRange, customFrom, customTo),
+    [dateRange, customFrom, customTo],
+  );
+
+  const trimmedSearch = search.trim();
+  const categoryDef = getCategoryDef(category);
+
+  // `filterKey` cambia cuando cualquier filtro server-side cambia. Cuando eso
+  // pasa, reseteamos el cursor y la lista acumulada — empezamos a paginar de
+  // nuevo desde la página más reciente.
+  const filterKey = useMemo(
+    () =>
+      JSON.stringify({
+        a: categoryDef.serverFilter.action ?? null,
+        ap: categoryDef.serverFilter.actionPrefix ?? null,
+        ax: categoryDef.serverFilter.actionExclude ?? null,
+        q: trimmedSearch,
+        from: rangeFrom ? rangeFrom.toISOString() : null,
+        to: rangeTo ? rangeTo.toISOString() : null,
+      }),
+    [categoryDef, trimmedSearch, rangeFrom, rangeTo],
+  );
+
+  const [cursor, setCursor] = useState<number | null>(null);
+  const [pages, setPages] = useState<AuditEntry[][]>([]);
+  const [exhausted, setExhausted] = useState(false);
+
+  // Reseteamos cursor y lista cuando cambian los filtros. Usamos un ref para
+  // que la primera petición del nuevo filtro no se haga con el cursor viejo
+  // (los useEffect corren después del render).
+  const lastFilterKeyRef = useRef(filterKey);
+  let effectiveCursor = cursor;
+  if (lastFilterKeyRef.current !== filterKey) {
+    effectiveCursor = null;
+  }
+
+  useEffect(() => {
+    if (lastFilterKeyRef.current === filterKey) return;
+    lastFilterKeyRef.current = filterKey;
+    setCursor(null);
+    setPages([]);
+    setExhausted(false);
+  }, [filterKey]);
+
+  const queryParams: ListAuditLogParams = useMemo(
+    () => ({
+      limit: PAGE_SIZE,
+      ...categoryDef.serverFilter,
+      ...(trimmedSearch ? { q: trimmedSearch } : {}),
+      ...(rangeFrom ? { from: rangeFrom.toISOString() } : {}),
+      ...(rangeTo ? { to: rangeTo.toISOString() } : {}),
+      ...(effectiveCursor ? { before: effectiveCursor } : {}),
+    }),
+    [
+      categoryDef,
+      trimmedSearch,
+      rangeFrom,
+      rangeTo,
+      effectiveCursor,
+    ],
+  );
+
+  const { data, isLoading, isFetching, isError, error } =
+    useListAuditLog(queryParams);
+
+  // Acumulamos cada página en `pages`. Usamos un ref + flag para no apendear
+  // dos veces el mismo data object (puede dispararse el efecto si React vuelve
+  // a renderizar sin que `data` cambie de referencia).
+  const lastAppendedDataRef = useRef<readonly AuditEntry[] | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    if (!data) return;
+    if (lastAppendedDataRef.current === data) return;
+    lastAppendedDataRef.current = data;
+    setPages((prev) => {
+      if (effectiveCursor == null) {
+        // Primera página del filtro actual.
+        return [data];
+      }
+      // Páginas siguientes: dedupe por id por si el backend devuelve traslapes
+      // (no debería, pero más vale defensivos).
+      const seen = new Set<number>();
+      for (const page of prev) for (const e of page) seen.add(e.id);
+      const fresh = data.filter((e) => !seen.has(e.id));
+      return fresh.length ? [...prev, fresh] : prev;
+    });
+    setExhausted(data.length < PAGE_SIZE);
+  }, [data, effectiveCursor]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(FILTER_STORAGE_KEY, category);
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const current = url.searchParams.get(FILTER_QUERY_KEY);
+      if (category === "all") {
+        if (current === null) return;
+        url.searchParams.delete(FILTER_QUERY_KEY);
+      } else {
+        if (current === category) return;
+        url.searchParams.set(FILTER_QUERY_KEY, category);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history with each filter change.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [category]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // For persistence we use the trimmed value: leading/trailing whitespace
+    // shouldn't survive a reload or end up in a shared link.
+    const persisted = search.trim();
+    try {
+      if (persisted) {
+        window.localStorage.setItem(SEARCH_STORAGE_KEY, persisted);
+      } else {
+        window.localStorage.removeItem(SEARCH_STORAGE_KEY);
+      }
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const current = url.searchParams.get(SEARCH_QUERY_KEY);
+      if (!persisted) {
+        if (current === null) return;
+        url.searchParams.delete(SEARCH_QUERY_KEY);
+      } else {
+        if (current === persisted) return;
+        url.searchParams.set(SEARCH_QUERY_KEY, persisted);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history with each keystroke.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [search]);
+
+  // Persist the date-range preset (and, when "custom", the Desde/Hasta
+  // values) so that refreshing the panel keeps the active investigation
+  // window. We mirror the same localStorage + query-string pattern used for
+  // the category and search filters above. The Desde/Hasta entries are only
+  // written when the preset is "custom"; for other presets the dates are
+  // computed from `now` on every render and persisting stale values would be
+  // misleading.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const persistCustom = dateRange === "custom";
+    const fromValue = persistCustom ? customFrom : "";
+    const toValue = persistCustom ? customTo : "";
+    try {
+      if (dateRange === "all") {
+        window.localStorage.removeItem(DATE_RANGE_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(DATE_RANGE_STORAGE_KEY, dateRange);
+      }
+      if (persistCustom && fromValue) {
+        window.localStorage.setItem(DATE_FROM_STORAGE_KEY, fromValue);
+      } else {
+        window.localStorage.removeItem(DATE_FROM_STORAGE_KEY);
+      }
+      if (persistCustom && toValue) {
+        window.localStorage.setItem(DATE_TO_STORAGE_KEY, toValue);
+      } else {
+        window.localStorage.removeItem(DATE_TO_STORAGE_KEY);
+      }
+    } catch {
+      // ignore quota / privacy errors
+    }
+    try {
+      const url = new URL(window.location.href);
+      const currentRange = url.searchParams.get(DATE_RANGE_QUERY_KEY);
+      const currentFrom = url.searchParams.get(DATE_FROM_QUERY_KEY);
+      const currentTo = url.searchParams.get(DATE_TO_QUERY_KEY);
+      const desiredRange = dateRange === "all" ? null : dateRange;
+      const desiredFrom = persistCustom && fromValue ? fromValue : null;
+      const desiredTo = persistCustom && toValue ? toValue : null;
+      if (
+        currentRange === desiredRange &&
+        currentFrom === desiredFrom &&
+        currentTo === desiredTo
+      ) {
+        return;
+      }
+      if (desiredRange === null) {
+        url.searchParams.delete(DATE_RANGE_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_RANGE_QUERY_KEY, desiredRange);
+      }
+      if (desiredFrom === null) {
+        url.searchParams.delete(DATE_FROM_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_FROM_QUERY_KEY, desiredFrom);
+      }
+      if (desiredTo === null) {
+        url.searchParams.delete(DATE_TO_QUERY_KEY);
+      } else {
+        url.searchParams.set(DATE_TO_QUERY_KEY, desiredTo);
+      }
+      const next = url.pathname + url.search + url.hash;
+      // replaceState avoids polluting browser history while picking dates.
+      window.history.replaceState(window.history.state, "", next);
+    } catch {
+      // ignore URL update errors
+    }
+  }, [dateRange, customFrom, customTo]);
+
+  const visibleEntries = useMemo(() => pages.flat(), [pages]);
+  const totalLoaded = visibleEntries.length;
+
+  // Los conteos por categoría se computan sobre las filas ya cargadas. Cuando
+  // hay un filtro server-side activo (categoría != "all", q, o rango), los
+  // conteos representan ese subconjunto — switching de categoría en el
+  // dropdown re-paginas con el nuevo filtro.
+  const counts = useMemo(() => {
+    const result = new Map<CategoryValue, number>();
+    for (const c of CATEGORIES) result.set(c.value, 0);
+    for (const entry of visibleEntries) {
+      for (const c of CATEGORIES) {
+        if (c.match(entry.action)) {
+          result.set(c.value, (result.get(c.value) ?? 0) + 1);
+        }
+      }
+    }
+    return result;
+  }, [visibleEntries]);
+
+  const dateRangeSummary = useMemo(
+    () => describeDateRange(dateRange, customFrom, customTo),
+    [dateRange, customFrom, customTo],
+  );
+
+  const filtersActive =
+    category !== "all" || trimmedSearch.length > 0 || dateRange !== "all";
+  const canLoadMore = !exhausted && totalLoaded > 0;
+  const loadingMore = isFetching && !isLoading;
+  const handleLoadMore = () => {
+    if (totalLoaded === 0) return;
+    const lastEntry = visibleEntries[totalLoaded - 1];
+    if (!lastEntry) return;
+    setCursor(lastEntry.id);
+  };
+
+  return (
+    <Card data-testid="card-audit-log">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ScrollText className="h-5 w-5 text-primary" />
+          Eventos de seguridad
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Entradas de auditoría más recientes. Filtra por tipo de evento, rango
+          de fechas o busca por operador / email afectado — los filtros se
+          aplican en el servidor y puedes seguir cargando eventos más antiguos.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <div
+          className="grid gap-3 mb-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end"
+          data-testid="audit-filter-bar"
+        >
+          <div className="space-y-1">
+            <Label
+              htmlFor="audit-filter-category"
+              className="text-xs text-muted-foreground"
+            >
+              Tipo de evento
+            </Label>
+            <Select
+              value={category}
+              onValueChange={(value) => {
+                const known = CATEGORIES.find((c) => c.value === value);
+                setCategory(known ? known.value : "all");
+              }}
+            >
+              <SelectTrigger
+                id="audit-filter-category"
+                className="h-9"
+                data-testid="audit-filter-category"
+              >
+                <SelectValue placeholder="Todos los eventos" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((c) => (
+                  <SelectItem
+                    key={c.value}
+                    value={c.value}
+                    data-testid={`audit-filter-category-${c.value}`}
+                  >
+                    {c.label}
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      ({counts.get(c.value) ?? 0})
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Label
+                htmlFor="audit-filter-date-range"
+                className="text-xs text-muted-foreground"
+              >
+                Rango de fechas
+              </Label>
+              {dateRangeSummary && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] font-normal"
+                  data-testid="audit-filter-date-range-badge"
+                >
+                  {dateRangeSummary}
+                </Badge>
+              )}
+            </div>
+            <Select
+              value={dateRange}
+              onValueChange={(value) => {
+                if (isDateRangeValue(value)) setDateRange(value);
+              }}
+            >
+              <SelectTrigger
+                id="audit-filter-date-range"
+                className="h-9"
+                data-testid="audit-filter-date-range"
+              >
+                <SelectValue placeholder="Cualquier fecha" />
+              </SelectTrigger>
+              <SelectContent>
+                {DATE_RANGE_OPTIONS.map((o) => (
+                  <SelectItem
+                    key={o.value}
+                    value={o.value}
+                    data-testid={`audit-filter-date-range-${o.value}`}
+                  >
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {dateRange === "custom" && (
+              <div
+                className="flex flex-wrap items-center gap-2 pt-2"
+                data-testid="audit-filter-date-custom"
+              >
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="audit-filter-date-from"
+                    className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                  >
+                    Desde
+                  </Label>
+                  <Input
+                    id="audit-filter-date-from"
+                    type="date"
+                    value={customFrom}
+                    max={customTo || undefined}
+                    onChange={(e) => setCustomFrom(e.target.value)}
+                    className="h-8 text-xs"
+                    data-testid="audit-filter-date-from"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label
+                    htmlFor="audit-filter-date-to"
+                    className="text-[10px] uppercase tracking-wide text-muted-foreground"
+                  >
+                    Hasta
+                  </Label>
+                  <Input
+                    id="audit-filter-date-to"
+                    type="date"
+                    value={customTo}
+                    min={customFrom || undefined}
+                    onChange={(e) => setCustomTo(e.target.value)}
+                    className="h-8 text-xs"
+                    data-testid="audit-filter-date-to"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <Label
+              htmlFor="audit-filter-search"
+              className="text-xs text-muted-foreground"
+            >
+              Operador o email afectado
+            </Label>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                id="audit-filter-search"
+                value={search}
+                onChange={(e) => setSearch(sanitizeSearch(e.target.value))}
+                placeholder="ej: ana@axyntrax.com"
+                className="h-9 pl-7 pr-7"
+                maxLength={SEARCH_MAX_LENGTH}
+                data-testid="audit-filter-search"
+                autoComplete="off"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Limpiar búsqueda"
+                  data-testid="audit-filter-search-clear"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {filtersActive && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-9 self-end"
+              onClick={() => {
+                setCategory("all");
+                setSearch("");
+                setDateRange("all");
+              }}
+              data-testid="audit-filter-reset"
+            >
+              Limpiar filtros
+            </Button>
+          )}
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="text-sm text-destructive">
+            No se pudo cargar el audit log
+            {error instanceof Error ? `: ${error.message}` : "."}
+          </div>
+        ) : visibleEntries.length === 0 ? (
+          <div
+            className="flex flex-col items-center gap-3 text-sm text-muted-foreground text-center py-6"
+            data-testid="audit-empty-filtered"
+          >
+            <span>
+              {filtersActive
+                ? "No hay eventos para este filtro."
+                : "No hay eventos registrados todavía."}
+            </span>
+            {filtersActive && exhausted && (
+              <span
+                className="text-xs"
+                data-testid="audit-load-older-exhausted"
+              >
+                Ya recorrimos todo el audit log con estos filtros y no
+                encontramos coincidencias.
+              </span>
+            )}
+          </div>
+        ) : (
+          <>
+            <div
+              className="flex flex-wrap items-center justify-between gap-2 mb-2"
+              data-testid="audit-filter-summary"
+            >
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="audit-filter-summary-text"
+              >
+                Mostrando {totalLoaded} evento{totalLoaded === 1 ? "" : "s"}
+                {filtersActive ? " (filtrado)" : ""}
+                {dateRangeSummary ? ` · Filtro: ${dateRangeSummary}` : ""}
+                {exhausted ? " · sin más eventos" : ""}
+              </span>
+              {canLoadMore && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-[11px]"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  data-testid="audit-load-older"
+                >
+                  {loadingMore ? (
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  ) : (
+                    <History className="h-3 w-3 mr-1" />
+                  )}
+                  Cargar más antiguos
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2" data-testid="audit-list">
+              {visibleEntries.map((entry) => (
+                <AuditRow key={entry.id} entry={entry} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Quick reset filters preserved as compact shortcuts */}
+        <div
+          className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-border"
+          data-testid="audit-quick-filters"
+          aria-label="Atajos rápidos de filtros"
+        >
+          <span className="text-[11px] uppercase tracking-wide text-muted-foreground self-center mr-1">
+            Atajos:
+          </span>
+          {(
+            [
+              {
+                value: "reset_cli_ok",
+                label: "OK",
+                icon: CheckCircle2,
+                testId: "filter-reset-ok",
+              },
+              {
+                value: "reset_cli_cancelled",
+                label: "Cancelado",
+                icon: XCircle,
+                testId: "filter-reset-cancelled",
+              },
+              {
+                value: "reset_cli_failed",
+                label: "Fallido",
+                icon: ShieldAlert,
+                testId: "filter-reset-failed",
+              },
+            ] as const
+          ).map((s) => {
+            const Icon = s.icon;
+            const active = category === s.value;
+            return (
+              <Button
+                key={s.value}
+                type="button"
+                size="sm"
+                variant={active ? "default" : "outline"}
+                className="h-6 px-2 text-[11px]"
+                onClick={() => setCategory(s.value)}
+                data-testid={s.testId}
+                aria-pressed={active}
+              >
+                <Icon className="h-3 w-3 mr-1" />
+                {s.label}
+                <span className="ml-1 opacity-70">
+                  ({counts.get(s.value) ?? 0})
+                </span>
+              </Button>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
