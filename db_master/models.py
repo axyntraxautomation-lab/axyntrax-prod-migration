@@ -303,7 +303,7 @@ def get_kpi_summary():
         cursor.execute("SELECT COUNT(*) FROM clientes WHERE estado = 'Prospecto'")
         summary["prospectos"] = cursor.fetchone()[0]
         
-        cursor.execute("SELECT COUNT(*) FROM licencias WHERE estado = 'Emitida'")
+        cursor.execute("SELECT COUNT(*) FROM licencias WHERE estado IN ('Emitida', 'INSTALACIÓN EXITOSA', 'Activa')")
         summary["licencias"] = cursor.fetchone()[0]
         
         conn.close()
