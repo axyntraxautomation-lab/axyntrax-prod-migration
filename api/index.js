@@ -171,6 +171,71 @@ async function graphSendWhatsAppText(to, body) {
   );
 }
 
+/*
+ * AXYNTRAX — CECILIA ENGINE V5.0 (chat web)
+ * Conversión de leads + resiliencia; IA solo si el mensaje es corto/simple tras reglas.
+ */
+const VENTAS_FALLBACK = {
+  saludo:
+    '¡Hola! 👋 Soy Cecilia de Axyntrax Automation. ¿Quieres activar tu sistema o automatizar tu negocio ahora?',
+  flujo_registro:
+    'Perfecto 🙌 Para activarte la prueba gratuita de 45 días necesito estos datos rápidos: Nombre, WhatsApp, Email, Empresa y Rubro.',
+  enlace_descarga:
+    '✅ Registro completado. Descarga tu sistema aquí: https://www.axyntrax-automation.net/api/installer',
+  error_fallback:
+    'Estamos con alta demanda, pero no te preocupes. Puedes registrarte y bajar el instalador directamente aquí: https://www.axyntrax-automation.net/api/installer'
+};
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const raw = String(req.body?.message || '').trim();
+    const visitorId = req.body?.visitorId;
+    const msg = raw.toLowerCase();
+
+    if (!raw) {
+      return res.status(400).json({ ok: false, error: 'message requerido' });
+    }
+
+    if (visitorId) {
+      console.log('[CECILIA/chat]', String(visitorId).slice(0, 64), '|', raw.slice(0, 120));
+    }
+
+    // 1) Intención de conversión antes que saludo genérico ("hola quiero activar" → registro)
+    if (msg.includes('activar') || msg.includes('prueba') || msg.includes('precio')) {
+      return res.json({ reply: VENTAS_FALLBACK.flujo_registro });
+    }
+
+    if (
+      msg.includes('hola') ||
+      msg.includes('buenos') ||
+      msg.includes('buenas') ||
+      msg.includes('qué tal') ||
+      msg.includes('que tal')
+    ) {
+      return res.json({ reply: VENTAS_FALLBACK.saludo });
+    }
+
+    if (raw.includes('@') || msg.includes('empresa') || raw.length > 50) {
+      return res.json({ reply: VENTAS_FALLBACK.enlace_descarga });
+    }
+
+    if (!resolveGeminiApiKey()) {
+      return res.json({ reply: VENTAS_FALLBACK.error_fallback });
+    }
+
+    try {
+      const reply = await ceciliaGeminiReply(raw);
+      return res.json({ reply });
+    } catch (e) {
+      console.error('[CECILIA/chat Gemini]', e.response?.data || e.message || e);
+      return res.json({ reply: VENTAS_FALLBACK.error_fallback });
+    }
+  } catch (err) {
+    console.error('[CECILIA/chat]', err);
+    return res.status(200).json({ reply: VENTAS_FALLBACK.error_fallback });
+  }
+});
+
 /** Debe coincidir con “Verify token” en Meta → WhatsApp → Configuration. En Vercel: META_VERIFY_TOKEN=Axyntrax_2026_Secure */
 const META_VERIFY_TOKEN_FIXED = 'Axyntrax_2026_Secure';
 const META_VERIFY_TOKEN =
