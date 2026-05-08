@@ -14,8 +14,8 @@ module.exports = async (req, res) => {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 
-  const CLIENT_ID = process.env.GOGLE_CLIENT_ID;
-  const CLIENT_SECRET = process.env.GOGLE_CLIENT_SECRET;
+  const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
   const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
   const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
 
