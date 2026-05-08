@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXYNTRAX — Dashboard Gerencial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0e1a;--card:#111827;--card2:#1a2235;
+    --cyan:#00d4d4;--cyan2:#00a8a8;--green:#10b981;
+    --red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;
+    --text:#e2e8f0;--muted:#64748b;
+  }
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,#0d1b2e,#0a1628);border-bottom:1px solid rgba(0,212,212,.15);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#000}
+  .logo-text{font-size:18px;font-weight:700;letter-spacing:.5px}
+  .logo-text span{color:var(--cyan)}
+  .status-pill{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--green);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .header-right{display:flex;align-items:center;gap:16px}
+  .clock{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* LAYOUT */
+  .container{padding:28px 32px;max-width:1400px;margin:0 auto}
+  .greeting{margin-bottom:28px}
+  .greeting h1{font-size:26px;font-weight:700}
+  .greeting h1 span{color:var(--cyan)}
+  .greeting p{color:var(--muted);font-size:14px;margin-top:4px}
+
+  /* METRIC CARDS */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+  .metric-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;cursor:default}
+  .metric-card:hover{transform:translateY(-2px);border-color:rgba(0,212,212,.2)}
+  .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+  .metric-card.cyan::before{background:linear-gradient(90deg,var(--cyan),var(--cyan2))}
+  .metric-card.green::before{background:linear-gradient(90deg,var(--green),#059669)}
+  .metric-card.yellow::before{background:linear-gradient(90deg,var(--yellow),#d97706)}
+  .metric-card.purple::before{background:linear-gradient(90deg,var(--purple),#7c3aed)}
+  .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:10px}
+  .metric-value{font-size:32px;font-weight:800;line-height:1;margin-bottom:8px}
+  .metric-card.cyan .metric-value{color:var(--cyan)}
+  .metric-card.green .metric-value{color:var(--green)}
+  .metric-card.yellow .metric-value{color:var(--yellow)}
+  .metric-card.purple .metric-value{color:var(--purple)}
+  .metric-sub{font-size:12px;color:var(--muted)}
+  .metric-sub .up{color:var(--green)}
+  .metric-sub .down{color:var(--red)}
+  .metric-icon{position:absolute;top:20px;right:20px;font-size:28px;opacity:.2}
+
+  /* MAIN GRID */
+  .main-grid{display:grid;grid-template-columns:1fr 1fr 380px;gap:20px;margin-bottom:28px}
+
+  /* CHART AREA */
+  .chart-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px}
+  .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .chart-title{font-size:15px;font-weight:600}
+  .chart-badge{background:rgba(0,212,212,.1);color:var(--cyan);font-size:11px;padding:4px 10px;border-radius:6px;font-weight:600}
+  .bar-chart{display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:10px}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .bar{width:100%;border-radius:6px 6px 0 0;transition:height .4s ease;position:relative;min-height:4px}
+  .bar.cyan-bar{background:linear-gradient(180deg,var(--cyan),rgba(0,212,212,.3))}
+  .bar.green-bar{background:linear-gradient(180deg,var(--green),rgba(16,185,129,.3))}
+  .bar-label{font-size:10px;color:var(--muted);font-weight:500}
+
+  /* CITAS TABLE */
+  .citas-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px;grid-column:span 1}
+  .cita-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .cita-item:last-child{border-bottom:none}
+  .cita-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+  .cita-info{flex:1;min-width:0}
+  .cita-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cita-time{font-size:11px;color:var(--muted);margin-top:2px}
+  .cita-badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;flex-shrink:0}
+  .badge-confirmada{background:rgba(16,185,129,.15);color:var(--green)}
+  .badge-pendiente{background:rgba(245,158,11,.15);color:var(--yellow)}
+  .badge-cancelada{background:rgba(239,68,68,.15);color:var(--red)}
+
+  /* CECILIA FEED */
+  .cecilia-card{background:var(--card);border:1px solid rgba(0,212,212,.12);border-radius:16px;padding:24px;display:flex;flex-direction:column}
+  .cecilia-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .cecilia-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));display:flex;align-items:center;justify-content:center;font-size:20px}
+  .cecilia-name{font-size:15px;font-weight:700}
+  .cecilia-status{font-size:11px;color:var(--green);margin-top:2px}
+  .chat-feed{flex:1;display:flex;flex-direction:column;gap:10px;max-height:280px;overflow-y:auto}
+  .chat-feed::-webkit-scrollbar{width:4px}
+  .chat-feed::-webkit-scrollbar-track{background:transparent}
+  .chat-feed::-webkit-scrollbar-thumb{background:rgba(0,212,212,.3);border-radius:2px}
+  .msg{padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.5;max-width:85%;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .msg.user{background:var(--card2);color:var(--text);align-self:flex-start;border-radius:4px 12px 12px 12px}
+  .msg.bot{background:rgba(0,212,212,.1);border:1px solid rgba(0,212,212,.15);color:var(--cyan);align-self:flex-end;border-radius:12px 4px 12px 12px}
+  .msg-time{font-size:10px;color:var(--muted);margin-top:4px;text-align:right}
+  .sim-badge{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:var(--purple);font-size:10px;padding:4px 10px;border-radius:6px;font-weight:600;text-align:center;margin-top:12px}
+
+  /* ALERTS */
+  .alerts-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px}
+  .alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid transparent}
+  .alert-item.danger{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.15)}
+  .alert-item.warning{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.15)}
+  .alert-item.info{background:rgba(0,212,212,.06);border-color:rgba(0,212,212,.15)}
+  .alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+  .alert-title{font-size:12px;font-weight:600;margin-bottom:2px}
+  .alert-desc{font-size:11px;color:var(--muted)}
+  .alert-item.danger .alert-title{color:var(--red)}
+  .alert-item.warning .alert-title{color:var(--yellow)}
+  .alert-item.info .alert-title{color:var(--cyan)}
+
+  /* BOTTOM ROW */
+  .bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .leads-table{width:100%;border-collapse:collapse}
+  .leads-table th{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600;padding:10px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+  .leads-table td{padding:12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+  .leads-table tr:hover td{background:rgba(255,255,255,.02)}
+  .score{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px}
+  .score.hot{background:rgba(239,68,68,.15);color:var(--red)}
+  .score.warm{background:rgba(245,158,11,.15);color:var(--yellow)}
+  .score.cold{background:rgba(100,116,139,.15);color:var(--muted)}
+
+  /* RESPONSIVE */
+  @media(max-width:1100px){.metrics{grid-template-columns:repeat(2,1fr)}.main-grid{grid-template-columns:1fr 1fr}.cecilia-card{grid-column:span 2}.bottom-grid{grid-template-columns:1fr}}
+  @media(max-width:700px){.container{padding:16px}.metrics{grid-template-columns:1fr 1fr}.main-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text">AXYN<span>TRAX</span></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Dashboard Gerencial</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><div class="dot"></div>Sistema Operativo</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="greeting">
+    <h1>Buen día, <span>Miguel</span> 👋</h1>
+    <p>Resumen ejecutivo del día — datos simulados en modo desarrollo 🧪</p>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="metrics">
+    <div class="metric-card cyan">
+      <div class="metric-icon">💰</div>
+      <div class="metric-label">Caja del Día</div>
+      <div class="metric-value" id="caja">S/ 3,240</div>
+      <div class="metric-sub"><span class="up">▲ +18%</span> vs ayer</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-icon">📅</div>
+      <div class="metric-label">Citas Hoy</div>
+      <div class="metric-value" id="citas">12</div>
+      <div class="metric-sub"><span class="up">▲ +3</span> vs ayer</div>
+    </div>
+    <div class="metric-card yellow">
+      <div class="metric-icon">💬</div>
+      <div class="metric-label">Mensajes WSP</div>
+      <div class="metric-value" id="mensajes">48</div>
+      <div class="metric-sub">CECILIA atendió <span class="up">100%</span></div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-icon">🎯</div>
+      <div class="metric-label">Leads Calificados</div>
+      <div class="metric-value" id="leads">7</div>
+      <div class="metric-sub">Tasa de conversión <span class="up">58%</span></div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+    <!-- GRÁFICO INGRESOS -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">📈 Ingresos Semanales</div>
+        <div class="chart-badge">Esta semana</div>
+      </div>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+
+    <!-- PRÓXIMAS CITAS -->
+    <div class="citas-card">
+      <div class="chart-header">
+        <div class="chart-title">📋 Próximas Citas</div>
+        <div class="chart-badge">Hoy</div>
+      </div>
+      <div id="citasList"></div>
+    </div>
+
+    <!-- CECILIA LIVE FEED -->
+    <div class="cecilia-card">
+      <div class="cecilia-header">
+        <div class="cecilia-avatar">🤖</div>
+        <div>
+          <div class="cecilia-name">CECILIA</div>
+          <div class="cecilia-status">● Activa — Modo Simulación</div>
+        </div>
+      </div>
+      <div class="chat-feed" id="chatFeed"></div>
+      <div class="sim-badge">🧪 MOCK MODE — Sin llamadas reales a Meta/Gemini</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+    <!-- ALERTAS -->
+    <div class="alerts-card">
+      <div class="chart-header">
+        <div class="chart-title">🔔 Alertas del Sistema</div>
+        <div class="chart-badge" id="alertCount">3 activas</div>
+      </div>
+      <div id="alertsList"></div>
+    </div>
+
+    <!-- LEADS CRM -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">🎯 Leads Recientes (CRM)</div>
+        <div class="chart-badge">Tiempo real</div>
+      </div>
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Canal</th>
+            <th>Interés</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="leadsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── RELOJ ───────────────────────────────────────────────────
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('es-PE',{hour12:false});
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ── DATOS SIMULADOS ────────────────────────────────────────
+const bars=[
+  {day:'Lun',caja:2100,citas:8,color:'cyan-bar'},
+  {day:'Mar',caja:2800,citas:10,color:'cyan-bar'},
+  {day:'Mié',caja:1950,citas:7,color:'green-bar'},
+  {day:'Jue',caja:3400,citas:14,color:'cyan-bar'},
+  {day:'Vie',caja:2900,citas:11,color:'green-bar'},
+  {day:'Sáb',caja:3240,citas:12,color:'cyan-bar'},
+  {day:'Hoy',caja:1200,citas:5,color:'cyan-bar'},
+];
+const maxCaja=Math.max(...bars.map(b=>b.caja));
+const barChart=document.getElementById('barChart');
+bars.forEach(b=>{
+  const h=Math.round((b.caja/maxCaja)*120);
+  barChart.innerHTML+=`
+    <div class="bar-wrap">
+      <div class="bar ${b.color}" style="height:${h}px" title="S/${b.caja.toLocaleString()}"></div>
+      <div class="bar-label">${b.day}</div>
+    </div>`;
+});
+
+const citas=[
+  {name:'Ana García',time:'09:00 am',type:'Consulta',status:'confirmada',color:'#10b981'},
+  {name:'Carlos Ríos',time:'10:30 am',type:'Seguimiento',status:'confirmada',color:'#10b981'},
+  {name:'Lucía Torres',time:'11:00 am',type:'Primera visita',status:'pendiente',color:'#f59e0b'},
+  {name:'José Medina',time:'02:00 pm',type:'Control',status:'confirmada',color:'#10b981'},
+  {name:'Rosa Huanca',time:'03:30 pm',type:'Urgencia',status:'pendiente',color:'#f59e0b'},
+  {name:'Pedro Solis',time:'04:00 pm',type:'Revisión',status:'cancelada',color:'#ef4444'},
+];
+const citasList=document.getElementById('citasList');
+citas.forEach(c=>{
+  const initials=c.name.split(' ').map(w=>w[0]).join('').substring(0,2);
+  citasList.innerHTML+=`
+    <div class="cita-item">
+      <div class="cita-avatar" style="background:${c.color}22;color:${c.color}">${initials}</div>
+      <div class="cita-info">
+        <div class="cita-name">${c.name}</div>
+        <div class="cita-time">🕐 ${c.time} — ${c.type}</div>
+      </div>
+      <div class="cita-badge badge-${c.status}">${c.status}</div>
+    </div>`;
+});
+
+const alerts=[
+  {type:'danger',icon:'🚨',title:'META_ACCESS_TOKEN pendiente',desc:'El bot CECILIA opera en modo simulación. Actualizar para producción.'},
+  {type:'warning',icon:'⚠️',title:'DNS propagando (20-30 min)',desc:'axyntrax-automation.com apuntando a Vercel. En espera.'},
+  {type:'info',icon:'ℹ️',title:'CECILIA operativa en mock mode',desc:'Webhook activo en /api/webhook. Respondiendo en consola.'},
+];
+const alertsList=document.getElementById('alertsList');
+alerts.forEach(a=>{
+  alertsList.innerHTML+=`
+    <div class="alert-item ${a.type}">
+      <div class="alert-icon">${a.icon}</div>
+      <div><div class="alert-title">${a.title}</div><div class="alert-desc">${a.desc}</div></div>
+    </div>`;
+});
+
+const leads=[
+  {name:'María López',canal:'WhatsApp',interes:'Plan Diamante',score:'hot'},
+  {name:'Roberto Cruz',canal:'WhatsApp',interes:'Plan Pro',score:'warm'},
+  {name:'Sandra Vega',canal:'WhatsApp',interes:'Plan Starter',score:'warm'},
+  {name:'Luis Paredes',canal:'WhatsApp',interes:'Cotización',score:'hot'},
+  {name:'Elena Chávez',canal:'WhatsApp',interes:'Info general',score:'cold'},
+];
+const leadsBody=document.getElementById('leadsBody');
+leads.forEach(l=>{
+  leadsBody.innerHTML+=`
+    <tr>
+      <td><strong>${l.name}</strong></td>
+      <td>💬 ${l.canal}</td>
+      <td style="color:var(--muted);font-size:12px">${l.interes}</td>
+      <td><span class="score ${l.score}">${l.score==='hot'?'🔥 Hot':l.score==='warm'?'🌡 Warm':'❄️ Cold'}</span></td>
+    </tr>`;
+});
+
+// ── CHAT SIMULADO DE CECILIA ──────────────────────────────
+const convos=[
+  {role:'user',text:'Hola, ¿cuánto cuesta el plan Pro?'},
+  {role:'bot',text:'💎 Plan Pro Cloud — S/ 399/mes\n✓ Bot 24/7 + CRM + Reportes'},
+  {role:'user',text:'¿Puedo agendar una demo?'},
+  {role:'bot',text:'📅 Claro, ¿qué fecha y hora prefieres?'},
+  {role:'user',text:'Mañana a las 11am'},
+  {role:'bot',text:'✅ Cita confirmada para mañana 11am. ¡Te esperamos!'},
+];
+const chatFeed=document.getElementById('chatFeed');
+convos.forEach((m,i)=>{
+  setTimeout(()=>{
+    const time=new Date();
+    time.setMinutes(time.getMinutes()-((convos.length-i)*3));
+    chatFeed.innerHTML+=`
+      <div class="msg ${m.role}">
+        ${m.text.replace(/\n/g,'<br>')}
+        <div class="msg-time">${time.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>`;
+    chatFeed.scrollTop=chatFeed.scrollHeight;
+  },i*200);
+});
+
+// ── CONTADORES ANIMADOS ───────────────────────────────────
+function animateCount(el,target,prefix='',suffix=''){
+  let start=0;const step=Math.ceil(target/40);
+  const timer=setInterval(()=>{
+    start=Math.min(start+step,target);
+    el.textContent=prefix+(typeof target==='number'&&target>999?start.toLocaleString():start)+suffix;
+    if(start>=target)clearInterval(timer);
+  },30);
+}
+setTimeout(()=>{
+  animateCount(document.getElementById('caja'),3240,'S/ ');
+  animateCount(document.getElementById('citas'),12);
+  animateCount(document.getElementById('mensajes'),48);
+  animateCount(document.getElementById('leads'),7);
+},300);
+</script>
+</body>
+</html>

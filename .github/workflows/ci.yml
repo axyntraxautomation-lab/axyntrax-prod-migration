@@ -1,0 +1,43 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install backend dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install flake8 pytest
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings.
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run pytest
+        run: |
+          source venv/bin/activate
+          pytest -v
+
+      - name: Start background server
+        run: |
+          source venv/bin/activate
+          nohup python axia_api.py > api_run.log 2>&1 &
+          sleep 5
+
+      - name: Run healthcheck check
+        run: |
+          curl --fail http://localhost:5001/api/health
