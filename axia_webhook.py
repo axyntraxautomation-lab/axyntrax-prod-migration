@@ -44,8 +44,8 @@ APP_SECRET      = os.getenv("WSP_APP_SECRET", "")  # Para validar firma HMAC
 # ── Validación HMAC (seguridad Meta) ────────────────────────────────────────
 def verify_meta_signature(payload: bytes, signature_header: str) -> bool:
     """Verifica que el webhook viene realmente de Meta."""
-    if not APP_SECRET:
-        return True  # Sin secret configurado, pasar (modo dev)
+    if not APP_SECRET or APP_SECRET == "PENDIENTE_POR_ADMIN":
+        return True  # Sin secret configurado o en desarrollo, pasar (modo dev)
     if not signature_header or not signature_header.startswith("sha256="):
         return False
     mac = hmac.new(APP_SECRET.encode("utf-8"), payload, hashlib.sha256)
