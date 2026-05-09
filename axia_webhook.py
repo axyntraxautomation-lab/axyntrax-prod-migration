@@ -214,6 +214,9 @@ def process_message(data: dict):
             system_prompt = build_cecilia_prompt(modulo, history, context, empresa_name)
             
             try:
+                # ── Modo Fallback-Only (Evita llamadas a la API de Gemini) ──
+                if os.getenv("USE_AI", "true").lower() == "false":
+                    raise Exception("USE_AI_IS_DISABLED")
                 # Llamar IA con historial + mensaje actual
                 full_history = history + [{"role": "user", "content": message_body}]
                 response_text = get_axia_response(full_history, system_override=system_prompt)
