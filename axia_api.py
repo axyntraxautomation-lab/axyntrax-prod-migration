@@ -18,6 +18,20 @@ from db_master.models import get_kpi_summary, init_db
 
 load_dotenv()
 
+# --- SENTRY OBSERVABILITY ---
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN_BACKEND", ""),
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.05,
+        environment=os.getenv("ENV", "development")
+    )
+    print("[SENTRY] Observabilidad de backend iniciada correctamente.")
+except ImportError:
+    pass
+
 app = Flask(__name__)
 
 # CORS: permite localhost dev + produccion Vercel/Netlify
@@ -427,7 +441,8 @@ Propietario: Miguel Montero. Lima, Peru.
 {context_str}
 Responde en espanol, conciso (max 4 oraciones), con datos reales. Eres AXIA, no una IA generica."""
 
-        if gemini_key:
+        use_ai = os.getenv("USE_AI", "true").lower() == "true"
+        if gemini_key and use_ai:
             import google.generativeai as genai
             genai.configure(api_key=gemini_key)
             model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=system_prompt)
