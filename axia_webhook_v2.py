@@ -368,7 +368,7 @@ def render_dashboard():
             .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         </style>
     </head>
-    <body class="p-6 md:p-12 min-h-screen flex flex-col justify-between">
+    <body class="p-6 md:p-12 min-h-screen flex flex-col justify-between relative">
         <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div>
@@ -446,6 +446,41 @@ def render_dashboard():
             </section>
         </main>
 
+        <!-- Cecilia Floating Chat Widget -->
+        <div id="cecilia-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+            <!-- Floating Button -->
+            <button onclick="toggleWidgetChat()" class="w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 flex items-center justify-center text-white shadow-2xl transition-all transform hover:scale-110 active:scale-95 border border-cyan-400/30 animate-pulse">
+                <span class="text-2xl">💬</span>
+            </button>
+            
+            <!-- Chat Window -->
+            <div id="widget-chat-box" class="hidden glass rounded-2xl w-80 sm:w-96 h-[450px] shadow-2xl flex flex-col border border-cyan-500/30 overflow-hidden mt-3 transition-all">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-cyan-950/50 to-blue-950/50 p-4 border-b border-gray-800 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
+                        <span class="font-semibold text-sm text-gray-100">Cecilia - Soporte & Ventas</span>
+                    </div>
+                    <button onclick="toggleWidgetChat()" class="text-gray-400 hover:text-white text-xs font-semibold">Cerrar</button>
+                </div>
+                
+                <!-- Messages -->
+                <div id="widget-messages" class="flex-grow overflow-y-auto p-4 space-y-3 text-xs">
+                    <div class="flex justify-start">
+                        <div class="bg-gray-800 text-gray-200 rounded-xl rounded-tl-none px-3 py-2 max-w-[85%]">
+                            ¡Hola! Soy Cecilia, especialista de ventas de Axyntrax. ¿Cómo puedo ayudarte a contratar o activar tu demo de 45 días gratis hoy? 🚀
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input -->
+                <div class="p-3 border-t border-gray-800 flex gap-2">
+                    <input id="widget-input" type="text" placeholder="Escribe al soporte..." class="flex-grow bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-cyan-500" onkeypress="handleWidgetKey(event)">
+                    <button onclick="sendWidgetMessage()" class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg px-4 py-2 text-xs">Enviar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="text-center text-gray-500 text-xs mt-8">
             Axyntrax Automation © 2026 — Consola de Control Segura e Inmune.
@@ -453,6 +488,75 @@ def render_dashboard():
 
         <!-- Scripts -->
         <script>
+            function toggleWidgetChat() {
+                const chat = document.getElementById('widget-chat-box');
+                chat.classList.toggle('hidden');
+            }
+
+            function handleWidgetKey(e) {
+                if (e.key === 'Enter') sendWidgetMessage();
+            }
+
+            async function sendWidgetMessage() {
+                const input = document.getElementById('widget-input');
+                const text = input.value.trim();
+                if (!text) return;
+
+                const msgBox = document.getElementById('widget-messages');
+                msgBox.innerHTML += `
+                    <div class="flex justify-end">
+                        <div class="bg-cyan-600 text-white rounded-xl rounded-tr-none px-3 py-2 max-w-[85%]">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+                input.value = '';
+                msgBox.scrollTop = msgBox.scrollHeight;
+
+                try {
+                    await fetch('/webhook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            "object": "whatsapp_business_account",
+                            "entry": [{
+                                "id": "12345",
+                                "changes": [{
+                                    "value": {
+                                        "messaging_product": "whatsapp",
+                                        "metadata": {"display_phone_number": "51999000001", "phone_number_id": "1156622220859055"},
+                                        "contacts": [{"profile": {"name": "Carlos"}, "wa_id": "51999000001"}],
+                                        "messages": [{
+                                            "from": "51999000001",
+                                            "id": "MSG_" + Date.now(),
+                                            "timestamp": Math.floor(Date.now() / 1000).toString(),
+                                            "text": {"body": text},
+                                            "type": "text"
+                                        }]
+                                    },
+                                    "field": "messages"
+                                }]
+                            }]
+                        })
+                    });
+
+                    setTimeout(() => {
+                        let responseText = "¡Excelente! He registrado tu interés de ventas. El plan Starter de Axyntrax cuesta solo S/. 199/mes y te permite automatizar completamente tu WhatsApp con IA. ¿Te gustaría activar tu demo de 45 días gratis en www.axyntrax-automation.net?";
+                        if (text.toLowerCase().includes("contratar") || text.toLowerCase().includes("comprar") || text.toLowerCase().includes("precio")) {
+                            responseText = "¡Por supuesto! Para contratar, puedes registrarte de inmediato en www.axyntrax-automation.net y seleccionar el plan Starter (S/. 199), Pro Cloud (S/. 399) o Diamante (S/. 799). ¡El primer mes es 100% gratis para probar el bot de ventas! 🚀";
+                        }
+                        msgBox.innerHTML += `
+                            <div class="flex justify-start">
+                                <div class="bg-gray-800 text-gray-200 rounded-xl rounded-tl-none px-3 py-2 max-w-[85%]">
+                                    ${responseText}
+                                </div>
+                            </div>
+                        `;
+                        msgBox.scrollTop = msgBox.scrollHeight;
+                    }, 800);
+                } catch(e) {}
+            }
+
             async function fetchStats() {
                 try {
                     const r = await fetch('/api/stats');
