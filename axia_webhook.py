@@ -218,17 +218,42 @@ def process_message(data: dict):
                 full_history = history + [{"role": "user", "content": message_body}]
                 response_text = get_axia_response(full_history, system_override=system_prompt)
             except Exception as ia_err:
-                # 2. MANEJO DE ERROR GEMINI
-                error_msg = "Estoy verificando tu solicitud, te respondo en un momento 🙏"
-                send_whatsapp_message(from_number, error_msg)
+                # ── Manejo Inteligente de Errores e IA Fallback (Antifrágil) ────
+                is_quota_error = "429" in str(ia_err) or "quota" in str(ia_err).lower()
+                intent = context.get("ultima_intencion")
+                nombre_cliente = context.get("nombre") or "estimado cliente"
                 
-                # Registrar error en Firebase
-                db.collection("errores_cecilia").add({
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "canal": "whatsapp",
-                    "from": from_number,
-                    "error_message": str(ia_err)
-                })
+                # Seleccionar respuesta predefinida elegante según la intención
+                if intent == "CITA":
+                    response_text = f"Hola, {nombre_cliente}. Actualmente mis sistemas de agendamiento inteligente están experimentando una alta demanda, pero cuéntame: ¿qué fecha y hora prefieres? Registraré tu solicitud de inmediato para confirmarla en breve 🙏."
+                elif intent == "PRECIO":
+                    response_text = f"Hola, {nombre_cliente}. Te comento que nuestros planes van desde S/. 199/mes (Starter) hasta S/. 799/mes (Diamante). Mis sistemas de cotización automática están en mantenimiento por alta demanda, pero puedes registrarte gratis en www.axyntrax-automation.net para activar tu demo de 45 días 🚀."
+                else:
+                    response_text = f"¡Hola, {nombre_cliente}! Recibí tu mensaje. Mis sistemas de respuesta inteligente se encuentran en optimización temporal por alta demanda, pero tu consulta ha sido registrada de forma segura. Un asesor se comunicará contigo de inmediato para ayudarte. ¡Gracias por tu paciencia! 🙏"
+                
+                # Enviar respuesta elegante de respaldo al usuario
+                send_whatsapp_message(from_number, response_text)
+                
+                # Registrar error y degradación del servicio en Firebase
+                if db:
+                    db.collection("errores_cecilia").add({
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "canal": "whatsapp",
+                        "from": from_number,
+                        "tipo": "DEGRADADO_CUOTA" if is_quota_error else "ERROR_CONEXION",
+                        "error_message": str(ia_err)
+                    })
+                
+                # Alerta a JARVIS sobre el estado de degradación del servicio
+                try:
+                    requests.post(f"{request.url_root}jarvis/alert", json={
+                        "tipo": "degradacion_modelo",
+                        "modelo": "Gemini 2.0 Flash",
+                        "detalle": "Error de Cuota 429 (Límite Excedido)" if is_quota_error else str(ia_err),
+                        "canal": "whatsapp"
+                    }, timeout=5)
+                except:
+                    pass
                 return
 
             # 4. DETECCIÓN DE INTERÉS Y CTA
