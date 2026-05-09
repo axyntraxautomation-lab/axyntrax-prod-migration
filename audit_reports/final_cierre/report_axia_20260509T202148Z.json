@@ -1,0 +1,41 @@
+{
+  "ia_name": "AXIA",
+  "start_timestamp": "2026-05-09T20:21:39.081200+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T20:21:48.291729+00:00",
+  "duration_seconds": 9.2,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "sync_check",
+      "outcome": "ok",
+      "latency_ms": 2046,
+      "details": {
+        "mensaje": "Notificación recibida por JARVIS",
+        "ok": true
+      },
+      "payload": {
+        "cecilia_reply": {
+          "ok": true,
+          "reply": "¡Pong! Recibido fuerte y claro. 🇵🇪\n\nSoy **AXIA**, la IA experta en automatización B2B de **AXYNTRAX**. Estoy lista para ayudarte a optimizar tus procesos, calificar tus leads y escalar tus ventas con tecnología de punta.\n\nCuéntame, ¿en qué etapa se encuentra tu empresa o qué proceso te gustaría automatizar hoy? Estoy aquí para ofrecerte la solución que mejor se ajuste a tus necesidades."
+        },
+        "atlas_context": {
+          "client_id": "TEST-0001"
+        },
+        "source": "automated_audit"
+      }
+    },
+    {
+      "test_name": "health_check",
+      "outcome": "error",
+      "latency_ms": 2045,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "url": "http://localhost:5001/api/jarvis/notificar/health"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[AXIA] Revisar logs del servicio."
+  ],
+  "confidence_score": 85
+}

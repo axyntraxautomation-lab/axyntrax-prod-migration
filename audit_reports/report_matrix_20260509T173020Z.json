@@ -1,0 +1,52 @@
+{
+  "ia_name": "MATRIX",
+  "start_timestamp": "2026-05-09T17:30:08.479028+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T17:30:20.845117+00:00",
+  "duration_seconds": 12.38,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "matrix_turn_1",
+      "outcome": "ok",
+      "latency_ms": 4234,
+      "details": {
+        "clave": "AX-FUL-07D6BD7C-FA82",
+        "dias": 30,
+        "modulo": "FULL",
+        "ok": true,
+        "vence": "2026-06-08"
+      },
+      "prompt": "Hola Matrix, confirma versión y sincronía con Cecilia y Atlas."
+    },
+    {
+      "test_name": "matrix_turn_2",
+      "outcome": "ok",
+      "latency_ms": 4063,
+      "details": {
+        "clave": "AX-FUL-56C73725-4CBE",
+        "dias": 30,
+        "modulo": "FULL",
+        "ok": true,
+        "vence": "2026-06-08"
+      },
+      "prompt": "Dame en 1 frase cualquier inconsistencia detectada."
+    },
+    {
+      "test_name": "matrix_turn_3",
+      "outcome": "ok",
+      "latency_ms": 4077,
+      "details": {
+        "clave": "AX-FUL-A575CA61-26B1",
+        "dias": 30,
+        "modulo": "FULL",
+        "ok": true,
+        "vence": "2026-06-08"
+      },
+      "prompt": "Simula remediación: si hay inconsistencia devuelve suggested_action."
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

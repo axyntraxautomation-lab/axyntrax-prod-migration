@@ -14,10 +14,35 @@ Eres analítica, precisa y mantienes un tono de asistente de alta seguridad.
 Tu prioridad es la integridad del sistema AxyntraX.
 """
 
+try:
+    from credit_guard import guard_call
+except ImportError:
+    import sys
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+    from credit_guard import guard_call
+
+def estimate_tokens_claude(prompt, **kwargs):
+    return len(str(prompt)) // 4 + 150  # Claude has slightly more overhead
+
 class DiamondAI:
     def __init__(self):
         self.client = Anthropic(api_key=ANTHROPIC_KEY) if ANTHROPIC_KEY else None
         self.model = "claude-3-5-sonnet-20240620"
+        self.max_tokens = int(os.getenv("MAX_TOKENS", 300))
+        self.temperature = float(os.getenv("TEMPERATURE", 0.5))
+
+    @guard_call(estimate_tokens_claude)
+    def _call_claude(self, question):
+        message = self.client.messages.create(
+            model=self.model,
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            system=SYSTEM_PROMPT,
+            messages=[
+                {"role": "user", "content": question}
+            ]
+        )
+        return message.content[0].text
 
     def ask(self, question):
         """Envía una consulta a Claude 3.5 Sonnet."""
@@ -25,15 +50,10 @@ class DiamondAI:
             return "⚠️ [IA ERROR] ANTHROPIC_API_KEY no detectada en .env. Configure su llave para activar el Copiloto Diamante."
 
         try:
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1024,
-                system=SYSTEM_PROMPT,
-                messages=[
-                    {"role": "user", "content": question}
-                ]
-            )
-            return message.content[0].text
+            result = self._call_claude(question)
+            if isinstance(result, dict) and result.get("error") == "OUT_OF_CREDIT":
+                return f"❌ [IA ERROR] {result['message']}"
+            return result
         except Exception as e:
             return f"❌ [IA ERROR] Error en la comunicación con Claude: {e}"
 

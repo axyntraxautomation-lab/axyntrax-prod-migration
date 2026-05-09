@@ -12,7 +12,7 @@
     "status": 200
   },
   {
-    "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Roboto+Mono&display=swap",
+    "url": "https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&family=Roboto+Mono&display=swap",
     "status": 200
   },
   {
@@ -32,6 +32,10 @@
     "status": 200
   },
   {
+    "url": "https://fonts.gstatic.com/s/orbitron/v35/yMJRMIlzdpvBhQQL_Qq7dy0.woff2",
+    "status": 200
+  },
+  {
     "url": "http://localhost:5000/webhook",
     "status": 200
   },
@@ -45,6 +49,10 @@
   },
   {
     "url": "http://localhost:5000/api/stats",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/logs",
     "status": 200
   }
 ]

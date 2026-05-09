@@ -1,0 +1,58 @@
+{
+  "ia_name": "ATLAS",
+  "start_timestamp": "2026-05-09T20:14:38.757764+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T20:14:44.900061+00:00",
+  "duration_seconds": 6.14,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "atlas_test_1",
+      "outcome": "ok",
+      "latency_ms": 2063,
+      "details": {
+        "client": {
+          "id": "TEST-0001",
+          "name": "Audit Test",
+          "status": "Active"
+        },
+        "ok": true
+      },
+      "payload": {
+        "action": "get_client",
+        "client_id": "TEST-0001"
+      }
+    },
+    {
+      "test_name": "atlas_test_2",
+      "outcome": "ok",
+      "latency_ms": 2046,
+      "details": {
+        "ok": true,
+        "reply": "Respuesta sugerida por Atlas."
+      },
+      "payload": {
+        "action": "suggested_reply",
+        "intent": "interes_paquete_pyme",
+        "context": {}
+      }
+    },
+    {
+      "test_name": "atlas_test_3",
+      "outcome": "ok",
+      "latency_ms": 2030,
+      "details": {
+        "match": true,
+        "ok": true
+      },
+      "payload": {
+        "action": "compare_entity",
+        "entity": "email",
+        "value": "test@example.com"
+      }
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

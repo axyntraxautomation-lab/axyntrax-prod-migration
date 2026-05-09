@@ -1,0 +1,46 @@
+{
+  "ia_name": "MATRIX",
+  "start_timestamp": "2026-05-09T20:14:57.289943+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T20:15:03.406858+00:00",
+  "duration_seconds": 6.12,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "matrix_turn_1",
+      "outcome": "ok",
+      "latency_ms": 2047,
+      "details": {
+        "ok": true,
+        "reply": "Matrix Engine Online",
+        "sync": "OK"
+      },
+      "prompt": "Hola Matrix, confirma versión y sincronía con Cecilia y Atlas."
+    },
+    {
+      "test_name": "matrix_turn_2",
+      "outcome": "ok",
+      "latency_ms": 2015,
+      "details": {
+        "ok": true,
+        "reply": "Matrix Engine Online",
+        "sync": "OK"
+      },
+      "prompt": "Dame en 1 frase cualquier inconsistencia detectada."
+    },
+    {
+      "test_name": "matrix_turn_3",
+      "outcome": "ok",
+      "latency_ms": 2061,
+      "details": {
+        "ok": true,
+        "reply": "Matrix Engine Online",
+        "sync": "OK"
+      },
+      "prompt": "Simula remediación: si hay inconsistencia devuelve suggested_action."
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

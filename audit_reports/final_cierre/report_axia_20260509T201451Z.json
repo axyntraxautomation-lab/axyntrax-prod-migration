@@ -1,0 +1,38 @@
+{
+  "ia_name": "AXIA",
+  "start_timestamp": "2026-05-09T20:14:45.503017+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T20:14:51.982569+00:00",
+  "duration_seconds": 6.47,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "sync_check",
+      "outcome": "ok",
+      "latency_ms": 2032,
+      "details": {
+        "mensaje": "Notificación recibida por JARVIS",
+        "ok": true
+      },
+      "payload": {
+        "cecilia_reply": "prueba reply",
+        "atlas_context": {
+          "client_id": "TEST-0001"
+        },
+        "source": "automated_audit"
+      }
+    },
+    {
+      "test_name": "health_check",
+      "outcome": "error",
+      "latency_ms": 2030,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "url": "http://localhost:5001/api/jarvis/notificar/health"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[AXIA] Revisar logs del servicio."
+  ],
+  "confidence_score": 85
+}

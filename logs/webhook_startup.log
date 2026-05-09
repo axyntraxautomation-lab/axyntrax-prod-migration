@@ -1,0 +1,5 @@
+[WARN] service-account.json no encontrado. Modo sin Firebase.
+[WARN] Firestore no disponible. Operando en modo local.
+[AXYNTRAX] CECILIA Webhook v2 running on port 5000
+ * Serving Flask app 'axia_webhook_v2'
+ * Debug mode: off

@@ -1,0 +1,41 @@
+{
+  "ia_name": "AXIA",
+  "start_timestamp": "2026-05-09T17:15:06.501126+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T17:15:10.589257+00:00",
+  "duration_seconds": 4.08,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "sync_check",
+      "outcome": "error",
+      "latency_ms": 2047,
+      "details": {
+        "detail": "Method Not Allowed"
+      },
+      "payload": {
+        "cecilia_reply": {
+          "status": "ok"
+        },
+        "atlas_context": {
+          "client_id": "TEST-0001"
+        },
+        "source": "automated_audit"
+      }
+    },
+    {
+      "test_name": "health_check",
+      "outcome": "error",
+      "latency_ms": 0,
+      "details": {
+        "detail": "Not Found"
+      },
+      "url": "http://localhost:5800/health/health"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[AXIA] Revisar logs del servicio."
+  ],
+  "confidence_score": 70
+}

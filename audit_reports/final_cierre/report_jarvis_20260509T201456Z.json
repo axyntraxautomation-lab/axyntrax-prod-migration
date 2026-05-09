@@ -1,0 +1,93 @@
+{
+  "ia_name": "JARVIS",
+  "start_timestamp": "2026-05-09T20:14:52.585661+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T20:14:56.687956+00:00",
+  "duration_seconds": 4.11,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "log_insert",
+      "outcome": "ok",
+      "latency_ms": 2046,
+      "details": {
+        "mensaje": "Notificación recibida por JARVIS",
+        "ok": true
+      },
+      "payload": {
+        "type": "health.check"
+      }
+    },
+    {
+      "test_name": "query_recent_events",
+      "outcome": "ok",
+      "latency_ms": 2063,
+      "details": {
+        "count": 8,
+        "inbox": [
+          {
+            "mensaje": "Asunto: TEST: Nueva solicitud de automatización | De: cliente_test@gmail.com | Snippet: Hola, estoy interesado en el plan Diamante...",
+            "origen": "GMAIL",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:14.879970",
+            "tipo": "CORREO"
+          },
+          {
+            "mensaje": "Evento: Demo Axyntrax - Clínica San Juan | Inicio: 2026-05-09T17:14:14.884004",
+            "origen": "CALENDAR",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:16.891646",
+            "tipo": "EVENTO"
+          },
+          {
+            "mensaje": "Asunto: TEST: Nueva solicitud de automatización | De: cliente_test@gmail.com | Snippet: Hola, estoy interesado en el plan Diamante...",
+            "origen": "GMAIL",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:28.905641",
+            "tipo": "CORREO"
+          },
+          {
+            "mensaje": "Evento: Demo Axyntrax - Clínica San Juan | Inicio: 2026-05-09T17:14:28.907152",
+            "origen": "CALENDAR",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:30.914667",
+            "tipo": "EVENTO"
+          },
+          {
+            "mensaje": "Asunto: TEST: Nueva solicitud de automatización | De: cliente_test@gmail.com | Snippet: Hola, estoy interesado en el plan Diamante...",
+            "origen": "GMAIL",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:42.922358",
+            "tipo": "CORREO"
+          },
+          {
+            "mensaje": "Evento: Demo Axyntrax - Clínica San Juan | Inicio: 2026-05-09T17:14:42.925886",
+            "origen": "CALENDAR",
+            "prioridad": 2,
+            "timestamp": "2026-05-09T15:14:44.930200",
+            "tipo": "EVENTO"
+          },
+          {
+            "mensaje": "",
+            "origen": "DESCONOCIDO",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T15:14:49.941824",
+            "tipo": "ACCION"
+          },
+          {
+            "mensaje": "",
+            "origen": "DESCONOCIDO",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T15:14:54.634200",
+            "tipo": "ACCION"
+          }
+        ],
+        "ok": true
+      },
+      "url": "http://localhost:5001/api/jarvis/inbox?limit=5"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

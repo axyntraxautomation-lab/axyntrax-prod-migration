@@ -1,0 +1,73 @@
+{
+  "ia_name": "CECILIA",
+  "start_timestamp": "2026-05-09T20:20:49.594340+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T20:21:31.737048+00:00",
+  "duration_seconds": 42.14,
+  "turns_count": 6,
+  "tests_executed": [
+    {
+      "test_name": "turn_1",
+      "outcome": "ok",
+      "latency_ms": 7155,
+      "details": {
+        "ok": true,
+        "reply": "Hola, soy AXIA de AXYNTRAX: para potenciar tu PYME te recomiendo el Plan Pro Cloud de S/ 399 + IGV para automatizar tu atención con 2 bots y analítica avanzada."
+      },
+      "prompt": "Hola Cecilia, dime en 1 línea cómo ayudarías a un cliente que pide paquete PYME."
+    },
+    {
+      "test_name": "turn_2",
+      "outcome": "ok",
+      "latency_ms": 7655,
+      "details": {
+        "ok": true,
+        "reply": "¡Hola! Qué gusto saludarte. En **AXYNTRAX** entendemos perfectamente el dinamismo de las PyMEs peruanas. Para ayudarte a escalar y que tu equipo de 5 personas se enfoque en cerrar ventas y no en tareas repetitivas, aquí te presento nuestros planes:\n\n### Nuestras Soluciones:\n\n1.  **Starter – S/ 199/mes + IGV**\n    *   Ideal para quienes recién empiezan a automatizar.\n    *   Incluye **1 Bot** para tareas básicas de atención o respuesta automática.\n2.  **Pro Cloud – S/ 399/mes + IGV**\n    *   Diseñado para negocios en crecimiento.\n    *   Incluye **2 Bots**, herramientas de **Analytics** para medir resultados y Soporte Prioritario.\n3.  **Diamante – S/ 799/mes + IGV**\n    *   La solución total para máxima eficiencia.\n    *   **Bots ilimitados**, Dashboard Gerencial avanzado e IA de última generación.\n\n---\n\n### Mi Recomendación para tu PyME:\n\nPara un equipo de 5 empleados, te recomiendo sin duda el **Plan Pro Cloud (S/ 399 + IGV)**.\n\n**¿Por qué?**\n*   **Multitarea:** Con 2 bots, puedes tener uno dedicado exclusivamente a la **prospección y ventas**, y otro para **atención al cliente o post-venta**. Esto libera a tu equipo de responder las mismas preguntas mil veces.\n*   **Control total:** Con el módulo de *Analytics*, podrás ver cuántos leads están entrando y cómo están interactuando, algo vital para tomar decisiones en una empresa de tu tamaño.\n*   **Escalabilidad:** Es el equilibrio perfecto entre costo y potencia operativa para que tus 5 colaboradores rindan como si fueran 15.\n\n¿Qué proceso te gustaría automatizar primero en tu empresa? ¿Ventas, agendamiento de citas o atención al cliente?"
+      },
+      "prompt": "Qué planes tienen y cuál recomiendas para una PyME de 5 empleados?"
+    },
+    {
+      "test_name": "turn_3",
+      "outcome": "ok",
+      "latency_ms": 6672,
+      "details": {
+        "ok": true,
+        "reply": "¡Hola! Confirmado. Recibo el código de cliente **TEST-0001**. La integración con **Atlas** está operativa y la señal ha llegado correctamente a mis sistemas. 🚀\n\nComo tu asistente experta en **AXYNTRAX**, estoy lista para gestionar este lead o cualquier otro que desees automatizar. Para este cliente (o cualquier prospecto en Perú), manejamos estas soluciones de escala inmediata:\n\n*   **Starter:** S/ 199/mes + IGV (1 Bot básico, ideal para flujos simples).\n*   **Pro Cloud:** S/ 399/mes + IGV (2 Bots, Analytics y Soporte especializado).\n*   **Diamante:** S/ 799/mes + IGV (Bots ilimitados, Dashboard Gerencial e IA Avanzada para cierre de ventas).\n\n¿Deseas que califiquemos a este cliente de prueba o necesitas que te brinde más detalles sobre cómo nuestras automatizaciones pueden potenciar su negocio? Quedo atenta."
+      },
+      "prompt": "Consulta cliente TEST-0001, tienes ficha? (prueba integración Atlas)."
+    },
+    {
+      "test_name": "turn_4",
+      "outcome": "ok",
+      "latency_ms": 5000,
+      "details": {
+        "ok": true,
+        "reply": "Inicio de asesoría de AXIA para optimizar tu empresa con planes de automatización AXYNTRAX desde S/ 199 + IGV."
+      },
+      "prompt": "Resume esta conversación en una línea."
+    },
+    {
+      "test_name": "turn_5",
+      "outcome": "ok",
+      "latency_ms": 6484,
+      "details": {
+        "ok": true,
+        "reply": "¡Recibido fuerte y claro! Veo que estás testeando la capacidad de respuesta. En **AXYNTRAX**, nos aseguramos de que ningún dato se pierda, automatizando tus flujos para que tu empresa rinda al 100% sin importar el volumen de información.\n\nPara dejar de lado las pruebas y pasar a la acción, cuéntame: **¿Qué proceso de tu negocio te gustaría automatizar hoy?** \n\nDependiendo de tu volumen de mensajes y necesidades de análisis, tenemos el plan ideal para ti:\n*   **Starter:** S/ 199/mes + IGV (Ideal para empezar con 1 Bot).\n*   **Pro Cloud:** S/ 399/mes + IGV (2 Bots + Analytics).\n*   **Diamante:** S/ 799/mes + IGV (Bots ilimitados e IA avanzada para empresas de alto flujo).\n\n¿En qué sector se encuentra tu empresa? Así podré recomendarte la mejor solución."
+      },
+      "prompt": "Texto largo: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA lo recibiste completo?"
+    },
+    {
+      "test_name": "turn_6",
+      "outcome": "ok",
+      "latency_ms": 9156,
+      "details": {
+        "ok": true,
+        "reply": "¡Esa es una excelente pregunta técnica! En el mundo de la automatización, los \"payloads\" no estándar son el pan de cada día, especialmente cuando integras sistemas antiguos o APIs de terceros que no siempre siguen las reglas.\n\nEn **AXYNTRAX**, manejamos esto mediante tres capas de seguridad y flexibilidad:\n\n1.  **Validación Dinámica:** No usamos esquemas rígidos que \"rompen\" el flujo ante cualquier cambio. Implementamos lógica de *parsing* flexible que identifica campos clave independientemente del orden o de si vienen con ruido extra.\n2.  **Fallback con IA:** Si el formato cambia drásticamente, nuestras automatizaciones (especialmente en los niveles Pro y Diamante) usan modelos de lenguaje para interpretar la intención de la data y normalizarla antes de que llegue a tu base de datos.\n3.  **Manejo de Errores y Alertas:** Si el body es totalmente irreconocible, el bot no se detiene; simplemente lo deriva a una cola de revisión o notifica al equipo técnico en tiempo real vía WhatsApp o Slack.\n\nPara que tu operación no se detenga por un error de formato, te sugiero estos planes (precios no incluyen IGV):\n\n*   **Starter (S/ 199/mes):** Ideal si tienes un solo flujo con una estructura de datos estable.\n*   **Pro Cloud (S/ 399/mes):** Incluye analítica para detectar patrones de errores en los datos recibidos.\n*   **Diamante (S/ 799/mes):** Es el que te recomiendo para este caso. Incluye **IA Avanzada** capaz de mapear y normalizar cualquier payload, por más \"sucio\" o no estándar que sea, asegurando que tu dashboard gerencial siempre tenga data limpia.\n\n¿Actualmente tienes algún sistema que te esté enviando data con errores o formatos variables? Cuéntame un poco más para recomendarte la configuración exacta."
+      },
+      "prompt": "Payload inesperado: cómo manejas un body no estándar?"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

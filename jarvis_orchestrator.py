@@ -65,6 +65,15 @@ class JarvisOrchestrator:
                         self.start_service("CECILIA", [sys.executable, "axia_webhook_v2.py"], "backend_webhook.log")
                     elif name == "API AXIA":
                         self.start_service("API AXIA", [sys.executable, "axia_api_unificada.py"], "backend_api.log")
+            
+            # Sincronización Google (Gmail/Calendar) cada 60 segundos
+            try:
+                from google_connector import GoogleJarvisConnector
+                connector = GoogleJarvisConnector()
+                connector.sync_to_jarvis()
+            except Exception as e:
+                write_log(f"Error en sincronización Google: {e}")
+
             time.sleep(10)
 
     def start(self):

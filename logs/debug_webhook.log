@@ -1,0 +1,7 @@
+[WARN] service-account.json no encontrado. Modo sin Firebase.
+[AXYNTRAX] CECILIA Webhook v2 running on port 5000
+ * Serving Flask app 'axia_webhook_v2'
+ * Debug mode: off
+[CREDIT GUARD] Llamada exitosa. Gasto estimado: 221 créditos. Consumo actual: 221/24000
+[CECILIA] Respuesta IA para 51999999999: ¡Hola! Qué gusto saludarte. Soy CECILIA,  👉 Demo gratis 45 días: www.axyntrax-automation.net
+[WSP ERR] Status 400: {"error":{"message":"Unsupported post request. Object with ID '1156622220859055' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api","code":100,"type":"GraphMethodException","error_subcode":33,"fbtrace_id":"AWYQVeprdGSXrVDN5KhfzgP"}}

@@ -449,7 +449,12 @@ Responde en espanol, conciso (max 4 oraciones), con datos reales. Eres AXIA, no 
             import google.generativeai as genai
             genai.configure(api_key=gemini_key)
             model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=system_prompt)
-            response = model.generate_content(message)
+            max_tokens = int(os.getenv("MAX_TOKENS", 300))
+            temperature = float(os.getenv("TEMPERATURE", 0.5))
+            response = model.generate_content(
+                message,
+                generation_config={"temperature": temperature, "max_output_tokens": max_tokens}
+            )
             reply = response.text.strip()
             mode  = "gemini"
         else:

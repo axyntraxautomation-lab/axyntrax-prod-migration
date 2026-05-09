@@ -328,6 +328,19 @@ def webhook():
     return jsonify({"status": "ok"}), 200
 
 
+@app.route("/api/cecilia/test", methods=["POST"])
+def cecilia_test():
+    """Endpoint para auditoría 2min/IA."""
+    body = request.get_json(silent=True) or {}
+    text = body.get("text", "")
+    if not text:
+        return jsonify({"ok": False, "error": "No text provided"}), 400
+    from axia_logic import get_axia_response
+    # get_axia_response espera una lista de historial
+    res = get_axia_response([{"role": "user", "content": text}])
+    return jsonify({"ok": True, "reply": res})
+
+
 @app.route("/api/logs", methods=["GET"])
 def get_logs():
     log_path = "logs/backend_webhook.log"

@@ -34,7 +34,7 @@ def get_axia_response(history, system_override: str = None):
     try:
         system = system_override if system_override else SYSTEM_PROMPT
         model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash",
+            model_name="gemini-flash-latest",
             system_instruction=system
         )
         

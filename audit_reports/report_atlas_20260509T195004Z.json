@@ -1,0 +1,47 @@
+{
+  "ia_name": "ATLAS",
+  "start_timestamp": "2026-05-09T19:49:58.054109+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T19:50:04.220590+00:00",
+  "duration_seconds": 6.17,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "atlas_test_1",
+      "outcome": "error",
+      "latency_ms": 2030,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "payload": {
+        "action": "get_client",
+        "client_id": "TEST-0001"
+      }
+    },
+    {
+      "test_name": "atlas_test_2",
+      "outcome": "error",
+      "latency_ms": 2077,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "payload": {
+        "action": "suggested_reply",
+        "intent": "interes_paquete_pyme",
+        "context": {}
+      }
+    },
+    {
+      "test_name": "atlas_test_3",
+      "outcome": "error",
+      "latency_ms": 2063,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "payload": {
+        "action": "compare_entity",
+        "entity": "email",
+        "value": "test@example.com"
+      }
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[ATLAS] Revisar logs del servicio."
+  ],
+  "confidence_score": 55
+}
