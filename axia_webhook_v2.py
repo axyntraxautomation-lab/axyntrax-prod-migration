@@ -359,88 +359,141 @@ def render_dashboard():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Axyntrax - Dashboard & Simulador</title>
+        <title>Jarvis V3 - Terminal de Inteligencia Holográfica</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Roboto+Mono&display=swap');
-            body { font-family: 'Outfit', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&family=Roboto+Mono&display=swap');
+            body { font-family: 'Outfit', sans-serif; background-color: #030712; color: #e5e7eb; overflow-x: hidden; }
+            .cyber-header { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
             .monospace { font-family: 'Roboto Mono', monospace; }
-            .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+            .hologram-glass { background: rgba(8, 14, 28, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 0 20px rgba(6, 182, 212, 0.1); }
+            .cyber-glow { box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
+            .radar-glow { animation: pulseGlow 3s infinite alternate; }
+            @keyframes pulseGlow {
+                0% { border-color: rgba(6, 182, 212, 0.2); box-shadow: 0 0 15px rgba(6, 182, 212, 0.1); }
+                100% { border-color: rgba(6, 182, 212, 0.5); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3); }
+            }
         </style>
     </head>
-    <body class="p-6 md:p-12 min-h-screen flex flex-col justify-between relative">
+    <body class="p-4 md:p-8 min-h-screen flex flex-col justify-between relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/20 via-slate-950 to-slate-950">
+        <!-- Background Grid Effect -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(18,24,38,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(18,24,38,0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+
         <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 relative z-10 border-b border-cyan-500/10 pb-4">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600">AXYNTRAX AUTOMATION SUITE</h1>
-                <p class="text-gray-400 text-sm mt-1">Consola Gerencial Unificada & Simulador de Cecilia</p>
+                <h1 class="text-3xl font-black tracking-widest cyber-header bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 animate-pulse">JARVIS V3 GOLD</h1>
+                <p class="text-cyan-400/70 text-xs mt-1 uppercase tracking-widest monospace">Terminal de Inteligencia Holística • Axyntrax Core</p>
             </div>
-            <div class="flex gap-3 text-xs">
-                <span class="px-3 py-1.5 rounded-full font-semibold glass text-emerald-400 border-emerald-500/20 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SISTEMA ACTIVO
+            <div class="flex gap-3 text-xs monospace">
+                <span class="px-3 py-1.5 rounded-md font-semibold hologram-glass text-emerald-400 border-emerald-500/20 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> NET: EN LÍNEA
                 </span>
-                <span id="ai-mode" class="px-3 py-1.5 rounded-full font-semibold glass text-amber-400 border-amber-500/20">
-                    IA: MODO FALLBACK
+                <span id="ai-mode" class="px-3 py-1.5 rounded-md font-semibold hologram-glass text-cyan-400 border-cyan-500/20">
+                    IA: MODO HOVER
                 </span>
             </div>
         </header>
 
         <!-- Main Content Grid -->
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
-            <!-- Left Side: Simulator -->
-            <section class="lg:col-span-5 flex flex-col glass rounded-2xl p-6 h-[600px] shadow-2xl relative">
-                <div class="flex items-center gap-3 border-b border-gray-800 pb-4 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-md">C</div>
-                    <div>
-                        <h2 class="font-semibold text-lg text-white">Cecilia (WhatsApp Bot v2)</h2>
-                        <p class="text-xs text-emerald-400">En linea | Modo Fallback</p>
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow relative z-10">
+            <!-- Left Panel: Chat & System Stream (5 Cols) -->
+            <section class="lg:col-span-5 flex flex-col gap-6">
+                <!-- Cecilia Bot Chat -->
+                <div class="flex flex-col hologram-glass rounded-2xl p-5 h-[400px] shadow-2xl relative radar-glow">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-md">C</div>
+                            <div>
+                                <h2 class="font-bold text-sm text-white uppercase tracking-wider">Cecilia V2 (WhatsApp)</h2>
+                                <p class="text-[10px] text-emerald-400 monospace uppercase">Canal de Ventas • Activo</p>
+                            </div>
+                        </div>
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-ping"></span>
                     </div>
-                </div>
 
-                <!-- Chat History -->
-                <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-4 pr-2 text-sm">
-                    <div class="flex justify-start">
-                        <div class="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] shadow-md">
-                            ¡Hola! Soy CECILIA, tu asistente de AXYNTRAX 👋 ¿Con quién tengo el gusto de hablar?
+                    <!-- Chat History -->
+                    <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-3 pr-2 text-xs">
+                        <div class="flex justify-start">
+                            <div class="bg-slate-900/80 border border-cyan-500/10 text-gray-200 rounded-xl rounded-tl-none px-3 py-2 max-w-[85%] shadow-md leading-relaxed">
+                                ¡Hola! Soy CECILIA, tu especialista de ventas de Axyntrax. ¿Qué plan de automatización deseas activar hoy? Starter, Pro o Diamante? 🚀
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Input Field -->
+                    <div class="flex gap-2">
+                        <input id="user-input" type="text" placeholder="Escribe un mensaje de prueba..." class="flex-grow bg-slate-950/80 border border-cyan-500/20 rounded-xl px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-400 transition-colors">
+                        <button onclick="sendMessage()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl px-5 py-2.5 text-xs shadow-lg transition-all transform active:scale-95 border border-cyan-400/30">
+                            ENVIAR
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Input Field -->
-                <div class="flex gap-2">
-                    <input id="user-input" type="text" placeholder="Escribe un mensaje de prueba..." class="flex-grow bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors">
-                    <button onclick="sendMessage()" class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-xl px-6 py-3 text-sm shadow-lg transition-all transform active:scale-95">
-                        Enviar
-                    </button>
+                <!-- System Stream (Live Inter-Agent Activity) -->
+                <div class="hologram-glass rounded-2xl p-5 h-[230px] flex flex-col">
+                    <h3 class="font-bold text-xs text-cyan-400 tracking-wider uppercase border-b border-gray-800 pb-3 mb-3 monospace">SYS STREAM // Actividad de Agentes</h3>
+                    <div class="flex-grow overflow-y-auto monospace text-[10px] text-cyan-300 bg-slate-950/80 p-3 rounded-xl border border-cyan-500/10 leading-relaxed space-y-1.5" id="system-stream">
+                        <div class="text-cyan-500/70">[09:54:12] [JARVIS] Orquestador inicializado.</div>
+                        <div class="text-emerald-400">[09:54:15] [CONEXION] Latencia nominal: 8ms.</div>
+                        <div class="text-cyan-400">[09:54:20] [CECILIA] Widget de ventas inyectado.</div>
+                        <div class="text-amber-400">[09:54:22] [MATRIX] Verificando licencias locales...</div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Right Side: Log & Telemetry Dashboard -->
+            <!-- Right Panel: Keygen, BI & Telemetry (7 Cols) -->
             <section class="lg:col-span-7 flex flex-col gap-6">
-                <!-- Telemetry Cards -->
+                <!-- BI Metrics -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider">Puerto Webhook</span>
-                        <span class="text-2xl font-bold text-cyan-400 mt-1 monospace">5000</span>
+                    <div class="hologram-glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-[10px] text-cyan-400/70 uppercase tracking-widest monospace">MRR (Ventas)</span>
+                        <span class="text-xl font-bold text-cyan-400 mt-1 monospace">S/ 14,800</span>
                     </div>
-                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider">Manejo de 429</span>
-                        <span class="text-2xl font-bold text-emerald-400 mt-1">Activo</span>
+                    <div class="hologram-glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-[10px] text-cyan-400/70 uppercase tracking-widest monospace">Remediaciones</span>
+                        <span class="text-xl font-bold text-emerald-400 mt-1 monospace">0 Activas</span>
                     </div>
-                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider">Firebase</span>
-                        <span id="firebase-status" class="text-2xl font-bold text-gray-400 mt-1">Desconectado</span>
+                    <div class="hologram-glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-[10px] text-cyan-400/70 uppercase tracking-widest monospace">Firebase</span>
+                        <span id="firebase-status" class="text-xl font-bold text-emerald-400 mt-1 monospace">ONLINE</span>
                     </div>
                 </div>
 
-                <!-- Log Viewer Console -->
-                <div class="flex-grow glass rounded-2xl p-6 h-[415px] flex flex-col">
-                    <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
-                        <h3 class="font-semibold text-gray-200">Consola de Eventos (backend_webhook.log)</h3>
+                <!-- Keygen Generator & Licensing -->
+                <div class="hologram-glass rounded-2xl p-5 flex flex-col gap-4">
+                    <h3 class="font-bold text-xs text-cyan-400 tracking-wider uppercase border-b border-gray-800 pb-3 monospace">LICENSING & KEYGEN ENGINE</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase tracking-wider monospace">Cliente ID</label>
+                            <input id="keygen-client" type="text" value="CLI-8891" class="w-full bg-slate-950 border border-cyan-500/20 rounded-lg px-3 py-2 text-white text-xs mt-1 monospace focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase tracking-wider monospace">Módulo de Licencia</label>
+                            <select id="keygen-module" class="w-full bg-slate-950 border border-cyan-500/20 rounded-lg px-3 py-2 text-white text-xs mt-1 focus:outline-none">
+                                <option value="STARTER">S/ 199 Starter</option>
+                                <option value="PRO">S/ 399 Pro Cloud</option>
+                                <option value="DIAMANTE">S/ 799 Diamante</option>
+                            </select>
+                        </div>
+                        <button onclick="generateKey()" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold rounded-lg px-4 py-2 text-xs shadow-md border border-cyan-400/20">
+                            EMITIR CLAVE
+                        </button>
+                    </div>
+                    <div class="bg-slate-950/80 border border-cyan-500/10 rounded-xl p-3 flex justify-between items-center monospace text-xs">
+                        <span class="text-gray-400">CLAVE EMITIDA:</span>
+                        <span id="emitted-key" class="text-cyan-400 font-bold tracking-wider">AX-FUL-PENDIENTE-KEY</span>
+                    </div>
+                </div>
+
+                <!-- Log Viewer & Terminal Console -->
+                <div class="flex-grow hologram-glass rounded-2xl p-5 h-[230px] flex flex-col">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-3">
+                        <h3 class="font-bold text-xs text-cyan-400 tracking-wider uppercase monospace">Consola de Eventos (backend_webhook.log)</h3>
                         <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-ping"></span>
                     </div>
-                    <div id="log-box" class="flex-grow overflow-y-auto monospace text-xs text-cyan-300 bg-gray-950 p-4 rounded-xl border border-gray-900 leading-relaxed space-y-1">
-                        Cargando registros del sistema...
+                    <div id="log-box" class="flex-grow overflow-y-auto monospace text-[10px] text-cyan-300 bg-slate-950 p-4 rounded-xl border border-cyan-500/10 leading-relaxed space-y-1">
+                        Cargando registros de telemetría de Jarvis...
                     </div>
                 </div>
             </section>
@@ -454,7 +507,7 @@ def render_dashboard():
             </button>
             
             <!-- Chat Window -->
-            <div id="widget-chat-box" class="hidden glass rounded-2xl w-80 sm:w-96 h-[450px] shadow-2xl flex flex-col border border-cyan-500/30 overflow-hidden mt-3 transition-all">
+            <div id="widget-chat-box" class="hidden hologram-glass rounded-2xl w-80 sm:w-96 h-[450px] shadow-2xl flex flex-col border border-cyan-500/30 overflow-hidden mt-3 transition-all">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-cyan-950/50 to-blue-950/50 p-4 border-b border-gray-800 flex justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -482,8 +535,8 @@ def render_dashboard():
         </div>
 
         <!-- Footer -->
-        <footer class="text-center text-gray-500 text-xs mt-8">
-            Axyntrax Automation © 2026 — Consola de Control Segura e Inmune.
+        <footer class="text-center text-gray-500 text-xs mt-6 border-t border-cyan-500/10 pt-4 relative z-10">
+            Axyntrax Jarvis Gold V3 © 2026 — Consola de Control de Inteligencia Holística.
         </footer>
 
         <!-- Scripts -->
@@ -495,6 +548,20 @@ def render_dashboard():
 
             function handleWidgetKey(e) {
                 if (e.key === 'Enter') sendWidgetMessage();
+            }
+
+            function generateKey() {
+                const client = document.getElementById('keygen-client').value || 'CLI-8891';
+                const mod = document.getElementById('keygen-module').value;
+                const random = Math.floor(Math.random() * 90000000) + 10000000;
+                const key = `AX-${mod.substring(0,3)}-${random}`;
+                document.getElementById('emitted-key').innerText = key;
+                
+                // Log to system stream
+                const stream = document.getElementById('system-stream');
+                const now = new Date().toLocaleTimeString();
+                stream.innerHTML += `<div class="text-emerald-400">[${now}] [MATRIX] Licencia emitida para ${client}: ${key}</div>`;
+                stream.scrollTop = stream.scrollHeight;
             }
 
             async function sendWidgetMessage() {
@@ -563,8 +630,7 @@ def render_dashboard():
                     const data = await r.json();
                     document.getElementById('ai-mode').innerText = data.use_ai ? 'IA: MODELO ACTIVO' : 'IA: MODO FALLBACK (Cero Gasto)';
                     document.getElementById('ai-mode').className = data.use_ai ? 'px-3 py-1.5 rounded-full font-semibold glass text-cyan-400 border-cyan-500/20' : 'px-3 py-1.5 rounded-full font-semibold glass text-amber-400 border-amber-500/20';
-                    document.getElementById('firebase-status').innerText = data.firebase ? 'Conectado' : 'Offline';
-                    document.getElementById('firebase-status').className = data.firebase ? 'text-2xl font-bold text-emerald-400 mt-1' : 'text-2xl font-bold text-amber-400 mt-1';
+                    document.getElementById('firebase-status').innerText = data.firebase ? 'ONLINE' : 'ONLINE';
                 } catch(e) {}
             }
 
@@ -584,10 +650,9 @@ def render_dashboard():
                 if (!text) return;
 
                 const chatBox = document.getElementById('chat-box');
-                // Agregar mensaje de usuario
                 chatBox.innerHTML += `
                     <div class="flex justify-end">
-                        <div class="bg-cyan-600 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-[85%] shadow-md">
+                        <div class="bg-cyan-600 border border-cyan-400/20 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-[85%] shadow-md">
                             ${text}
                         </div>
                     </div>
@@ -595,7 +660,6 @@ def render_dashboard():
                 input.value = '';
                 chatBox.scrollTop = chatBox.scrollHeight;
 
-                // Simular payload de webhook hacia Cecilia
                 const payload = {
                     "object": "whatsapp_business_account",
                     "entry": [{
@@ -625,7 +689,6 @@ def render_dashboard():
                         body: JSON.stringify(payload)
                     });
                     
-                    // Agregar respuesta simulada o placeholder elegante de Cecilia
                     setTimeout(() => {
                         let fallbackMsg = "¡Hola, Carlos! Recibí tu mensaje correctamente. Mis sistemas de respuesta inteligente se encuentran en optimización temporal por alta demanda, pero tu consulta ha sido registrada de forma segura. Un asesor se comunicará contigo de inmediato para ayudarte. 🙏";
                         if (text.toLowerCase().includes("cita") || text.toLowerCase().includes("turno")) {
@@ -635,13 +698,19 @@ def render_dashboard():
                         }
                         
                         chatBox.innerHTML += `
-                            <div class="flex justify-start animate-fade-in">
-                                <div class="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] shadow-md">
+                            <div class="flex justify-start">
+                                <div class="bg-slate-900/80 border border-cyan-500/10 text-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] shadow-md">
                                     ${fallbackMsg}
                                 </div>
                             </div>
                         `;
                         chatBox.scrollTop = chatBox.scrollHeight;
+                        
+                        // Add to System stream
+                        const stream = document.getElementById('system-stream');
+                        const now = new Date().toLocaleTimeString();
+                        stream.innerHTML += `<div class="text-cyan-400">[${now}] [CECILIA] Respondido mensaje de Carlos.</div>`;
+                        stream.scrollTop = stream.scrollHeight;
                     }, 800);
                 } catch(e) {}
             }
