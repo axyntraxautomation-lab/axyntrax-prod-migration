@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from db_master.connection import get_db
 from db_master.models import get_kpi_summary, init_db
 
-load_dotenv()
+load_dotenv(override=True)
 
 # --- SENTRY OBSERVABILITY ---
 try:
