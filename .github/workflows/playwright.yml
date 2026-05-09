@@ -1,0 +1,57 @@
+name: Playwright Visual Testing CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  visual-test:
+    name: Run Playwright Visual Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: visual-tests/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Suite Dependencies
+        run: |
+          pip install -r requirements.txt --break-system-packages || true
+          pip install flask requests python-dotenv --break-system-packages
+
+      - name: Install Playwright Dependencies
+        run: |
+          cd visual-tests
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Start Services in Background
+        run: |
+          python axia_webhook_v2.py &
+          echo "Esperando a que el servidor inicialice..."
+          sleep 5
+
+      - name: Execute Visual Tests
+        run: |
+          cd visual-tests
+          node visual_test.js http://localhost:5000/dashboard
+
+      - name: Upload Visual Test Evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-visual-evidence
+          path: visual-tests/visual_test_results/
+          retention-days: 14
