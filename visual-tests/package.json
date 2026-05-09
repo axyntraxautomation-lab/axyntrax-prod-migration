@@ -1,0 +1,12 @@
+{
+  "name": "visual-tests",
+  "version": "1.0.0",
+  "description": "Pruebas visuales automatizadas con Playwright",
+  "main": "visual_test.js",
+  "scripts": {
+    "test": "node visual_test.js"
+  },
+  "dependencies": {
+    "playwright": "^1.42.1"
+  }
+}

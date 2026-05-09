@@ -1,0 +1,50 @@
+[
+  {
+    "url": "http://localhost:5000/dashboard",
+    "status": 200
+  },
+  {
+    "url": "https://cdn.tailwindcss.com/",
+    "status": 302
+  },
+  {
+    "url": "https://cdn.tailwindcss.com/3.4.17",
+    "status": 200
+  },
+  {
+    "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Roboto+Mono&display=swap",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/stats",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/logs",
+    "status": 200
+  },
+  {
+    "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2",
+    "status": 200
+  },
+  {
+    "url": "https://fonts.gstatic.com/s/robotomono/v31/L0xuDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vq_ROW4.woff2",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/webhook",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/logs",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/logs",
+    "status": 200
+  },
+  {
+    "url": "http://localhost:5000/api/stats",
+    "status": 200
+  }
+]
