@@ -343,15 +343,230 @@ def jarvis_alert():
     return jsonify({"status": "alert_logged"}), 200
 
 
-@app.route("/health", methods=["GET"])
-def health():
+@app.route("/api/logs", methods=["GET"])
+def get_logs():
+    log_path = "logs/backend_webhook.log"
+    if not os.path.exists(log_path):
+        return jsonify({"logs": ["No hay logs de momento."]}), 200
+    try:
+        with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.readlines()[-30:]
+        return jsonify({"logs": [line.strip() for line in lines]})
+    except Exception as e:
+        return jsonify({"logs": [f"Error leyendo logs: {e}"]}), 500
+
+
+@app.route("/api/stats", methods=["GET"])
+def get_stats():
     return jsonify({
-        "status":    "operational",
-        "service":   "CECILIA WhatsApp Bot 24/7",
-        "firebase":  db is not None,
-        "whatsapp":  bool(ACCESS_TOKEN and PHONE_NUMBER_ID),
-        "version":   "CECILIA v2.0"
+        "use_ai": os.getenv("USE_AI", "true").lower() == "true",
+        "status": "operational",
+        "port": 5000,
+        "firebase": db is not None
     }), 200
+
+
+@app.route("/dashboard", methods=["GET"])
+def render_dashboard():
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="es" class="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Axyntrax - Dashboard & Simulador</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Roboto+Mono&display=swap');
+            body { font-family: 'Outfit', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+            .monospace { font-family: 'Roboto Mono', monospace; }
+            .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        </style>
+    </head>
+    <body class="p-6 md:p-12 min-h-screen flex flex-col justify-between">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600">AXYNTRAX AUTOMATION SUITE</h1>
+                <p class="text-gray-400 text-sm mt-1">Consola Gerencial Unificada & Simulador de Cecilia</p>
+            </div>
+            <div class="flex gap-3 text-xs">
+                <span class="px-3 py-1.5 rounded-full font-semibold glass text-emerald-400 border-emerald-500/20 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SISTEMA ACTIVO
+                </span>
+                <span id="ai-mode" class="px-3 py-1.5 rounded-full font-semibold glass text-amber-400 border-amber-500/20">
+                    IA: MODO FALLBACK
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
+            <!-- Left Side: Simulator (Col-5) -->
+            <section class="lg:col-span-5 flex flex-col glass rounded-2xl p-6 h-[600px] shadow-2xl relative">
+                <div class="flex items-center gap-3 border-b border-gray-800 pb-4 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-md">C</div>
+                    <div>
+                        <h2 class="font-semibold text-lg text-white">Cecilia (WhatsApp Bot)</h2>
+                        <p class="text-xs text-emerald-400">En linea | Modo Fallback</p>
+                    </div>
+                </div>
+
+                <!-- Chat History -->
+                <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-4 pr-2 text-sm">
+                    <div class="flex justify-start">
+                        <div class="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] shadow-md">
+                            ¡Hola! Soy CECILIA, tu asistente de AXYNTRAX 👋 ¿Con quién tengo el gusto de hablar?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Field -->
+                <div class="flex gap-2">
+                    <input id="user-input" type="text" placeholder="Escribe un mensaje de prueba..." class="flex-grow bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                    <button onclick="sendMessage()" class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold rounded-xl px-6 py-3 text-sm shadow-lg transition-all transform active:scale-95">
+                        Enviar
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Side: Log & Telemetry Dashboard (Col-7) -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
+                <!-- Telemetry Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Puerto Webhook</span>
+                        <span class="text-2xl font-bold text-cyan-400 mt-1 monospace">5000</span>
+                    </div>
+                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Manejo de 429</span>
+                        <span class="text-2xl font-bold text-emerald-400 mt-1">Activo</span>
+                    </div>
+                    <div class="glass p-4 rounded-xl flex flex-col justify-between">
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Firebase</span>
+                        <span id="firebase-status" class="text-2xl font-bold text-gray-400 mt-1">Desconectado</span>
+                    </div>
+                </div>
+
+                <!-- Log Viewer Console -->
+                <div class="flex-grow glass rounded-2xl p-6 h-[415px] flex flex-col">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+                        <h3 class="font-semibold text-gray-200">Consola de Eventos (backend_webhook.log)</h3>
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-ping"></span>
+                    </div>
+                    <div id="log-box" class="flex-grow overflow-y-auto monospace text-xs text-cyan-300 bg-gray-950 p-4 rounded-xl border border-gray-900 leading-relaxed space-y-1">
+                        Cargando registros del sistema...
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-500 text-xs mt-8">
+            Axyntrax Automation © 2026 — Consola de Control Segura e Inmune.
+        </footer>
+
+        <!-- Scripts -->
+        <script>
+            async function fetchStats() {
+                try {
+                    const r = await fetch('/api/stats');
+                    const data = await r.json();
+                    document.getElementById('ai-mode').innerText = data.use_ai ? 'IA: MODELO ACTIVO' : 'IA: MODO FALLBACK (Cero Gasto)';
+                    document.getElementById('ai-mode').className = data.use_ai ? 'px-3 py-1.5 rounded-full font-semibold glass text-cyan-400 border-cyan-500/20' : 'px-3 py-1.5 rounded-full font-semibold glass text-amber-400 border-amber-500/20';
+                    document.getElementById('firebase-status').innerText = data.firebase ? 'Conectado' : 'Offline';
+                    document.getElementById('firebase-status').className = data.firebase ? 'text-2xl font-bold text-emerald-400 mt-1' : 'text-2xl font-bold text-amber-400 mt-1';
+                } catch(e) {}
+            }
+
+            async function fetchLogs() {
+                try {
+                    const r = await fetch('/api/logs');
+                    const data = await r.json();
+                    const logBox = document.getElementById('log-box');
+                    logBox.innerHTML = data.logs.map(line => `<div>${line}</div>`).join('');
+                    logBox.scrollTop = logBox.scrollHeight;
+                } catch(e) {}
+            }
+
+            async function sendMessage() {
+                const input = document.getElementById('user-input');
+                const text = input.value.trim();
+                if (!text) return;
+
+                const chatBox = document.getElementById('chat-box');
+                // Agregar mensaje de usuario
+                chatBox.innerHTML += `
+                    <div class="flex justify-end">
+                        <div class="bg-cyan-600 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-[85%] shadow-md">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+                input.value = '';
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Simular payload de webhook hacia Cecilia
+                const payload = {
+                    "object": "whatsapp_business_account",
+                    "entry": [{
+                        "id": "12345",
+                        "changes": [{
+                            "value": {
+                                "messaging_product": "whatsapp",
+                                "metadata": {"display_phone_number": "51999000001", "phone_number_id": "1156622220859055"},
+                                "contacts": [{"profile": {"name": "Carlos"}, "wa_id": "51999000001"}],
+                                "messages": [{
+                                    "from": "51999000001",
+                                    "id": "MSG_" + Date.now(),
+                                    "timestamp": Math.floor(Date.now() / 1000).toString(),
+                                    "text": {"body": text},
+                                    "type": "text"
+                                }]
+                            },
+                            "field": "messages"
+                        }]
+                    }]
+                };
+
+                try {
+                    await fetch('/webhook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    // Agregar respuesta simulada o placeholder elegante de Cecilia
+                    setTimeout(() => {
+                        let fallbackMsg = "¡Hola, Carlos! Recibí tu mensaje correctamente. Mis sistemas de respuesta inteligente se encuentran en optimización temporal por alta demanda, pero tu consulta ha sido registrada de forma segura. Un asesor se comunicará contigo de inmediato para ayudarte. 🙏";
+                        if (text.toLowerCase().includes("cita") || text.toLowerCase().includes("turno")) {
+                            fallbackMsg = "Hola, Carlos. Actualmente mis sistemas de agendamiento inteligente están experimentando una alta demanda, pero cuéntame: ¿qué fecha y hora prefieres? Registraré tu solicitud de inmediato para confirmarla en breve 🙏.";
+                        } else if (text.toLowerCase().includes("precio") || text.toLowerCase().includes("costo") || text.toLowerCase().includes("plan")) {
+                            fallbackMsg = "Hola, Carlos. Te comento que nuestros planes van desde S/. 199/mes (Starter) hasta S/. 799/mes (Diamante). Mis sistemas de cotización automática están en mantenimiento por alta demanda, pero puedes registrarte gratis en www.axyntrax-automation.net para activar tu demo de 45 días 🚀.";
+                        }
+                        
+                        chatBox.innerHTML += `
+                            <div class="flex justify-start animate-fade-in">
+                                <div class="bg-gray-800 text-gray-100 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] shadow-md">
+                                    ${fallbackMsg}
+                                </div>
+                            </div>
+                        `;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }, 800);
+                } catch(e) {}
+            }
+
+            // Polling
+            fetchStats();
+            fetchLogs();
+            setInterval(fetchStats, 5000);
+            setInterval(fetchLogs, 2000);
+        </script>
+    </body>
+    </html>
+    """
+    return html_content, 200
 
 
 if __name__ == "__main__":
