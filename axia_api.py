@@ -159,12 +159,15 @@ def require_admin(f):
 @app.route("/api/health", methods=["GET"])
 def health():
     wsp_ok = bool(os.getenv("WSP_ACCESS_TOKEN") and os.getenv("WSP_PHONE_NUMBER_ID"))
-    gemini  = bool(os.getenv("GEMINI_API_KEY"))
+    gemini_present = bool(os.getenv("GEMINI_API_KEY"))
+    use_ai = os.getenv("USE_AI", "true").lower() == "true"
     return jsonify({
-        "status":    "operational",
-        "whatsapp":  wsp_ok,
-        "gemini":    gemini,
-        "version":   "3.0",
+        "status": "operational",
+        "whatsapp": wsp_ok,
+        "gemini_present": gemini_present,
+        "use_ai": use_ai,
+        "gemini_active": gemini_present and use_ai,
+        "version": "3.0",
         "timestamp": datetime.datetime.now().isoformat()
     })
 
@@ -594,5 +597,8 @@ def list_clients():
 if __name__ == "__main__":
     init_db()
     port = int(os.getenv("API_PORT", 5001))
-    print(f"[AXYNTRAX API v3.0] Puerto {port} | Auth: ON | Gemini: {bool(os.getenv('GEMINI_API_KEY'))}")
+    use_ai = os.getenv("USE_AI", "true").lower() == "true"
+    gemini_present = bool(os.getenv("GEMINI_API_KEY"))
+    gemini_active = gemini_present and use_ai
+    print(f"[AXYNTRAX API v3.0] Puerto {port} | Auth: ON | Gemini present: {gemini_present} | Use_AI: {use_ai} | Gemini active: {gemini_active}")
     app.run(port=port, debug=False, host="0.0.0.0")
