@@ -1368,3 +1368,88 @@ Press CTRL+C to quit
 127.0.0.1 - - [09/May/2026 15:20:19] "POST /api/jarvis/notificar HTTP/1.1" 200 -
 127.0.0.1 - - [09/May/2026 15:20:31] "POST /api/jarvis/notificar HTTP/1.1" 200 -
 127.0.0.1 - - [09/May/2026 15:20:33] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+[DB_MASTER] Base de Datos Inicializada.
+[AXYNTRAX UNIFIED API v3.2.0] Puerto 5001 | Auth: ON | Gemini: True | Active: True
+ * Serving Flask app 'axia_api_unificada'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.100.2:5001
+Press CTRL+C to quit
+127.0.0.1 - - [09/May/2026 15:20:41] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:20:43] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:20:55] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:20:57] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:09] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:11] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:23] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:25] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:34] "GET /api/atlas?action=get_client&client_id=TEST-0001 HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:36] "GET /api/atlas?action=suggested_reply&intent=interes_paquete_pyme HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:37] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:38] "GET /api/atlas?action=compare_entity&entity=email&value=test@example.com HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:39] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:46] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:48] "GET /api/jarvis/notificar/health HTTP/1.1" 404 -
+127.0.0.1 - - [09/May/2026 15:21:50] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:51] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:53] "GET /api/jarvis/inbox?limit=5 HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:53] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:55] "POST /api/matrix HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:57] "POST /api/matrix HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:21:59] "POST /api/matrix HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:05] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:07] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:19] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:21] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:33] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:35] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:47] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:22:50] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:02] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:04] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:16] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:18] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:30] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:32] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:44] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:46] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:23:58] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:00] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:12] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:14] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:26] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:28] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:40] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:42] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:54] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:24:56] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:08] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:10] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:22] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:24] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:36] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:38] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:50] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:25:52] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:04] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:06] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:18] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:20] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:32] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:34] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:46] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:26:48] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:00] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:02] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:14] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:16] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:28] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:30] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:42] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:44] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:56] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:27:58] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:28:10] "POST /api/jarvis/notificar HTTP/1.1" 200 -
+127.0.0.1 - - [09/May/2026 15:28:12] "POST /api/jarvis/notificar HTTP/1.1" 200 -
