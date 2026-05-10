@@ -1,13 +1,15 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Package, Calendar, MessageCircle, Settings, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Users, Package, Calendar, MessageCircle, Settings, CreditCard, ShieldCheck, Factory } from 'lucide-react';
 const nav = [
-  { href: '/dashboard', label: 'KPIs', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Cerebro JARVIS', icon: LayoutDashboard },
+  { href: '/dashboard/matrix', label: 'Fábrica MATRIX', icon: Factory },
+  { href: '/dashboard/atlas', label: 'Guardián ATLAS', icon: ShieldCheck },
   { href: '/dashboard/workers', label: 'Trabajadores', icon: Users },
   { href: '/dashboard/modules', label: 'Módulos', icon: Package },
   { href: '/dashboard/calendar', label: 'Calendario', icon: Calendar },
-  { href: '/dashboard/chat', label: 'Cecilia', icon: MessageCircle },
+  { href: '/dashboard/chat', label: 'Consejera Cecilia', icon: MessageCircle },
   { href: '/dashboard/billing', label: 'Facturación', icon: CreditCard },
   { href: '/dashboard/settings', label: 'Ajustes', icon: Settings },
 ];
