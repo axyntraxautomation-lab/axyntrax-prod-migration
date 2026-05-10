@@ -3,14 +3,15 @@
     { "src": "api/whatsapp.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
     { "src": "api/messenger.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
     { "src": "api/test.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
-    { "src": "dashboard/package.json", "use": "@vercel/next" }
+    { "src": "dashboard/package.json", "use": "@vercel/next" },
+    { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
     { "src": "/api/test", "dest": "/api/test.py" },
-    { "src": "/dashboard", "dest": "/dashboard" },
     { "src": "/dashboard/(.*)", "dest": "/dashboard/$1" },
+    { "src": "/dashboard", "dest": "/dashboard/" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
