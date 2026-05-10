@@ -1,16 +1,37 @@
 {
-  "functions": {
-    "api/whatsapp.py": { "runtime": "python3.9", "includeFiles": "api/cecilia_ia.py" },
-    "api/messenger.py": { "runtime": "python3.9", "includeFiles": "api/cecilia_ia.py" },
-    "api/jarvis_report.py": { "runtime": "python3.9" },
-    "api/jarvis_dashboard.py": { "runtime": "python3.9" },
-    "api/test.py": { "runtime": "python3.9" }
-  },
+  "builds": [
+    {
+      "src": "api/test.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    },
+    {
+      "src": "api/whatsapp.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    },
+    {
+      "src": "api/messenger.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    },
+    {
+      "src": "api/jarvis_report.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    },
+    {
+      "src": "api/jarvis_dashboard.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    }
+  ],
   "routes": [
     { "src": "/api/test", "dest": "/api/test.py" },
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
     { "src": "/api/jarvis/report", "dest": "/api/jarvis_report.py" },
-    { "src": "/api/jarvis/dashboard", "dest": "/api/jarvis_dashboard.py" }
+    { "src": "/api/jarvis/dashboard", "dest": "/api/jarvis_dashboard.py" },
+    { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
