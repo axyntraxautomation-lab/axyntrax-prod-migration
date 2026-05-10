@@ -1,43 +1,14 @@
 {
   "builds": [
-    {
-      "src": "api/test.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    },
-    {
-      "src": "api/debug_send.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    },
-    {
-      "src": "api/whatsapp.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    },
-    {
-      "src": "api/messenger.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    },
-    {
-      "src": "api/jarvis_report.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    },
-    {
-      "src": "api/jarvis_dashboard.py",
-      "use": "@vercel/python",
-      "config": { "runtime": "python3.9" }
-    }
+    { "src": "api/whatsapp.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
+    { "src": "api/messenger.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
+    { "src": "dashboard/package.json", "use": "@vercel/next" }
   ],
   "routes": [
-    { "src": "/api/test", "dest": "/api/test.py" },
-    { "src": "/api/debug_send", "dest": "/api/debug_send.py" },
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
-    { "src": "/api/jarvis/report", "dest": "/api/jarvis_report.py" },
-    { "src": "/api/jarvis/dashboard", "dest": "/api/jarvis_dashboard.py" },
+    { "src": "/dashboard", "dest": "/dashboard" },
+    { "src": "/dashboard/(.*)", "dest": "/dashboard/$1" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
