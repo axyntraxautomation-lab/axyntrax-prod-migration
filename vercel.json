@@ -2,10 +2,13 @@
   "version": 2,
   "builds": [
     { "src": "public/index.html", "use": "@vercel/static" },
+    { "src": "api/*.py", "use": "@vercel/python" },
     { "src": "api/index.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
+    { "src": "/api/messenger", "dest": "/api/messenger.py" },
+    { "src": "/api/health", "dest": "/api/index.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
