@@ -6,6 +6,11 @@
       "config": { "runtime": "python3.9" }
     },
     {
+      "src": "api/debug_send.py",
+      "use": "@vercel/python",
+      "config": { "runtime": "python3.9" }
+    },
+    {
       "src": "api/whatsapp.py",
       "use": "@vercel/python",
       "config": { "runtime": "python3.9" }
@@ -28,6 +33,7 @@
   ],
   "routes": [
     { "src": "/api/test", "dest": "/api/test.py" },
+    { "src": "/api/debug_send", "dest": "/api/debug_send.py" },
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
     { "src": "/api/jarvis/report", "dest": "/api/jarvis_report.py" },
