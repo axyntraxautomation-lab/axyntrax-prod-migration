@@ -3,9 +3,11 @@
     "api/whatsapp.py": { "runtime": "python3.9", "includeFiles": "api/cecilia_ia.py" },
     "api/messenger.py": { "runtime": "python3.9", "includeFiles": "api/cecilia_ia.py" },
     "api/jarvis_report.py": { "runtime": "python3.9" },
-    "api/jarvis_dashboard.py": { "runtime": "python3.9" }
+    "api/jarvis_dashboard.py": { "runtime": "python3.9" },
+    "api/test.py": { "runtime": "python3.9" }
   },
   "routes": [
+    { "src": "/api/test", "dest": "/api/test.py" },
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
     { "src": "/api/jarvis/report", "dest": "/api/jarvis_report.py" },
