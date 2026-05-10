@@ -2,11 +2,13 @@
   "builds": [
     { "src": "api/whatsapp.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
     { "src": "api/messenger.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
+    { "src": "api/test.py", "use": "@vercel/python", "config": { "runtime": "python3.9" } },
     { "src": "dashboard/package.json", "use": "@vercel/next" }
   ],
   "routes": [
     { "src": "/api/whatsapp", "dest": "/api/whatsapp.py" },
     { "src": "/api/messenger", "dest": "/api/messenger.py" },
+    { "src": "/api/test", "dest": "/api/test.py" },
     { "src": "/dashboard", "dest": "/dashboard" },
     { "src": "/dashboard/(.*)", "dest": "/dashboard/$1" },
     { "src": "/(.*)", "dest": "/public/$1" }
