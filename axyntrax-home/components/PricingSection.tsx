@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from "framer-motion";
 import { CheckCircle2, Zap, ArrowRight, ShieldCheck, Activity } from "lucide-react";
 import Link from "next/link";

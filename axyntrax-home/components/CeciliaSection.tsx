@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Bot, Sparkles, RefreshCcw, UserCircle2 } from 'lucide-react';
 import { askDeepSeek } from '@/lib/agents/deepseek/client';
 
+type Message = { role: 'system' | 'user' | 'assistant'; content: string; isFallback?: boolean };
+
 export default function CeciliaSection({ isCompact = false }) {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: '¡Hola! Soy Cecilia Asist, tu asesora neural de AXYNTRAX. ¿Cómo te llamas?' }
   ]);
   const [input, setInput] = useState('');

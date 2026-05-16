@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from "framer-motion";
 import { 
   ChevronRight, Zap, PlayCircle, ShieldCheck, BarChart3, Bot, LayoutGrid, 
@@ -7,7 +9,6 @@ import {
 import Link from "next/link";
 import ModulesSection from "@/components/ModulesSection";
 import CeciliaSection from "@/components/CeciliaSection";
-import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
 
 const AGENTS = [
@@ -142,7 +143,6 @@ export default function Home() {
         </div>
       </section>
 
-      <TrustSection />
       <Footer />
 
       {/* FLOATING WHATSAPP */}

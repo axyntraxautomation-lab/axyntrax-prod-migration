@@ -23,3 +23,13 @@ INTENCIONES A DETECTAR:
 - Gestión: Consulta sobre datos actuales.
 
 RESPUESTA CORTA Y ACCIONABLE.`;
+
+/**
+ * AGGREGATED SYSTEM PROMPTS
+ * Used across omnichannel handlers.
+ */
+export const SYSTEM_PROMPTS = {
+  CECILIA_WSP: CECILIA_WSP_PROMPT,
+  CECILIA_WEB: `Actúa como Cecilia, la asistente neural web de AXYNTRAX. Tu objetivo es convertir visitas en leads calificados mediante una conversación fluida y profesional.`,
+  CECILIA_BASE: `Eres Cecilia, la inteligencia neural de AXYNTRAX. Tu tono es premium, moderno y enfocado en resultados de negocio.`
+};
