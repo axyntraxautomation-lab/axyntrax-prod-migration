@@ -1,0 +1,67 @@
+{
+  "ia_name": "CECILIA",
+  "start_timestamp": "2026-05-09T17:29:39.362053+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T17:29:51.737564+00:00",
+  "duration_seconds": 12.38,
+  "turns_count": 6,
+  "tests_executed": [
+    {
+      "test_name": "turn_1",
+      "outcome": "ok",
+      "latency_ms": 2061,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Hola Cecilia, dime en 1 línea cómo ayudarías a un cliente que pide paquete PYME."
+    },
+    {
+      "test_name": "turn_2",
+      "outcome": "ok",
+      "latency_ms": 2063,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Qué planes tienen y cuál recomiendas para una PyME de 5 empleados?"
+    },
+    {
+      "test_name": "turn_3",
+      "outcome": "ok",
+      "latency_ms": 2061,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Consulta cliente TEST-0001, tienes ficha? (prueba integración Atlas)."
+    },
+    {
+      "test_name": "turn_4",
+      "outcome": "ok",
+      "latency_ms": 2063,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Resume esta conversación en una línea."
+    },
+    {
+      "test_name": "turn_5",
+      "outcome": "ok",
+      "latency_ms": 2046,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Texto largo: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA lo recibiste completo?"
+    },
+    {
+      "test_name": "turn_6",
+      "outcome": "ok",
+      "latency_ms": 2078,
+      "details": {
+        "status": "ok"
+      },
+      "prompt": "Payload inesperado: cómo manejas un body no estándar?"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

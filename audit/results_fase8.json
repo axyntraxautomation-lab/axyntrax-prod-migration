@@ -1,0 +1,26 @@
+[
+  {
+    "capa": "1 Autenticación",
+    "status": "PASS"
+  },
+  {
+    "capa": "2 Control acceso",
+    "status": "PASS"
+  },
+  {
+    "capa": "3 Cifrado",
+    "status": "PASS"
+  },
+  {
+    "capa": "4 Ataques",
+    "status": "PASS"
+  },
+  {
+    "capa": "5 Monitoreo ATLAS",
+    "status": "PASS"
+  },
+  {
+    "capa": "6 Recuperación",
+    "status": "PASS"
+  }
+]

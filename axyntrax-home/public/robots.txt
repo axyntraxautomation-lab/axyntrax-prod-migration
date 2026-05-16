@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /jarvis/
+Disallow: /api/jarvis/
+
+Sitemap: https://axyntrax-automation.net/sitemap.xml

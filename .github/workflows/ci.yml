@@ -1,0 +1,42 @@
+name: AXYNTRAX Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'axyntrax-home/**'
+
+jobs:
+  deploy:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: axyntrax-home/package-lock.json
+
+      - name: Install dependencies
+        working-directory: axyntrax-home
+        run: npm ci
+
+      - name: Pull Vercel Environment Variables
+        working-directory: axyntrax-home
+        run: npx vercel env pull .env.production.local --environment=production --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Vercel
+        working-directory: axyntrax-home
+        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

@@ -1,0 +1,34 @@
+kind = "api"
+title = "WhatsApp Worker"
+version = "1.0.0"
+
+# El wa-worker NO se monta en el shared proxy: el api-server lo llama
+# directamente vía la variable de entorno WA_WORKER_BASE_URL al deployment
+# Reserved VM en producción. Por eso `paths` queda vacío.
+
+[[services]]
+localPort = 8099
+name = "WhatsApp Worker"
+paths = []
+
+[services.development]
+run = "PORT=8099 WA_WORKER_MOCK=true pnpm --filter @workspace/wa-worker run dev"
+
+[services.production]
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/wa-worker", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+# arrancamos directo node para acelerar el cold start del Reserved VM
+args = ["node", "--enable-source-maps", "artifacts/wa-worker/dist/index.mjs"]
+
+[services.production.run.env]
+PORT = "8099"
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/healthz"

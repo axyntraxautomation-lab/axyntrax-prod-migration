@@ -1,0 +1,36 @@
+{
+  "ia_name": "MATRIX",
+  "start_timestamp": "2026-05-09T19:50:16.325405+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T19:50:22.478046+00:00",
+  "duration_seconds": 6.16,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "matrix_turn_1",
+      "outcome": "error",
+      "latency_ms": 2046,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "prompt": "Hola Matrix, confirma versión y sincronía con Cecilia y Atlas."
+    },
+    {
+      "test_name": "matrix_turn_2",
+      "outcome": "error",
+      "latency_ms": 2045,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "prompt": "Dame en 1 frase cualquier inconsistencia detectada."
+    },
+    {
+      "test_name": "matrix_turn_3",
+      "outcome": "error",
+      "latency_ms": 2063,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "prompt": "Simula remediación: si hay inconsistencia devuelve suggested_action."
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[MATRIX] Revisar logs del servicio."
+  ],
+  "confidence_score": 55
+}

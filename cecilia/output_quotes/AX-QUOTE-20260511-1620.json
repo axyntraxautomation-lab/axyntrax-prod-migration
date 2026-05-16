@@ -1,0 +1,20 @@
+{
+    "folio": "AX-QUOTE-20260511-1620",
+    "fecha": "2026-05-11",
+    "cliente": "Cl\u00ednica Dental Sonrisas",
+    "detalle_solicitado": "Hola Cecilia, queremos una p\u00e1gina web para nuestra cl\u00ednica dental y un bot de automatizaci\u00f3n para agendar citas.",
+    "conceptos": [
+        "Creaci\u00f3n de Web / E-commerce",
+        "Automatizaci\u00f3n RPA"
+    ],
+    "urgencia": "URGENTE",
+    "financiero": {
+        "subtotal_neto": 3541.67,
+        "igv": 637.5,
+        "total_final": 4179.17,
+        "ahorro_eficiencia": 531.25,
+        "eta_dias": 9
+    },
+    "condiciones": "50% adelanto para inicio de proyecto, 50% contra entrega satisfactoria.",
+    "vendedor": "Cecilia (AXYNTRAX Commercial AI)"
+}

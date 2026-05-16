@@ -1,0 +1,47 @@
+{
+  "ia_name": "ATLAS",
+  "start_timestamp": "2026-05-09T17:14:59.722525+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T17:15:05.899761+00:00",
+  "duration_seconds": 6.17,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "atlas_test_1",
+      "outcome": "error",
+      "latency_ms": 2061,
+      "details": "<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n",
+      "payload": {
+        "action": "get_client",
+        "client_id": "TEST-0001"
+      }
+    },
+    {
+      "test_name": "atlas_test_2",
+      "outcome": "error",
+      "latency_ms": 2047,
+      "details": "<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n",
+      "payload": {
+        "action": "suggested_reply",
+        "intent": "interes_paquete_pyme",
+        "context": {}
+      }
+    },
+    {
+      "test_name": "atlas_test_3",
+      "outcome": "error",
+      "latency_ms": 2063,
+      "details": "<!doctype html>\n<html lang=en>\n<title>405 Method Not Allowed</title>\n<h1>Method Not Allowed</h1>\n<p>The method is not allowed for the requested URL.</p>\n",
+      "payload": {
+        "action": "compare_entity",
+        "entity": "email",
+        "value": "test@example.com"
+      }
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[ATLAS] Revisar logs del servicio."
+  ],
+  "confidence_score": 55
+}

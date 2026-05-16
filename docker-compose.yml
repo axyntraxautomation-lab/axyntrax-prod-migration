@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  axia-api:
+    build: .
+    container_name: axia_api_prod
+    command: gunicorn -w 4 -b 0.0.0.0:5001 axia_api:app
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    restart: always
+
+  axia-webhook:
+    build: .
+    container_name: axia_webhook_prod
+    command: gunicorn -w 2 -b 0.0.0.0:5000 axia_webhook:app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    restart: always
+
+  jarvis:
+    build: .
+    container_name: jarvis_orchestrator_prod
+    command: python jarvis_orchestrator.py
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    restart: always

@@ -1,0 +1,79 @@
+run = "node server/index.js"
+entrypoint = "server/index.js"
+modules = ["nodejs-22", "postgresql-16", "python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["nodejs_20"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 8082
+externalPort = 3002
+
+[[ports]]
+localPort = 8099
+externalPort = 8099
+
+[[ports]]
+localPort = 23183
+externalPort = 3000
+
+[[ports]]
+localPort = 24303
+externalPort = 3003
+
+[[ports]]
+localPort = 25265
+externalPort = 3001
+
+[agent]
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 180000
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/wa-worker: worker"
+
+[[workflows.workflow]]
+name = "artifacts/wa-worker: worker"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=8099 WA_WORKER_MOCK=true pnpm --filter @workspace/wa-worker run dev"
+waitForPort = 8099
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["pnpm", "install", "--frozen-lockfile"]
+run = ["pnpm", "--filter", "@workspace/api-server", "run", "start"]
+
+[userenv]
+
+[userenv.shared]

@@ -1,0 +1,72 @@
+{
+  "ia_name": "JARVIS",
+  "start_timestamp": "2026-05-09T17:30:03.794133+00:00",
+  "status": "OK",
+  "end_timestamp": "2026-05-09T17:30:07.876757+00:00",
+  "duration_seconds": 4.09,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "log_insert",
+      "outcome": "ok",
+      "latency_ms": 2047,
+      "details": {
+        "mensaje": "Notificación recibida por JARVIS",
+        "ok": true
+      },
+      "payload": {
+        "type": "health.check"
+      }
+    },
+    {
+      "test_name": "query_recent_events",
+      "outcome": "ok",
+      "latency_ms": 2046,
+      "details": {
+        "count": 5,
+        "inbox": [
+          {
+            "mensaje": "Establecido MAX_TOKENS = 300, TEMPERATURE = 0.5 y RouteLLM en modo ahorro de energia Lite local.",
+            "origen": "ANTIGRAVITY",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T11:07:10.809169",
+            "tipo": "ACCION"
+          },
+          {
+            "mensaje": "audit_probe",
+            "origen": "ANTIGRAVITY",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T12:13:29.762572",
+            "tipo": "health.check"
+          },
+          {
+            "mensaje": "",
+            "origen": "DESCONOCIDO",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T12:15:13.241855",
+            "tipo": "ACCION"
+          },
+          {
+            "mensaje": "",
+            "origen": "DESCONOCIDO",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T12:25:23.653511",
+            "tipo": "ACCION"
+          },
+          {
+            "mensaje": "",
+            "origen": "DESCONOCIDO",
+            "prioridad": 1,
+            "timestamp": "2026-05-09T12:30:05.836416",
+            "tipo": "ACCION"
+          }
+        ],
+        "ok": true
+      },
+      "url": "http://localhost:5001/api/jarvis/inbox?limit=5"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [],
+  "confidence_score": 100
+}

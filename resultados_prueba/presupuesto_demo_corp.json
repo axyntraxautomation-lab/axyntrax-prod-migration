@@ -1,0 +1,20 @@
+{
+    "folio": "AX-QUOTE-20260511-1650",
+    "fecha": "2026-05-11",
+    "cliente": "DemoCorp International",
+    "detalle_solicitado": "Necesitamos una plataforma e-learning con IA propia para la capacitaci\u00f3n interna de nuestros 500 empleados. Debe ser web y m\u00f3vil.",
+    "conceptos": [
+        "Creaci\u00f3n de Web / E-commerce",
+        "Modelos IA Empresarial"
+    ],
+    "urgencia": "URGENTE",
+    "financiero": {
+        "subtotal_neto": 11458.33,
+        "igv": 2062.5,
+        "total_final": 13520.83,
+        "ahorro_eficiencia": 1718.75,
+        "eta_dias": 31
+    },
+    "condiciones": "50% adelanto para inicio de proyecto, 50% contra entrega satisfactoria.",
+    "vendedor": "Cecilia (AXYNTRAX Commercial AI)"
+}

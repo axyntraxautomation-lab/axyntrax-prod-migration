@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Gerencia | Axyntrax</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a0a; color:#fff; font-family:'Inter',sans-serif; display:flex; min-height:100vh; }
+  #sidebar { width:250px; background:rgba(15,25,35,0.95); border-right:1px solid rgba(6,182,212,0.2); padding:20px; }
+  #sidebar h3 { color:#22d3ee; margin-bottom:20px; font-size:1.2rem; }
+  .module-item { padding:12px; cursor:pointer; color:#94a3b8; border-radius:8px; margin-bottom:5px; transition:all 0.2s; list-style:none; }
+  .module-item.active { background:rgba(6,182,212,0.15); color:#fff; }
+  .module-item:hover { background:rgba(6,182,212,0.08); }
+  #main-panel { flex:1; padding:30px; overflow-y:auto; }
+  .glass { background:rgba(15,25,35,0.8); backdrop-filter:blur(20px); border:1px solid rgba(6,182,212,0.2); border-radius:24px; padding:30px; margin-bottom:20px; }
+  .kpi { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; margin-bottom:30px; }
+  .kpi-card { background:rgba(6,182,212,0.08); border-radius:20px; padding:25px; text-align:center; }
+  .kpi-value { font-family:'JetBrains Mono',monospace; font-size:2.5rem; font-weight:700; color:#22d3ee; }
+  .kpi-label { color:#94a3b8; font-size:0.9rem; margin-top:8px; }
+  .charts { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:30px; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; padding:12px; border-bottom:2px solid rgba(6,182,212,0.3); color:#22d3ee; }
+  td { padding:12px; border-bottom:1px solid rgba(255,255,255,0.05); font-family:'JetBrains Mono',monospace; }
+  .badge { background:#22d3ee; color:#000; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:600; }
+  h2 { color:#22d3ee; margin-bottom:20px; }
+</style>
+</head>
+<body>
+<aside id="sidebar">
+  <h3>Panel de Gerencia</h3>
+  <ul style="list-style:none;padding:0;">
+    <li class="module-item active" data-module="dashboard">Dashboard Principal</li>
+    <li class="module-item" data-module="access-control">Control de Accesos</li>
+    <li class="module-item" data-module="daily-report">Reporte Diario</li>
+    <li class="module-item" data-module="user-management">Gestión de Usuarios</li>
+    <li class="module-item" data-module="cecilia-chat">Cecilia Asistente</li>
+  </ul>
+</aside>
+<main id="main-panel">
+  <div id="content-dashboard">
+    <h2>Dashboard de Gerencia</h2>
+    <div class="kpi">
+      <div class="kpi-card"><div class="kpi-value">S/ 1,200</div><div class="kpi-label">Ingresos del Día</div></div>
+      <div class="kpi-card"><div class="kpi-value">15</div><div class="kpi-label">Órdenes Activas</div></div>
+      <div class="kpi-card"><div class="kpi-value">3</div><div class="kpi-label">Clientes Nuevos</div></div>
+      <div class="kpi-card"><div class="kpi-value">98%</div><div class="kpi-label">Tasa de Conversión</div></div>
+    </div>
+    <div class="charts">
+      <canvas id="weeklyChart"></canvas>
+      <canvas id="modulesChart"></canvas>
+    </div>
+  </div>
+  <div id="content-access-control" style="display:none;">
+    <h2>Control de Accesos</h2>
+    <div class="glass"><p>Registro de accesos al sistema. Monitoreo en tiempo real de usuarios activos.</p>
+    <table><thead><tr><th>Usuario</th><th>Hora</th><th>Acción</th></tr></thead><tbody><tr><td>admin</td><td>08:00</td><td>Login</td></tr><tr><td>operador</td><td>08:15</td><td>Login</td></tr><tr><td>cajero</td><td>08:30</td><td>Login</td></tr></tbody></table></div>
+  </div>
+  <div id="content-daily-report" style="display:none;">
+    <h2>Reporte Diario</h2>
+    <div class="glass"><p>Resumen de actividad del día de hoy.</p>
+    <ul style="padding-left:20px; color:#94a3b8;"><li>Órdenes procesadas: 15</li><li>Ingresos totales: S/ 1,200.00</li><li>Clientes nuevos: 3</li><li>Productos más vendidos: Filtros de aceite</li></ul></div>
+  </div>
+  <div id="content-user-management" style="display:none;">
+    <h2>Gestión de Usuarios</h2>
+    <div class="glass"><p>Administración de usuarios y permisos del sistema.</p>
+    <table><thead><tr><th>Nombre</th><th>Rol</th><th>Estado</th></tr></thead><tbody><tr><td>Ana López</td><td>Gerente</td><td><span class="badge">Activo</span></td></tr><tr><td>Carlos Ruiz</td><td>Operador</td><td><span class="badge">Activo</span></td></tr><tr><td>María Torres</td><td>Cajero</td><td><span class="badge">Inactivo</span></td></tr></tbody></table></div>
+  </div>
+  <div id="content-cecilia-chat" style="display:none;">
+    <h2>Cecilia Asistente</h2>
+    <div class="glass"><p>Cecilia Master está activa y lista para ayudarle con la configuración de su módulo. Puede preguntarle sobre horarios, servicios o cualquier duda operativa.</p>
+    <div style="background:#111; border:1px solid rgba(6,182,212,0.3); border-radius:16px; padding:15px; margin-top:15px; max-height:300px; overflow-y:auto;">
+      <p style="color:#22d3ee;">Cecilia:</p><p style="color:#94a3b8;">Hola, soy Cecilia Master. Estoy aquí para guiarlo en la configuración de sus módulos. ¿En qué puedo ayudarle?</p>
+    </div></div>
+  </div>
+</main>
+<script>
+  const labels = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  new Chart(document.getElementById('weeklyChart'),{type:'bar',data:{labels,datasets:[{label:'Actividad',data:[12,19,8,15,22,10,5],backgroundColor:'rgba(34,211,238,0.6)',borderColor:'#22d3ee',borderWidth:1}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94a3b8'}},x:{grid:{display:false},ticks:{color:'#94a3b8'}}},responsive:true,maintainAspectRatio:false}});
+  new Chart(document.getElementById('modulesChart'),{type:'doughnut',data:{labels:['Predictive','Inventory','Gateways','Cecilia','Neo','Atlas'],datasets:[{data:[25,20,15,18,12,10],backgroundColor:['#22d3ee','#f97316','#8b5cf6','#10b981','#ec4899','#f59e0b'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:15}}},responsive:true,maintainAspectRatio:false}});
+  document.querySelectorAll('.module-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.module-item').forEach(i => { i.classList.remove('active'); });
+      this.classList.add('active');
+      const moduleName = this.getAttribute('data-module');
+      document.querySelectorAll('[id^="content-"]').forEach(c => c.style.display = 'none');
+      const target = document.getElementById('content-' + moduleName);
+      if (target) target.style.display = 'block';
+    });
+  });
+</script>
+</body>
+</html>

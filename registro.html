@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro y Acceso | AXYNTRAX Automation</title>
+    <link rel="canonical" href="https://www.axyntrax-automation.net/registro" />
+    <meta name="domain" content="axyntrax-automation.net">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0D0D0D',
+                        cyan: { DEFAULT: '#00E5FF' }
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0D0D0D; color: #FFFFFF; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .cyan-gradient { background: linear-gradient(135deg, #00E5FF 0%, #008291 100%); }
+        .hide { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-10">
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                <a href="index.html#modulos" class="hover:text-cyan transition-colors">Módulos</a>
+                <a href="index.html#planes" class="hover:text-cyan transition-colors">Planes</a>
+                <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
+                <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+            </div>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="flex-grow flex items-center justify-center pt-32 pb-20 px-6">
+        <div class="max-w-md w-full relative">
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-cyan/5 blur-[100px] rounded-full -z-10"></div>
+            
+            <!-- REGISTRO -->
+            <div id="form-registro" class="glass p-10 rounded-[40px] border-cyan/20">
+                <h1 class="text-3xl font-bold text-center mb-8">Empieza tu <span class="text-cyan">Demo Gratis</span></h1>
+                <form class="space-y-4">
+                    <input type="text" placeholder="Nombre completo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="text" placeholder="Empresa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
+                        <option>Rubro</option>
+                        <option>Taller</option>
+                        <option>Dental</option>
+                    </select>
+                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
+                        <option>Módulo</option>
+                        <option>Gestión Taller</option>
+                        <option>Gestión Dental</option>
+                    </select>
+                    <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="tel" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <button type="button" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">Crear cuenta y recibir KEY</button>
+                    <div class="text-center pt-6">
+                        <button type="button" onclick="toggleForm('login')" class="text-xs text-gray-500 hover:text-cyan transition-colors underline decoration-cyan/30">¿Ya tienes cuenta? → Acceder</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="form-login" class="glass p-10 rounded-[40px] border-cyan/20 hide">
+                <h1 class="text-3xl font-bold text-center mb-8">Acceder a <span class="text-cyan">mi cuenta</span></h1>
+                <form class="space-y-4">
+                    <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="text" placeholder="KEY de licencia" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <button type="button" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">Acceder al Dashboard</button>
+                    <div class="text-center pt-6">
+                        <button type="button" onclick="toggleForm('registro')" class="text-xs text-gray-500 hover:text-cyan transition-colors underline decoration-cyan/30">¿Eres nuevo? → Registrarse gratis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="pt-20 pb-10 border-t border-white/5 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
+                <div>
+                    <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-8 mb-6 mx-auto md:mx-0">
+                    <div class="text-[10px] text-gray-500 space-y-2 uppercase tracking-widest font-bold">
+                        <p>Axyntrax Automation S.A.C.</p>
+                        <p>RUC 10406750324</p>
+                        <p>&copy; 2026 Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 text-xs text-gray-500">
+                    <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                    <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                    <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+                    <a href="politicas-de-privacidad.html" class="hover:text-cyan transition-colors">Políticas de Privacidad</a>
+                </div>
+                <div class="text-xs text-gray-500 space-y-4">
+                    <p>axyntraxautomation@gmail.com</p>
+                    <p>+51 991 740 590</p>
+                    <div class="flex justify-center md:justify-start gap-4 text-xl">
+                        <a href="https://wa.me/51991740590" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://facebook.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-wrap justify-center gap-8 text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em]">
+                <span>SSL Seguro</span>
+                <span>Hosting Vercel</span>
+                <span>Pagos Culqi</span>
+                <span>Facturación SUNAT</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="cecilia-widget.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="email-sistema.js"></script>
+
+    <!-- SCRIPTS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="email-sistema.js"></script>
+    <script>
+        (function() {
+            emailjs.init("TU_PUBLIC_KEY");
+        })();
+    </script>
+
+    <script>
+        function toggleForm(mode) {
+            document.getElementById('form-registro').classList.toggle('hide', mode === 'login');
+            document.getElementById('form-login').classList.toggle('hide', mode === 'registro');
+        }
+    </script>
+</body>
+</html>

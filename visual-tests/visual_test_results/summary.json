@@ -1,0 +1,21 @@
+{
+  "url": "http://localhost:5000/dashboard",
+  "timestamp": "2026-05-09T20:22:09.571Z",
+  "menuLinksCount": 0,
+  "chatResult": {
+    "found": true,
+    "attempts": [
+      {
+        "success": true,
+        "screenshot": "C:\\Users\\YARVIS\\.gemini\\antigravity\\scratch\\AXYNTRAX_AUTOMATION_Suite\\visual-tests\\visual_test_results\\chat_response_2026-05-09T20-22-09-298Z.png"
+      }
+    ]
+  },
+  "statusChecks": {
+    "title": "Jarvis V3 - Terminal de Inteligencia Holográfica",
+    "url": "http://localhost:5000/dashboard",
+    "has404": false,
+    "has500": false
+  },
+  "resultsDirectory": "C:\\Users\\YARVIS\\.gemini\\antigravity\\scratch\\AXYNTRAX_AUTOMATION_Suite\\visual-tests\\visual_test_results"
+}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXYNTRAX | Simulación de Cliente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        body {
+            background-color: #050b14;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+        .cyber-border {
+            border: 1px solid #0ea5e9;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
+        }
+        .matrix-bg {
+            background: linear-gradient(to bottom, rgba(5,11,20,0.9), rgba(5,11,20,0.95)),
+                        url('https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="matrix-bg min-h-screen flex items-center justify-center p-4 overflow-hidden">
+
+    <div class="w-full max-w-3xl cyber-border bg-slate-900/90 rounded-xl p-6 backdrop-blur-md flex flex-col h-[80vh]">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b border-sky-500/30 pb-4 mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <h1 class="font-['Orbitron'] text-sky-400 tracking-widest font-bold">AXYNTRAX LIVE PORTAL</h1>
+            </div>
+            <span class="text-xs text-slate-400 font-mono">SESSION_ID: CX_7742_AUTO</span>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 px-2 py-4 font-mono text-sm">
+            <!-- Initial Message -->
+            <div class="flex gap-3">
+                <div class="text-sky-400 font-bold w-20 shrink-0">[CECILIA]:</div>
+                <div class="text-slate-300">Bienvenido al Hub de Soluciones Corporativas Axyntrax. Soy Cecilia, tu consultora de automatización IA. ¿En qué puedo optimizar tu negocio hoy?</div>
+            </div>
+        </div>
+
+        <!-- Input Simulation Area -->
+        <div class="border-t border-sky-500/30 pt-4 mt-auto">
+            <div id="typing-indicator" class="text-xs text-slate-500 italic mb-2 h-4"></div>
+            <div class="flex items-center bg-black/50 p-3 rounded border border-slate-700">
+                <span class="text-sky-400 mr-2 font-bold">></span>
+                <div id="command-input" class="text-white animate-pulse">_</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chat = document.getElementById('chat-box');
+        const inputEl = document.getElementById('command-input');
+        const typingInd = document.getElementById('typing-indicator');
+
+        const script = [
+            { role: "CLIENTE", text: "Hola Cecilia. Tengo una constructora y quiero saber qué módulos de automatización me recomiendas para gestionar facturas y leads." },
+            { role: "CECILIA", text: "Entendido perfectamente. Analizando industria [CONSTRUCCIÓN]..." },
+            { role: "CECILIA", text: "Recomiendo la triada diamante: 1. Módulo de Automatización RPA (para facturas), 2. Dashboard de Inteligencia Analítica, y 3. Mi propio motor WhatsApp CRM. ¿Te gustaría una demostración funcional ahora?" },
+            { role: "CLIENTE", text: "Sí, dame la demo." },
+            { role: "CECILIA", text: "Preparando entorno de pruebas... Desplegando sandbox temporal..." },
+            { role: "CECILIA", text: "✅ Demo generada con éxito. Presiona el botón flotante de instalación que aparecerá a continuación para activarla en tu sistema local." },
+            { role: "SYSTEM", text: "DOWNLOADING AXYNTRAX_SANDBOX_DEMO.EXE [100%]...", type: "action" }
+        ];
+
+        function addMessage(role, text, isSys = false) {
+            const div = document.createElement('div');
+            div.className = "flex gap-3 animate-fade-in";
+            let roleColor = "text-sky-400";
+            if (role === "CLIENTE") roleColor = "text-emerald-400";
+            if (isSys) roleColor = "text-yellow-500";
+            
+            div.innerHTML = `<div class="${roleColor} font-bold w-20 shrink-0">[${role}]:</div><div class="text-slate-300">${text}</div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function typeText(text, element) {
+            let current = "";
+            for(let char of text) {
+                current += char;
+                element.innerText = current + "_";
+                await new Promise(r => setTimeout(r, 30));
+            }
+        }
+
+        async function runScenario() {
+            await new Promise(r => setTimeout(r, 1500));
+
+            for(let line of script) {
+                if(line.role === "CLIENTE") {
+                    typingInd.innerText = "Simulando entrada de cliente...";
+                    await typeText(line.text, inputEl);
+                    await new Promise(r => setTimeout(r, 500));
+                    inputEl.innerText = "_";
+                    typingInd.innerText = "";
+                    addMessage("CLIENTE", line.text);
+                } else {
+                    typingInd.innerText = line.role === "CECILIA" ? "Cecilia está respondiendo..." : "";
+                    await new Promise(r => setTimeout(r, 1200));
+                    addMessage(line.role, line.text, line.type === "action");
+                }
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            
+            // Create Final Download Button
+            const btn = document.createElement('button');
+            btn.className = "mt-6 w-full bg-sky-600 hover:bg-sky-500 text-white py-3 rounded font-bold font-['Orbitron'] glow-text transition animate-bounce";
+            btn.innerText = "EJECUTAR DEMO AXYNTRAX V3.5";
+            btn.onclick = () => {
+                btn.innerText = "LANZANDO...";
+                btn.className = "mt-6 w-full bg-green-600 text-white py-3 rounded font-bold font-['Orbitron'] cursor-not-allowed";
+                window.location.href = "http://localhost:0"; // This triggers error or closure, or just visually changes.
+                alert("Simulando apertura de ventana Demo en el monitor local...");
+            };
+            chat.appendChild(btn);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        runScenario();
+    </script>
+</body>
+</html>

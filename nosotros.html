@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros | AXYNTRAX Automation</title>
+    <link rel="canonical" href="https://www.axyntrax-automation.net/nosotros" />
+    <meta name="domain" content="axyntrax-automation.net">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0D0D0D',
+                        cyan: { DEFAULT: '#00E5FF' }
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0D0D0D; color: #FFFFFF; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .cyan-gradient { background: linear-gradient(135deg, #00E5FF 0%, #008291 100%); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-10">
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                <a href="index.html#modulos" class="hover:text-cyan transition-colors">Módulos</a>
+                <a href="index.html#planes" class="hover:text-cyan transition-colors">Planes</a>
+                <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
+                <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+            </div>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="pt-40 pb-20 relative">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <h1 class="text-5xl font-bold mb-4 tracking-tight">Sobre <span class="text-cyan">Axyntrax</span></h1>
+            <p class="text-gray-400 text-lg italic">"Automatizando el Perú, empresa por empresa"</p>
+        </div>
+    </section>
+
+    <!-- HISTORIA -->
+    <section class="py-20">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="glass p-12 rounded-[40px] border-white/5 text-center leading-relaxed">
+                <h2 class="text-2xl font-bold mb-8">Nuestra Historia</h2>
+                <p class="text-gray-400 text-lg">
+                    Axyntrax es una empresa tecnológica orgullosamente arequipeña. 
+                    Comenzamos automatizando procesos en talleres mecánicos locales y hoy nuestra suite 
+                    gestiona 8 rubros diferentes en Lima, Arequipa, Cusco y Trujillo. 
+                    Nuestra misión es democratizar la IA para el empresario peruano.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MISIÓN / VISIÓN / VALORES -->
+    <section class="py-24 bg-dark/50">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="glass p-10 rounded-[32px] border-white/5 text-center transition-all hover:border-cyan/30">
+                <div class="text-4xl mb-6">🎯</div>
+                <h3 class="text-xl font-bold mb-4">Misión</h3>
+                <p class="text-xs text-gray-500">Software de automatización accesible y potente diseñado específicamente para la empresa peruana.</p>
+            </div>
+            <div class="glass p-10 rounded-[32px] border-white/5 text-center transition-all hover:border-cyan/30">
+                <div class="text-4xl mb-6">🚀</div>
+                <h3 class="text-xl font-bold mb-4">Visión</h3>
+                <p class="text-xs text-gray-500">Convertirnos en la plataforma #1 de gestión automatizada del Perú para el 2027, impactando a 500+ empresas.</p>
+            </div>
+            <div class="glass p-10 rounded-[32px] border-white/5 text-center transition-all hover:border-cyan/30">
+                <div class="text-4xl mb-6">💎</div>
+                <h3 class="text-xl font-bold mb-4">Valores</h3>
+                <p class="text-xs text-gray-500">Innovación · Honestidad · Soporte real · Precios justos · Tecnología 100% peruana.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- AGENTES PÚBLICOS -->
+    <section class="py-24 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-16 italic">Nuestro Equipo IA</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-10 rounded-[40px] border-white/5 hover:border-cyan/50 transition-all group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform">🤖</div>
+                    <h4 class="font-bold mb-1">CECILIA</h4>
+                    <p class="text-[10px] text-cyan font-bold tracking-widest uppercase mb-4">Atención 24/7</p>
+                    <p class="text-xs text-gray-500">Directora de Atención al Cliente. Gestión de leads y soporte inicial.</p>
+                </div>
+                <div class="glass p-10 rounded-[40px] border-white/5 hover:border-cyan/50 transition-all group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform">🛰️</div>
+                    <h4 class="font-bold mb-1">ATLAS</h4>
+                    <p class="text-[10px] text-cyan font-bold tracking-widest uppercase mb-4">Operaciones TI</p>
+                    <p class="text-xs text-gray-500">Director de Infraestructura. Monitoreo constante del uptime del sistema.</p>
+                </div>
+                <div class="glass p-10 rounded-[40px] border-white/5 hover:border-cyan/50 transition-all group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform">📣</div>
+                    <h4 class="font-bold mb-1">MARK</h4>
+                    <p class="text-[10px] text-cyan font-bold tracking-widest uppercase mb-4">Director Marketing</p>
+                    <p class="text-xs text-gray-500">Estrategia de contenido autónomo. Generación de posts cada 3 horas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DATOS EMPRESA -->
+    <section class="py-24 bg-cyan/5">
+        <div class="max-w-xl mx-auto px-6 text-center">
+            <div class="glass p-12 rounded-[40px] border-cyan/20">
+                <div class="text-xs text-cyan font-bold uppercase tracking-[0.4em] mb-10 italic">Ficha Corporativa</div>
+                <div class="space-y-4 text-sm font-medium">
+                    <p class="flex justify-between border-b border-white/5 pb-2"><span>RUC</span><span class="text-cyan">10406750324</span></p>
+                    <p class="flex justify-between border-b border-white/5 pb-2"><span>Razón Social</span><span>Axyntrax Automation S.A.C.</span></p>
+                    <p class="flex justify-between border-b border-white/5 pb-2"><span>Sede</span><span>Arequipa, Perú</span></p>
+                    <p class="flex justify-between border-b border-white/5 pb-2"><span>Email</span><span class="text-cyan">axyntraxautomation@gmail.com</span></p>
+                    <p class="flex justify-between"><span>WhatsApp</span><span>+51 991 740 590</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="py-24 text-center">
+        <h2 class="text-3xl font-bold mb-6 italic">Únete a los 47 negocios peruanos</h2>
+        <a href="/registro" class="px-10 py-4 cyan-gradient text-dark font-black rounded-xl text-lg hover:shadow-2xl transition-all">Empieza tu Demo Gratis</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="pt-20 pb-10 border-t border-white/5 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
+                <div>
+                    <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-8 mb-6 mx-auto md:mx-0">
+                    <div class="text-[10px] text-gray-500 space-y-2 uppercase tracking-widest font-bold">
+                        <p>Axyntrax Automation S.A.C.</p>
+                        <p>RUC 10406750324</p>
+                        <p>&copy; 2026 Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 text-xs text-gray-500">
+                    <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                    <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                    <a href="nosotros.html" class="text-cyan font-bold">Nosotros</a>
+                    <a href="politicas-de-privacidad.html" class="hover:text-cyan transition-colors">Políticas de Privacidad</a>
+                </div>
+                <div class="text-xs text-gray-500 space-y-4">
+                    <p>axyntraxautomation@gmail.com</p>
+                    <p>+51 991 740 590</p>
+                    <div class="flex justify-center md:justify-start gap-4 text-xl">
+                        <a href="https://wa.me/51991740590" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://facebook.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-wrap justify-center gap-8 text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em]">
+                <span>SSL Seguro</span>
+                <span>Hosting Vercel</span>
+                <span>Pagos Culqi</span>
+                <span>Facturación SUNAT</span>
+    <script src="cecilia-widget.js"></script>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÓN WHATSAPP -->
+    <a href="https://wa.me/51991740590" target="_blank" class="fixed bottom-28 right-8 z-[100] w-14 h-14 bg-[#25D366] rounded-full shadow-2xl flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- WIDGET CECILIA -->
+    <div class="fixed bottom-8 right-8 z-[100]">
+        <button onclick="document.getElementById('chat-window').classList.toggle('hidden')" class="w-16 h-16 cyan-gradient rounded-full shadow-2xl flex items-center justify-center text-dark text-3xl hover:scale-110 transition-transform relative">
+            <i class="fa-solid fa-robot"></i><span class="absolute top-0 right-0 w-4 h-4 bg-green-500 border-2 border-dark rounded-full"></span>
+        </button>
+        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 glass rounded-[32px] overflow-hidden shadow-2xl border-cyan/20">
+            <div class="bg-cyan p-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-dark rounded-full flex items-center justify-center text-xl">🤖</div>
+                <div class="text-dark font-bold text-sm">Cecilia AI</div>
+            </div>
+            <div class="p-4 h-64 overflow-y-auto text-xs space-y-4 bg-dark/20">
+                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none max-w-[80%]">Hola, soy Cecilia 👋 ¿En qué te ayudo?</div>
+            </div>
+            <div class="p-4 border-t border-white/5 flex gap-2">
+                <input type="text" placeholder="Escribe aquí..." class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] outline-none">
+                <button class="text-cyan text-lg"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

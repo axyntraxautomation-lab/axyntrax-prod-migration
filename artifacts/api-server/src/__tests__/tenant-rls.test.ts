@@ -1,0 +1,574 @@
+/**
+ * Tests cross-tenant RLS endurecido (Tarea #47).
+ *
+ * Estrategia:
+ *  1. Crea 2 tenants A y B en Supabase con service-role (bypass RLS).
+ *  2. Inserta data en tablas tenant_inventario / tenant_alertas /
+ *     tenant_finanzas_movimientos / tenant_pagos_qr para CADA tenant.
+ *  3. Firma un JWT con tenant_id = B (role=tenant_owner) y verifica:
+ *     - SELECT cross-tenant devuelve 0 filas (USING aplica).
+ *     - SELECT propio sí ve filas del propio tenant.
+ *     - INSERT/UPDATE/DELETE de filas del PROPIO tenant funcionan.
+ *     - INSERT con tenant_id=A (forjado en body) es BLOQUEADO por
+ *       WITH CHECK aunque el JWT sea de B.
+ *     - UPDATE/DELETE filtrado por tenant_id=A no afecta filas
+ *       (USING evalúa false → 0 rows touched).
+ *  4. Limpia ambos tenants al final.
+ *
+ * Pre-requisito: `pnpm --filter @workspace/db-supabase run bootstrap` y
+ * `pnpm --filter @workspace/db-supabase run install-rls` ya ejecutados.
+ *
+ * Uso: pnpm --filter @workspace/api-server run test:rls
+ */
+
+import { test, before, after } from "node:test";
+import assert from "node:assert/strict";
+import jwt from "jsonwebtoken";
+import { eq } from "drizzle-orm";
+
+import {
+  getSupabaseDb,
+  tenantsTable,
+  tenantBrandingTable,
+  tenantOnboardingStateTable,
+  tenantInventarioTable,
+  tenantAlertasTable,
+  tenantFinanzasMovimientosTable,
+  tenantPagosQrTable,
+  tenantClientesFinalesTable,
+  isSupabaseConfigured,
+  getSupabaseEnv,
+} from "@workspace/db-supabase";
+
+type TenantSeed = { id: string; slug: string; ownerEmail: string };
+
+const TS = Date.now();
+const SLUG_A = `rls-a-${TS}`;
+const SLUG_B = `rls-b-${TS}`;
+const EMAIL_A = `rls-a-${TS}@axyntrax.test`;
+const EMAIL_B = `rls-b-${TS}@axyntrax.test`;
+
+let A: TenantSeed | null = null;
+let B: TenantSeed | null = null;
+
+/**
+ * Una corrida real de RLS exige Supabase configurado **y** el secret HS256
+ * para firmar JWTs simulados. Si falta cualquiera, los tests deben skippear
+ * limpio en CI/sandboxes (no fallar en module-load).
+ */
+function isRlsTestReady(): boolean {
+  return isSupabaseConfigured() && Boolean(process.env.SUPABASE_JWT_SECRET);
+}
+
+function signJwt(tenantId: string): string {
+  const secret = process.env.SUPABASE_JWT_SECRET;
+  if (!secret) throw new Error("SUPABASE_JWT_SECRET requerido para signJwt");
+  return jwt.sign(
+    {
+      sub: `test-${tenantId}`,
+      tenant_id: tenantId,
+      role: "tenant_owner",
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    },
+    secret,
+    { algorithm: "HS256" },
+  );
+}
+
+async function restGet(args: {
+  table: string;
+  jwt: string;
+  query?: string;
+}): Promise<{ status: number; rows: Array<Record<string, unknown>> }> {
+  const env = getSupabaseEnv();
+  const url = `${env.publicUrl}/rest/v1/${args.table}?${args.query ?? "select=*"}`;
+  const res = await fetch(url, {
+    headers: {
+      apikey: env.anonKey!,
+      Authorization: `Bearer ${args.jwt}`,
+      Accept: "application/json",
+    },
+  });
+  let rows: Array<Record<string, unknown>> = [];
+  if (res.status >= 200 && res.status < 300) {
+    rows = (await res.json()) as Array<Record<string, unknown>>;
+  } else {
+    try {
+      await res.text();
+    } catch {
+      // ignore
+    }
+  }
+  return { status: res.status, rows };
+}
+
+async function restMutate(args: {
+  table: string;
+  jwt: string;
+  method: "POST" | "PATCH" | "DELETE";
+  body?: unknown;
+  query?: string;
+}): Promise<number> {
+  const env = getSupabaseEnv();
+  const url = `${env.publicUrl}/rest/v1/${args.table}${args.query ? `?${args.query}` : ""}`;
+  const res = await fetch(url, {
+    method: args.method,
+    headers: {
+      apikey: env.anonKey!,
+      Authorization: `Bearer ${args.jwt}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: args.body ? JSON.stringify(args.body) : undefined,
+  });
+  try {
+    await res.text();
+  } catch {
+    // ignore
+  }
+  return res.status;
+}
+
+async function cleanupByEmail(email: string): Promise<void> {
+  const sdb = getSupabaseDb();
+  const [t] = await sdb
+    .select({ id: tenantsTable.id })
+    .from(tenantsTable)
+    .where(eq(tenantsTable.ownerEmail, email))
+    .limit(1);
+  if (!t) return;
+  await sdb
+    .delete(tenantPagosQrTable)
+    .where(eq(tenantPagosQrTable.tenantId, t.id));
+  await sdb
+    .delete(tenantFinanzasMovimientosTable)
+    .where(eq(tenantFinanzasMovimientosTable.tenantId, t.id));
+  await sdb
+    .delete(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, t.id));
+  await sdb
+    .delete(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.tenantId, t.id));
+  await sdb
+    .delete(tenantClientesFinalesTable)
+    .where(eq(tenantClientesFinalesTable.tenantId, t.id));
+  await sdb
+    .delete(tenantOnboardingStateTable)
+    .where(eq(tenantOnboardingStateTable.tenantId, t.id));
+  await sdb
+    .delete(tenantBrandingTable)
+    .where(eq(tenantBrandingTable.tenantId, t.id));
+  await sdb.delete(tenantsTable).where(eq(tenantsTable.id, t.id));
+}
+
+async function seedTenant(args: {
+  slug: string;
+  email: string;
+}): Promise<TenantSeed> {
+  const sdb = getSupabaseDb();
+  const [t] = await sdb
+    .insert(tenantsTable)
+    .values({
+      slug: args.slug,
+      nombreEmpresa: `RLS Test ${args.slug}`,
+      rubroId: "car_wash",
+      ownerEmail: args.email,
+      ownerName: "RLS Test Owner",
+    })
+    .returning({ id: tenantsTable.id, slug: tenantsTable.slug });
+  const tenantId = t!.id;
+
+  await sdb.insert(tenantInventarioTable).values({
+    tenantId,
+    sku: `SKU-${args.slug}`,
+    nombre: `Insumo ${args.slug}`,
+    cantidad: "10",
+    minimoAlerta: "5",
+    unidad: "u",
+  });
+  await sdb.insert(tenantAlertasTable).values({
+    tenantId,
+    tipo: "stock_bajo",
+    severidad: "warning",
+    titulo: `Alerta ${args.slug}`,
+  });
+  await sdb.insert(tenantFinanzasMovimientosTable).values({
+    tenantId,
+    tipo: "ingreso",
+    monto: "100.00",
+    moneda: "PEN",
+    metodoPago: "yape",
+    concepto: `Ingreso ${args.slug}`,
+  });
+  await sdb.insert(tenantPagosQrTable).values({
+    tenantId,
+    metodo: "yape",
+    monto: "50.00",
+    moneda: "PEN",
+    estado: "pendiente",
+  });
+
+  return { id: tenantId, slug: args.slug, ownerEmail: args.email };
+}
+
+before(async () => {
+  if (!isRlsTestReady()) {
+    console.warn("[tenant-rls.test] Supabase no configurado, tests skipped");
+    return;
+  }
+  await cleanupByEmail(EMAIL_A);
+  await cleanupByEmail(EMAIL_B);
+  A = await seedTenant({ slug: SLUG_A, email: EMAIL_A });
+  B = await seedTenant({ slug: SLUG_B, email: EMAIL_B });
+});
+
+after(async () => {
+  if (!isRlsTestReady()) return;
+  await cleanupByEmail(EMAIL_A);
+  await cleanupByEmail(EMAIL_B);
+});
+
+// Tablas con seed explícito en seedTenant() — las usamos para verificar
+// además de aislamiento que B SÍ ve sus propias filas.
+const TENANT_TABLES_SEEDED = [
+  "tenant_inventario",
+  "tenant_alertas",
+  "tenant_finanzas_movimientos",
+  "tenant_pagos_qr",
+] as const;
+
+// Las 17 tablas `tenant_*` que llevan RLS. Para cada una pedimos un SELECT
+// con filtro explícito `tenant_id=eq.<A.id>` desde el JWT de B y esperamos
+// 0 filas — es la única forma de verificar que la policy bloquea aún si
+// la tabla está vacía (sin policy, PostgREST devolvería 401/403).
+const TENANT_TABLES_ALL = [
+  "tenant_branding",
+  "tenant_rubro_overrides",
+  "tenant_inventario",
+  "tenant_servicios",
+  "tenant_clientes_finales",
+  "tenant_empleados",
+  "tenant_citas_servicios",
+  "tenant_finanzas_movimientos",
+  "tenant_alertas",
+  "tenant_chat_cecilia_messages",
+  "tenant_whatsapp_sessions",
+  "tenant_whatsapp_messages",
+  "tenant_kpi_snapshots",
+  "tenant_onboarding_state",
+  "tenant_faq_overrides",
+  "tenant_pagos_qr",
+  "tenant_backups",
+] as const;
+
+test("RLS: tenant B JWT NO ve filas del tenant A en NINGUNA de las 17 tablas tenant_*", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+
+  for (const table of TENANT_TABLES_ALL) {
+    // Consulta con filtro explícito por tenant_id=A — si RLS está bien,
+    // PostgREST debe responder 200 con [] aunque haya filas en la tabla.
+    const res = await restGet({
+      table,
+      jwt: tokenB,
+      query: `select=tenant_id&tenant_id=eq.${A!.id}&limit=50`,
+    });
+    assert.ok(
+      res.status === 200,
+      `${table}: SELECT con filtro tenant_id=A debe devolver 200 (status=${res.status}) — policy faltante o mal aplicada`,
+    );
+    assert.equal(
+      res.rows.length,
+      0,
+      `${table}: tenant B vio ${res.rows.length} filas del tenant A (RLS roto)`,
+    );
+  }
+});
+
+test("RLS: tenant B SÍ ve sus propias filas en las tablas seedadas", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+
+  for (const table of TENANT_TABLES_SEEDED) {
+    const res = await restGet({ table, jwt: tokenB });
+    assert.equal(
+      res.status,
+      200,
+      `${table}: tenant_owner debe poder hacer SELECT (status=${res.status})`,
+    );
+    const fromB = res.rows.filter((r) => r.tenant_id === B!.id);
+    assert.ok(
+      fromB.length >= 1,
+      `${table}: tenant B debería ver sus propias filas (vio ${fromB.length})`,
+    );
+  }
+});
+
+test("RLS: tenant A JWT solo ve la fila propia de la tabla tenants", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenA = signJwt(A!.id);
+  const res = await restGet({
+    table: "tenants",
+    jwt: tokenA,
+    query: "select=id,slug",
+  });
+  assert.equal(res.status, 200);
+  assert.equal(res.rows.length, 1, "tenants debe devolver exactamente 1 fila");
+  assert.equal(res.rows[0]!.id, A!.id);
+});
+
+test("RLS: SIN JWT (anon sin claims) no debe leer tenant_inventario", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  const env = getSupabaseEnv();
+  const res = await fetch(
+    `${env.publicUrl}/rest/v1/tenant_inventario?select=*&limit=1`,
+    {
+      headers: { apikey: env.anonKey!, Accept: "application/json" },
+    },
+  );
+  // Sin JWT el rol es `anon`, que NO recibió GRANT SELECT. Esperamos
+  // 401 (sin auth) o 200 con array vacío (si Supabase responde sin filas
+  // por falta de policy aplicable).
+  if (res.status === 200) {
+    const rows = (await res.json()) as unknown[];
+    assert.equal(rows.length, 0, "anon sin policy no debe ver filas");
+  } else {
+    assert.ok(
+      res.status === 401 || res.status === 403 || res.status === 404,
+      `anon sin JWT: status inesperado ${res.status}`,
+    );
+  }
+});
+
+test("RLS: tenant_owner SÍ puede INSERT/UPDATE/DELETE filas de su propio tenant", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+
+  // INSERT propio: tenant_id=B en el body, JWT de B → debe pasar (WITH CHECK ok).
+  const insertStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "POST",
+    body: {
+      tenant_id: B!.id,
+      sku: `OWN-INSERT-${TS}`,
+      nombre: "own insert",
+      cantidad: "3",
+      minimo_alerta: "1",
+      unidad: "u",
+    },
+  });
+  assert.ok(
+    insertStatus >= 200 && insertStatus < 300,
+    `INSERT propio debería pasar (status=${insertStatus})`,
+  );
+
+  // UPDATE propio: cambiar `cantidad` de un row del mismo tenant.
+  const updateStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "PATCH",
+    query: `tenant_id=eq.${B!.id}&sku=eq.OWN-INSERT-${TS}`,
+    body: { cantidad: "9" },
+  });
+  assert.ok(
+    updateStatus >= 200 && updateStatus < 300,
+    `UPDATE propio debería pasar (status=${updateStatus})`,
+  );
+
+  // DELETE propio.
+  const deleteStatus = await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "DELETE",
+    query: `tenant_id=eq.${B!.id}&sku=eq.OWN-INSERT-${TS}`,
+  });
+  assert.ok(
+    deleteStatus >= 200 && deleteStatus < 300,
+    `DELETE propio debería pasar (status=${deleteStatus})`,
+  );
+});
+
+test("RLS: tenant_owner NO puede INSERT/UPDATE/DELETE filas de OTRO tenant", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const tokenB = signJwt(B!.id);
+  const sdb = getSupabaseDb();
+
+  // INSERT con tenant_id=A forjado en body → bloqueado por WITH CHECK.
+  // Probado en MÚLTIPLES tablas críticas (no solo inventario) para
+  // blindar el contrato "si una operación pasa está roto".
+  const FORGED_INSERTS: Array<{ table: string; body: Record<string, unknown> }> = [
+    {
+      table: "tenant_inventario",
+      body: {
+        tenant_id: A!.id,
+        sku: `FORGED-${TS}`,
+        nombre: "forged tenant_id",
+        cantidad: "1",
+        minimo_alerta: "0",
+        unidad: "u",
+      },
+    },
+    {
+      table: "tenant_alertas",
+      body: {
+        tenant_id: A!.id,
+        tipo: "stock_bajo",
+        severidad: "warning",
+        titulo: "forged",
+      },
+    },
+    {
+      table: "tenant_finanzas_movimientos",
+      body: {
+        tenant_id: A!.id,
+        tipo: "ingreso",
+        monto: "999.99",
+        moneda: "PEN",
+        metodo_pago: "yape",
+        concepto: "forged",
+      },
+    },
+    {
+      table: "tenant_pagos_qr",
+      body: {
+        tenant_id: A!.id,
+        metodo: "yape",
+        monto: "1.00",
+        moneda: "PEN",
+        estado: "pendiente",
+      },
+    },
+  ];
+
+  // PostgREST traduce violación WITH CHECK de RLS a 401/403 (permission
+  // denied). Aceptamos cualquiera de los dos pero NO 2xx ni 409 ni 500
+  // — el contrato es "deny por permiso", no "deny por constraint".
+  const PERMISSION_DENIED = new Set([401, 403]);
+  for (const fi of FORGED_INSERTS) {
+    const status = await restMutate({
+      table: fi.table,
+      jwt: tokenB,
+      method: "POST",
+      body: fi.body,
+    });
+    assert.ok(
+      PERMISSION_DENIED.has(status),
+      `${fi.table}: INSERT con tenant_id ajeno debe devolver 401/403 (status=${status})`,
+    );
+  }
+
+  // Confirma con service-role que no se creó la fila inventario forjada.
+  const forgedRows = await sdb
+    .select({ id: tenantInventarioTable.id })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.sku, `FORGED-${TS}`));
+  assert.equal(forgedRows.length, 0, "no debe existir la fila forjada");
+
+  // Cobertura defensiva en TODAS las tablas tenant_*: un INSERT mínimo
+  // con tenant_id ajeno debe ser bloqueado por la policy WITH CHECK
+  // ANTES de que Postgres evalúe NOT NULL constraints. Si la respuesta
+  // es 400 (NOT NULL violation), significa que la policy NO se aplicó,
+  // lo cual sería un fallo crítico. Esperamos siempre 401/403.
+  for (const table of TENANT_TABLES_ALL) {
+    const status = await restMutate({
+      table,
+      jwt: tokenB,
+      method: "POST",
+      body: { tenant_id: A!.id },
+    });
+    assert.ok(
+      PERMISSION_DENIED.has(status),
+      `${table}: INSERT mínimo con tenant_id ajeno debe devolver 401/403 (status=${status}); cualquier otro status indica que la policy NO bloqueó antes de evaluar constraints`,
+    );
+  }
+
+  // UPDATE/DELETE filtrados por tenant_id=A: el predicado USING de la
+  // policy evalúa false para esas filas desde el punto de vista del
+  // tenant B, así que PostgREST devuelve 200/204 con 0 filas tocadas
+  // (NO un 401/403, porque el WHERE simplemente no matchea ninguna fila
+  // visible). El test verifica el comportamiento por efecto: la cantidad
+  // y el conteo de A no cambian post-mutación.
+
+  // Snapshot de cantidad antes.
+  const inventarioA = await sdb
+    .select({
+      id: tenantInventarioTable.id,
+      cantidad: tenantInventarioTable.cantidad,
+    })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.tenantId, A!.id))
+    .limit(1);
+  assert.ok(inventarioA[0], "fila de A existe");
+  const cantidadAntes = inventarioA[0]!.cantidad;
+
+  await restMutate({
+    table: "tenant_inventario",
+    jwt: tokenB,
+    method: "PATCH",
+    query: `tenant_id=eq.${A!.id}`,
+    body: { cantidad: "999" },
+  });
+
+  const inventarioADespues = await sdb
+    .select({ cantidad: tenantInventarioTable.cantidad })
+    .from(tenantInventarioTable)
+    .where(eq(tenantInventarioTable.id, inventarioA[0]!.id))
+    .limit(1);
+  assert.equal(
+    inventarioADespues[0]!.cantidad,
+    cantidadAntes,
+    "UPDATE cross-tenant no debió modificar la fila de A",
+  );
+
+  // DELETE filtrado por tenant_id=A: idem, 0 filas borradas.
+  const alertasACountAntes = await sdb
+    .select({ id: tenantAlertasTable.id })
+    .from(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, A!.id));
+  await restMutate({
+    table: "tenant_alertas",
+    jwt: tokenB,
+    method: "DELETE",
+    query: `tenant_id=eq.${A!.id}`,
+  });
+  const alertasACountDespues = await sdb
+    .select({ id: tenantAlertasTable.id })
+    .from(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, A!.id));
+  assert.equal(
+    alertasACountDespues.length,
+    alertasACountAntes.length,
+    "DELETE cross-tenant no debió borrar alertas de A",
+  );
+});
+
+test("RLS: tenant B no puede consultar fila específica del tenant A por id", async (t) => {
+  if (!isRlsTestReady()) return t.skip("Supabase no configurado");
+  assert.ok(A && B, "tenants seed");
+  const sdb = getSupabaseDb();
+  const [aAlerta] = await sdb
+    .select({ id: tenantAlertasTable.id })
+    .from(tenantAlertasTable)
+    .where(eq(tenantAlertasTable.tenantId, A!.id))
+    .limit(1);
+  assert.ok(aAlerta, "alerta de A existe");
+  const tokenB = signJwt(B!.id);
+  const res = await restGet({
+    table: "tenant_alertas",
+    jwt: tokenB,
+    query: `select=*&id=eq.${aAlerta.id}`,
+  });
+  assert.equal(res.status, 200);
+  assert.equal(
+    res.rows.length,
+    0,
+    "lookup por id de fila ajena debe devolver vacío",
+  );
+});

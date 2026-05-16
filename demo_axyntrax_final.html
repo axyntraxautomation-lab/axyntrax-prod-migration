@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXYNTRAX | Simulador de Experiencia Integral</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+        .code-font { font-family: 'Fira Code', monospace; }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .cyber-gradient {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+        }
+        .chat-bubble {
+            animation: slideIn 0.3s ease forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loader-bar {
+            transition: width 0.3s ease;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+
+    <!-- SECTION 1: FAKE WEBSITE LANDING -->
+    <div id="screen-web" class="relative w-[90vw] h-[85vh] glass rounded-2xl shadow-2xl flex flex-col transition-opacity duration-500">
+        <!-- Browser Header -->
+        <div class="flex items-center px-4 py-2 bg-slate-800/80 rounded-t-2xl border-b border-slate-700 gap-2">
+            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div class="ml-4 flex-1 bg-slate-900 py-1 px-4 rounded text-xs text-slate-400 flex items-center gap-2">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"></path></svg>
+                https://www.axyntrax-automation.net
+            </div>
+        </div>
+
+        <!-- Web Content -->
+        <div class="flex-1 relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+            <!-- Navigation -->
+            <nav class="flex justify-between items-center p-6 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 cyber-gradient rounded-lg rotate-45 shadow-lg shadow-blue-500/30"></div>
+                    <span class="font-bold text-xl tracking-tight">AXYNTRAX</span>
+                </div>
+                <div class="flex gap-6 text-sm text-slate-400 font-medium">
+                    <a href="#" class="hover:text-white transition">Inicio</a>
+                    <a href="#" class="hover:text-white transition">Soluciones</a>
+                    <a href="#" class="hover:text-white transition">Precios</a>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="flex flex-col items-center justify-center h-full text-center px-4 -mt-16">
+                <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-500 mb-4 tracking-tight">
+                    Automatización Total de Negocios
+                </h1>
+                <p class="text-lg text-slate-400 max-w-xl mb-8 leading-relaxed">
+                    Optimiza tu empresa con inteligencia artificial de grado militar. 
+                    Reducción de costos del 60% desde el primer mes.
+                </p>
+                <div class="flex gap-4">
+                    <button class="px-8 py-3 rounded-full bg-white text-black font-semibold hover:bg-slate-200 transition shadow-lg">Ver Características</button>
+                    <button onclick="openChat()" class="px-8 py-3 rounded-full border border-slate-700 bg-slate-800/50 text-white hover:bg-slate-800 transition font-medium">Hablar con un Asesor</button>
+                </div>
+            </div>
+
+            <!-- FLOAT CHAT WINDOW (Cecilia) -->
+            <div id="chat-box" class="absolute bottom-6 right-6 w-80 bg-slate-900 rounded-xl border border-sky-500/30 shadow-2xl flex flex-col shadow-sky-500/10 scale-0 transition-transform origin-bottom-right duration-300">
+                <div class="bg-sky-900/50 px-4 py-3 rounded-t-xl flex items-center gap-2 border-b border-white/5">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="font-semibold text-sm text-sky-100">CECILIA | Online</span>
+                </div>
+                <div id="chat-history" class="h-64 overflow-y-auto p-3 flex flex-col gap-3 text-xs">
+                    <!-- Messages will be injected here -->
+                </div>
+                <div class="p-3 border-t border-white/5 flex gap-2">
+                    <input type="text" disabled class="bg-slate-800 flex-1 rounded px-3 py-1.5 text-xs text-slate-300 border border-transparent outline-none focus:border-sky-500" placeholder="Escribiendo respuesta automática...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: SANDBOX SIMULATOR (TERMINAL) -->
+    <div id="screen-terminal" class="hidden w-[90vw] h-[85vh] bg-black/90 rounded-2xl border border-slate-800 shadow-2xl p-6 flex flex-col code-font relative">
+        <div class="flex justify-between items-center mb-6 text-slate-500 text-sm border-b border-white/10 pb-4">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span>AXYNTRAX_SANDBOX_v3.5 // TERMINAL ACTIVA</span>
+            </div>
+            <div id="term-clock">15:00:00</div>
+        </div>
+        
+        <div class="flex gap-4 h-full overflow-hidden">
+            <!-- Left: Live Log -->
+            <div class="flex-1 flex flex-col h-full">
+                <div id="term-logs" class="flex-1 overflow-y-auto text-sm text-slate-300 space-y-1 mb-4">
+                    <!-- Logs go here -->
+                </div>
+                <!-- Bottom Status bar -->
+                <div class="bg-slate-900 p-4 rounded border border-slate-800">
+                    <div class="flex justify-between mb-2 text-xs text-slate-400">
+                        <span>ESTADO DE CARGA: PROCESANDO CLIENTES</span>
+                        <span id="prog-percent">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="global-bar" class="h-full bg-emerald-500 loader-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right: Stats Counter -->
+            <div class="w-64 flex flex-col gap-4">
+                <div class="bg-slate-900/50 p-4 rounded border border-slate-800">
+                    <h4 class="text-xs text-slate-500 mb-1">CLIENTES PROCESADOS</h4>
+                    <div id="stat-clients" class="text-3xl font-bold text-white">0/50</div>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded border border-slate-800">
+                    <h4 class="text-xs text-slate-500 mb-1">INGRESOS GENERADOS</h4>
+                    <div id="stat-money" class="text-xl font-bold text-emerald-400">$0.00</div>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded border border-slate-800 flex-1">
+                    <h4 class="text-xs text-slate-500 mb-2">STATUS MÓDULOS</h4>
+                    <ul class="text-xs space-y-2">
+                        <li class="flex justify-between"><span>ATLAS</span> <span class="text-green-500 font-bold">ONLINE</span></li>
+                        <li class="flex justify-between"><span>NEO</span> <span id="neo-status" class="text-yellow-500">STANDBY</span></li>
+                        <li class="flex justify-between"><span>JARVIS</span> <span class="text-green-500">READY</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- OVERLAY: FINAL REPORT -->
+        <div id="report-modal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-10">
+            <div class="bg-white text-slate-900 rounded-xl w-full max-w-2xl shadow-2xl p-8 scale-90 animate-[slideIn_0.4s_ease_forwards] relative">
+                <div class="border-b-2 border-slate-900 pb-4 mb-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold tracking-tight">CECILIA MASTER AUDIT REPORT</h2>
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">PASSED</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">Simulación Certificada de Carga Empresarial efectuada con éxito.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-slate-100 p-4 rounded">
+                        <span class="text-xs text-slate-500 block">Ingresos Totales</span>
+                        <span class="text-xl font-bold">$ 80,240.00</span>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded">
+                        <span class="text-xs text-slate-500 block">Margen Garantizado</span>
+                        <span class="text-xl font-bold text-emerald-600">40.00%</span>
+                    </div>
+                </div>
+                
+                <div class="border border-slate-200 rounded mb-6 text-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-2 font-bold border-b border-slate-200 flex justify-between">
+                        <span>Dictamen Final</span>
+                        <span>Estatus</span>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <p>✓ Cero errores de infraestructura detectados por Atlas.</p>
+                        <p>✓ Neo escaló construcción de 50 entregables sin fallos.</p>
+                        <p class="font-bold text-emerald-700 mt-4">RECOMENDACIÓN: EL ECOSISTEMA ESTÁ LISTO PARA PRODUCCIÓN MASIVA.</p>
+                    </div>
+                </div>
+                
+                <button onclick="window.close()" class="w-full bg-slate-900 hover:bg-black text-white py-3 rounded-lg font-bold transition cursor-pointer">Cerrar Auditoría</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const chatHistory = document.getElementById('chat-history');
+        const screenWeb = document.getElementById('screen-web');
+        const screenTerm = document.getElementById('screen-terminal');
+        const termLogs = document.getElementById('term-logs');
+        const progBar = document.getElementById('global-bar');
+        const progText = document.getElementById('prog-percent');
+        const statClients = document.getElementById('stat-clients');
+        const statMoney = document.getElementById('stat-money');
+        const clock = document.getElementById('term-clock');
+
+        function addMsg(who, text, isAction = false) {
+            const div = document.createElement('div');
+            if (isAction) {
+                div.className = 'text-center my-2';
+                div.innerHTML = text;
+            } else {
+                const bg = who === 'C' ? 'bg-slate-800 text-slate-200' : 'bg-sky-600 text-white self-end';
+                div.className = `p-2.5 rounded-lg max-w-[85%] chat-bubble ${bg}`;
+                div.innerText = text;
+            }
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function writeLog(txt, color="text-slate-300") {
+            const d = new Date();
+            const ts = `[${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}]`;
+            const div = document.createElement('div');
+            div.innerHTML = `<span class="text-slate-600">${ts}</span> <span class="${color}">${txt}</span>`;
+            termLogs.appendChild(div);
+            termLogs.scrollTop = termLogs.scrollHeight;
+        }
+
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function openChat() {
+            chatBox.classList.remove('scale-0');
+            await wait(1000);
+            addMsg('C', 'Hola Carlos. Soy Cecilia. Veo que representas a TecnoFuturo. ¿Deseas la demo?');
+            await wait(1500);
+            addMsg('U', 'Hola! Sí, quiero la demo del módulo de automatización de procesos.');
+            await wait(1200);
+            addMsg('C', 'Perfecto. Generando clave segura...');
+            await wait(1500);
+            addMsg('C', 'Clave generada: DEMO-8523-K9. Presiona el botón inferior para descargar.');
+            await wait(800);
+            addMsg('A', `<button id="dl-btn" onclick="startDownload()" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-4 rounded font-bold text-xs transition shadow-lg">Descargar Sandbox Axyntrax</button>`, true);
+        }
+
+        async function startDownload() {
+            const btn = document.getElementById('dl-btn');
+            btn.disabled = true;
+            btn.innerText = "Descargando... 0%";
+            
+            for(let i=0; i<=100; i+=25) {
+                btn.innerText = `Descargando... ${i}%`;
+                await wait(400);
+            }
+            btn.innerText = "Instalando Localmente...";
+            btn.className = "bg-green-600 text-white py-2 px-4 rounded font-bold text-xs";
+            
+            await wait(1000);
+            
+            // Transition to Terminal
+            screenWeb.classList.add('opacity-0');
+            await wait(500);
+            screenWeb.classList.add('hidden');
+            screenTerm.classList.remove('hidden');
+            runSimulation();
+        }
+
+        async function runSimulation() {
+            writeLog("INICIALIZANDO ENTORNO LOCAL...", "text-yellow-500");
+            await wait(800);
+            writeLog("> Extracting payload...");
+            writeLog("> Verifying license key [DEMO-8523-K9]... Valid.", "text-green-500");
+            await wait(1000);
+            writeLog("ESTABLECIENDO HANDSHAKE CON ATLAS...");
+            await wait(1500);
+            writeLog("CONEXIÓN ESTABLECIDA 100% SEGURA.", "text-green-500");
+            await wait(800);
+            writeLog("CARGANDO LOTE DE 50 CLIENTES FANTASMA...", "text-cyan-400");
+            
+            await wait(1000);
+            
+            document.getElementById('neo-status').className = "text-green-500 font-bold";
+            document.getElementById('neo-status').innerText = "BUSY";
+
+            const clients = [
+                {n: "Juan Perez", p: "Web Starter", m: 590},
+                {n: "Alejandra Soler", p: "E-commerce", m: 2360},
+                {n: "Constructora Norte", p: "RPA Auto", m: 1416},
+                {n: "Grupo Logistic", p: "App + IA", m: 3540}
+            ];
+
+            let currMoney = 0;
+
+            for(let i=1; i<=50; i++) {
+                const client = clients[Math.floor(Math.random() * clients.length)];
+                writeLog(`PROCESANDO: Cliente ID_${i} (${client.n}) -> Solicitud Aprobada.`, "text-slate-400");
+                
+                if(i % 5 === 0) {
+                    writeLog(`🔨 NEO: Scaffolding archivos arquitectura para grupo de 5... DONE`, "text-blue-400");
+                }
+                
+                currMoney += client.m;
+                statMoney.innerText = `$ ${currMoney.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                statClients.innerText = `${i}/50`;
+                
+                let percent = Math.round((i / 50) * 100);
+                progBar.style.width = `${percent}%`;
+                progText.innerText = `${percent}%`;
+                
+                await wait(120); // Fast cascading simulation
+            }
+
+            await wait(1000);
+            writeLog("TODAS LAS TAREAS DE LA COLA HAN SIDO COMPLETADAS.", "text-green-400 font-bold");
+            writeLog("JARVIS: Notificaciones de entrega enviadas vía Mail API.");
+            
+            await wait(1500);
+            document.getElementById('neo-status').innerText = "IDLE";
+            
+            // Show Final Report
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+
+        // Auto clock update
+        setInterval(() => {
+            const d = new Date();
+            clock.innerText = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`;
+        }, 1000);
+
+        // Trigger simulation workflow automatically if requested or just by user interaction
+        window.onload = () => {
+            setTimeout(() => {
+                openChat();
+            }, 1500);
+        };
+    </script>
+</body>
+</html>

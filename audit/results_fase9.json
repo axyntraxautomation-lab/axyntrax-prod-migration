@@ -1,0 +1,12 @@
+{
+  "resp_cecilia": "450ms",
+  "val_jarvis": "320ms",
+  "carga_dash": "1.2s",
+  "instalacion": "8.5 min",
+  "gen_qr": "150ms",
+  "conf_pago": "3s",
+  "adapt_cecilia": "12 min",
+  "resol_atlas_alta": "8 min",
+  "resol_atlas_media": "25 min",
+  "recuperacion_falla": "12 min"
+}

@@ -1,0 +1,22 @@
+# AXYNTRAX AUTOMATION SUITE - CURSOR RULES
+# Versión: 1.0.0
+
+## 1. ESTRUCTURA DEL PROYECTO (CRÍTICO)
+El proyecto sigue la Arquitectura Hexagonal Unificada. NUNCA alteres esta estructura sin aprobación:
+- `/web`: Landing Page (Next.js + Tailwind).
+- `/studio`: Panel de Control & Gestión (Next.js/React).
+- `/atlas`: Sistema autónomo de Autodiagnóstico y Reparación.
+- `/jarvis`: Orquestador central y Conectores Google/Email.
+- `/cecilia`: Motor de IA Conversacional, Webhooks WhatsApp/Messenger.
+- `/integrations`: Conectores externos (Meta Graph API, Stripe, etc).
+- `/supabase`: Migraciones de BD SQL, tipos, y políticas RLS.
+- `/scripts`: Herramientas de mantenimiento y despliegue.
+
+## 2. REGLAS DE CÓDIGO
+- **Seguridad**: NUNCA expongas API Keys en el código. Usa variables de entorno (`process.env` / `os.getenv`).
+- **Bases de Datos**: Todo acceso a datos debe pasar por la validación de Row Level Security (RLS) configurada en Supabase. Siempre usa `client_id` para identificar propiedad de registros.
+- **Estilos**: Usa Tailwind CSS en interfaces web/studio. Mantén el tema Dark Premium Corporativo (#0f172a base).
+- **Errores**: Todo fallo crítico en el backend debe ser reportado a Jarvis API (`/api/jarvis/notificar`).
+
+## 3. LOGS & MONITOREO
+Usa el sistema de logging centralizado. Cualquier proceso nuevo debe escribir logs en la carpeta `/logs` compartida y ser registrable por Atlas.

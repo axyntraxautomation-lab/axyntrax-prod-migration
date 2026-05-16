@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar Módulos | AXYNTRAX Automation</title>
+    <link rel="canonical" href="https://www.axyntrax-automation.net/descargar" />
+    <meta name="domain" content="axyntrax-automation.net">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0D0D0D',
+                        card: '#161616',
+                        cyan: { DEFAULT: '#00E5FF' }
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0D0D0D; color: #FFFFFF; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .cyan-gradient { background: linear-gradient(135deg, #00E5FF 0%, #008291 100%); }
+        .hide { display: none; }
+        .progress-bar { width: 0%; transition: width 2s ease-in-out; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-10">
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                <a href="index.html#modulos" class="hover:text-cyan transition-colors">Módulos</a>
+                <a href="index.html#planes" class="hover:text-cyan transition-colors">Planes</a>
+                <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
+                <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+            </div>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow pt-32 pb-20 px-6">
+        
+        <!-- ESTADO A: VERIFICACIÓN -->
+        <section id="estado-a" class="max-w-xl mx-auto py-10">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4 tracking-tight">Descarga tu <span class="text-cyan">módulo</span></h1>
+                <p class="text-gray-500 text-sm">Ingresa tu KEY de licencia para acceder a tu descarga.</p>
+            </div>
+            <div class="glass p-10 rounded-[40px] border-white/5">
+                <form id="verify-form" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase mb-2 ml-1">Email registrado</label>
+                        <input type="email" id="v-email" placeholder="ejemplo@empresa.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase mb-2 ml-1">KEY de licencia</label>
+                        <input type="text" id="v-key" placeholder="AXY-XXXX-XXXX-XXXX" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-sm tracking-widest font-mono">
+                    </div>
+                    <button type="submit" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4 shadow-xl shadow-cyan/20">Verificar y descargar</button>
+                    
+                    <div class="text-center pt-8 space-y-3">
+                        <p class="text-xs text-gray-500">¿No recibiste tu KEY? <a href="#" onclick="document.getElementById('chat-window').classList.remove('hidden')" class="text-cyan">Escribe a Cecilia</a></p>
+                        <p class="text-xs text-gray-500">¿Aún no tienes cuenta? <a href="registro.html" class="text-cyan font-bold">Regístrate gratis</a></p>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ESTADO B: PANEL DE DESCARGA -->
+        <section id="estado-b" class="max-w-6xl mx-auto hide animate-in fade-in duration-500">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Bienvenido, <span id="user-name" class="text-cyan">Empresario</span></h1>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-bold uppercase tracking-widest border border-green-500/20">Licencia Activa ✅</span>
+                        <span class="text-xs text-gray-500">Plan Demo — 24 días restantes</span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="px-6 py-2 glass rounded-lg text-xs font-bold text-gray-400 hover:text-red-500 transition-colors">Cerrar Sesión</button>
+            </div>
+
+            <!-- GRID MÓDULOS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+                <!-- 1 -->
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative">
+                    <span class="absolute top-4 right-4 bg-green-500/20 text-green-400 text-[8px] font-black px-2 py-0.5 rounded">INCLUIDO</span>
+                    <i class="fa-solid fa-screwdriver-wrench text-2xl text-cyan mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Gestión Taller</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v2.1.0 · 52 MB</div>
+                    <button onclick="simulateDownload(this)" class="w-full py-2.5 cyan-gradient text-dark font-bold rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Descargar .exe
+                    </button>
+                </div>
+                <!-- 2 -->
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative">
+                    <span class="absolute top-4 right-4 bg-green-500/20 text-green-400 text-[8px] font-black px-2 py-0.5 rounded">INCLUIDO</span>
+                    <i class="fa-solid fa-tooth text-2xl text-cyan mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Gestión Dental</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v2.0.3 · 48 MB</div>
+                    <button onclick="simulateDownload(this)" class="w-full py-2.5 cyan-gradient text-dark font-bold rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Descargar .exe
+                    </button>
+                </div>
+                <!-- 3 -->
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative">
+                    <span class="absolute top-4 right-4 bg-green-500/20 text-green-400 text-[8px] font-black px-2 py-0.5 rounded">INCLUIDO</span>
+                    <i class="fa-solid fa-id-card text-2xl text-cyan mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Control Accesos</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v1.8.1 · 31 MB</div>
+                    <button onclick="simulateDownload(this)" class="w-full py-2.5 cyan-gradient text-dark font-bold rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Descargar .exe
+                    </button>
+                </div>
+                <!-- 4 -->
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative opacity-60">
+                    <span class="absolute top-4 right-4 bg-white/5 text-gray-500 text-[8px] font-black px-2 py-0.5 rounded">UPGRADE 🔒</span>
+                    <i class="fa-solid fa-chart-line text-2xl text-gray-500 mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Reporte Diario</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v2.2.0 · 28 MB</div>
+                    <a href="index.html#planes" class="w-full py-2.5 glass text-gray-400 font-bold rounded-xl text-xs flex items-center justify-center">Ver Planes Pro</a>
+                </div>
+                <!-- Repetir para los otros 4 módulos (simulación) -->
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative opacity-60">
+                    <span class="absolute top-4 right-4 bg-white/5 text-gray-500 text-[8px] font-black px-2 py-0.5 rounded">UPGRADE 🔒</span>
+                    <i class="fa-solid fa-users text-2xl text-gray-500 mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Gestión Usuarios</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v1.9.5 · 35 MB</div>
+                    <a href="index.html#planes" class="w-full py-2.5 glass text-gray-400 font-bold rounded-xl text-xs flex items-center justify-center">Ver Planes Pro</a>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative opacity-60">
+                    <span class="absolute top-4 right-4 bg-white/5 text-gray-500 text-[8px] font-black px-2 py-0.5 rounded">UPGRADE 🔒</span>
+                    <i class="fa-solid fa-file-invoice text-2xl text-gray-500 mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Facturación SUNAT</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v3.0.1 · 44 MB</div>
+                    <a href="index.html#planes" class="w-full py-2.5 glass text-gray-400 font-bold rounded-xl text-xs flex items-center justify-center">Ver Planes Pro</a>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative opacity-60">
+                    <span class="absolute top-4 right-4 bg-white/5 text-gray-500 text-[8px] font-black px-2 py-0.5 rounded">UPGRADE 🔒</span>
+                    <i class="fa-solid fa-box text-2xl text-gray-500 mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">Inventario</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v2.1.2 · 39 MB</div>
+                    <a href="index.html#planes" class="w-full py-2.5 glass text-gray-400 font-bold rounded-xl text-xs flex items-center justify-center">Ver Planes Pro</a>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-cyan/30 transition-all group relative opacity-60">
+                    <span class="absolute top-4 right-4 bg-white/5 text-gray-500 text-[8px] font-black px-2 py-0.5 rounded">UPGRADE 🔒</span>
+                    <i class="fa-solid fa-handshake text-2xl text-gray-500 mb-4"></i>
+                    <h3 class="font-bold text-sm mb-1">CRM</h3>
+                    <div class="text-[10px] text-gray-500 mb-4">v1.7.0 · 42 MB</div>
+                    <a href="index.html#planes" class="w-full py-2.5 glass text-gray-400 font-bold rounded-xl text-xs flex items-center justify-center">Ver Planes Pro</a>
+                </div>
+            </div>
+
+            <!-- SECCIONES DE AYUDA -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- INSTRUCCIONES -->
+                <div>
+                    <h3 class="text-xl font-bold mb-8">Instrucciones de Instalación</h3>
+                    <div class="space-y-4">
+                        <div class="glass p-5 rounded-2xl border-white/5 cursor-pointer" onclick="toggleInstr(this)">
+                            <div class="flex justify-between items-center text-sm font-bold">Paso 1: Descarga el instalador<i class="fa-solid fa-plus text-cyan"></i></div>
+                            <div class="instr-content hide text-xs text-gray-500 mt-4 leading-relaxed">Descarga el archivo .exe del módulo que deseas utilizar haciendo clic en el botón correspondiente arriba.</div>
+                        </div>
+                        <div class="glass p-5 rounded-2xl border-white/5 cursor-pointer" onclick="toggleInstr(this)">
+                            <div class="flex justify-between items-center text-sm font-bold">Paso 2: Ejecuta como Administrador<i class="fa-solid fa-plus text-cyan"></i></div>
+                            <div class="instr-content hide text-xs text-gray-500 mt-4 leading-relaxed">Localiza el archivo en tu carpeta de descargas, haz clic derecho y selecciona "Ejecutar como administrador" para asegurar que los permisos sean correctos.</div>
+                        </div>
+                        <div class="glass p-5 rounded-2xl border-white/5 cursor-pointer" onclick="toggleInstr(this)">
+                            <div class="flex justify-between items-center text-sm font-bold">Paso 3: Ingresa tu KEY<i class="fa-solid fa-plus text-cyan"></i></div>
+                            <div class="instr-content hide text-xs text-gray-500 mt-4 leading-relaxed">Durante la instalación, el sistema te solicitará tu clave de activación. Ingresa el código AXY-XXXX-XXXX-XXXX que recibiste por email.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REQUISITOS -->
+                <div>
+                    <h3 class="text-xl font-bold mb-8">Requisitos del Sistema</h3>
+                    <div class="glass rounded-2xl overflow-hidden border-white/5">
+                        <table class="w-full text-left text-xs">
+                            <tr class="border-b border-white/5 bg-white/5"><th class="p-4 text-gray-400">Componente</th><th class="p-4 text-gray-400">Requerimiento</th></tr>
+                            <tr class="border-b border-white/5"><td class="p-4 font-bold text-gray-300">Sistema Operativo</td><td class="p-4 text-gray-500">Windows 10 / 11</td></tr>
+                            <tr class="border-b border-white/5"><td class="p-4 font-bold text-gray-300">Memoria RAM</td><td class="p-4 text-gray-500">4GB (8GB Recomendado)</td></tr>
+                            <tr class="border-b border-white/5"><td class="p-4 font-bold text-gray-300">Espacio en Disco</td><td class="p-4 text-gray-500">500 MB por módulo</td></tr>
+                            <tr><td class="p-4 font-bold text-gray-300">Internet</td><td class="p-4 text-gray-500">Requerido (Sincronización)</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="pt-20 pb-10 border-t border-white/5 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
+                <div>
+                    <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-8 mb-6 mx-auto md:mx-0">
+                    <div class="text-[10px] text-gray-500 space-y-2 uppercase tracking-widest font-bold">
+                        <p>Axyntrax Automation S.A.C.</p>
+                        <p>RUC 10406750324</p>
+                        <p>&copy; 2026 Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 text-xs text-gray-500">
+                    <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                    <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                    <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+                    <a href="politicas-de-privacidad.html" class="hover:text-cyan transition-colors">Políticas de Privacidad</a>
+                </div>
+                <div class="text-xs text-gray-500 space-y-4">
+                    <p>axyntraxautomation@gmail.com</p>
+                    <p>+51 991 740 590</p>
+                    <div class="flex justify-center md:justify-start gap-4 text-xl">
+                        <a href="https://wa.me/51991740590" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://facebook.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-wrap justify-center gap-8 text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em]">
+                <span>SSL Seguro</span>
+                <span>Hosting Vercel</span>
+                <span>Pagos Culqi</span>
+                <span>Facturación SUNAT</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÓN WHATSAPP -->
+    <a href="https://wa.me/51991740590" target="_blank" class="fixed bottom-28 right-8 z-[100] w-14 h-14 bg-[#25D366] rounded-full shadow-2xl flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- WIDGET CECILIA -->
+    <div class="fixed bottom-8 right-8 z-[100]">
+        <button onclick="document.getElementById('chat-window').classList.toggle('hidden')" class="w-16 h-16 cyan-gradient rounded-full shadow-2xl flex items-center justify-center text-dark text-3xl hover:scale-110 transition-transform relative">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 glass rounded-[32px] overflow-hidden shadow-2xl border-cyan/20">
+            <div class="bg-cyan p-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-dark rounded-full flex items-center justify-center text-xl">🤖</div>
+                <div class="text-dark font-bold text-sm">Cecilia AI</div>
+            </div>
+            <div class="p-4 h-64 overflow-y-auto text-xs space-y-4 bg-dark/20">
+                <div class="bg-white/5 p-3 rounded-2xl max-w-[90%]">Hola, soy Cecilia 👋 ¿En qué te ayudo?</div>
+            </div>
+        </div>
+    </div>
+    <script src="cecilia-widget.js"></script>
+
+    <script>
+        // LOGIC
+        const verifyForm = document.getElementById('verify-form');
+        const estadoA = document.getElementById('estado-a');
+        const estadoB = document.getElementById('estado-b');
+
+        // Check LocalStorage
+        window.onload = () => {
+            const savedKey = localStorage.getItem('axy_key');
+            if(savedKey) showDownloads();
+        };
+
+        verifyForm.onsubmit = (e) => {
+            e.preventDefault();
+            const key = document.getElementById('v-key').value;
+            const email = document.getElementById('v-email').value;
+
+            // Simple validation: AXY-XXXX-XXXX-XXXX
+            const regex = /^AXY-\w{4}-\w{4}-\w{4}$/;
+            if(regex.test(key) && email.includes('@')) {
+                localStorage.setItem('axy_key', key);
+                localStorage.setItem('axy_email', email);
+                showDownloads();
+            } else {
+                alert('KEY no válida. Formato esperado: AXY-XXXX-XXXX-XXXX');
+            }
+        };
+
+        function showDownloads() {
+            estadoA.classList.add('hide');
+            estadoB.classList.remove('hide');
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function toggleInstr(el) {
+            el.querySelector('.instr-content').classList.toggle('hide');
+            el.querySelector('i').classList.toggle('fa-plus');
+            el.querySelector('i').classList.toggle('fa-minus');
+        }
+
+        function simulateDownload(btn) {
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-full bg-dark/30 h-1 rounded-full overflow-hidden"><div class="progress-bar h-full bg-dark" style="width: 100%"></div></div>';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Descarga iniciada';
+                btn.classList.replace('cyan-gradient', 'bg-green-500');
+                btn.classList.add('text-white');
+            }, 2100);
+        }
+    </script>
+
+</body>
+</html>

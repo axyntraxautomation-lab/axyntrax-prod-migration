@@ -1,0 +1,6146 @@
+[
+  {
+    "id": "CLI-TALLER-001",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-002",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-003",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-004",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-006",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-008",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-009",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-010",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-011",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-013",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-014",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-016",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-017",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-018",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-020",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-021",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-022",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-024",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-025",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-027",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-028",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-029",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-030",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-031",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-032",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-034",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-035",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-036",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-037",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-038",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-039",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TALLER-040",
+    "rubro": "TALLER",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Gestión Vehículos",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Repuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Órdenes Trabajo",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Historial",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-001",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-002",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-003",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-004",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-006",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-008",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-009",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-010",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-011",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-013",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-014",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-016",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-017",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-018",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-020",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-021",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-022",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-024",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-025",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-027",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-028",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-029",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-030",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-031",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-032",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-034",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-035",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-036",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-037",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-038",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-039",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-VETERINARIA-040",
+    "rubro": "VETERINARIA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Historias Clínicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Vacunas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Grooming",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Recordatorios",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-001",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-002",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-003",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-004",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-006",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-008",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-009",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-010",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-011",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-013",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-014",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-016",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-017",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-018",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-020",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-021",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-022",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-024",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-025",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-027",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-028",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-029",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-030",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-031",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-032",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-034",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-035",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-036",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-037",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-038",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-039",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-DENTISTA-040",
+    "rubro": "DENTISTA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Odontograma",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Presupuestos",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Evolución",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Materiales",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-001",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-002",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-003",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-004",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-006",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-008",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-009",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-010",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-011",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-013",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-014",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-016",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-017",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-018",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-020",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-021",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-022",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-024",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-025",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-027",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-028",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-029",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-030",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-031",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-032",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-034",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-035",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-036",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-037",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-038",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-039",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-CLINICA-040",
+    "rubro": "CLINICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Triaje",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Citas Médicas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Recetas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Laboratorio",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Farmacia",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-001",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-002",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-003",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-004",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-006",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-008",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-009",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-010",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-011",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-013",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-014",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-016",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-017",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-018",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-020",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-021",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-022",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-024",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-025",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-027",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-028",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-029",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-030",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-031",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-032",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-034",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-035",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-036",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-037",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-038",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-039",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RETAIL-040",
+    "rubro": "RETAIL",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Punto Venta",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Stocks",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Proveedores",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Promociones",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-001",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-002",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-003",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-004",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-006",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-008",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-009",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-010",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-011",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-013",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-014",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-016",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-017",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-018",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-020",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-021",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-022",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-024",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-025",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-027",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-028",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-029",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-030",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-031",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-032",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-034",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-035",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-036",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-037",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-038",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-039",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-RESTAURANTE-040",
+    "rubro": "RESTAURANTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Comandas",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mesas",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Cocina",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Insumos",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-001",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-002",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-003",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-004",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-006",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-008",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-009",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-010",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-011",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-013",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-014",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-016",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-017",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-018",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-020",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-021",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-022",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-024",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-025",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-027",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-028",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-029",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-030",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-031",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-032",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-034",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-035",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-036",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-037",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-038",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-039",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-LOGISTICA-040",
+    "rubro": "LOGISTICA",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Almacén",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Despacho",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Rutas",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 Picking",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-001",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-002",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-003",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-004",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-006",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-008",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-009",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-010",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-011",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-013",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-014",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-016",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-017",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-018",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-020",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-021",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-022",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-024",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-025",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-027",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-028",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-029",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-030",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-031",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-032",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-034",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-035",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-036",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-037",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-038",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-039",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  },
+  {
+    "id": "CLI-TRANSPORTE-040",
+    "rubro": "TRANSPORTE",
+    "fase": 5,
+    "modules": [
+      {
+        "module": "K1 Flota",
+        "status": "PASS"
+      },
+      {
+        "module": "K2 Mantenimiento",
+        "status": "PASS"
+      },
+      {
+        "module": "K3 Combustible",
+        "status": "PASS"
+      },
+      {
+        "module": "K4 GPS",
+        "status": "PASS"
+      },
+      {
+        "module": "K5 Conductores",
+        "status": "PASS"
+      }
+    ]
+  }
+]

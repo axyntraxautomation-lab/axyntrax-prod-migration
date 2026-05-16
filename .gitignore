@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.vercel/
+.netlify/
+.env
+*.log
+*.cache
+*.db-shm
+*.db-wal
+axyntrax.db
+__pycache__/
+.pytest_cache/
+dist/
+build/
+out/
+.vercel

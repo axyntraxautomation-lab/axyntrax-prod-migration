@@ -1,0 +1,6 @@
+[16:50:23] [STEP] INICIANDO CASO PRINCIPAL: DemoCorp
+[16:50:23] [SUCCESS] Cecilia analizó solicitud: Detectado 'Web', 'E-Learning', 'IA Propia'
+[16:50:23] [FINANCE] Presupuesto DemoCorp: $13520.83 (Folio: AX-QUOTE-20260511-1650)
+[16:50:23] [SUCCESS] Cliente DemoCorp ha APROBADO el presupuesto automáticamente.
+[16:50:23] [STEP] Neo desplegando arquitectura en feat/ad8f2b1f
+[16:50:25] [STEP] Neo ejecutando el batch final de Scaffolding...

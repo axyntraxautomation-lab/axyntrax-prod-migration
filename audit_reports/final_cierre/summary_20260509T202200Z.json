@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-05-09T20:22:00.345811+00:00",
+  "results": {
+    "CECILIA": "OK",
+    "ATLAS": "OK",
+    "AXIA": "WARN",
+    "JARVIS": "CRITICAL",
+    "MATRIX": "OK",
+    "WHATSAPP": "OK"
+  },
+  "reports": [
+    {
+      "ia": "CECILIA",
+      "status": "OK",
+      "report_path": "audit_reports\\final_cierre\\report_cecilia_20260509T202131Z.json"
+    },
+    {
+      "ia": "ATLAS",
+      "status": "OK",
+      "report_path": "audit_reports\\final_cierre\\report_atlas_20260509T202138Z.json"
+    },
+    {
+      "ia": "AXIA",
+      "status": "WARN",
+      "report_path": "audit_reports\\final_cierre\\report_axia_20260509T202148Z.json"
+    },
+    {
+      "ia": "JARVIS",
+      "status": "CRITICAL",
+      "report_path": "audit_reports\\final_cierre\\report_jarvis_20260509T202153Z.json"
+    },
+    {
+      "ia": "MATRIX",
+      "status": "OK",
+      "report_path": "audit_reports\\final_cierre\\report_matrix_20260509T202159Z.json"
+    },
+    {
+      "ia": "WHATSAPP",
+      "status": "OK",
+      "report_path": "audit_reports\\final_cierre\\report_whatsapp_20260509T202200Z.json"
+    }
+  ]
+}

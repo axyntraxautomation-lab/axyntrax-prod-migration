@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "public/index.html", "use": "@vercel/static" },
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": "public/AXYNTRAX_Installer.bat" }
+    },
+    { "src": "api/jarvis.js", "use": "@vercel/node" },
+    { "src": "api/test-google.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/jarvis-leads", "dest": "/api/jarvis.js" },
+    { "src": "/api/test-google", "dest": "/api/test-google.js" },
+    { "src": "/api/(.*)", "dest": "/api/index.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}

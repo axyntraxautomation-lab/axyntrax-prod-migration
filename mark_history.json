@@ -1,0 +1,69 @@
+[
+  {
+    "tipo": "oferta_flash",
+    "canal": "WhatsApp Business",
+    "texto": "Aprovecha: Upgrade a Plan Diamante al precio de Pro solo por hoy.",
+    "prompt_imagen": "Diseño profesional para WhatsApp Business, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Oferta Flash ⚡: Aprovecha: Upgrade a Plan Diam...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-14T01:24:31.157Z"
+  },
+  {
+    "tipo": "modulo_dia",
+    "canal": "Instagram",
+    "texto": "🦷 Hoy destacamos: Gestión Dental. Historias clínicas digitales y odontograma inteligente.",
+    "prompt_imagen": "Diseño profesional para Instagram, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Módulo del Día: 🦷 Hoy destacamos: Gestión Den...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-14T01:24:31.164Z"
+  },
+  {
+    "tipo": "demo",
+    "canal": "Facebook",
+    "texto": "No pagues nada hasta estar convencido. 30 días de automatización total gratis.",
+    "prompt_imagen": "Diseño profesional para Facebook, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Demo Gratuita: No pagues nada hasta estar con...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-14T01:24:31.164Z"
+  },
+  {
+    "tipo": "tip",
+    "canal": "TikTok",
+    "texto": "¿Sabías que un CRM automatizado puede aumentar tu retención de clientes en un 30%?",
+    "prompt_imagen": "Diseño profesional para TikTok, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Tip de Automatización: ¿Sabías que un CRM automatizad...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-14T01:24:31.165Z"
+  },
+  {
+    "tipo": "engagement",
+    "canal": "LinkedIn",
+    "texto": "🤔 ¿Cuántas horas pierdes a la semana haciendo reportes manuales?",
+    "prompt_imagen": "Diseño profesional para LinkedIn, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Pregunta de Engagement: 🤔 ¿Cuántas horas pierdes a la...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-14T01:24:31.166Z"
+  },
+  {
+    "tipo": "tip",
+    "canal": "WhatsApp Business",
+    "texto": "Consejo Axyntrax: El control de accesos no es solo seguridad, es data valiosa para tu negocio.",
+    "prompt_imagen": "Diseño profesional para WhatsApp Business, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Tip de Automatización: Consejo Axyntrax: El control d...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-15T05:14:21.345Z",
+    "post_id": "wsp_stub_1778822061350"
+  },
+  {
+    "tipo": "caso_exito",
+    "canal": "Instagram",
+    "texto": "📈 Cómo un taller en Lima redujo sus errores de inventario en un 90% con Axyntrax.",
+    "prompt_imagen": "Diseño profesional para Instagram, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Caso de Éxito: 📈 Cómo un taller en Lima redu...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-15T05:14:22.380Z",
+    "post_id": "ig_stub_1778822062381"
+  },
+  {
+    "tipo": "tip",
+    "canal": "Facebook",
+    "texto": "💡 Tip: Automatiza tu reporte de caja diario y ahorra 2 horas de trabajo administrativo.",
+    "prompt_imagen": "Diseño profesional para Facebook, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Tip de Automatización: 💡 Tip: Automatiza tu reporte ...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-15T05:14:22.708Z",
+    "post_id": "fb_stub_1778822062709"
+  },
+  {
+    "tipo": "caso_exito",
+    "canal": "LinkedIn",
+    "texto": "De procesos manuales a control total. Mira cómo creció Automotriz Rojas.",
+    "prompt_imagen": "Diseño profesional para LinkedIn, estilo corporativo moderno. Colores principales: #0D0D0D (fondo) y #00E5FF (acentos). Incluir logo de AXYNTRAX en la esquina superior. Texto central: \"Caso de Éxito: De procesos manuales a control...\". Personas peruanas en entorno de oficina tecnológica. Calidad 4K, fotorrealista.",
+    "timestamp": "2026-05-15T05:14:23.056Z",
+    "post_id": "li_stub_1778822063056"
+  }
+]

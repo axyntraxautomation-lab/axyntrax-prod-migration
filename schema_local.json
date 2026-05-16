@@ -1,0 +1,1064 @@
+{
+  "usuarios": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "nombre",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "email",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "password_hash",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rol",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "activo",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "1",
+      "pk": false
+    }
+  ],
+  "clientes": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "empresa",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "contacto",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "email",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "telefono",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "ruc",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "ciudad",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Prospecto'",
+      "pk": false
+    },
+    {
+      "name": "score",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "0",
+      "pk": false
+    },
+    {
+      "name": "puntos_lealtad",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "0",
+      "pk": false
+    },
+    {
+      "name": "categoria_vip",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Bronce'",
+      "pk": false
+    },
+    {
+      "name": "fecha_ultima_interaccion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_nacimiento",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_aniversario",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "notas",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "usuario_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "licencias": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "clave",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "tipo",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "dias",
+      "type": "INTEGER",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Emitida'",
+      "pk": false
+    },
+    {
+      "name": "fecha_inicio",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_fin",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "creado_por",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "notas",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "ventas": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "licencia_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "monto",
+      "type": "REAL",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "etapa",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Cierre'",
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Completada'",
+      "pk": false
+    },
+    {
+      "name": "metodo_pago",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "notas",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "usuario_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "creado_en",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "cobros": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "venta_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "monto",
+      "type": "REAL",
+      "notnull": true,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_vencimiento",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_pago",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Pendiente'",
+      "pk": false
+    },
+    {
+      "name": "metodo_pago",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "notas",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "gastos": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "categoria",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'General'",
+      "pk": false
+    },
+    {
+      "name": "descripcion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "monto",
+      "type": "REAL",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    },
+    {
+      "name": "usuario_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "logs": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "usuario_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "accion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "tabla",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "registro_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "detalles",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "hash_actual",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "hash_previo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "timestamp",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_memory": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "context",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "interaction_type",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "sentiment",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "timestamp",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_autonomy_logs": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "modulo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "decision",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "nivel_riesgo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "resultado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "timestamp",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_patterns": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "entidad",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "patron_clave",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "peso",
+      "type": "REAL",
+      "notnull": false,
+      "dflt_value": "1.0",
+      "pk": false
+    },
+    {
+      "name": "ultima_actualizacion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_notifications": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "entidad_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "tipo_aviso",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_envio",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_config": [
+    {
+      "name": "key",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "value",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "axia_campaigns": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "fecha_programada",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "segmento",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "mensaje_raw",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Pendiente'",
+      "pk": false
+    },
+    {
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "axia_marketing_logs": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "campana_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_envio",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    },
+    {
+      "name": "resultado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "interaccion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "citas": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "cliente_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_cita",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "asunto",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "ubicacion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "resultado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Pendiente'",
+      "pk": false
+    },
+    {
+      "name": "sync_provider",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Local'",
+      "pk": false
+    },
+    {
+      "name": "external_id",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "axia_reports": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "tipo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "nombre_archivo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "ruta_archivo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_generacion",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "leads_v6": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "source",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "score",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "0",
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'Nuevo'",
+      "pk": false
+    },
+    {
+      "name": "creado_en",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "whatsapp_followups": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "lead_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "tipo_seguimiento",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "estado_envio",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "fecha_disparo",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "resultado_log",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    }
+  ],
+  "bot_audit": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "bot_id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "action_type",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "result",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "details",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "rubro",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "tenant_id",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "hash_signature",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "timestamp",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "CURRENT_TIMESTAMP",
+      "pk": false
+    }
+  ],
+  "res_config": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": true
+    },
+    {
+      "name": "nombre_condominio",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'AXYNTRAX RESIDENCIAL'",
+      "pk": false
+    },
+    {
+      "name": "cta_principal",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'PAGAR MANTENIMIENTO'",
+      "pk": false
+    },
+    {
+      "name": "logo_path",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": null,
+      "pk": false
+    },
+    {
+      "name": "moneda",
+      "type": "TEXT",
+      "notnull": false,
+      "dflt_value": "'S/'",
+      "pk": false
+    },
+    {
+      "name": "dia_cierre",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "1",
+      "pk": false
+    },
+    {
+      "name": "transparencia_activa",
+      "type": "INTEGER",
+      "notnull": false,
+      "dflt_value": "1",
+      "pk": false
+    }
+  ]
+}

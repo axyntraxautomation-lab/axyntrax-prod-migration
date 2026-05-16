@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AXYNTRAX MVP - Selector de Módulos</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #070A0F; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #111827; padding: 2.5rem; border-radius: 1.5rem; border: 1px solid #00E5FF; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); width: 400px; }
+        h1 { color: #00E5FF; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .mod-item { background: #1A2235; padding: 1rem; border-radius: 0.75rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .mod-item:hover { border: 1px solid #7C3AED; }
+        input[type="checkbox"] { transform: scale(1.5); accent-color: #00E5FF; }
+        .totals { margin-top: 1.5rem; border-top: 1px solid #1E293B; pt-4; }
+        .total-row { display: flex; justify-content: space-between; margin-top: 0.5rem; color: #64748B; }
+        .total-final { font-size: 1.4rem; color: #00E5FF; font-weight: bold; }
+        
+        /* CHAT STYLE */
+        #chat-box { position: fixed; bottom: 20px; right: 20px; width: 320px; background: #111827; border: 1px solid #7C3AED; border-radius: 1rem; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #chat-hdr { background: #7C3AED; padding: 12px; font-weight: bold; font-size: 0.9rem; }
+        #chat-msgs { height: 250px; overflow-y: auto; padding: 12px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; }
+        .msg { padding: 8px 12px; border-radius: 10px; max-width: 85%; }
+        .bot { background: #1A2235; align-self: flex-start; color: #00E5FF; }
+        .usr { background: #7C3AED; align-self: flex-end; color: white; }
+        #chat-inp { border: none; padding: 12px; background: #070A0F; color: white; outline: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>⬡ AXYNTRAX SELECTOR</h1>
+        <div id="selector">
+            <div class="mod-item"><span>MEDIBOT (S/ 150)</span> <input type="checkbox" value="150" class="mod"></div>
+            <div class="mod-item"><span>VETBOT (S/ 120)</span> <input type="checkbox" value="120" class="mod"></div>
+            <div class="mod-item"><span>DENTBOT (S/ 180)</span> <input type="checkbox" value="180" class="mod"></div>
+        </div>
+        <div class="totals">
+            <div class="total-row"><span>Subtotal:</span> <span>S/ <span id="sub">0.00</span></span></div>
+            <div class="total-row"><span>IGV (18%):</span> <span>S/ <span id="igv">0.00</span></span></div>
+            <div class="total-row total-final" style="margin-top: 1rem;"><span>TOTAL:</span> <span>S/ <span id="total">0.00</span></span></div>
+        </div>
+        <button style="width: 100%; padding: 1rem; margin-top: 1.5rem; background: #7C3AED; color: white; border: none; border-radius: 0.75rem; font-weight: bold; cursor: pointer;">PAGAR AHORA ⚡</button>
+    </div>
+
+    <!-- CHAT UI -->
+    <div id="chat-box">
+        <div id="chat-hdr">⬡ CECILIA (AXIA Chat)</div>
+        <div id="chat-msgs">
+            <div class="msg bot">¡Hola! Soy Cecilia. ¿En qué módulo de AXYNTRAX estás interesado hoy?</div>
+        </div>
+        <input type="text" id="chat-inp" placeholder="Escribe un mensaje...">
+    </div>
+
+    <script>
+        document.querySelectorAll('.mod').forEach(el => el.onchange = () => {
+            let sub = Array.from(document.querySelectorAll('.mod:checked')).reduce((a, b) => a + Number(b.value), 0);
+            document.getElementById('sub').innerText = sub.toFixed(2);
+            document.getElementById('igv').innerText = (sub * 0.18).toFixed(2);
+            document.getElementById('total').innerText = (sub * 1.18).toFixed(2);
+        });
+
+        // CHAT LOGIC (Mock)
+        const inp = document.getElementById('chat-inp');
+        const msgs = document.getElementById('chat-msgs');
+
+        inp.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && inp.value.trim()) {
+                const uMsg = inp.value;
+                msgs.innerHTML += `<div class="msg usr">${uMsg}</div>`;
+                inp.value = '';
+                msgs.scrollTop = msgs.scrollHeight;
+
+                setTimeout(() => {
+                    let r = "Entendido. Estoy analizando cómo AXYNTRAX puede potenciar tu negocio.";
+                    if (uMsg.toLowerCase().includes('precio')) r = "El plan básico empieza en S/ 99. ¿Deseas que te explique el plan Gold?";
+                    if (uMsg.toLowerCase().includes('medibot')) r = "MEDIBOT es genial para clínicas. Automatiza tus citas médicas en 5 minutos.";
+                    if (uMsg.toLowerCase().includes('vetbot')) r = "VETBOT te ayudará con los recordatorios de vacunas de tus mascotas automáticamente.";
+                    
+                    msgs.innerHTML += `<div class="msg bot">${r}</div>`;
+                    msgs.scrollTop = msgs.scrollHeight;
+                }, 800);
+            }
+        });
+    </script>
+</body>
+</html>

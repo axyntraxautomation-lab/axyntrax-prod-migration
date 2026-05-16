@@ -1,0 +1,34 @@
+{
+  "ia_name": "JARVIS",
+  "start_timestamp": "2026-05-09T17:15:11.192476+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T17:15:15.291707+00:00",
+  "duration_seconds": 4.09,
+  "turns_count": 2,
+  "tests_executed": [
+    {
+      "test_name": "log_insert",
+      "outcome": "ok",
+      "latency_ms": 2047,
+      "details": {
+        "mensaje": "Notificación recibida por JARVIS",
+        "ok": true
+      },
+      "payload": {
+        "type": "health.check"
+      }
+    },
+    {
+      "test_name": "query_recent_events",
+      "outcome": "error",
+      "latency_ms": 2046,
+      "details": "<!doctype html>\n<html lang=en>\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n",
+      "url": "http://localhost:5001/api/jarvis/notificar/events?limit=5"
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[JARVIS] Revisar logs del servicio."
+  ],
+  "confidence_score": 85
+}

@@ -1,0 +1,20 @@
+{
+  "ia_name": "WHATSAPP",
+  "start_timestamp": "2026-05-09T17:25:33.074160+00:00",
+  "status": "OK",
+  "tests_executed": [
+    {
+      "test_name": "wsp_token_validate",
+      "outcome": "skipped",
+      "details": "Sin WHATSAPP_TOKEN"
+    }
+  ],
+  "token_info": {
+    "token_present": false
+  },
+  "confidence_score": 100,
+  "turns_count": 0,
+  "suggested_next_steps": [],
+  "end_timestamp": "2026-05-09T17:25:33.074160+00:00",
+  "duration_seconds": 0.0
+}

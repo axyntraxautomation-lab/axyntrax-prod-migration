@@ -1,0 +1,42 @@
+{
+  "ia_name": "MATRIX",
+  "start_timestamp": "2026-05-09T17:25:26.307742+00:00",
+  "status": "WARN",
+  "end_timestamp": "2026-05-09T17:25:32.471689+00:00",
+  "duration_seconds": 6.17,
+  "turns_count": 3,
+  "tests_executed": [
+    {
+      "test_name": "matrix_turn_1",
+      "outcome": "error",
+      "latency_ms": 2063,
+      "details": {
+        "error": "No autorizado"
+      },
+      "prompt": "Hola Matrix, confirma versión y sincronía con Cecilia y Atlas."
+    },
+    {
+      "test_name": "matrix_turn_2",
+      "outcome": "error",
+      "latency_ms": 2046,
+      "details": {
+        "error": "No autorizado"
+      },
+      "prompt": "Dame en 1 frase cualquier inconsistencia detectada."
+    },
+    {
+      "test_name": "matrix_turn_3",
+      "outcome": "error",
+      "latency_ms": 2063,
+      "details": {
+        "error": "No autorizado"
+      },
+      "prompt": "Simula remediación: si hay inconsistencia devuelve suggested_action."
+    }
+  ],
+  "unresolved_issues": [],
+  "suggested_next_steps": [
+    "[MATRIX] Revisar logs del servicio."
+  ],
+  "confidence_score": 55
+}

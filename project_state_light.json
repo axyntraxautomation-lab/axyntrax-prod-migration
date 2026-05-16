@@ -1,0 +1,15 @@
+{
+  "ts": 1778478628.0648706,
+  "files": {
+    "api/whatsapp.py": "167a6c50a4f101bca1f07f40134598b036c58f03050ac2c5fff14c37d4fe19e9",
+    "api/messenger.py": "8ee6b4b5b48aab339fc392d2a09f0c4396bed6973ede978810af27feab94befe",
+    "api/cecilia_ia.py": "50e28ba5e851a7c7c826d8df5133160aeabcae2ddcf468399b67aa4cc908a107",
+    "vercel.json": "445eec8d5b7cb7571f9c1e343bf350b733c7589319336c1c8643d9267ef00055",
+    "requirements.txt": "630178b6fad46aae189af69c5d6005ce469dcdb35b41617ee5081cac4a46b30b",
+    "public/index.html": "93ee19273be372b0030598d88005229aa8afc9463a946a3a0578ea99f9dbfd7e"
+  },
+  "env": {
+    "wsp_token": false,
+    "deepseek_key": false
+  }
+}

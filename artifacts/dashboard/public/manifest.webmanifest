@@ -1,0 +1,26 @@
+{
+  "name": "JARVIS · AXYNTRAX",
+  "short_name": "JARVIS",
+  "description": "JARVIS, IA principal de AXYNTRAX AUTOMATION",
+  "start_url": "/dashboard/",
+  "scope": "/dashboard/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "es-PE",
+  "icons": [
+    {
+      "src": "/dashboard/axyntrax-logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/dashboard/axyntrax-logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AxyntraX Automation | Tu empresa, en automático</title>
+    <link rel="canonical" href="https://axyntrax-automation.net" />
+    <meta name="domain" content="axyntrax-automation.net">
+    <meta name="description" content="Automatiza tu empresa con AxyntraX Automation. SaaS modular para talleres, dentistas, retail y más en el Perú.">
+    <meta property="og:title" content="AxyntraX Automation | Tu empresa, en automático">
+    <meta property="og:description" content="Lidera tu negocio con inteligencia artificial.">
+    <meta property="og:image" content="https://axyntrax-automation.net/assets/og-image.jpg">
+    <link rel="icon" type="image/svg+xml" href="assets/logo-axyntrax.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0D0D0D',
+                        card: '#161616',
+                        cyan: {
+                            DEFAULT: '#00E5FF',
+                            hover: '#00B8CC',
+                            glow: 'rgba(0, 229, 255, 0.4)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0D0D0D; color: #FFFFFF; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .cyan-gradient { background: linear-gradient(135deg, #00E5FF 0%, #008291 100%); }
+        .cyan-text { color: #00E5FF; }
+        .card-hover:hover { border-color: rgba(0, 229, 255, 0.3); box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-10">
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                <a href="index.html#modulos" class="hover:text-cyan transition-colors">Módulos</a>
+                <a href="index.html#planes" class="hover:text-cyan transition-colors">Planes</a>
+                <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
+                <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+            </div>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="pt-40 pb-20 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight">Tu empresa, <span class="cyan-text">en automático</span></h1>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10 italic">"Automatiza procesos, reduce errores y enfócate en crecer"</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                <div class="glass p-6 rounded-2xl border-cyan/10">
+                    <div class="text-3xl font-black text-cyan">8 Rubros</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">SaaS Especializado</div>
+                </div>
+                <div class="glass p-6 rounded-2xl border-cyan/20 bg-cyan/5">
+                    <div class="text-3xl font-black text-cyan">30 Días</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">Gratis sin tarjeta</div>
+                </div>
+                <div class="glass p-6 rounded-2xl border-cyan/10">
+                    <div class="text-3xl font-black text-cyan">47 Clientes</div>
+                    <div class="text-xs uppercase tracking-widest text-gray-500">Activos en el Perú</div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="/registro" class="px-8 py-4 cyan-gradient text-dark font-black rounded-xl text-lg hover:shadow-[0_0_30px_rgba(0,229,255,0.4)] transition-all">Empezar Demo Gratis</a>
+                <a href="#como-funciona" class="px-8 py-4 glass text-white font-bold rounded-xl text-lg hover:bg-white/5 transition-all">Ver Cómo Funciona</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MÓDULOS -->
+    <section id="modulos" class="py-24 bg-dark/50 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Módulos Estratégicos</h2>
+                <p class="text-gray-400">Construye la suite perfecta para tu negocio.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- WASH -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-car text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">WASH - Carwash</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Registro clientes</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda turnos</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- MED -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-user-doctor text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">MED - Clínica</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda citas</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Ficha paciente</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- DENT -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-tooth text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">DENT - Dental</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda citas</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Ficha dental</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- VET -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-paw text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">VET - Veterinaria</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Registro mascotas</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- LEX -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-scale-balanced text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">LEX - Jurídico</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Registro clientes</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- LOGI -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-truck-fast text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">LOGI - Logística</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Registro envíos</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Tracking básico</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- REST -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-utensils text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">REST - Restaurante</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Carta digital</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Reservas</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+                <!-- GYM -->
+                <div class="glass p-8 rounded-3xl card-hover border-white/5 transition-all group">
+                    <i class="fa-solid fa-dumbbell text-3xl text-cyan mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4">GYM - Gimnasio</h3>
+                    <ul class="space-y-3 text-[10px] mb-8">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Registro socios</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Agenda clases</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan"></i> Caja básica</li>
+                    </ul>
+                    <a href="registro.html" class="w-full block py-3 text-center text-xs font-bold border border-cyan/30 rounded-lg group-hover:bg-cyan group-hover:text-dark transition-colors">Empezar Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section id="como-funciona" class="py-24">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-16">Cómo Funciona</h2>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8 relative">
+                <div class="flex-1 text-center">
+                    <div class="w-20 h-20 cyan-gradient rounded-full flex items-center justify-center text-dark text-3xl mx-auto mb-6">📝</div>
+                    <h4 class="font-bold mb-2">1. Regístrate</h4>
+                    <p class="text-xs text-gray-500">Gratis en 2 minutos.</p>
+                </div>
+                <div class="flex-1 text-center">
+                    <div class="w-20 h-20 cyan-gradient rounded-full flex items-center justify-center text-dark text-3xl mx-auto mb-6">📧</div>
+                    <h4 class="font-bold mb-2">2. KEY por email</h4>
+                    <p class="text-xs text-gray-500">Activación inmediata.</p>
+                </div>
+                <div class="flex-1 text-center">
+                    <div class="w-20 h-20 cyan-gradient rounded-full flex items-center justify-center text-dark text-3xl mx-auto mb-6">💻</div>
+                    <h4 class="font-bold mb-2">3. Instala .exe</h4>
+                    <p class="text-xs text-gray-500">Para tu PC Windows.</p>
+                </div>
+                <div class="flex-1 text-center">
+                    <div class="w-20 h-20 cyan-gradient rounded-full flex items-center justify-center text-dark text-3xl mx-auto mb-6">🚀</div>
+                    <h4 class="font-bold mb-2">4. 30 días gratis</h4>
+                    <p class="text-xs text-gray-500">Sin compromiso.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AGENTES IA -->
+    <section class="py-24 bg-dark/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16">Agentes IA Públicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-10 rounded-[40px] text-center border-white/5 hover:border-cyan/30 transition-all">
+                    <div class="text-5xl mb-6">🤖</div>
+                    <h3 class="text-2xl font-bold mb-2">CECILIA</h3>
+                    <p class="text-xs text-cyan font-bold tracking-widest uppercase mb-4">Atención 24/7</p>
+                    <p class="text-sm text-gray-400">Atiende a tus clientes por WhatsApp sin descanso.</p>
+                </div>
+                <div class="glass p-10 rounded-[40px] text-center border-white/5 hover:border-cyan/30 transition-all">
+                    <div class="text-5xl mb-6">🛰️</div>
+                    <h3 class="text-2xl font-bold mb-2">ATLAS</h3>
+                    <p class="text-xs text-cyan font-bold tracking-widest uppercase mb-4">Operaciones TI</p>
+                    <p class="text-sm text-gray-400">Monitorea la estabilidad y soporte técnico continuo.</p>
+                </div>
+                <div class="glass p-10 rounded-[40px] text-center border-white/5 hover:border-cyan/30 transition-all">
+                    <div class="text-5xl mb-6">📣</div>
+                    <h3 class="text-2xl font-bold mb-2">MARK</h3>
+                    <p class="text-xs text-cyan font-bold tracking-widest uppercase mb-4">Marketing IA</p>
+                    <p class="text-sm text-gray-400">Crea contenido y promociones automáticas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANES -->
+    <section id="planes" class="py-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16">Planes de Automatización</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="glass p-10 rounded-3xl border-white/5 flex flex-col">
+                    <h3 class="text-xl font-bold mb-4">Demo</h3>
+                    <div class="text-4xl font-black mb-2 text-cyan">S/ 0</div>
+                    <p class="text-xs text-gray-500 mb-8 tracking-widest uppercase">30 Días de Prueba</p>
+                    <ul class="space-y-4 text-sm mb-12 flex-grow">
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Hasta 3 módulos</li>
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Sin tarjeta requerida</li>
+                    </ul>
+                    <a href="/registro" class="w-full py-4 glass text-center font-bold rounded-xl hover:bg-white/10">Empezar Gratis</a>
+                </div>
+                <div class="glass p-10 rounded-3xl border-cyan bg-cyan/5 scale-105 shadow-2xl shadow-cyan/10 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 right-10 bg-cyan text-dark text-[10px] font-bold px-3 py-1 rounded-b-lg">POPULAR</div>
+                    <h3 class="text-xl font-bold mb-4">Pro Cloud</h3>
+                    <div class="text-4xl font-black mb-2">S/ 199<span class="text-sm font-normal text-gray-500">/mes</span></div>
+                    <p class="text-xs text-gray-500 mb-8 tracking-widest uppercase">Módulos Ilimitados</p>
+                    <ul class="space-y-4 text-sm mb-12 flex-grow">
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Todo el sistema</li>
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Factura SUNAT</li>
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Soporte Estándar</li>
+                    </ul>
+                    <a href="/registro" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-center">Suscribirse</a>
+                </div>
+                <div class="glass p-10 rounded-3xl border-white/5 flex flex-col">
+                    <h3 class="text-xl font-bold mb-4">Enterprise</h3>
+                    <div class="text-4xl font-black mb-2">S/ 399<span class="text-sm font-normal text-gray-500">/mes</span></div>
+                    <p class="text-xs text-gray-500 mb-8 tracking-widest uppercase">Escalado Corporativo</p>
+                    <ul class="space-y-4 text-sm mb-12 flex-grow">
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Soporte Prioritario</li>
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> API Access</li>
+                        <li><i class="fa-solid fa-check text-cyan mr-2"></i> Configuración Incluida</li>
+                    </ul>
+                    <a href="/registro" class="w-full py-4 glass text-center font-bold rounded-xl hover:bg-white/10">Contactar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="py-24 bg-dark/30">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-16">Casos de Éxito</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass p-8 rounded-3xl">
+                    <p class="text-sm text-gray-400 italic mb-6">"El taller mecánico en Arequipa ahora tiene control total de las órdenes. Axyntrax cambió nuestra forma de trabajar."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-cyan/20 rounded-full flex items-center justify-center font-bold text-cyan">TA</div>
+                        <div><div class="text-sm font-bold">Taller Los Andes</div><div class="text-[10px] text-gray-500">Arequipa</div></div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <p class="text-sm text-gray-400 italic mb-6">"La gestión de pacientes en mi clínica de Cusco es impecable con Cecilia. Agendamiento automático real."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-cyan/20 rounded-full flex items-center justify-center font-bold text-cyan">DC</div>
+                        <div><div class="text-sm font-bold">Dental Cusco</div><div class="text-[10px] text-gray-500">Cusco</div></div>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <p class="text-sm text-gray-400 italic mb-6">"La facturación SUNAT y el inventario en mi ferretería de Lima ahora son un placer de gestionar."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-cyan/20 rounded-full flex items-center justify-center font-bold text-cyan">FL</div>
+                        <div><div class="text-sm font-bold">Ferretería Lima</div><div class="text-[10px] text-gray-500">Lima</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMULARIO RÁPIDO -->
+    <section id="registro-rapido" class="py-24 relative overflow-hidden">
+        <div class="max-w-xl mx-auto px-6">
+            <div class="glass p-12 rounded-[40px] border-cyan/20">
+                <h2 class="text-3xl font-bold text-center mb-10">Consigue tu Demo de 30 días</h2>
+                <form class="space-y-4">
+                    <input type="text" placeholder="Tu nombre" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="text" placeholder="Empresa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
+                        <option>Rubro</option>
+                        <option>Taller</option>
+                        <option>Dental</option>
+                        <option>Comercio</option>
+                        <option>Otro</option>
+                    </select>
+                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
+                        <option>Módulo de Interés</option>
+                        <option>Gestión Taller</option>
+                        <option>Gestión Dental</option>
+                        <option>Control Accesos</option>
+                    </select>
+                    <input type="tel" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <button type="submit" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4 shadow-xl shadow-cyan/20">Quiero mi Demo de 30 días</button>
+                    <p class="text-center text-[10px] text-gray-600 mt-4 uppercase tracking-tighter">Sin tarjeta. Sin contratos. Solo resultados.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pt-20 pb-10 border-t border-white/5 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
+                <div>
+                    <img src="assets/logo-axyntrax.svg" alt="AxyntraX Automation" class="h-8 mb-6 mx-auto md:mx-0">
+                    <div class="text-[10px] text-gray-500 space-y-2 uppercase tracking-widest font-bold">
+                        <p>Axyntrax Automation S.A.C.</p>
+                        <p>RUC 10406750324</p>
+                        <p>&copy; 2026 Todos los derechos reservados.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 text-xs text-gray-500">
+                    <a href="index.html" class="hover:text-cyan transition-colors">Inicio</a>
+                    <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                    <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+                    <a href="politicas-de-privacidad.html" class="hover:text-cyan transition-colors">Políticas de Privacidad</a>
+                </div>
+                <div class="text-xs text-gray-500 space-y-4">
+                    <p><i class="fa-solid fa-envelope text-cyan mr-2"></i> axyntraxautomation@gmail.com</p>
+                    <p><i class="fa-solid fa-phone text-cyan mr-2"></i> +51 991 740 590</p>
+                    <div class="flex justify-center md:justify-start gap-4 text-xl">
+                        <a href="https://wa.me/51991740590" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://facebook.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/axyntrax.automation" target="_blank" class="hover:text-cyan transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-wrap justify-center gap-8 text-[9px] text-gray-600 font-bold uppercase tracking-[0.2em]">
+                <span>SSL Seguro</span>
+                <span>Hosting Vercel</span>
+                <span>Pagos Culqi</span>
+                <span>Facturación SUNAT</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- COMPONENTES EXTERNOS -->
+    <script src="cecilia-widget.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="email-sistema.js"></script>
+    <script>
+        (function() {
+            emailjs.init("TU_PUBLIC_KEY");
+        })();
+    </script>
+
+</body>
+</html>

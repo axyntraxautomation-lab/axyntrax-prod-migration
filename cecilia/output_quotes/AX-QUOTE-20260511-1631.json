@@ -1,0 +1,21 @@
+{
+    "folio": "AX-QUOTE-20260511-1631",
+    "fecha": "2026-05-11",
+    "cliente": "Panader\u00eda Los Andes",
+    "detalle_solicitado": "Hola, soy Roberto de 'Panader\u00eda Los Andes'. Necesito una landing page para mi negocio y automatizar la toma de pedidos por WhatsApp.",
+    "conceptos": [
+        "Creaci\u00f3n de Web / E-commerce",
+        "Automatizaci\u00f3n RPA",
+        "App AI a Medida"
+    ],
+    "urgencia": "NORMAL",
+    "financiero": {
+        "subtotal_neto": 7833.33,
+        "igv": 1410.0,
+        "total_final": 9243.33,
+        "ahorro_eficiencia": 1175.0,
+        "eta_dias": 30
+    },
+    "condiciones": "50% adelanto para inicio de proyecto, 50% contra entrega satisfactoria.",
+    "vendedor": "Cecilia (AXYNTRAX Commercial AI)"
+}
