@@ -1,0 +1,21 @@
+{
+  "name": "AXYNTRAX Automation Suite",
+  "short_name": "AXYNTRAX",
+  "description": "Automatización inteligente B2B con Cecilia IA y Jarvis OS.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#00D4FF",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/logo-premium.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

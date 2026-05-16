@@ -14,14 +14,25 @@ export async function POST(request: Request) {
     const randomHex = Math.random().toString(16).substring(2, 8).toUpperCase();
     const demoKey = `AX-DEMO-${randomHex}`;
 
-    // 2. Guardar en Firestore para seguimiento
+    // 2. Guardar en Firestore para seguimiento con CONSENTIMIENTO AUDITABLE
     const userId = telefono; // Usamos el teléfono como ID
+    const now = Date.now();
     await setDoc(doc(db, 'cecilia_states', userId), {
       nombreUsuario: nombre,
       empresa,
       telefono,
       demoKey,
-      fechaRegistro: Date.now(),
+      fechaRegistro: now,
+      // Capa Legal Auditable
+      consent: {
+        termsAcceptedAt: now,
+        termsVersion: "1.0",
+        privacyAcceptedAt: now,
+        privacyVersion: "1.0",
+        whatsappOptInAt: now,
+        whatsappOptInVersion: "1.0",
+        consentSource: "WEB_REGISTRATION_FORM"
+      },
       followup_3d_sent: false,
       moduloActual: null,
       submoduloActual: null,

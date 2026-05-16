@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Bot } from 'lucide-react';
-import { Logo } from './Logo';
 
 export default function CeciliaChat() {
   const [isOpen, setIsOpen] = useState(false);

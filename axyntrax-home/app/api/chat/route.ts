@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { askCecilia } from '@/lib/cecilia-logic';
+import { askCecilia } from '@/lib/cecilia/cecilia-logic';
 
 export async function POST(req: Request) {
   try {

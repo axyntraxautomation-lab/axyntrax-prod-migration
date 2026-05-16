@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
-import { askCecilia } from '@/lib/cecilia-logic';
+import { askCecilia } from '@/lib/cecilia/cecilia-logic';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 

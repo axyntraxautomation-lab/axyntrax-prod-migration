@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const { username, password } = await request.json();
 
     // Credenciales Hardcoded para acceso exclusivo CEO
-    if (username === 'jarvis' && password === 'viernes') {
+    if (username === process.env.JARVIS_USER && password === process.env.JARVIS_PASS) {
       const response = NextResponse.json({ success: true, message: "Protocolo JARVIS aceptado." });
       
       // Seteo de cookie segura httpOnly

@@ -9,7 +9,14 @@ import { ArrowLeft, User, Building2, Phone } from 'lucide-react';
 export default function RegistroPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ nombre: '', empresa: '', telefono: '' });
+  const [form, setForm] = useState({ 
+    nombre: '', 
+    empresa: '', 
+    telefono: '', 
+    termsAccepted: false, 
+    privacyAccepted: false, 
+    whatsappOptIn: false 
+  });
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,11 +121,55 @@ export default function RegistroPage() {
               </div>
             </div>
 
+            <div className="col-span-1 md:col-span-2 space-y-4 bg-white/[0.02] border border-white/5 p-6 rounded-2xl">
+              <div className="flex items-start gap-3">
+                <input 
+                  type="checkbox" 
+                  id="terms"
+                  checked={form.termsAccepted}
+                  onChange={(e) => setForm({...form, termsAccepted: e.target.checked})}
+                  className="mt-1 w-4 h-4 rounded border-white/10 bg-black/50 text-[#00D4FF] focus:ring-[#00D4FF]"
+                  required
+                />
+                <label htmlFor="terms" className="text-[11px] text-slate-400 leading-tight">
+                  Acepto los <a href="/terminos" target="_blank" className="text-[#00D4FF] hover:underline">Términos y Condiciones</a> y entiendo que mi actividad operativa será auditada para garantizar la seguridad del sistema.
+                </label>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <input 
+                  type="checkbox" 
+                  id="privacy"
+                  checked={form.privacyAccepted}
+                  onChange={(e) => setForm({...form, privacyAccepted: e.target.checked})}
+                  className="mt-1 w-4 h-4 rounded border-white/10 bg-black/50 text-[#00D4FF] focus:ring-[#00D4FF]"
+                  required
+                />
+                <label htmlFor="privacy" className="text-[11px] text-slate-400 leading-tight">
+                  He leído la <a href="/privacidad" target="_blank" className="text-[#00D4FF] hover:underline">Política de Privacidad</a> y autorizo el tratamiento de mis datos corporativos bajo estándares de cifrado.
+                </label>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <input 
+                  type="checkbox" 
+                  id="whatsapp"
+                  checked={form.whatsappOptIn}
+                  onChange={(e) => setForm({...form, whatsappOptIn: e.target.checked})}
+                  className="mt-1 w-4 h-4 rounded border-white/10 bg-black/50 text-[#00D4FF] focus:ring-[#00D4FF]"
+                  required
+                />
+                <label htmlFor="whatsapp" className="text-[11px] text-slate-400 leading-tight">
+                  Autorizo la atención automatizada vía Cecilia IA para la entrega de licencias, soporte y notificaciones operativas.
+                </label>
+              </div>
+            </div>
+
             <div className="col-span-1 md:col-span-2 space-y-4 mt-4">
               <button 
                 type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-[#00D4FF] to-[#7B2FFF] text-white font-bold py-4 rounded-xl hover:shadow-[0_0_20px_rgba(123,47,255,0.4)] transition-all disabled:opacity-50"
+                disabled={loading || !form.termsAccepted || !form.privacyAccepted || !form.whatsappOptIn}
+                className="w-full bg-gradient-to-r from-[#00D4FF] to-[#7B2FFF] text-white font-bold py-4 rounded-xl hover:shadow-[0_0_20px_rgba(123,47,255,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'PROCESANDO SOLICITUD...' : 'ENVIAR SOLICITUD DE LICENCIA'}
               </button>

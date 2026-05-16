@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/Logo';
-import { validateKey } from '@/lib/auth';
+import { validateKey } from '@/lib/validators/auth';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, ShieldCheck, HelpCircle } from 'lucide-react';
 
@@ -115,7 +115,7 @@ export default function LoginPage() {
             target="_blank" 
             className="flex items-center gap-2 text-slate-400 hover:text-[#00D4FF] text-xs transition-colors"
           >
-            <HelpCircle size={14} /> Soporte Técnico CEO JARVIS
+            <HelpCircle size={14} /> Soporte Técnico Centralizado Atlas
           </a>
           <button 
             onClick={() => router.push('/registro')}
