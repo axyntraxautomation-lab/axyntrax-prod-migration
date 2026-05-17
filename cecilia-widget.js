@@ -4,7 +4,7 @@
  */
 
 const CECILIA_FALLBACK =
-    '✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer';
+    '✅ ¡Hola! Recibimos tu mensaje. Para activar tus 30 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer';
 
 const TECHNICAL_REPLY_RE =
     /error en mi cerebro|dificultades técnicas|problema técnico|error 500|error 404|traceback|exception/i;
@@ -15,7 +15,7 @@ class CeciliaAssistant {
         this.config = null;
         this.messages = [
             { role: 'bot', text: '¡Hola! Soy Cecilia, tu asistente virtual de AxyntraX. 🤖' },
-            { role: 'bot', text: '¿Listo para SOLICITAR ACTIVACIÓN? Demo 45 días · planes desde S/199. Escríbeme.' }
+            { role: 'bot', text: '¿Listo para SOLICITAR ACTIVACIÓN? Demo 30 días · planes desde S/199. Escríbeme.' }
         ];
         this.init();
     }
@@ -31,7 +31,9 @@ class CeciliaAssistant {
     }
 
     renderStyles() {
+        if (document.getElementById('cecilia-styles')) return;
         const style = document.createElement('style');
+        style.id = 'cecilia-styles';
         style.innerHTML = `
             #cecilia-hub { position: fixed; bottom: 30px; right: 30px; z-index: 9999; font-family: 'Outfit', sans-serif; }
             .hub-buttons { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
@@ -119,6 +121,7 @@ class CeciliaAssistant {
     }
 
     renderHTML() {
+        if (document.getElementById('cecilia-hub')) return;
         const hub = document.createElement('div');
         hub.id = 'cecilia-hub';
         hub.innerHTML = `
@@ -265,7 +268,7 @@ class CeciliaAssistant {
             return `Planes: Starter S/199, Pro Cloud S/399, Diamante S/799. En ${registro} pulsa SOLICITAR ACTIVACIÓN.`;
         }
         if (input.includes('demo') || input.includes('prueba') || input.includes('gratis') || input.includes('activar')) {
-            return `Demo 45 días sin tarjeta. Abre ${registro} y pulsa SOLICITAR ACTIVACIÓN. Instalador: ${installer}`;
+            return `Demo 30 días sin tarjeta. Abre ${registro} y pulsa SOLICITAR ACTIVACIÓN. Instalador: ${installer}`;
         }
         if (input.includes('hola') || input.includes('buenos')) {
             return '¡Hola! Soy Cecilia. ¿Te ayudo con planes, demo o instalador?';
@@ -276,5 +279,9 @@ class CeciliaAssistant {
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.cecilia) {
+        console.warn('CeciliaAssistant already initialized on this page.');
+        return;
+    }
     window.cecilia = new CeciliaAssistant();
 });

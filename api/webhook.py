@@ -1,4 +1,8 @@
 import os
+import time
+import hmac
+import hashlib
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
@@ -8,8 +12,37 @@ from flask import Flask, request, jsonify, redirect
 
 app = Flask(__name__)
 
+# Rate limiting: max 30 solicitudes por minuto por IP
+_IP_REQUESTS = defaultdict(list)
+
+def check_rate_limit() -> bool:
+    ip = request.headers.get("x-forwarded-for", request.remote_addr)
+    if ip and "," in ip:
+        ip = ip.split(",")[0].strip()
+    now = time.time()
+    _IP_REQUESTS[ip] = [t for t in _IP_REQUESTS[ip] if now - t < 60]
+    if len(_IP_REQUESTS[ip]) >= 30:
+        return False
+    _IP_REQUESTS[ip].append(now)
+    return True
+
+def verificar_firma_meta(raw_body: bytes, signature_header: str) -> bool:
+    app_secret = os.getenv("FB_APP_SECRET")
+    if not app_secret:
+        print("[Meta HMAC] FB_APP_SECRET no configurado, saltando validación para compatibilidad")
+        return True
+    if not signature_header or not signature_header.startswith("sha256="):
+        return False
+    expected_sig = signature_header.split("sha256=")[1].strip()
+    computed_sig = hmac.new(
+        app_secret.encode("utf-8"),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected_sig, computed_sig)
+
 # Fuente de verdad (sincronizar con assets/axyntrax-config.json)
-DEMO_DAYS = 45
+DEMO_DAYS = 30
 PRICE_STARTER = 199
 PRICE_PRO = 399
 PRICE_DIAMANTE = 799
@@ -17,7 +50,7 @@ INSTALLER_URL = "https://www.axyntrax-automation.net/api/installer"
 CTA_ACTIVACION = "SOLICITAR ACTIVACIÓN"
 REGISTRO_PATH = "/registro.html"
 CECILIA_FALLBACK = (
-    "✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar "
+    "✅ ¡Hola! Recibimos tu mensaje. Para activar tus 30 días gratis o descargar "
     f"los optimizadores, ve directo a: {INSTALLER_URL}"
 )
 
@@ -294,6 +327,17 @@ def webhook_whatsapp():
             return str(challenge), 200
         return "Forbidden", 403
 
+    # Rate limiting: máx 30 solicitudes por minuto por IP
+    if not check_rate_limit():
+        return jsonify({"error": "Too Many Requests"}), 429
+
+    # Validar firma HMAC SHA256 si está presente
+    signature = request.headers.get("X-Hub-Signature-256")
+    raw_body = request.get_data()
+    if signature and not verificar_firma_meta(raw_body, signature):
+        print("[Meta HMAC] Firma inválida detectada en el webhook de WhatsApp")
+        return "Invalid signature", 401
+
     try:
         data = request.get_json(silent=True) or {}
         if data.get("entry"):
@@ -347,6 +391,8 @@ def stripe_webhook():
 
 @app.route("/api/cecilia/chat", methods=["POST"])
 def chat_web():
+    if not check_rate_limit():
+        return jsonify({"error": "Too Many Requests"}), 429
     try:
         data = request.get_json(silent=True) or {}
         mensaje = data.get("message", "Hola")
