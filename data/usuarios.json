@@ -1,0 +1,35 @@
+[
+  {
+    "id": "u1",
+    "nombre": "Yarvis Admin",
+    "email": "yarvis@axyntrax.com",
+    "username": "admin",
+    "password": "axyntrax2026",
+    "rol": "admin",
+    "permisos": ["total", "usuarios", "facturacion", "metricas", "integraciones"],
+    "fecha_creacion": "2026-05-01",
+    "activo": true
+  },
+  {
+    "id": "u2",
+    "nombre": "Soporte Técnico",
+    "email": "soporte@axyntrax.com",
+    "username": "soporte",
+    "password": "soporte2026",
+    "rol": "soporte",
+    "permisos": ["tickets", "faq", "casos"],
+    "fecha_creacion": "2026-05-05",
+    "activo": true
+  },
+  {
+    "id": "u3",
+    "nombre": "Juan Pérez",
+    "email": "juan@cliente.com",
+    "username": "cliente1",
+    "password": "cliente2026",
+    "rol": "cliente",
+    "permisos": [],
+    "fecha_creacion": "2026-05-10",
+    "activo": true
+  }
+]

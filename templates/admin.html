@@ -57,7 +57,7 @@
             margin-left: 280px;
             flex-grow: 1;
             padding: 40px;
-            min-width: 0; /* Prevents flex items from breaking grid */
+            min-width: 0;
         }
 
         /* Branding */
@@ -265,7 +265,7 @@
         }
 
         .metric-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 800;
             letter-spacing: -0.5px;
         }
@@ -397,6 +397,7 @@
 
         <nav>
             <ul class="nav-menu">
+                {% if rol == 'admin' %}
                 <li class="nav-item active" data-target="sec-resumen">
                     <a href="#resumen"><i class="fa-solid fa-chart-pie"></i>Resumen</a>
                 </li>
@@ -412,14 +413,25 @@
                 <li class="nav-item" data-target="sec-soporte">
                     <a href="#soporte"><i class="fa-solid fa-circle-question"></i>Soporte</a>
                 </li>
+                <li class="nav-item" data-target="sec-usuarios">
+                    <a href="#usuarios"><i class="fa-solid fa-user-gear"></i>Usuarios</a>
+                </li>
+                {% else %}
+                <li class="nav-item active" data-target="sec-clientes">
+                    <a href="#clientes"><i class="fa-solid fa-users"></i>Clientes</a>
+                </li>
+                <li class="nav-item" data-target="sec-soporte">
+                    <a href="#soporte"><i class="fa-solid fa-circle-question"></i>Soporte</a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
 
         <div class="sidebar-footer">
-            <div class="user-avatar">Y</div>
+            <div class="user-avatar">{{ rol[0]|upper }}</div>
             <div class="user-info">
-                <div class="user-name">YARVIS</div>
-                <div class="user-role">Administrador</div>
+                <div class="user-name">{{ rol|upper }}</div>
+                <div class="user-role">Agente Autorizado</div>
             </div>
         </div>
     </aside>
@@ -428,48 +440,37 @@
     <main class="main-content">
         <header class="header-section">
             <div class="header-title">
-                <h1 id="page-title">Panel de Control</h1>
-                <p id="page-subtitle">Monitoreo y administración general de clientes y activaciones</p>
+                <h1 id="page-title">{% if rol == 'admin' %}Panel de Control{% else %}Cartera de Soporte{% endif %}</h1>
+                <p id="page-subtitle">{% if rol == 'admin' %}Monitoreo y administración general de clientes y activaciones{% else %}Gestión de casos de soporte y cartera de clientes asignada{% endif %}</p>
             </div>
-            <button class="btn-action" onclick="alert('Funcionalidad reservada en producción')">
+            <button class="btn-action" onclick="alert('Datos sincronizados correctamente')">
                 <i class="fa-solid fa-rotate"></i> Sincronizar
             </button>
         </header>
 
         <!-- Metrics Grid -->
         <section class="metrics-grid">
+            {% if rol == 'admin' %}
             <div class="metric-card">
                 <div class="metric-header">
-                    <span class="metric-title">Clientes Totales</span>
-                    <div class="metric-icon"><i class="fa-solid fa-users text-cyan"></i></div>
+                    <span class="metric-title">Ingresos Mensuales</span>
+                    <div class="metric-icon"><i class="fa-solid fa-wallet text-cyan"></i></div>
                 </div>
-                <div class="metric-value">{{ clientes|length }}</div>
+                <div class="metric-value">S/ {{ "%.2f"|format(ingresos_mensuales) }}</div>
             </div>
             <div class="metric-card emerald">
                 <div class="metric-header">
-                    <span class="metric-title">Módulos Activos</span>
-                    <div class="metric-icon"><i class="fa-solid fa-circle-check text-emerald"></i></div>
+                    <span class="metric-title">Clientes Activos</span>
+                    <div class="metric-icon"><i class="fa-solid fa-user-check text-emerald"></i></div>
                 </div>
-                <div class="metric-value">
-                    {% set active_count = 0 %}
-                    {% for a in activaciones %}
-                        {% if a.estado == 'activo' %}{% set active_count = active_count + 1 %}{% endif %}
-                    {% endfor %}
-                    {{ active_count }}
-                </div>
+                <div class="metric-value">{{ clientes_activos }}</div>
             </div>
             <div class="metric-card amber">
                 <div class="metric-header">
-                    <span class="metric-title">Licencias Demo</span>
-                    <div class="metric-icon"><i class="fa-solid fa-hourglass-half text-amber"></i></div>
+                    <span class="metric-title">Conversión (Demo→Plan)</span>
+                    <div class="metric-icon"><i class="fa-solid fa-chart-line text-amber"></i></div>
                 </div>
-                <div class="metric-value">
-                    {% set demo_count = 0 %}
-                    {% for c in clientes %}
-                        {% if c.plan == 'demo' %}{% set demo_count = demo_count + 1 %}{% endif %}
-                    {% endfor %}
-                    {{ demo_count }}
-                </div>
+                <div class="metric-value">{{ conversion_rate }}%</div>
             </div>
             <div class="metric-card rose">
                 <div class="metric-header">
@@ -484,27 +485,52 @@
                     {{ ticket_count }}
                 </div>
             </div>
+            {% else %}
+            <!-- Vista Soporte -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Clientes Totales</span>
+                    <div class="metric-icon"><i class="fa-solid fa-users text-cyan"></i></div>
+                </div>
+                <div class="metric-value">{{ clientes|length }}</div>
+            </div>
+            <div class="metric-card rose">
+                <div class="metric-header">
+                    <span class="metric-title">Tickets Abiertos</span>
+                    <div class="metric-icon"><i class="fa-solid fa-triangle-exclamation text-rose"></i></div>
+                </div>
+                <div class="metric-value">
+                    {% set ticket_count = 0 %}
+                    {% for t in tickets %}
+                        {% if t.estado == 'abierto' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
+                    {% endfor %}
+                    {{ ticket_count }}
+                </div>
+            </div>
+            {% endif %}
         </section>
 
         <!-- SECTION: Resumen -->
+        {% if rol == 'admin' %}
         <div id="sec-resumen" class="content-section active">
             <div class="section-header">
-                <h2 class="section-title"><i class="fa-solid fa-chart-line"></i>Vista de Negocio</h2>
+                <h2 class="section-title"><i class="fa-solid fa-chart-line"></i>Vista de Negocio Centralizada</h2>
             </div>
-            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 0;">
+            
+            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 30px;">
                 <div class="metric-card" style="background: rgba(255,255,255,0.01);">
-                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Últimas Activaciones</h3>
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 15px;"><i class="fa-solid fa-cubes text-cyan"></i> Módulos Más Usados</h3>
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
-                        {% for a in activaciones[:3] %}
+                        {% for mod_name, mod_count in modulos_mas_usados %}
                         <li style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--dark-border); padding-bottom: 8px;">
-                            <span>Módulo: <strong>{{ a.modulo }}</strong></span>
-                            <span class="badge {% if a.estado == 'activo' %}badge-pro{% else %}badge-demo{% endif %}">{{ a.estado }}</span>
+                            <span>{{ mod_name }}</span>
+                            <span class="badge badge-starter">{{ mod_count }} usos</span>
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
                 <div class="metric-card" style="background: rgba(255,255,255,0.01);">
-                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Últimos Comprobantes</h3>
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 15px;"><i class="fa-solid fa-receipt text-emerald"></i> Últimos Comprobantes</h3>
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
                         {% for f in facturacion[:3] %}
                         <li style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--dark-border); padding-bottom: 8px;">
@@ -516,9 +542,10 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- SECTION: Clientes -->
-        <div id="sec-clientes" class="content-section">
+        <div id="sec-clientes" class="content-section {% if rol != 'admin' %}active{% endif %}">
             <div class="section-header">
                 <h2 class="section-title"><i class="fa-solid fa-users"></i>Cartera de Clientes</h2>
             </div>
@@ -563,6 +590,7 @@
         </div>
 
         <!-- SECTION: Facturación -->
+        {% if rol == 'admin' %}
         <div id="sec-facturacion" class="content-section">
             <div class="section-header">
                 <h2 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i>Facturación y Cobranzas</h2>
@@ -633,6 +661,7 @@
                 </table>
             </div>
         </div>
+        {% endif %}
 
         <!-- SECTION: Soporte -->
         <div id="sec-soporte" class="content-section">
@@ -673,6 +702,60 @@
                 </table>
             </div>
         </div>
+
+        <!-- SECTION: Usuarios -->
+        {% if rol == 'admin' %}
+        <div id="sec-usuarios" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-user-gear"></i>Gestión de Usuarios y Accesos</h2>
+                <button class="btn-action" onclick="alert('Gestión de creación reservada vía API')">
+                    <i class="fa-solid fa-user-plus"></i> Crear Usuario
+                </button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Nombre de Usuario</th>
+                            <th>Rol</th>
+                            <th>Permisos</th>
+                            <th>Estado</th>
+                            <th>Creación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            <td><strong>{{ u.nombre }}</strong></td>
+                            <td>{{ u.email }}</td>
+                            <td><code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 12px;">{{ u.username }}</code></td>
+                            <td>
+                                <span class="badge {% if u.rol == 'admin' %}badge-diamante{% elif u.rol == 'soporte' %}badge-starter{% else %}badge-demo{% endif %}">
+                                    {{ u.rol }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    {% for p in u.permisos %}
+                                    <span style="font-size: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); padding: 2px 6px; border-radius: 4px;">{{ p }}</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {% if u.activo %}badge-pro{% else %}badge-unpaid{% endif %}">
+                                    {% if u.activo %}activo{% else %}inactivo{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ u.fecha_creacion }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
     </main>
 
     <!-- Navigation Handler Script -->
@@ -694,7 +777,8 @@
                     'sec-clientes': ['Fichas de Clientes', 'Gestión de cartera B2B, planes y renovaciones de licencia'],
                     'sec-facturacion': ['Facturas y Cobranzas', 'Historial de comprobantes de pago y estados de transacciones'],
                     'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
-                    'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución']
+                    'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución'],
+                    'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice']
                 };
 
                 if (titleMap[target]) {

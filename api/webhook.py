@@ -54,11 +54,39 @@ def load_data(filename: str, default_val: list) -> list:
         print(f"[load_data] Error cargando {filename}: {e}")
         return default_val
 
+# Helper para guardar datos JSON
+def save_data(filename: str, data: list):
+    path = os.path.join(os.path.dirname(__file__), "..", "data", filename)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[save_data] Error guardando {filename}: {e}")
+
 # Autenticación HTTP Basic
 def check_auth(username, password):
     admin_user = os.getenv("ADMIN_USER", "admin")
     admin_pass = os.getenv("ADMIN_PASS", "axyntrax2026")
-    return username == admin_user and password == admin_pass
+    if username == admin_user and password == admin_pass:
+        return True
+
+    # Buscar en data/usuarios.json
+    usuarios = load_data("usuarios.json", [])
+    for u in usuarios:
+        if u.get("username") == username and u.get("password") == password and u.get("activo"):
+            return True
+    return False
+
+def get_auth_user_role(username) -> str:
+    admin_user = os.getenv("ADMIN_USER", "admin")
+    if username == admin_user:
+        return "admin"
+    usuarios = load_data("usuarios.json", [])
+    for u in usuarios:
+        if u.get("username") == username:
+            return u.get("rol", "cliente")
+    return "cliente"
 
 def authenticate():
     resp = make_response("Acceso denegado. Credenciales incorrectas.", 401)
@@ -457,10 +485,31 @@ def admin_panel():
     if not check_admin_rate_limit():
         return jsonify({"error": "Too Many Requests"}), 429
     try:
+        username = request.authorization.username
+        rol = get_auth_user_role(username)
+
+        if rol not in ("admin", "soporte"):
+            return make_response("Acceso denegado: este rol no tiene permisos para acceder al backoffice.", 403)
+
         clientes = load_data("clientes.json", [])
         facturacion = load_data("facturacion.json", [])
         activaciones = load_data("activaciones.json", [])
         tickets = load_data("tickets.json", [])
+        usuarios = load_data("usuarios.json", [])
+
+        # Métricas de negocio
+        clientes_activos = len([c for c in clientes if c.get("plan") and c.get("plan") != "demo"])
+        ingresos_mensuales = sum(float(f.get("monto", 0)) for f in facturacion if f.get("estado") == "pagado")
+        total_demos = len([c for c in clientes if c.get("plan") == "demo"])
+        denominador = total_demos + clientes_activos
+        conversion_rate = round((clientes_activos / denominador) * 100, 1) if denominador > 0 else 0.0
+
+        modulo_counts = {}
+        for a in activaciones:
+            mod = a.get("modulo")
+            if mod:
+                modulo_counts[mod] = modulo_counts.get(mod, 0) + 1
+        modulos_mas_usados = sorted(modulo_counts.items(), key=lambda x: x[1], reverse=True)[:3]
 
         template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "admin.html")
         with open(template_path, "r", encoding="utf-8") as f:
@@ -471,11 +520,23 @@ def admin_panel():
             clientes=clientes,
             facturacion=facturacion,
             activaciones=activaciones,
-            tickets=tickets
+            tickets=tickets,
+            usuarios=usuarios,
+            rol=rol,
+            clientes_activos=clientes_activos,
+            ingresos_mensuales=ingresos_mensuales,
+            conversion_rate=conversion_rate,
+            modulos_mas_usados=modulos_mas_usados
         )
     except Exception as e:
         print(f"[admin_panel] Error: {e}")
         return f"Error interno cargando el panel de administración: {e}", 500
+
+
+@app.route("/admin/usuarios", methods=["GET"])
+@requires_auth
+def admin_usuarios():
+    return redirect("/admin#usuarios")
 
 
 @app.route("/admin/api/data", methods=["GET"])
@@ -484,6 +545,12 @@ def admin_api_data():
     if not check_admin_rate_limit():
         return jsonify({"error": "Too Many Requests"}), 429
     try:
+        username = request.authorization.username
+        rol = get_auth_user_role(username)
+
+        if rol not in ("admin", "soporte"):
+            return jsonify({"error": "No autorizado"}), 403
+
         clientes = load_data("clientes.json", [])
         facturacion = load_data("facturacion.json", [])
         activaciones = load_data("activaciones.json", [])
@@ -492,10 +559,69 @@ def admin_api_data():
             "clientes": clientes,
             "facturacion": facturacion,
             "activaciones": activaciones,
-            "tickets": tickets
+            "tickets": tickets,
+            "rol": rol
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/admin/api/usuarios", methods=["GET", "POST"])
+@requires_auth
+def admin_api_usuarios():
+    if not check_admin_rate_limit():
+        return jsonify({"error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"error": "No autorizado"}), 403
+
+    if request.method == "GET":
+        try:
+            usuarios = load_data("usuarios.json", [])
+            return jsonify(usuarios), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    elif request.method == "POST":
+        try:
+            data = request.get_json(silent=True) or {}
+            usuarios = load_data("usuarios.json", [])
+
+            user_id = data.get("id")
+            if user_id:
+                # Editar
+                for u in usuarios:
+                    if u.get("id") == user_id:
+                        u["nombre"] = data.get("nombre", u["nombre"])
+                        u["email"] = data.get("email", u["email"])
+                        u["username"] = data.get("username", u["username"])
+                        if "password" in data and data["password"]:
+                            u["password"] = data["password"]
+                        u["rol"] = data.get("rol", u["rol"])
+                        u["permisos"] = data.get("permisos", u["permisos"])
+                        u["activo"] = data.get("activo", u["activo"])
+                        break
+            else:
+                # Crear
+                new_user = {
+                    "id": f"u{len(usuarios) + 1}",
+                    "nombre": data.get("nombre", "Nuevo Usuario"),
+                    "email": data.get("email", ""),
+                    "username": data.get("username", ""),
+                    "password": data.get("password", "axyntrax2026"),
+                    "rol": data.get("rol", "cliente"),
+                    "permisos": data.get("permisos", []),
+                    "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+                    "activo": data.get("activo", True)
+                }
+                usuarios.append(new_user)
+
+            save_data("usuarios.json", usuarios)
+            return jsonify({"status": "ok", "usuarios": usuarios}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
