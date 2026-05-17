@@ -12,18 +12,7 @@
   ],
   "routes": [
     { 
-      "src": "/admin", 
-      "dest": "/api/webhook.py",
-      "headers": {
-        "Content-Security-Policy": "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' https: data:; frame-ancestors 'none';",
-        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
-        "X-Frame-Options": "DENY",
-        "X-Content-Type-Options": "nosniff",
-        "Referrer-Policy": "strict-origin-when-cross-origin"
-      }
-    },
-    { 
-      "src": "/admin/api/(.*)", 
+      "src": "/admin(.*)", 
       "dest": "/api/webhook.py",
       "headers": {
         "Content-Security-Policy": "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' https: data:; frame-ancestors 'none';",
