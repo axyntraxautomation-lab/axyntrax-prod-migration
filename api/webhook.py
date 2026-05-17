@@ -502,7 +502,7 @@ def extraer_datos_stripe(event: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 def enviar_whatsapp(num: str, texto: str) -> None:
     if not ACCESS_TOKEN:
-        print("[WhatsApp] Falta WSP_ACCESS_TOKEN o WHATSAPP_TOKEN")
+        print("[WhatsApp] ERROR: Falta WSP_ACCESS_TOKEN. Configura la variable de entorno en Vercel.")
         return
     url = f"https://graph.facebook.com/v20.0/{PHONE_ID}/messages"
     headers = {
@@ -515,7 +515,17 @@ def enviar_whatsapp(num: str, texto: str) -> None:
         "type": "text",
         "text": {"body": texto},
     }
-    requests.post(url, headers=headers, json=payload, timeout=15)
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=15)
+        if resp.status_code == 200:
+            print(f"[WhatsApp] Mensaje enviado a {num}")
+        elif resp.status_code == 401:
+            print(f"[WhatsApp] TOKEN EXPIRADO (401). Renueva WSP_ACCESS_TOKEN en Meta Business y actualiza la variable en Vercel.")
+        else:
+            print(f"[WhatsApp] ERROR {resp.status_code}: {resp.text[:200]}")
+    except Exception as e:
+        print(f"[WhatsApp] Excepción al enviar: {e}")
+
 
 
 @app.route("/api/installer", methods=["GET"])

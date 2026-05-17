@@ -342,11 +342,19 @@ class CeciliaAssistant {
     }
 }
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
+// Inicializar cuando el DOM esté listo - maneja el caso donde ya cargó
+(function initCecilia() {
     if (window.cecilia) {
         console.warn('CeciliaAssistant already initialized on this page.');
         return;
     }
-    window.cecilia = new CeciliaAssistant();
-});
+    if (document.readyState === 'loading') {
+        // DOM aún no terminó - esperamos el evento
+        document.addEventListener('DOMContentLoaded', function () {
+            window.cecilia = new CeciliaAssistant();
+        });
+    } else {
+        // DOM ya está listo (script cargó tarde, después del DOMContentLoaded)
+        window.cecilia = new CeciliaAssistant();
+    }
+})();
