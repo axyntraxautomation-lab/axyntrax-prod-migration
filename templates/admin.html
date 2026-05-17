@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axyntrax Backoffice | Panel de Administración</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark: #070708;
+            --dark-card: #0F0F12;
+            --dark-border: rgba(255, 255, 255, 0.05);
+            --cyan: #00E5FF;
+            --cyan-dim: rgba(0, 229, 255, 0.1);
+            --emerald: #10B981;
+            --emerald-dim: rgba(16, 185, 129, 0.1);
+            --amber: #F59E0B;
+            --amber-dim: rgba(245, 158, 11, 0.1);
+            --rose: #EF4444;
+            --rose-dim: rgba(239, 68, 68, 0.1);
+            --text-main: #FFFFFF;
+            --text-muted: #8F9199;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Layout Structure */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 40px;
+            min-width: 0; /* Prevents flex items from breaking grid */
+        }
+
+        /* Branding */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .logo-area img {
+            height: 32px;
+        }
+
+        .logo-title {
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-title span {
+            color: var(--cyan);
+        }
+
+        /* Navigation Links */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 18px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active a {
+            border-left: 3px solid var(--cyan);
+            border-radius: 4px 12px 12px 4px;
+            background: var(--cyan-dim);
+            color: var(--cyan);
+        }
+
+        .nav-item a i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* User badge at bottom of sidebar */
+        .sidebar-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--cyan);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .user-info {
+            line-height: 1.3;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Top Header */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            background: var(--cyan);
+            color: var(--dark);
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 229, 255, 0.25);
+        }
+
+        /* Dashboard Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .metric-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--cyan);
+            opacity: 0.7;
+        }
+
+        .metric-card.emerald::before { background: var(--emerald); }
+        .metric-card.amber::before { background: var(--amber); }
+        .metric-card.rose::before { background: var(--rose); }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-title {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--dark-border);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Content Containers */
+        .content-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--cyan);
+        }
+
+        /* Beautiful Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            padding: 16px 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--dark-border);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--dark-border);
+            color: #E2E4E9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-demo { background: var(--amber-dim); color: var(--amber); }
+        .badge-starter { background: var(--cyan-dim); color: var(--cyan); }
+        .badge-pro { background: var(--emerald-dim); color: var(--emerald); }
+        .badge-diamante { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+        .badge-paid { background: var(--emerald-dim); color: var(--emerald); }
+        .badge-unpaid { background: var(--rose-dim); color: var(--rose); }
+        .badge-resolved { background: var(--emerald-dim); color: var(--emerald); }
+        .badge-open { background: var(--rose-dim); color: var(--rose); }
+
+        /* General Info */
+        .client-info-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .client-name-bold {
+            font-weight: 600;
+            color: #FFF;
+        }
+
+        .client-subtext {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo-area">
+            <img src="assets/logo-axyntrax.svg" alt="AxyntraX Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%2300E5FF%22/></svg>'">
+            <div class="logo-title">AXYNTRAX<span>.</span></div>
+        </div>
+
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-target="sec-resumen">
+                    <a href="#resumen"><i class="fa-solid fa-chart-pie"></i>Resumen</a>
+                </li>
+                <li class="nav-item" data-target="sec-clientes">
+                    <a href="#clientes"><i class="fa-solid fa-users"></i>Clientes</a>
+                </li>
+                <li class="nav-item" data-target="sec-facturacion">
+                    <a href="#facturacion"><i class="fa-solid fa-file-invoice-dollar"></i>Facturación</a>
+                </li>
+                <li class="nav-item" data-target="sec-activaciones">
+                    <a href="#activaciones"><i class="fa-solid fa-key"></i>Activaciones</a>
+                </li>
+                <li class="nav-item" data-target="sec-soporte">
+                    <a href="#soporte"><i class="fa-solid fa-circle-question"></i>Soporte</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-avatar">Y</div>
+            <div class="user-info">
+                <div class="user-name">YARVIS</div>
+                <div class="user-role">Administrador</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <header class="header-section">
+            <div class="header-title">
+                <h1 id="page-title">Panel de Control</h1>
+                <p id="page-subtitle">Monitoreo y administración general de clientes y activaciones</p>
+            </div>
+            <button class="btn-action" onclick="alert('Funcionalidad reservada en producción')">
+                <i class="fa-solid fa-rotate"></i> Sincronizar
+            </button>
+        </header>
+
+        <!-- Metrics Grid -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Clientes Totales</span>
+                    <div class="metric-icon"><i class="fa-solid fa-users text-cyan"></i></div>
+                </div>
+                <div class="metric-value">{{ clientes|length }}</div>
+            </div>
+            <div class="metric-card emerald">
+                <div class="metric-header">
+                    <span class="metric-title">Módulos Activos</span>
+                    <div class="metric-icon"><i class="fa-solid fa-circle-check text-emerald"></i></div>
+                </div>
+                <div class="metric-value">
+                    {% set active_count = 0 %}
+                    {% for a in activaciones %}
+                        {% if a.estado == 'activo' %}{% set active_count = active_count + 1 %}{% endif %}
+                    {% endfor %}
+                    {{ active_count }}
+                </div>
+            </div>
+            <div class="metric-card amber">
+                <div class="metric-header">
+                    <span class="metric-title">Licencias Demo</span>
+                    <div class="metric-icon"><i class="fa-solid fa-hourglass-half text-amber"></i></div>
+                </div>
+                <div class="metric-value">
+                    {% set demo_count = 0 %}
+                    {% for c in clientes %}
+                        {% if c.plan == 'demo' %}{% set demo_count = demo_count + 1 %}{% endif %}
+                    {% endfor %}
+                    {{ demo_count }}
+                </div>
+            </div>
+            <div class="metric-card rose">
+                <div class="metric-header">
+                    <span class="metric-title">Tickets Abiertos</span>
+                    <div class="metric-icon"><i class="fa-solid fa-triangle-exclamation text-rose"></i></div>
+                </div>
+                <div class="metric-value">
+                    {% set ticket_count = 0 %}
+                    {% for t in tickets %}
+                        {% if t.estado == 'abierto' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
+                    {% endfor %}
+                    {{ ticket_count }}
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Resumen -->
+        <div id="sec-resumen" class="content-section active">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-chart-line"></i>Vista de Negocio</h2>
+            </div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 0;">
+                <div class="metric-card" style="background: rgba(255,255,255,0.01);">
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Últimas Activaciones</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                        {% for a in activaciones[:3] %}
+                        <li style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--dark-border); padding-bottom: 8px;">
+                            <span>Módulo: <strong>{{ a.modulo }}</strong></span>
+                            <span class="badge {% if a.estado == 'activo' %}badge-pro{% else %}badge-demo{% endif %}">{{ a.estado }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="metric-card" style="background: rgba(255,255,255,0.01);">
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Últimos Comprobantes</h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                        {% for f in facturacion[:3] %}
+                        <li style="display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--dark-border); padding-bottom: 8px;">
+                            <span>Nro: <strong>{{ f.nro_comprobante }}</strong></span>
+                            <span class="badge {% if f.estado == 'pagado' %}badge-paid{% else %}badge-unpaid{% endif %}">S/ {{ f.monto }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: Clientes -->
+        <div id="sec-clientes" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-users"></i>Cartera de Clientes</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Contacto</th>
+                            <th>Plan de Licencia</th>
+                            <th>Fecha Registro</th>
+                            <th>Renovación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in clientes %}
+                        <tr>
+                            <td>
+                                <div class="client-info-cell">
+                                    <span class="client-name-bold">{{ c.nombre }}</span>
+                                    <span class="client-subtext">ID: {{ c.id }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="client-info-cell">
+                                    <span>{{ c.email }}</span>
+                                    <span class="client-subtext">{{ c.telefono }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {% if c.plan == 'demo' %}badge-demo{% elif 'Starter' in c.plan %}badge-starter{% elif 'Pro' in c.plan %}badge-pro{% else %}badge-diamante{% endif %}">
+                                    {{ c.plan }}
+                                </span>
+                            </td>
+                            <td>{{ c.fecha_registro }}</td>
+                            <td>{{ c.renovacion }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION: Facturación -->
+        <div id="sec-facturacion" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i>Facturación y Cobranzas</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Comprobante</th>
+                            <th>Cliente ID</th>
+                            <th>Monto</th>
+                            <th>Fecha Emisión</th>
+                            <th>Estado Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in facturacion %}
+                        <tr>
+                            <td><strong>{{ f.nro_comprobante }}</strong></td>
+                            <td>{{ f.cliente_id }}</td>
+                            <td><strong>S/ {{ "%.2f"|format(f.monto) }}</strong></td>
+                            <td>{{ f.fecha_emision }}</td>
+                            <td>
+                                <span class="badge {% if f.estado == 'pagado' %}badge-paid{% else %}badge-unpaid{% endif %}">
+                                    {{ f.estado }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION: Activaciones -->
+        <div id="sec-activaciones" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-key"></i>Licencias y Módulos Activados</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente ID</th>
+                            <th>Módulo</th>
+                            <th>Fecha Activación</th>
+                            <th>Licencia Key</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in activaciones %}
+                        <tr>
+                            <td>{{ a.id }}</td>
+                            <td>{{ a.cliente_id }}</td>
+                            <td><strong>{{ a.modulo }}</strong></td>
+                            <td>{{ a.fecha_activacion }}</td>
+                            <td><code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: var(--cyan);">{{ a.licencia_key }}</code></td>
+                            <td>
+                                <span class="badge {% if a.estado == 'activo' %}badge-pro{% else %}badge-demo{% endif %}">
+                                    {{ a.estado }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION: Soporte -->
+        <div id="sec-soporte" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-circle-question"></i>Tickets de Soporte</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Cliente ID</th>
+                            <th>Asunto / Detalle</th>
+                            <th>Fecha Creación</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tickets %}
+                        <tr>
+                            <td>{{ t.id }}</td>
+                            <td>{{ t.cliente_id }}</td>
+                            <td>
+                                <div class="client-info-cell">
+                                    <span class="client-name-bold">{{ t.asunto }}</span>
+                                    <span class="client-subtext" style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.mensaje }}</span>
+                                </div>
+                            </td>
+                            <td>{{ t.fecha_creacion }}</td>
+                            <td>
+                                <span class="badge {% if t.estado == 'resuelto' %}badge-resolved{% else %}badge-open{% endif %}">
+                                    {{ t.estado }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Navigation Handler Script -->
+    <script>
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Navigation activation classes
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                // Toggle sections
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+
+                // Header text updates
+                const titleMap = {
+                    'sec-resumen': ['Panel de Control', 'Monitoreo y administración general de clientes y activaciones'],
+                    'sec-clientes': ['Fichas de Clientes', 'Gestión de cartera B2B, planes y renovaciones de licencia'],
+                    'sec-facturacion': ['Facturas y Cobranzas', 'Historial de comprobantes de pago y estados de transacciones'],
+                    'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
+                    'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución']
+                };
+
+                if (titleMap[target]) {
+                    document.getElementById('page-title').innerText = titleMap[target][0];
+                    document.getElementById('page-subtitle').innerText = titleMap[target][1];
+                }
+            });
+        });
+    </script>
+</body>
+</html>

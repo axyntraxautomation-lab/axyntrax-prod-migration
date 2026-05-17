@@ -1,0 +1,29 @@
+[
+  {
+    "id": "c1",
+    "nombre": "Taller Mecánico El Veloz",
+    "email": "contacto@elveloz.com",
+    "telefono": "+51991740590",
+    "fecha_registro": "2026-05-01",
+    "plan": "Pro Cloud S/399",
+    "renovacion": "2026-06-01"
+  },
+  {
+    "id": "c2",
+    "nombre": "Clínica Dental San Apollonia",
+    "email": "administracion@sanapollonia.pe",
+    "telefono": "+51987654321",
+    "fecha_registro": "2026-05-10",
+    "plan": "Starter S/199",
+    "renovacion": "2026-06-10"
+  },
+  {
+    "id": "c3",
+    "nombre": "Restaurante La Picantería Arequipeña",
+    "email": "ventas@lapicanteria.pe",
+    "telefono": "+51954321098",
+    "fecha_registro": "2026-05-15",
+    "plan": "demo",
+    "renovacion": "2026-06-14"
+  }
+]

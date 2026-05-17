@@ -2,13 +2,15 @@ import os
 import time
 import hmac
 import hashlib
+import json
+from functools import wraps
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 import requests
 import stripe
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, render_template_string, make_response
 
 app = Flask(__name__)
 
@@ -25,6 +27,52 @@ def check_rate_limit() -> bool:
         return False
     _IP_REQUESTS[ip].append(now)
     return True
+
+# Rate limiting para administradores: máx 120 solicitudes por minuto por IP
+_ADMIN_IP_REQUESTS = defaultdict(list)
+
+def check_admin_rate_limit() -> bool:
+    ip = request.headers.get("x-forwarded-for", request.remote_addr)
+    if ip and "," in ip:
+        ip = ip.split(",")[0].strip()
+    now = time.time()
+    _ADMIN_IP_REQUESTS[ip] = [t for t in _ADMIN_IP_REQUESTS[ip] if now - t < 60]
+    if len(_ADMIN_IP_REQUESTS[ip]) >= 120:
+        return False
+    _ADMIN_IP_REQUESTS[ip].append(now)
+    return True
+
+# Helper para cargar datos JSON
+def load_data(filename: str, default_val: list) -> list:
+    path = os.path.join(os.path.dirname(__file__), "..", "data", filename)
+    if not os.path.exists(path):
+        return default_val
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[load_data] Error cargando {filename}: {e}")
+        return default_val
+
+# Autenticación HTTP Basic
+def check_auth(username, password):
+    admin_user = os.getenv("ADMIN_USER", "admin")
+    admin_pass = os.getenv("ADMIN_PASS", "axyntrax2026")
+    return username == admin_user and password == admin_pass
+
+def authenticate():
+    resp = make_response("Acceso denegado. Credenciales incorrectas.", 401)
+    resp.headers["WWW-Authenticate"] = 'Basic realm="Login Required"'
+    return resp
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 def verificar_firma_meta(raw_body: bytes, signature_header: str) -> bool:
     app_secret = os.getenv("FB_APP_SECRET")
@@ -401,6 +449,53 @@ def chat_web():
     except Exception as e:
         print(f"[chat_web] {e}")
         return jsonify({"reply": CECILIA_FALLBACK})
+
+
+@app.route("/admin", methods=["GET"])
+@requires_auth
+def admin_panel():
+    if not check_admin_rate_limit():
+        return jsonify({"error": "Too Many Requests"}), 429
+    try:
+        clientes = load_data("clientes.json", [])
+        facturacion = load_data("facturacion.json", [])
+        activaciones = load_data("activaciones.json", [])
+        tickets = load_data("tickets.json", [])
+
+        template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "admin.html")
+        with open(template_path, "r", encoding="utf-8") as f:
+            template_content = f.read()
+
+        return render_template_string(
+            template_content,
+            clientes=clientes,
+            facturacion=facturacion,
+            activaciones=activaciones,
+            tickets=tickets
+        )
+    except Exception as e:
+        print(f"[admin_panel] Error: {e}")
+        return f"Error interno cargando el panel de administración: {e}", 500
+
+
+@app.route("/admin/api/data", methods=["GET"])
+@requires_auth
+def admin_api_data():
+    if not check_admin_rate_limit():
+        return jsonify({"error": "Too Many Requests"}), 429
+    try:
+        clientes = load_data("clientes.json", [])
+        facturacion = load_data("facturacion.json", [])
+        activaciones = load_data("activaciones.json", [])
+        tickets = load_data("tickets.json", [])
+        return jsonify({
+            "clientes": clientes,
+            "facturacion": facturacion,
+            "activaciones": activaciones,
+            "tickets": tickets
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

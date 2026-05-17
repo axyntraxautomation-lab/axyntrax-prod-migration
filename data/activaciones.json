@@ -1,0 +1,26 @@
+[
+  {
+    "id": "a1",
+    "cliente_id": "c1",
+    "modulo": "Gestión Taller",
+    "fecha_activacion": "2026-05-01",
+    "licencia_key": "AX-PRO-VELOZ-2026",
+    "estado": "activo"
+  },
+  {
+    "id": "a2",
+    "cliente_id": "c2",
+    "modulo": "Gestión Dental",
+    "fecha_activacion": "2026-05-10",
+    "licencia_key": "AX-STA-APOLL-2026",
+    "estado": "activo"
+  },
+  {
+    "id": "a3",
+    "cliente_id": "c3",
+    "modulo": "Restaurante",
+    "fecha_activacion": "2026-05-15",
+    "licencia_key": "AX-DEMO-PICAN-2026",
+    "estado": "demo"
+  }
+]

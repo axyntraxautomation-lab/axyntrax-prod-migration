@@ -1,0 +1,18 @@
+[
+  {
+    "id": "t1",
+    "cliente_id": "c1",
+    "asunto": "Configuración de WhatsApp Business",
+    "mensaje": "No logro conectar la API de Cecilia con mi cuenta de WhatsApp.",
+    "estado": "resuelto",
+    "fecha_creacion": "2026-05-02"
+  },
+  {
+    "id": "t2",
+    "cliente_id": "c2",
+    "asunto": "Error en descarga de reportes",
+    "mensaje": "Al exportar a PDF, sale en blanco la sección de cobros.",
+    "estado": "abierto",
+    "fecha_creacion": "2026-05-12"
+  }
+]
