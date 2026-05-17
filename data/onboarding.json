@@ -205,6 +205,98 @@
         "fecha_completado": null,
         "ultima_actualizacion": "2026-05-12"
       }
+    ],
+    "c3": [
+      {
+        "id": "paso1",
+        "paso_numero": 1,
+        "titulo": "Completar perfil corporativo",
+        "descripcion": "Registrar los datos de la empresa, RUC, dirección y correos de contacto.",
+        "estado": "completado",
+        "fecha_completado": "2026-05-17",
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso2",
+        "paso_numero": 2,
+        "titulo": "Cargar identidad visual",
+        "descripcion": "Configurar el logotipo, isotipo y paleta de colores oficial de la marca.",
+        "estado": "completado",
+        "fecha_completado": "2026-05-17",
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso3",
+        "paso_numero": 3,
+        "titulo": "Conectar WhatsApp Business API",
+        "descripcion": "Vincular el número de WhatsApp oficial con la API Graph de Meta.",
+        "estado": "completado",
+        "fecha_completado": "2026-05-17",
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso4",
+        "paso_numero": 4,
+        "titulo": "Configurar base de conocimiento",
+        "descripcion": "Subir las FAQs y el manual de marca para entrenar las respuestas de Cecilia.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso5",
+        "paso_numero": 5,
+        "titulo": "Personalizar widget web",
+        "descripcion": "Incrustar y estilizar el widget de chat de Cecilia en el sitio web de la empresa.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso6",
+        "paso_numero": 6,
+        "titulo": "Definir reglas de derivación",
+        "descripcion": "Establecer las condiciones para escalar de Cecilia a soporte humano o Mark.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso7",
+        "paso_numero": 7,
+        "titulo": "Integrar pasarela de pago",
+        "descripcion": "Configurar las credenciales de Culqi o Stripe para procesar cobros automáticos.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso8",
+        "paso_numero": 8,
+        "titulo": "Crear primera campaña comercial",
+        "descripcion": "Definir audiencias, mensajes y flujos de prospección automática con Mark.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso9",
+        "paso_numero": 9,
+        "titulo": "Verificar dominio oficial",
+        "descripcion": "Agregar registros DNS TXT/CNAME para validar la propiedad del dominio.",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-17"
+      },
+      {
+        "id": "paso10",
+        "paso_numero": 10,
+        "titulo": "Revisar políticas de seguridad",
+        "descripcion": "Habilitar la encriptación SSL y aceptar la Ley peruana de Protección de Datos Personales.",
+        "estado": "completado",
+        "fecha_completado": "2026-05-17",
+        "ultima_actualizacion": "2026-05-17"
+      }
     ]
   }
 }

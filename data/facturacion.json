@@ -2,25 +2,31 @@
   {
     "id": "f1",
     "cliente_id": "c1",
-    "monto": 399.00,
+    "monto": 399.0,
     "fecha_emision": "2026-05-01",
     "estado": "pagado",
-    "nro_comprobante": "F001-0000123"
+    "nro_comprobante": "F001-0000123",
+    "charge_id": "chg_prod_c1_001",
+    "plan_solicitado": "Pro Cloud S/399"
   },
   {
     "id": "f2",
     "cliente_id": "c2",
-    "monto": 199.00,
+    "monto": 199.0,
     "fecha_emision": "2026-05-10",
     "estado": "pagado",
-    "nro_comprobante": "B001-0000456"
+    "nro_comprobante": "B001-0000456",
+    "charge_id": "chg_prod_c2_001",
+    "plan_solicitado": "Starter S/199"
   },
   {
-    "id": "f3",
+    "id": "f_c3",
     "cliente_id": "c3",
-    "monto": 0.00,
-    "fecha_emision": "2026-05-15",
-    "estado": "gratis",
-    "nro_comprobante": "DEMO-0000001"
+    "monto": 399.0,
+    "fecha_emision": "2026-05-17",
+    "estado": "pagado",
+    "nro_comprobante": "PE-C3-3003",
+    "charge_id": "chg_sim_c3",
+    "plan_solicitado": "Pro Cloud S/399"
   }
 ]

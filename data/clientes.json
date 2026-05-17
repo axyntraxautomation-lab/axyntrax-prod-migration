@@ -21,12 +21,13 @@
   },
   {
     "id": "c3",
-    "nombre": "Restaurante La Picantería Arequipeña",
-    "email": "ventas@lapicanteria.pe",
-    "telefono": "+51954321098",
-    "fecha_registro": "2026-05-15",
-    "plan": "demo",
-    "renovacion": "2026-06-14",
-    "acceso_key": "picanteria123"
+    "nombre": "Pollos & Brasas Huancayo",
+    "email": "ventas@pollosbrasashuancayo.pe",
+    "telefono": "+51991740590",
+    "fecha_registro": "2026-05-17",
+    "plan": "Pro Cloud S/399",
+    "renovacion": "2026-06-16",
+    "acceso_key": "AX-PR-POLLOS-88",
+    "rubro": "restaurantes"
   }
 ]

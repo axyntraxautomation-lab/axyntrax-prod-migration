@@ -209,21 +209,25 @@
                 return;
             }
 
-            try {
-                // Hacer POST ligero para iniciar sesión del cliente y guardar cookie cliente_id
-                const res = await fetch("/api/pago/config"); // Endpoint público para ver si responde la API
-                if (res.ok) {
-                    // Poner ID cliente en la cookie y redirigir
-                    document.cookie = `cliente_id=${key}; path=/; max-age=86400`;
-                    window.location.href = "/dashboard";
-                } else {
-                    alert("Error conectando con la API unificada. Reintenta.");
-                }
-            } catch (err) {
-                // Fallback directo por cookies
-                document.cookie = `cliente_id=${key}; path=/; max-age=86400`;
-                window.location.href = "/dashboard";
-            }
+            // Crear un form dinámico y hacer POST server-side al /api/dashboard/login
+            // Esto valida las credenciales correctamente y setea la cookie en el servidor
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/api/dashboard/login";
+            form.style.display = "none";
+
+            const emailInput = document.createElement("input");
+            emailInput.name = "email";
+            emailInput.value = email;
+            form.appendChild(emailInput);
+
+            const passInput = document.createElement("input");
+            passInput.name = "passcode";
+            passInput.value = key;
+            form.appendChild(passInput);
+
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 </body>

@@ -4,7 +4,7 @@
     "cliente_id": "c1",
     "nombre": "Campaña Diagnóstico Completo Primavera",
     "canal": "meta",
-    "presupuesto": 450.00,
+    "presupuesto": 450.0,
     "estado": "activa",
     "clics": 124,
     "impresiones": 3200,
@@ -16,11 +16,23 @@
     "cliente_id": "c1",
     "nombre": "Oferta Cambio de Aceite Semanal",
     "canal": "whatsapp",
-    "presupuesto": 150.00,
+    "presupuesto": 150.0,
     "estado": "pausada",
     "clics": 89,
     "impresiones": 650,
     "conversiones": 12,
     "fecha_creacion": "2026-05-10"
+  },
+  {
+    "id": "pub_c3",
+    "cliente_id": "c3",
+    "nombre": "Campaña Familiar Delivery",
+    "canal": "meta",
+    "presupuesto": 150.0,
+    "estado": "activa",
+    "clics": 124,
+    "impresiones": 3205,
+    "conversiones": 18,
+    "fecha_creacion": "2026-05-17"
   }
 ]

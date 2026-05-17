@@ -16,11 +16,11 @@
     "estado": "activo"
   },
   {
-    "id": "a3",
+    "id": "a_c3",
     "cliente_id": "c3",
-    "modulo": "Restaurante",
-    "fecha_activacion": "2026-05-15",
-    "licencia_key": "AX-DEMO-PICAN-2026",
-    "estado": "demo"
+    "modulo": "Delivery WhatsApp",
+    "fecha_activacion": "2026-05-17",
+    "licencia_key": "AX-C3-FULL-2026",
+    "estado": "activo"
   }
 ]

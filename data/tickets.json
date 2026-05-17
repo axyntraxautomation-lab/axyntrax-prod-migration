@@ -37,5 +37,22 @@
         "cambio": "Ticket creado e ingresado a cola."
       }
     ]
+  },
+  {
+    "id": "t_c3",
+    "cliente_id": "c3",
+    "asunto": "Soporte Técnico de Onboarding",
+    "mensaje": "Problema vinculando la impresora térmica para la salida directa de pedidos.",
+    "estado": "abierto",
+    "prioridad": "media",
+    "fecha_creacion": "2026-05-17",
+    "agente_asignado": "Soporte Nivel 1",
+    "historial": [
+      {
+        "fecha": "2026-05-17 16:15:55",
+        "usuario": "Sistema (Automatización)",
+        "cambio": "Ticket creado e ingresado a cola."
+      }
+    ]
   }
 ]
