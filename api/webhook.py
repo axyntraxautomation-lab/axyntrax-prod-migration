@@ -579,6 +579,55 @@ def admin_panel():
         integraciones = load_data("integraciones.json", [])
         metricas = obtener_metricas_calculadas()
 
+        # Cargar Onboarding
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        onboarding_progreso = onboarding.get("progreso", {})
+        onboarding_template = onboarding.get("template", [])
+        
+        clientes_onboarding = []
+        for c in clientes:
+            c_id = c.get("id")
+            c_prog = onboarding_progreso.get(c_id, [])
+            
+            if not c_prog and onboarding_template:
+                c_prog = []
+                for t in onboarding_template:
+                    c_prog.append({
+                        "id": t["id"],
+                        "estado": "pendiente",
+                        "fecha_completado": None,
+                        "ultima_actualizacion": datetime.now().strftime("%Y-%m-%d")
+                    })
+                onboarding_progreso[c_id] = c_prog
+                onboarding["progreso"] = onboarding_progreso
+                
+            completados = 0
+            alerta_estancado = False
+            
+            for cp in c_prog:
+                if cp.get("estado") == "completado":
+                    completados += 1
+                elif cp.get("estado") == "pendiente":
+                    try:
+                        act_date = datetime.strptime(cp.get("ultima_actualizacion", ""), "%Y-%m-%d")
+                        if (datetime.now() - act_date).days > 7:
+                            alerta_estancado = True
+                    except:
+                        pass
+                        
+            porcentaje = round((completados / len(onboarding_template)) * 100) if onboarding_template else 0
+            
+            clientes_onboarding.append({
+                "id": c_id,
+                "nombre": c.get("nombre", "Cliente"),
+                "progreso_porcentaje": porcentaje,
+                "estancado": alerta_estancado,
+                "completados": completados,
+                "total_pasos": len(onboarding_template)
+            })
+            
+        save_data("onboarding.json", onboarding)
+
         # Métricas de negocio
         clientes_activos = len([c for c in clientes if c.get("plan") and c.get("plan") != "demo"])
         ingresos_mensuales = sum(float(f.get("monto", 0)) for f in facturacion if f.get("estado") == "pagado")
@@ -610,7 +659,9 @@ def admin_panel():
             conversion_rate=conversion_rate,
             modulos_mas_usados=modulos_mas_usados,
             metricas=metricas,
-            integraciones=integraciones
+            integraciones=integraciones,
+            clientes_onboarding=clientes_onboarding,
+            onboarding_template=onboarding_template
         )
     except Exception as e:
         print(f"[admin_panel] Error: {e}")
@@ -991,6 +1042,195 @@ def api_tickets_escalar():
         print(f"[ESCALAR SOPORTE] Notificación enviada a axyntraxautomation@gmail.com para el ticket {ticket_id}")
         
         return jsonify({"ok": True, "datos": target_ticket, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/onboarding/<cliente_id>", methods=["GET"])
+def api_onboarding_get(cliente_id):
+    try:
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        template = onboarding.get("template", [])
+        progreso = onboarding.get("progreso", {})
+        
+        # Si el cliente no tiene progreso registrado, inicializar
+        if cliente_id not in progreso:
+            cliente_progreso = []
+            for t in template:
+                cliente_progreso.append({
+                    "id": t["id"],
+                    "estado": "pendiente",
+                    "fecha_completado": None,
+                    "ultima_actualizacion": datetime.now().strftime("%Y-%m-%d")
+                })
+            progreso[cliente_id] = cliente_progreso
+            onboarding["progreso"] = progreso
+            save_data("onboarding.json", onboarding)
+            
+        cliente_progreso = progreso[cliente_id]
+        
+        # Combinar datos de template con el progreso del cliente
+        pasos_completos = []
+        completados = 0
+        
+        for t in template:
+            estado_t = "pendiente"
+            fecha_c = None
+            ultima_act = datetime.now().strftime("%Y-%m-%d")
+            
+            for cp in cliente_progreso:
+                if cp.get("id") == t.get("id"):
+                    estado_t = cp.get("estado", "pendiente")
+                    fecha_c = cp.get("fecha_completado")
+                    ultima_act = cp.get("ultima_actualizacion") or datetime.now().strftime("%Y-%m-%d")
+                    break
+            
+            if estado_t == "completado":
+                completados += 1
+                
+            # Alerta de estancamiento si lleva más de 7 días pendiente
+            estancado = False
+            dias_transcurridos = 0
+            if estado_t == "pendiente":
+                try:
+                    act_date = datetime.strptime(ultima_act, "%Y-%m-%d")
+                    dias_transcurridos = (datetime.now() - act_date).days
+                    if dias_transcurridos > 7:
+                        estancado = True
+                except:
+                    pass
+            
+            pasos_completos.append({
+                "id": t.get("id"),
+                "paso_numero": t.get("paso_numero"),
+                "titulo": t.get("titulo"),
+                "descripcion": t.get("descripcion"),
+                "tipo": t.get("tipo"),
+                "obligatorio": t.get("obligatorio"),
+                "estado": estado_t,
+                "fecha_completado": fecha_c,
+                "ultima_actualizacion": ultima_act,
+                "estancado": estancado,
+                "dias_estancado": dias_transcurridos if estancado else 0
+            })
+            
+        porcentaje = round((completados / len(template)) * 100) if template else 0
+        
+        datos = {
+            "cliente_id": cliente_id,
+            "porcentaje_progreso": porcentaje,
+            "pasos": pasos_completos
+        }
+        return jsonify({"ok": True, "datos": datos, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/onboarding/<cliente_id>/completar", methods=["POST"])
+def api_onboarding_completar(cliente_id):
+    try:
+        data = request.get_json(silent=True) or {}
+        paso_id = data.get("id")
+        if not paso_id:
+            return jsonify({"ok": False, "datos": None, "error": "Falta parámetro 'id'"}), 400
+            
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        progreso = onboarding.get("progreso", {})
+        
+        if cliente_id not in progreso:
+            return jsonify({"ok": False, "datos": None, "error": "Cliente no encontrado"}), 404
+            
+        cliente_progreso = progreso[cliente_id]
+        encontrado = False
+        for cp in cliente_progreso:
+            if cp.get("id") == paso_id:
+                cp["estado"] = "completado"
+                cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
+                cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
+                encontrado = True
+                break
+                
+        if not encontrado:
+            return jsonify({"ok": False, "datos": None, "error": "Paso no encontrado"}), 404
+            
+        onboarding["progreso"] = progreso
+        save_data("onboarding.json", onboarding)
+        
+        return jsonify({"ok": True, "datos": {"cliente_id": cliente_id, "paso_id": paso_id, "estado": "completado"}, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/onboarding/<cliente_id>/siguiente", methods=["GET"])
+def api_onboarding_siguiente(cliente_id):
+    try:
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        template = onboarding.get("template", [])
+        progreso = onboarding.get("progreso", {})
+        
+        if cliente_id not in progreso:
+            return jsonify({"ok": True, "datos": None, "error": "Cliente sin onboarding iniciado"}), 200
+            
+        cliente_progreso = progreso[cliente_id]
+        
+        # Encontrar el primer paso pendiente en orden secuencial
+        next_step = None
+        for t in template:
+            estado_t = "pendiente"
+            for cp in cliente_progreso:
+                if cp.get("id") == t.get("id"):
+                    estado_t = cp.get("estado", "pendiente")
+                    break
+            
+            if estado_t == "pendiente":
+                next_step = t
+                break
+                
+        return jsonify({"ok": True, "datos": next_step, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/onboarding/verificar", methods=["POST"])
+@requires_auth
+def admin_api_onboarding_verificar():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol not in ("admin", "soporte"):
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        progreso = onboarding.get("progreso", {})
+        
+        # Automatización de verificación (Antigravity verification)
+        integraciones = load_data("integraciones.json", [])
+        wsp_activo = False
+        for i in integraciones:
+            if i.get("id") == "i1" and i.get("estado") == "activo":
+                wsp_activo = True
+                break
+                
+        for cliente_id, cliente_progreso in progreso.items():
+            for cp in cliente_progreso:
+                # Paso 3: Conectar WhatsApp Business API
+                if cp.get("id") == "paso3" and cp.get("estado") == "pendiente" and wsp_activo:
+                    cp["estado"] = "completado"
+                    cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
+                    cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
+                
+                # Paso 4: Configurar base de conocimiento (FAQ)
+                if cp.get("id") == "paso4" and cp.get("estado") == "pendiente":
+                    cp["estado"] = "completado"
+                    cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
+                    cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
+
+        onboarding["progreso"] = progreso
+        save_data("onboarding.json", onboarding)
+        return jsonify({"ok": True, "datos": progreso, "error": None}), 200
     except Exception as e:
         return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 

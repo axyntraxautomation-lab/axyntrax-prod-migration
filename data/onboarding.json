@@ -1,0 +1,210 @@
+{
+  "template": [
+    {
+      "id": "paso1",
+      "paso_numero": 1,
+      "titulo": "Completar perfil corporativo",
+      "descripcion": "Registrar los datos de la empresa, RUC, dirección y correos de contacto.",
+      "tipo": "perfil",
+      "obligatorio": true
+    },
+    {
+      "id": "paso2",
+      "paso_numero": 2,
+      "titulo": "Cargar identidad visual",
+      "descripcion": "Configurar el logotipo, isotipo y paleta de colores oficial de la marca.",
+      "tipo": "perfil",
+      "obligatorio": false
+    },
+    {
+      "id": "paso3",
+      "paso_numero": 3,
+      "titulo": "Conectar WhatsApp Business API",
+      "descripcion": "Vincular el número de WhatsApp oficial con la API Graph de Meta.",
+      "tipo": "integracion",
+      "obligatorio": true
+    },
+    {
+      "id": "paso4",
+      "paso_numero": 4,
+      "titulo": "Configurar base de conocimiento",
+      "descripcion": "Subir las FAQs y el manual de marca para entrenar las respuestas de Cecilia.",
+      "tipo": "configuracion",
+      "obligatorio": true
+    },
+    {
+      "id": "paso5",
+      "paso_numero": 5,
+      "titulo": "Personalizar widget web",
+      "descripcion": "Incrustar y estilizar el widget de chat de Cecilia en el sitio web de la empresa.",
+      "tipo": "configuracion",
+      "obligatorio": false
+    },
+    {
+      "id": "paso6",
+      "paso_numero": 6,
+      "titulo": "Definir reglas de derivación",
+      "descripcion": "Establecer las condiciones para escalar de Cecilia a soporte humano o Mark.",
+      "tipo": "configuracion",
+      "obligatorio": true
+    },
+    {
+      "id": "paso7",
+      "paso_numero": 7,
+      "titulo": "Integrar pasarela de pago",
+      "descripcion": "Configurar las credenciales de Culqi o Stripe para procesar cobros automáticos.",
+      "tipo": "integracion",
+      "obligatorio": false
+    },
+    {
+      "id": "paso8",
+      "paso_numero": 8,
+      "titulo": "Crear primera campaña comercial",
+      "descripcion": "Definir audiencias, mensajes y flujos de prospección automática con Mark.",
+      "tipo": "campana",
+      "obligatorio": false
+    },
+    {
+      "id": "paso9",
+      "paso_numero": 9,
+      "titulo": "Verificar dominio oficial",
+      "descripcion": "Agregar registros DNS TXT/CNAME para validar la propiedad del dominio.",
+      "tipo": "verificacion",
+      "obligatorio": true
+    },
+    {
+      "id": "paso10",
+      "paso_numero": 10,
+      "titulo": "Revisar políticas de seguridad",
+      "descripcion": "Habilitar la encriptación SSL y aceptar la Ley peruana de Protección de Datos Personales.",
+      "tipo": "verificacion",
+      "obligatorio": true
+    }
+  ],
+  "progreso": {
+    "c1": [
+      {
+        "id": "paso1",
+        "estado": "completado",
+        "fecha_completado": "2026-05-02",
+        "ultima_actualizacion": "2026-05-02"
+      },
+      {
+        "id": "paso2",
+        "estado": "completado",
+        "fecha_completado": "2026-05-03",
+        "ultima_actualizacion": "2026-05-03"
+      },
+      {
+        "id": "paso3",
+        "estado": "completado",
+        "fecha_completado": "2026-05-04",
+        "ultima_actualizacion": "2026-05-04"
+      },
+      {
+        "id": "paso4",
+        "estado": "completado",
+        "fecha_completado": "2026-05-05",
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso5",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso6",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso7",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso8",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso9",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      },
+      {
+        "id": "paso10",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-05"
+      }
+    ],
+    "c2": [
+      {
+        "id": "paso1",
+        "estado": "completado",
+        "fecha_completado": "2026-05-12",
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso2",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso3",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso4",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso5",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso6",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso7",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso8",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso9",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      },
+      {
+        "id": "paso10",
+        "estado": "pendiente",
+        "fecha_completado": null,
+        "ultima_actualizacion": "2026-05-12"
+      }
+    ]
+  }
+}

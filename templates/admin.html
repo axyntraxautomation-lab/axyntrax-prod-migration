@@ -420,6 +420,9 @@
                 <li class="nav-item" data-target="sec-soporte">
                     <a href="#soporte"><i class="fa-solid fa-circle-question"></i>Soporte</a>
                 </li>
+                <li class="nav-item" data-target="sec-onboarding">
+                    <a href="#onboarding"><i class="fa-solid fa-circle-check"></i>Onboarding</a>
+                </li>
                 <li class="nav-item" data-target="sec-usuarios">
                     <a href="#usuarios"><i class="fa-solid fa-user-gear"></i>Usuarios</a>
                 </li>
@@ -429,6 +432,9 @@
                 </li>
                 <li class="nav-item" data-target="sec-soporte">
                     <a href="#soporte"><i class="fa-solid fa-circle-question"></i>Soporte</a>
+                </li>
+                <li class="nav-item" data-target="sec-onboarding">
+                    <a href="#onboarding"><i class="fa-solid fa-circle-check"></i>Onboarding</a>
                 </li>
                 {% endif %}
             </ul>
@@ -928,6 +934,85 @@
             </div>
         </div>
 
+        <!-- SECTION: Onboarding -->
+        <div id="sec-onboarding" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-circle-check"></i>Onboarding Profundo y Activación B2B</h2>
+                <button class="btn-action" style="background: var(--cyan); color: #0D0D0D;" onclick="verificarSetupGlobal()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Validar Setup (Antigravity)
+                </button>
+            </div>
+            
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <!-- Tabla de Clientes -->
+                <div style="flex: 1.5; min-width: 500px;" class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Progreso de Activación</th>
+                                <th>Estado de Alerta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in clientes_onboarding %}
+                            <tr>
+                                <td>
+                                    <div class="client-info-cell">
+                                        <span class="client-name-bold">{{ c.nombre }}</span>
+                                        <span class="client-subtext">ID: {{ c.id }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="flex-grow: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; border: 1px solid var(--dark-border);">
+                                            <div style="width: {{ c.progreso_porcentaje }}%; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); border-radius: 4px;"></div>
+                                        </div>
+                                        <span style="font-weight: 700; color: var(--cyan); font-size: 13px;">{{ c.progreso_porcentaje }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if c.estancado %}
+                                    <span class="badge badge-open" style="background: rgba(239, 68, 68, 0.1); color: var(--rose);">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Estancado (> 7 días)
+                                    </span>
+                                    {% else %}
+                                    <span class="badge badge-pro">
+                                        <i class="fa-solid fa-circle-check"></i> Al día
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px;" onclick="cargarChecklistOnboarding('{{ c.id }}', '{{ c.nombre }}')">
+                                        <i class="fa-solid fa-list-check"></i> Ver Detalles
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel de Checklist del Cliente Seleccionado -->
+                <div id="panel-checklist" style="flex: 1; min-width: 400px; background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 25px; border-radius: 24px; display: none; border-left: 3px solid var(--cyan);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;">
+                        <div>
+                            <h3 id="checklist-cliente-nombre" style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0;">Checklist de Onboarding</h3>
+                            <span id="checklist-cliente-porcentaje" style="font-size: 12px; color: var(--cyan); font-weight: bold;">Progreso: 0%</span>
+                        </div>
+                        <button class="btn-action" id="btn-verificar-setup-cliente" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: var(--cyan); color: #0D0D0D;" onclick="verificarSetupOnboarding()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Verificar
+                        </button>
+                    </div>
+                    
+                    <div id="checklist-pasos-container" style="display: flex; flex-direction: column; gap: 12px; max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                        <!-- Renderizado dinámico vía JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- SECTION: Usuarios -->
         {% if rol == 'admin' %}
         <div id="sec-usuarios" class="content-section">
@@ -1053,6 +1138,7 @@
                     'sec-facturacion': ['Facturas y Cobranzas', 'Historial de comprobantes de pago y estados de transacciones'],
                     'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
                     'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución'],
+                    'sec-onboarding': ['Guía de Onboarding Profundo', 'Seguimiento de activación paso a paso y alertas de estancamiento para clientes'],
                     'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice'],
                     'sec-integraciones': ['Mapeo de Integraciones', 'Estado de salud y validación de conexiones externas de la plataforma']
                 };
@@ -1108,12 +1194,12 @@
                             }
                         }
                     });
-                    alert('¡Integraciones validadas con éxito!');
+                    alert('¡Validación completada con éxito!');
                 } else {
-                    alert('Error validando integraciones: ' + (result.error || 'Desconocido'));
+                    alert('Error validando: ' + result.error);
                 }
             } catch (err) {
-                alert('Error de conexión al servidor: ' + err.message);
+                alert('Error de red: ' + err.message);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
@@ -1145,16 +1231,7 @@
         }
 
         function gestionarTicket(id) {
-            const row = document.querySelector(`tr[data-ticket-id="${id}"]`);
             document.getElementById('modal-ticket-id').value = id;
-            document.getElementById('modal-ticket-titulo').innerText = 'Responder Ticket: ' + id.toUpperCase();
-            
-            // Cargar valores actuales de la fila si es posible
-            document.getElementById('modal-ticket-estado').value = row.getAttribute('data-estado');
-            document.getElementById('modal-ticket-prioridad').value = row.getAttribute('data-prioridad');
-            document.getElementById('modal-ticket-agente').value = row.querySelector('.col-agente').innerText.trim() || 'Soporte Nivel 1';
-            document.getElementById('modal-ticket-respuesta').value = '';
-            
             document.getElementById('modal-ticket').style.display = 'flex';
         }
 
@@ -1165,8 +1242,8 @@
         async function guardarGestionTicket() {
             const id = document.getElementById('modal-ticket-id').value;
             const estado = document.getElementById('modal-ticket-estado').value;
-            const prioridad = document.getElementById('modal-ticket-prioridad').value;
             const agente = document.getElementById('modal-ticket-agente').value;
+            const prioridad = document.getElementById('modal-ticket-prioridad').value;
             const respuesta = document.getElementById('modal-ticket-respuesta').value;
             
             try {
@@ -1214,6 +1291,222 @@
                     location.reload();
                 } else {
                     alert('Error escalando ticket: ' + (result.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        let currentClienteOnboardingId = null;
+
+        async function cargarChecklistOnboarding(clienteId, clienteNombre) {
+            currentClienteOnboardingId = clienteId;
+            const panel = document.getElementById('panel-checklist');
+            const titulo = document.getElementById('checklist-cliente-nombre');
+            const container = document.getElementById('checklist-pasos-container');
+            const pct = document.getElementById('checklist-cliente-porcentaje');
+            
+            titulo.innerText = `Checklist: ${clienteNombre}`;
+            panel.style.display = 'block';
+            container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; padding: 20px 0;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando pasos...</div>';
+            
+            try {
+                const response = await fetch(`/api/onboarding/${clienteId}`);
+                const result = await response.json();
+                
+                if (result.ok) {
+                    const data = result.datos;
+                    pct.innerText = `Progreso: ${data.porcentaje_progreso}%`;
+                    container.innerHTML = '';
+                    
+                    data.pasos.forEach(paso => {
+                        const div = document.createElement('div');
+                        div.style.background = 'rgba(255,255,255,0.02)';
+                        div.style.border = '1px solid var(--dark-border)';
+                        div.style.padding = '15px';
+                        div.style.borderRadius = '16px';
+                        div.style.display = 'flex';
+                        div.style.flexDirection = 'column';
+                        div.style.gap = '8px';
+                        
+                        const stepHeader = document.createElement('div');
+                        stepHeader.style.display = 'flex';
+                        stepHeader.style.justifyContent = 'space-between';
+                        stepHeader.style.alignItems = 'center';
+                        
+                        const left = document.createElement('div');
+                        left.style.display = 'flex';
+                        left.style.alignItems = 'center';
+                        left.style.gap = '8px';
+                        
+                        const num = document.createElement('span');
+                        num.style.fontWeight = '700';
+                        num.style.color = 'var(--cyan)';
+                        num.style.fontSize = '14px';
+                        num.innerText = `${paso.paso_numero}.`;
+                        
+                        const title = document.createElement('span');
+                        title.style.fontWeight = '600';
+                        title.style.color = '#FFF';
+                        title.style.fontSize = '13px';
+                        title.innerText = paso.titulo;
+                        
+                        left.appendChild(num);
+                        left.appendChild(title);
+                        
+                        const right = document.createElement('div');
+                        right.style.display = 'flex';
+                        right.style.gap = '6px';
+                        
+                        const badgeType = document.createElement('span');
+                        badgeType.className = 'badge';
+                        badgeType.style.fontSize = '9px';
+                        badgeType.style.padding = '3px 6px';
+                        badgeType.style.background = 'rgba(255,255,255,0.05)';
+                        badgeType.style.color = 'var(--text-muted)';
+                        badgeType.innerText = paso.tipo;
+                        
+                        if (paso.obligatorio) {
+                            const badgeReq = document.createElement('span');
+                            badgeReq.className = 'badge badge-open';
+                            badgeReq.style.fontSize = '9px';
+                            badgeReq.style.padding = '3px 6px';
+                            badgeReq.innerText = 'obligatorio';
+                            right.appendChild(badgeReq);
+                        }
+                        
+                        right.appendChild(badgeType);
+                        stepHeader.appendChild(left);
+                        stepHeader.appendChild(right);
+                        
+                        const desc = document.createElement('p');
+                        desc.style.fontSize = '12px';
+                        desc.style.color = 'var(--text-muted)';
+                        desc.style.margin = '0';
+                        desc.innerText = paso.descripcion;
+                        
+                        const stepFooter = document.createElement('div');
+                        stepFooter.style.display = 'flex';
+                        stepFooter.style.justifyContent = 'space-between';
+                        stepFooter.style.alignItems = 'center';
+                        stepFooter.style.marginTop = '6px';
+                        
+                        const statusArea = document.createElement('div');
+                        statusArea.style.display = 'flex';
+                        statusArea.style.alignItems = 'center';
+                        statusArea.style.gap = '6px';
+                        
+                        if (paso.estado === 'completado') {
+                            statusArea.innerHTML = `<span class="badge badge-pro" style="font-size: 10px; padding: 4px 8px;"><i class="fa-solid fa-circle-check"></i> completado</span><span style="font-size: 11px; color: var(--text-muted);">${paso.fecha_completado}</span>`;
+                        } else {
+                            statusArea.innerHTML = `<span class="badge badge-demo" style="font-size: 10px; padding: 4px 8px;"><i class="fa-solid fa-clock"></i> pendiente</span>`;
+                            if (paso.estancado) {
+                                const stBadge = document.createElement('span');
+                                stBadge.className = 'badge badge-open';
+                                stBadge.style.fontSize = '10px';
+                                stBadge.style.padding = '4px 8px';
+                                stBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> estancado (${paso.dias_estancado}d)`;
+                                statusArea.appendChild(stBadge);
+                            }
+                        }
+                        
+                        const btnArea = document.createElement('div');
+                        if (paso.estado !== 'completado') {
+                            const btnComp = document.createElement('button');
+                            btnComp.className = 'btn-action';
+                            btnComp.style.padding = '5px 10px';
+                            btnComp.style.fontSize = '10px';
+                            btnComp.style.borderRadius = '6px';
+                            btnComp.style.background = 'var(--emerald)';
+                            btnComp.innerHTML = '<i class="fa-solid fa-check"></i> Marcar Listo';
+                            btnComp.onclick = () => completarPasoOnboarding(clienteId, paso.id, clienteNombre);
+                            btnArea.appendChild(btnComp);
+                        }
+                        
+                        stepFooter.appendChild(statusArea);
+                        stepFooter.appendChild(btnArea);
+                        
+                        div.appendChild(stepHeader);
+                        div.appendChild(desc);
+                        div.appendChild(stepFooter);
+                        container.appendChild(div);
+                    });
+                } else {
+                    container.innerHTML = `<div style="color: var(--rose); font-size: 13px; padding: 20px 0;">Error cargando onboarding: ${result.error}</div>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<div style="color: var(--rose); font-size: 13px; padding: 20px 0;">Error de red: ${err.message}</div>`;
+            }
+        }
+
+        async function completarPasoOnboarding(clienteId, pasoId, clienteNombre) {
+            try {
+                const response = await fetch(`/api/onboarding/${clienteId}/completar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: pasoId })
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    cargarChecklistOnboarding(clienteId, clienteNombre);
+                } else {
+                    alert('Error al completar paso: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function verificarSetupOnboarding() {
+            if (!currentClienteOnboardingId) return;
+            const btn = document.getElementById('btn-verificar-setup-cliente');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-arrows-spin fa-spin"></i> Verificando...';
+            
+            try {
+                const response = await fetch('/admin/api/onboarding/verificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                
+                if (result.ok) {
+                    alert('¡Verificación automática ejecutada! Los módulos conectados de WhatsApp y bases de FAQs han sido validados.');
+                    const nombreCliente = document.getElementById('checklist-cliente-nombre').innerText.replace('Checklist: ', '');
+                    cargarChecklistOnboarding(currentClienteOnboardingId, nombreCliente);
+                } else {
+                    alert('Error en verificación: ' + result.error);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function verificarSetupGlobal() {
+            if (!confirm('¿Deseas ejecutar la validación automática de onboarding para toda la cartera de clientes?')) return;
+            
+            try {
+                const response = await fetch('/admin/api/onboarding/verificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    alert('¡Validación global completada con éxito!');
+                    location.reload();
+                } else {
+                    alert('Error en verificación global: ' + result.error);
                 }
             } catch (err) {
                 alert('Error de red: ' + err.message);
