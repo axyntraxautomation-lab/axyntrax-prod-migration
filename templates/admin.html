@@ -405,6 +405,9 @@
                 <li class="nav-item" data-target="sec-metricas">
                     <a href="#metricas"><i class="fa-solid fa-chart-column"></i>Métricas</a>
                 </li>
+                <li class="nav-item" data-target="sec-integraciones">
+                    <a href="#integraciones"><i class="fa-solid fa-circle-nodes"></i>Integraciones</a>
+                </li>
                 <li class="nav-item" data-target="sec-clientes">
                     <a href="#clientes"><i class="fa-solid fa-users"></i>Clientes</a>
                 </li>
@@ -671,6 +674,55 @@
         </div>
         {% endif %}
 
+        <!-- SECTION: Integraciones (Solo para Admin) -->
+        {% if rol == 'admin' %}
+        <div id="sec-integraciones" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-circle-nodes"></i>Mapeo y Estado de Integraciones</h2>
+                <button class="btn-action" id="btn-validar-integraciones" onclick="validarIntegraciones()">
+                    <i class="fa-solid fa-arrows-spin"></i> Validar Ahora
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="tabla-integraciones">
+                    <thead>
+                        <tr>
+                            <th>Servicio / Integración</th>
+                            <th>Tipo</th>
+                            <th>Endpoint Base</th>
+                            <th>Estado</th>
+                            <th>Última Validación</th>
+                            <th>Latencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in integraciones %}
+                        <tr data-integration-id="{{ i.id }}">
+                            <td><strong>{{ i.nombre }}</strong></td>
+                            <td><span style="font-size: 11px; background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); padding: 4px 8px; border-radius: 6px;">{{ i.tipo }}</span></td>
+                            <td><code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: var(--text-muted);">{{ i.endpoint }}</code></td>
+                            <td>
+                                <span class="badge badge-estado {% if i.estado == 'activo' %}badge-pro{% elif i.estado == 'pendiente' %}badge-demo{% else %}badge-unpaid{% endif %}">
+                                    {{ i.estado }}
+                                </span>
+                            </td>
+                            <td class="col-ultima-val">{{ i.ultima_validacion }}</td>
+                            <td class="col-latencia">
+                                {% if i.latencia_ms %}
+                                <strong style="color: var(--cyan);">{{ i.latencia_ms }} ms</strong>
+                                {% else %}
+                                <span style="color: var(--text-muted);">--</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- SECTION: Clientes -->
         <div id="sec-clientes" class="content-section {% if rol != 'admin' %}active{% endif %}">
             <div class="section-header">
@@ -904,9 +956,10 @@
                     'sec-metricas': ['Métricas Ejecutivas', 'Monitoreo de uso de módulos, retención y funnel comercial'],
                     'sec-clientes': ['Fichas de Clientes', 'Gestión de cartera B2B, planes y renovaciones de licencia'],
                     'sec-facturacion': ['Facturas y Cobranzas', 'Historial de comprobantes de pago y estados de transacciones'],
-                    'sec-activaciones': ['Módulos and Licencias', 'Control de llaves de activación por módulo'],
+                    'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
                     'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución'],
-                    'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice']
+                    'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice'],
+                    'sec-integraciones': ['Mapeo de Integraciones', 'Estado de salud y validación de conexiones externas de la plataforma']
                 };
 
                 if (titleMap[target]) {
@@ -915,6 +968,62 @@
                 }
             });
         });
+
+        async function validarIntegraciones() {
+            const btn = document.getElementById('btn-validar-integraciones');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-arrows-spin fa-spin"></i> Validando...';
+            
+            try {
+                const response = await fetch('/admin/api/integraciones/validar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.ok) {
+                    // Actualizar filas de la tabla
+                    result.datos.forEach(integration => {
+                        const row = document.querySelector(`tr[data-integration-id="${integration.id}"]`);
+                        if (row) {
+                            // Actualizar badge
+                            const badge = row.querySelector('.badge-estado');
+                            badge.className = 'badge badge-estado';
+                            if (integration.estado === 'activo') {
+                                badge.classList.add('badge-pro');
+                            } else if (integration.estado === 'pendiente') {
+                                badge.classList.add('badge-demo');
+                            } else {
+                                badge.classList.add('badge-unpaid');
+                            }
+                            badge.innerText = integration.estado;
+                            
+                            // Actualizar fecha
+                            row.querySelector('.col-ultima-val').innerText = integration.ultima_validacion;
+                            
+                            // Actualizar latencia
+                            const latCol = row.querySelector('.col-latencia');
+                            if (integration.latencia_ms) {
+                                latCol.innerHTML = `<strong style="color: var(--cyan);">${integration.latencia_ms} ms</strong>`;
+                            } else {
+                                latCol.innerHTML = '<span style="color: var(--text-muted);">--</span>';
+                            }
+                        }
+                    });
+                    alert('¡Integraciones validadas con éxito!');
+                } else {
+                    alert('Error validando integraciones: ' + (result.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de conexión al servidor: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
     </script>
 </body>
 </html>

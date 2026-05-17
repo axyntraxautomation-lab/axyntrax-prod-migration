@@ -576,6 +576,7 @@ def admin_panel():
         activaciones = load_data("activaciones.json", [])
         tickets = load_data("tickets.json", [])
         usuarios = load_data("usuarios.json", [])
+        integraciones = load_data("integraciones.json", [])
         metricas = obtener_metricas_calculadas()
 
         # Métricas de negocio
@@ -608,7 +609,8 @@ def admin_panel():
             ingresos_mensuales=ingresos_mensuales,
             conversion_rate=conversion_rate,
             modulos_mas_usados=modulos_mas_usados,
-            metricas=metricas
+            metricas=metricas,
+            integraciones=integraciones
         )
     except Exception as e:
         print(f"[admin_panel] Error: {e}")
@@ -625,46 +627,50 @@ def admin_usuarios():
 @requires_auth
 def admin_api_data():
     if not check_admin_rate_limit():
-        return jsonify({"error": "Too Many Requests"}), 429
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
     try:
         username = request.authorization.username
         rol = get_auth_user_role(username)
 
         if rol not in ("admin", "soporte"):
-            return jsonify({"error": "No autorizado"}), 403
+            return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
 
         clientes = load_data("clientes.json", [])
         facturacion = load_data("facturacion.json", [])
         activaciones = load_data("activaciones.json", [])
         tickets = load_data("tickets.json", [])
         return jsonify({
-            "clientes": clientes,
-            "facturacion": facturacion,
-            "activaciones": activaciones,
-            "tickets": tickets,
-            "rol": rol
+            "ok": True,
+            "datos": {
+                "clientes": clientes,
+                "facturacion": facturacion,
+                "activaciones": activaciones,
+                "tickets": tickets,
+                "rol": rol
+            },
+            "error": None
         }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
 @app.route("/admin/api/usuarios", methods=["GET", "POST"])
 @requires_auth
 def admin_api_usuarios():
     if not check_admin_rate_limit():
-        return jsonify({"error": "Too Many Requests"}), 429
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
     
     username = request.authorization.username
     rol = get_auth_user_role(username)
     if rol != "admin":
-        return jsonify({"error": "No autorizado"}), 403
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
 
     if request.method == "GET":
         try:
             usuarios = load_data("usuarios.json", [])
-            return jsonify(usuarios), 200
+            return jsonify({"ok": True, "datos": usuarios, "error": None}), 200
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
     elif request.method == "POST":
         try:
@@ -701,27 +707,27 @@ def admin_api_usuarios():
                 usuarios.append(new_user)
 
             save_data("usuarios.json", usuarios)
-            return jsonify({"status": "ok", "usuarios": usuarios}), 200
+            return jsonify({"ok": True, "datos": usuarios, "error": None}), 200
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
 @app.route("/admin/api/metricas", methods=["GET"])
 @requires_auth
 def admin_api_metricas():
     if not check_admin_rate_limit():
-        return jsonify({"error": "Too Many Requests"}), 429
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
     
     username = request.authorization.username
     rol = get_auth_user_role(username)
     if rol != "admin":
-        return jsonify({"error": "No autorizado"}), 403
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
 
     try:
         metricas = obtener_metricas_calculadas()
-        return jsonify(metricas), 200
+        return jsonify({"ok": True, "datos": metricas, "error": None}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
 @app.route("/admin/api/metricas/exportar", methods=["GET"])
@@ -778,6 +784,60 @@ def admin_api_metricas_exportar():
         return output
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/admin/api/integraciones", methods=["GET"])
+@requires_auth
+def admin_api_integraciones():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        integraciones = load_data("integraciones.json", [])
+        return jsonify({"ok": True, "datos": integraciones, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/integraciones/validar", methods=["POST"])
+@requires_auth
+def admin_api_integraciones_validar():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        integraciones = load_data("integraciones.json", [])
+        
+        # Ejecutar validación para WhatsApp Business API
+        for integration in integraciones:
+            if integration.get("id") == "i1": # WhatsApp
+                endpoint = integration.get("endpoint", "https://graph.facebook.com/v17.0")
+                start_time = time.time()
+                try:
+                    res = requests.get(endpoint, timeout=3.0)
+                    latencia = int((time.time() - start_time) * 1000)
+                    integration["estado"] = "activo"
+                    integration["latencia_ms"] = latencia
+                except Exception as e:
+                    integration["estado"] = "error"
+                    integration["latencia_ms"] = None
+                integration["ultima_validacion"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                break
+        
+        save_data("integraciones.json", integraciones)
+        return jsonify({"ok": True, "datos": integraciones, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
 if __name__ == "__main__":

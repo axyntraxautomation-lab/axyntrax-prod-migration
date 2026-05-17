@@ -1,0 +1,47 @@
+[
+  {
+    "id": "i1",
+    "nombre": "WhatsApp Business API",
+    "estado": "activo",
+    "tipo": "Mensajería",
+    "endpoint": "https://graph.facebook.com/v17.0",
+    "ultima_validacion": "2026-05-17 14:00:00",
+    "latencia_ms": 145
+  },
+  {
+    "id": "i2",
+    "nombre": "Email Transaccional (Resend)",
+    "estado": "pendiente",
+    "tipo": "Notificaciones",
+    "endpoint": "https://api.resend.com",
+    "ultima_validacion": "2026-05-15 10:30:00",
+    "latencia_ms": null
+  },
+  {
+    "id": "i3",
+    "nombre": "Pasarela de Pago (Culqi)",
+    "estado": "pendiente",
+    "tipo": "Finanzas",
+    "endpoint": "https://api.culqi.com/v2",
+    "ultima_validacion": "2026-05-15 10:30:00",
+    "latencia_ms": null
+  },
+  {
+    "id": "i4",
+    "nombre": "CRM Externo (HubSpot)",
+    "estado": "pendiente",
+    "tipo": "Ventas",
+    "endpoint": "https://api.hubapi.com",
+    "ultima_validacion": "2026-05-15 10:30:00",
+    "latencia_ms": null
+  },
+  {
+    "id": "i5",
+    "nombre": "Redes Sociales (Meta API)",
+    "estado": "pendiente",
+    "tipo": "Marketing",
+    "endpoint": "https://graph.facebook.com/v17.0",
+    "ultima_validacion": "2026-05-15 10:30:00",
+    "latencia_ms": null
+  }
+]
