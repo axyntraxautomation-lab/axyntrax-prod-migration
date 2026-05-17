@@ -1,0 +1,78 @@
+[
+  {
+    "id": "faq1",
+    "pregunta": "¿Qué es AXYNTRAX Automation?",
+    "respuesta": "AXYNTRAX es una plataforma SaaS de automatización empresarial impulsada por IA para PYMES peruanas. Centraliza tu comunicación por WhatsApp Business y automatiza flujos comerciales mediante agentes inteligentes especializados."
+  },
+  {
+    "id": "faq2",
+    "pregunta": "¿Cuáles son los planes de precios disponibles?",
+    "respuesta": "Ofrecemos tres planes flexibles con IGV incluido: Starter (S/ 199/mes), Pro Cloud (S/ 399/mes) y Diamante (S/ 799/mes). El precio oficial de entrada unificado para campañas y accesos básicos es de S/ 235."
+  },
+  {
+    "id": "faq3",
+    "pregunta": "¿Ofrecen una prueba gratuita (Demo)?",
+    "respuesta": "Sí, todos los planes de AXYNTRAX vienen con una prueba gratuita (Demo) sin restricciones durante 30 días para que puedas validar la suite comercial completa."
+  },
+  {
+    "id": "faq4",
+    "pregunta": "¿Cómo solicito la activación de un módulo?",
+    "respuesta": "Puedes solicitar la activación de cualquier módulo directamente desde el botón 'Solicitar Activación' en nuestra web o enviando un mensaje directo a Cecilia por WhatsApp."
+  },
+  {
+    "id": "faq5",
+    "pregunta": "¿A qué rubros de negocio se adapta AXYNTRAX?",
+    "respuesta": "Nos adaptamos con precisión a 13 rubros clave: médico, legal, restaurantes, residencial, retail, educación, inmobiliario, hotelería, logística, manufactura, automotriz, belleza y consultoría."
+  },
+  {
+    "id": "faq6",
+    "pregunta": "¿Cómo funciona la integración con WhatsApp Business?",
+    "respuesta": "La integración se realiza de forma directa a través de la API oficial de WhatsApp Business (Meta Graph API), lo que garantiza el 100% de cumplimiento de políticas de Meta y evita bloqueos."
+  },
+  {
+    "id": "faq7",
+    "pregunta": "¿Quién es Cecilia?",
+    "respuesta": "Cecilia es nuestra agente de inteligencia artificial omnichannel especializada en atención al cliente. Responde consultas en WhatsApp y páginas web las 24 horas del día con lenguaje natural peruanizado."
+  },
+  {
+    "id": "faq8",
+    "pregunta": "¿Quién es el orquestador JARVIS?",
+    "respuesta": "JARVIS es el CEO del sistema y orquestador neuronal central que distribuye tareas y monitorea el estado operativo de los agentes Cecilia, Mark y Atlas."
+  },
+  {
+    "id": "faq9",
+    "pregunta": "¿Quién es Mark?",
+    "respuesta": "Mark es nuestro agente de automatización especializado en marketing conversacional, prospección de leads y seguimiento automatizado de oportunidades."
+  },
+  {
+    "id": "faq10",
+    "pregunta": "¿Quién es Atlas?",
+    "notes": "Reportes y telemetría",
+    "respuesta": "Atlas es el agente analítico responsable del monitoreo de KPIs, control de latencia en webhooks y elaboración de reportes ejecutivos en tiempo real."
+  },
+  {
+    "id": "faq11",
+    "pregunta": "¿AXYNTRAX requiere instalar software?",
+    "respuesta": "No, AXYNTRAX es una solución 100% en la nube (SaaS). El widget de Cecilia se incrusta con una sola línea de código JavaScript en cualquier sitio web."
+  },
+  {
+    "id": "faq12",
+    "pregunta": "¿Es seguro el manejo de mis datos?",
+    "respuesta": "Es sumamente seguro. Cumplimos estrictamente con la Ley de Protección de Datos Personales en el Perú (Ley N° 29733) y encriptamos todos los flujos de comunicación."
+  },
+  {
+    "id": "faq13",
+    "pregunta": "¿Qué pasa si Cecilia no puede responder una consulta?",
+    "respuesta": "Si Cecilia detecta que una consulta es compleja, creará automáticamente un ticket de soporte y derivará el caso al agente Mark y a un soporte humano."
+  },
+  {
+    "id": "faq14",
+    "pregunta": "¿Cómo se pagan las suscripciones mensuales?",
+    "respuesta": "Soportamos pagos en Soles (PEN) a través de pasarelas seguras (Stripe y Culqi). Aceptamos todas las tarjetas de crédito, débito, y transferencias bancarias."
+  },
+  {
+    "id": "faq15",
+    "pregunta": "¿Qué nivel de soporte técnico incluyen los planes?",
+    "respuesta": "Los planes Starter y Pro incluyen soporte vía ticket y mesa de ayuda con respuesta en menos de 24 horas. El plan Diamante incluye soporte B2B preferente 24/7."
+  }
+]

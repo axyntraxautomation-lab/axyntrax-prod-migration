@@ -840,5 +840,160 @@ def admin_api_integraciones_validar():
         return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
+@app.route("/api/faq", methods=["GET"])
+def api_faq():
+    try:
+        faq = load_data("faq.json", [])
+        return jsonify({"ok": True, "datos": faq, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/tickets", methods=["POST"])
+def api_tickets_crear():
+    try:
+        data = request.get_json(silent=True) or {}
+        tickets = load_data("tickets.json", [])
+        
+        # Generar ID
+        ticket_id = f"t{len(tickets) + 1}"
+        new_ticket = {
+            "id": ticket_id,
+            "cliente_id": data.get("cliente_id", "cliente_anonimo"),
+            "asunto": data.get("asunto", "Consulta general"),
+            "mensaje": data.get("mensaje", "Detalle no provisto"),
+            "estado": "abierto",
+            "prioridad": data.get("prioridad", "media"),
+            "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+            "agente_asignado": "Soporte Nivel 1",
+            "historial": [
+                {
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "usuario": "Sistema (Automatización)",
+                    "cambio": "Ticket creado e ingresado a cola."
+                }
+            ]
+        }
+        tickets.append(new_ticket)
+        save_data("tickets.json", tickets)
+        return jsonify({"ok": True, "datos": new_ticket, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/tickets", methods=["GET", "POST"])
+@requires_auth
+def admin_api_tickets():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol not in ("admin", "soporte"):
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    if request.method == "GET":
+        try:
+            tickets = load_data("tickets.json", [])
+            return jsonify({"ok": True, "datos": tickets, "error": None}), 200
+        except Exception as e:
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+    elif request.method == "POST":
+        try:
+            data = request.get_json(silent=True) or {}
+            tickets = load_data("tickets.json", [])
+            ticket_id = data.get("id")
+            
+            target_ticket = None
+            for t in tickets:
+                if t.get("id") == ticket_id:
+                    target_ticket = t
+                    break
+                    
+            if not target_ticket:
+                return jsonify({"ok": False, "datos": None, "error": "Ticket no encontrado"}), 404
+                
+            # Aplicar cambios y guardar historial
+            historial = target_ticket.get("historial", [])
+            
+            nuevo_estado = data.get("estado")
+            if nuevo_estado and nuevo_estado != target_ticket.get("estado"):
+                historial.append({
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "usuario": username,
+                    "cambio": f"Estado cambiado de '{target_ticket.get('estado')}' a '{nuevo_estado}'."
+                })
+                target_ticket["estado"] = nuevo_estado
+                
+            nueva_prioridad = data.get("prioridad")
+            if nueva_prioridad and nueva_prioridad != target_ticket.get("prioridad"):
+                historial.append({
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "usuario": username,
+                    "cambio": f"Prioridad cambiada de '{target_ticket.get('prioridad')}' a '{nueva_prioridad}'."
+                })
+                target_ticket["prioridad"] = nueva_prioridad
+                
+            nuevo_agente = data.get("agente_asignado")
+            if nuevo_agente and nuevo_agente != target_ticket.get("agente_asignado"):
+                historial.append({
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "usuario": username,
+                    "cambio": f"Agente asignado cambiado de '{target_ticket.get('agente_asignado')}' a '{nuevo_agente}'."
+                })
+                target_ticket["agente_asignado"] = nuevo_agente
+                
+            respuesta = data.get("respuesta")
+            if respuesta:
+                historial.append({
+                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "usuario": username,
+                    "cambio": f"Respuesta soporte: {respuesta}"
+                })
+                
+            target_ticket["historial"] = historial
+            save_data("tickets.json", tickets)
+            return jsonify({"ok": True, "datos": tickets, "error": None}), 200
+        except Exception as e:
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/tickets/escalar", methods=["POST"])
+def api_tickets_escalar():
+    try:
+        data = request.get_json(silent=True) or {}
+        ticket_id = data.get("id")
+        tickets = load_data("tickets.json", [])
+        
+        target_ticket = None
+        for t in tickets:
+            if t.get("id") == ticket_id:
+                target_ticket = t
+                break
+                
+        if not target_ticket:
+            return jsonify({"ok": False, "datos": None, "error": "Ticket no encontrado"}), 404
+            
+        historial = target_ticket.get("historial", [])
+        historial.append({
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "usuario": "Mark (Agente Comercial)",
+            "cambio": "Ticket escalado a soporte humano externo por prioridad comercial."
+        })
+        target_ticket["estado"] = "escalado_humano"
+        target_ticket["agente_asignado"] = "Yarvis (Human Lead)"
+        target_ticket["historial"] = historial
+        
+        save_data("tickets.json", tickets)
+        
+        # Simular notificación por correo electrónico
+        print(f"[ESCALAR SOPORTE] Notificación enviada a axyntraxautomation@gmail.com para el ticket {ticket_id}")
+        
+        return jsonify({"ok": True, "datos": target_ticket, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run()

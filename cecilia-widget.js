@@ -13,6 +13,8 @@ class CeciliaAssistant {
     constructor() {
         this.isOpen = false;
         this.config = null;
+        this.ticketStep = 0;
+        this.ticketData = null;
         this.messages = [
             { role: 'bot', text: '¡Hola! Soy Cecilia, tu asistente virtual de AxyntraX. 🤖' },
             { role: 'bot', text: '¿Listo para SOLICITAR ACTIVACIÓN? Demo 30 días · planes desde S/199. Escríbeme.' }
@@ -77,9 +79,9 @@ class CeciliaAssistant {
             .cecilia-header { 
                 padding: 20px; background: rgba(0, 229, 255, 0.1); 
                 border-bottom: 1px solid rgba(255,255,255,0.05);
-                display: flex; items-center: center; gap: 12px;
+                display: flex; align-items: center; gap: 12px;
             }
-            .cecilia-header .avatar { width: 45px; height: 45px; background: #00E5FF; border-radius: 50%; overflow: hidden; display: flex; items-center: center; justify-content: center; border: 2px solid #00E5FF; }
+            .cecilia-header .avatar { width: 45px; height: 45px; background: #00E5FF; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid #00E5FF; }
             .cecilia-header .avatar img { width: 100%; height: 100%; object-fit: cover; }
             .cecilia-header .info { line-height: 1.2; }
             .cecilia-header .name { font-weight: 800; font-size: 14px; color: #00E5FF; }
@@ -87,8 +89,8 @@ class CeciliaAssistant {
 
             .cecilia-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
             .msg { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 13px; line-height: 1.5; animation: msgIn 0.3s ease-out forwards; }
-            .msg-bot { background: rgba(255,255,255,0.05); color: #FFF; align-self: flex-start; border-bottom-left-radius: 5px; border: 1px solid rgba(255,255,255,0.05); }
-            .msg-user { background: #00E5FF; color: #0D0D0D; font-weight: 600; align-self: flex-end; border-bottom-right-radius: 5px; }
+            .msg-bot { background: rgba(255,255,255,0.05); color: #FFF; align-self: flex-start; border-bottom-left-radius: 5px; border: 1px solid rgba(255,255,255,0.05); text-align: left; }
+            .msg-user { background: #00E5FF; color: #0D0D0D; font-weight: 600; align-self: flex-end; border-bottom-right-radius: 5px; text-align: left; }
 
             @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -208,8 +210,83 @@ class CeciliaAssistant {
         this.addMessage('user', text);
         input.value = '';
         
+        if (this.ticketStep && this.ticketStep > 0) {
+            this.handleTicketCreationFlow(text);
+            return;
+        }
+
+        const inputLower = text.toLowerCase();
+        if (inputLower.includes('soporte') || inputLower.includes('ticket') || inputLower.includes('falla') || inputLower.includes('humano')) {
+            this.ofrecerTicket();
+            return;
+        }
+
         this.showTyping();
         this.fetchReply(text);
+    }
+
+    ofrecerTicket() {
+        this.showTyping();
+        setTimeout(() => {
+            this.hideTyping();
+            this.addMessage('bot', 'Parece que tienes una consulta compleja o necesitas soporte técnico.');
+            this.addMessage('bot', '¿Te gustaría registrar un ticket de soporte oficial en nuestro sistema? Escribe "si" para iniciar.');
+            this.ticketStep = 1;
+            this.ticketData = {
+                cliente_id: 'cliente_web',
+                asunto: '',
+                mensaje: '',
+                prioridad: 'media'
+            };
+        }, 600);
+    }
+
+    handleTicketCreationFlow(text) {
+        this.showTyping();
+        setTimeout(() => {
+            this.hideTyping();
+            if (this.ticketStep === 1) {
+                const choice = text.toLowerCase().trim();
+                if (choice === 'si' || choice === 'sí' || choice === 'crear' || choice === 'aceptar') {
+                    this.ticketStep = 2;
+                    this.addMessage('bot', 'Excelente. Escribe un título breve o asunto para tu ticket (ej. Error en activación de licencia):');
+                } else {
+                    this.ticketStep = 0;
+                    this.addMessage('bot', 'Entendido. Si necesitas algo más, aquí estaré para ayudarte.');
+                }
+            } else if (this.ticketStep === 2) {
+                this.ticketData.asunto = text;
+                this.ticketStep = 3;
+                this.addMessage('bot', 'Registrado. Ahora, describe detalladamente tu consulta o el inconveniente presentado:');
+            } else if (this.ticketStep === 3) {
+                this.ticketData.mensaje = text;
+                this.ticketStep = 0;
+                this.submitTicketToServer();
+            }
+        }, 800);
+    }
+
+    async submitTicketToServer() {
+        this.showTyping();
+        try {
+            const response = await fetch('/api/tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.ticketData)
+            });
+            const result = await response.json();
+            this.hideTyping();
+            if (result.ok) {
+                this.addMessage('bot', `¡Perfecto! He creado el ticket ${result.datos.id.toUpperCase()} con éxito. Nuestro equipo de soporte o el agente Mark lo revisará de inmediato.`);
+            } else {
+                this.addMessage('bot', 'Hubo un inconveniente al registrar tu ticket. Por favor, inténtalo de nuevo más tarde.');
+            }
+        } catch (e) {
+            this.hideTyping();
+            this.addMessage('bot', 'No pudimos conectarnos al servidor de tickets. Por favor, escríbenos directamente a axyntraxautomation@gmail.com.');
+        }
     }
 
     async fetchReply(userInput) {
@@ -232,32 +309,17 @@ class CeciliaAssistant {
                 this.addMessage('bot', reply);
                 return;
             }
-            this.addMessage('bot', fallback);
+            this.ofrecerTicket();
         } catch (e) {
             clearTimeout(timer);
             this.hideTyping();
-            this.addMessage('bot', this.processAIResponseLocal(userInput) || fallback);
+            const localReply = this.processAIResponseLocal(userInput);
+            if (localReply) {
+                this.addMessage('bot', localReply);
+            } else {
+                this.ofrecerTicket();
+            }
         }
-    }
-
-    showTyping() {
-        const container = document.getElementById('msgContainer');
-        const typing = document.createElement('div');
-        typing.id = 'typingIndicator';
-        typing.className = 'typing';
-        typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        container.appendChild(typing);
-        this.scrollToBottom();
-    }
-
-    hideTyping() {
-        const indicator = document.getElementById('typingIndicator');
-        if (indicator) indicator.remove();
-    }
-
-    scrollToBottom() {
-        const container = document.getElementById('msgContainer');
-        container.scrollTop = container.scrollHeight;
     }
 
     processAIResponseLocal(userInput) {

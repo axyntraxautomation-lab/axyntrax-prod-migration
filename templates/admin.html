@@ -487,7 +487,7 @@
                 <div class="metric-value">
                     {% set ticket_count = 0 %}
                     {% for t in tickets %}
-                        {% if t.estado == 'abierto' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
+                        {% if t.estado == 'abierto' or t.estado == 'en_progreso' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
                     {% endfor %}
                     {{ ticket_count }}
                 </div>
@@ -509,7 +509,7 @@
                 <div class="metric-value">
                     {% set ticket_count = 0 %}
                     {% for t in tickets %}
-                        {% if t.estado == 'abierto' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
+                        {% if t.estado == 'abierto' or t.estado == 'en_progreso' %}{% set ticket_count = ticket_count + 1 %}{% endif %}
                     {% endfor %}
                     {{ ticket_count }}
                 </div>
@@ -845,35 +845,81 @@
         <!-- SECTION: Soporte -->
         <div id="sec-soporte" class="content-section">
             <div class="section-header">
-                <h2 class="section-title"><i class="fa-solid fa-circle-question"></i>Tickets de Soporte</h2>
+                <h2 class="section-title"><i class="fa-solid fa-circle-question"></i>Mesa de Ayuda y Tickets</h2>
+                <div style="display: flex; gap: 10px;">
+                    <select id="filtro-estado" onchange="filtrarTickets()" style="background: var(--dark-card); border: 1px solid var(--dark-border); padding: 8px 12px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                        <option value="todos">Todos los Estados</option>
+                        <option value="abierto">Abiertos</option>
+                        <option value="en_progreso">En Progreso</option>
+                        <option value="resuelto">Resueltos</option>
+                        <option value="escalado_humano">Escalados a Humano</option>
+                    </select>
+                    <select id="filtro-prioridad" onchange="filtrarTickets()" style="background: var(--dark-card); border: 1px solid var(--dark-border); padding: 8px 12px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                        <option value="todos">Todas las Prioridades</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
             </div>
+            
             <div class="table-container">
-                <table>
+                <table id="tabla-tickets">
                     <thead>
                         <tr>
                             <th>Ticket ID</th>
-                            <th>Cliente ID</th>
-                            <th>Asunto / Detalle</th>
-                            <th>Fecha Creación</th>
+                            <th>Cliente</th>
+                            <th>Asunto y Mensaje</th>
+                            <th>Prioridad</th>
+                            <th>Asignado</th>
                             <th>Estado</th>
+                            <th>Seguimiento</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for t in tickets %}
-                        <tr>
-                            <td>{{ t.id }}</td>
+                        <tr class="fila-ticket" data-estado="{{ t.estado }}" data-prioridad="{{ t.prioridad }}" data-ticket-id="{{ t.id }}">
+                            <td><strong>{{ t.id|upper }}</strong></td>
                             <td>{{ t.cliente_id }}</td>
                             <td>
                                 <div class="client-info-cell">
                                     <span class="client-name-bold">{{ t.asunto }}</span>
-                                    <span class="client-subtext" style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.mensaje }}</span>
+                                    <span class="client-subtext" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.mensaje }}</span>
                                 </div>
                             </td>
-                            <td>{{ t.fecha_creacion }}</td>
                             <td>
-                                <span class="badge {% if t.estado == 'resuelto' %}badge-resolved{% else %}badge-open{% endif %}">
+                                <span class="badge {% if t.prioridad == 'alta' %}badge-unpaid{% elif t.prioridad == 'media' %}badge-demo{% else %}badge-starter{% endif %}">
+                                    {{ t.prioridad }}
+                                </span>
+                            </td>
+                            <td class="col-agente"><strong>{{ t.agente_asignado or 'Sin Asignar' }}</strong></td>
+                            <td class="col-estado">
+                                <span class="badge badge-estado {% if t.estado == 'resuelto' %}badge-pro{% elif t.estado == 'en_progreso' %}badge-starter{% elif t.estado == 'escalado_humano' %}badge-diamante{% else %}badge-open{% endif %}">
                                     {{ t.estado }}
                                 </span>
+                            </td>
+                            <td>
+                                <button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px;" onclick="verHistorial('{{ t.id }}')">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                                </button>
+                                <div id="historial-{{ t.id }}" style="display:none; margin-top: 10px; font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--dark-border); max-width: 300px;">
+                                    {% for h in t.historial %}
+                                    <div style="border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px; margin-bottom: 5px; text-align: left;">
+                                        <strong>[{{ h.fecha }}] {{ h.usuario }}:</strong> {{ h.cambio }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: var(--emerald);" onclick="gestionarTicket('{{ t.id }}')">
+                                        <i class="fa-solid fa-reply"></i> Responder
+                                    </button>
+                                    <button class="btn-action btn-escalar-ticket" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: rgba(139, 92, 246, 0.2); color: #8B5CF6; border: 1px solid #8B5CF6;" onclick="escalarTicket('{{ t.id }}')">
+                                        <i class="fa-solid fa-angles-up"></i> Escalar
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -936,6 +982,55 @@
         </div>
         {% endif %}
     </main>
+
+    <!-- Modal de Gestión de Tickets -->
+    <div id="modal-ticket" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--dark-card); border: 1px solid var(--dark-border); padding: 30px; border-radius: 24px; width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="modal-ticket-titulo" style="font-size: 18px; font-weight: 700;">Responder Ticket</h3>
+                <button onclick="cerrarModalTicket()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="modal-ticket-id">
+            
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Cambiar Estado</label>
+                <select id="modal-ticket-estado" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+                    <option value="abierto">Abierto</option>
+                    <option value="en_progreso">En Progreso</option>
+                    <option value="resuelto">Resuelto</option>
+                    <option value="escalado_humano">Escalado a Humano</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Asignar Agente</label>
+                <select id="modal-ticket-agente" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+                    <option value="Soporte Nivel 1">Soporte Nivel 1</option>
+                    <option value="Soporte Nivel 2">Soporte Nivel 2</option>
+                    <option value="Yarvis (Human Lead)">Yarvis (Human Lead)</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Prioridad</label>
+                <select id="modal-ticket-prioridad" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+                    <option value="baja">Baja</option>
+                    <option value="media">Media</option>
+                    <option value="alta">Alta</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Respuesta de Soporte</label>
+                <textarea id="modal-ticket-respuesta" rows="4" placeholder="Escribe la respuesta para el cliente..." style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px; font-family: inherit; resize: none;"></textarea>
+            </div>
+
+            <button class="btn-action" onclick="guardarGestionTicket()" style="justify-content: center;">
+                <i class="fa-solid fa-paper-plane"></i> Guardar Cambios
+            </button>
+        </div>
+    </div>
 
     <!-- Navigation Handler Script -->
     <script>
@@ -1022,6 +1117,106 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
+            }
+        }
+
+        function filtrarTickets() {
+            const estado = document.getElementById('filtro-estado').value;
+            const prioridad = document.getElementById('filtro-prioridad').value;
+            
+            document.querySelectorAll('.fila-ticket').forEach(row => {
+                const matchEstado = estado === 'todos' || row.getAttribute('data-estado') === estado;
+                const matchPrioridad = prioridad === 'todos' || row.getAttribute('data-prioridad') === prioridad;
+                if (matchEstado && matchPrioridad) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function verHistorial(id) {
+            const div = document.getElementById('historial-' + id);
+            if (div.style.display === 'none') {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        }
+
+        function gestionarTicket(id) {
+            const row = document.querySelector(`tr[data-ticket-id="${id}"]`);
+            document.getElementById('modal-ticket-id').value = id;
+            document.getElementById('modal-ticket-titulo').innerText = 'Responder Ticket: ' + id.toUpperCase();
+            
+            // Cargar valores actuales de la fila si es posible
+            document.getElementById('modal-ticket-estado').value = row.getAttribute('data-estado');
+            document.getElementById('modal-ticket-prioridad').value = row.getAttribute('data-prioridad');
+            document.getElementById('modal-ticket-agente').value = row.querySelector('.col-agente').innerText.trim() || 'Soporte Nivel 1';
+            document.getElementById('modal-ticket-respuesta').value = '';
+            
+            document.getElementById('modal-ticket').style.display = 'flex';
+        }
+
+        function cerrarModalTicket() {
+            document.getElementById('modal-ticket').style.display = 'none';
+        }
+
+        async function guardarGestionTicket() {
+            const id = document.getElementById('modal-ticket-id').value;
+            const estado = document.getElementById('modal-ticket-estado').value;
+            const prioridad = document.getElementById('modal-ticket-prioridad').value;
+            const agente = document.getElementById('modal-ticket-agente').value;
+            const respuesta = document.getElementById('modal-ticket-respuesta').value;
+            
+            try {
+                const response = await fetch('/admin/api/tickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        estado: estado,
+                        prioridad: prioridad,
+                        agente_asignado: agente,
+                        respuesta: respuesta
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.ok) {
+                    alert('¡Ticket gestionado con éxito!');
+                    location.reload();
+                } else {
+                    alert('Error guardando cambios: ' + (result.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function escalarTicket(id) {
+            if (!confirm('¿Estás seguro de que deseas escalar este ticket a soporte humano externo?')) return;
+            
+            try {
+                const response = await fetch('/api/tickets/escalar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                });
+                
+                const result = await response.json();
+                if (result.ok) {
+                    alert('¡Ticket escalado con éxito! Se notificó al lead humano.');
+                    location.reload();
+                } else {
+                    alert('Error escalando ticket: ' + (result.error || 'Desconocido'));
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
             }
         }
     </script>

@@ -5,7 +5,21 @@
     "asunto": "Configuración de WhatsApp Business",
     "mensaje": "No logro conectar la API de Cecilia con mi cuenta de WhatsApp.",
     "estado": "resuelto",
-    "fecha_creacion": "2026-05-02"
+    "prioridad": "alta",
+    "fecha_creacion": "2026-05-02",
+    "agente_asignado": "Soporte Nivel 1",
+    "historial": [
+      {
+        "fecha": "2026-05-02 09:00:00",
+        "usuario": "Sistema (Automatización)",
+        "cambio": "Ticket creado automáticamente."
+      },
+      {
+        "fecha": "2026-05-02 11:30:00",
+        "usuario": "admin",
+        "cambio": "Estado cambiado de 'abierto' a 'resuelto'. Respuesta soporte: Credenciales corregidas en Meta Developer Suite."
+      }
+    ]
   },
   {
     "id": "t2",
@@ -13,6 +27,15 @@
     "asunto": "Error en descarga de reportes",
     "mensaje": "Al exportar a PDF, sale en blanco la sección de cobros.",
     "estado": "abierto",
-    "fecha_creacion": "2026-05-12"
+    "prioridad": "media",
+    "fecha_creacion": "2026-05-12",
+    "agente_asignado": "Soporte Nivel 1",
+    "historial": [
+      {
+        "fecha": "2026-05-12 14:22:00",
+        "usuario": "Sistema (Automatización)",
+        "cambio": "Ticket creado e ingresado a cola."
+      }
+    ]
   }
 ]
