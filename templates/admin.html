@@ -423,6 +423,9 @@
                 <li class="nav-item" data-target="sec-onboarding">
                     <a href="#onboarding"><i class="fa-solid fa-circle-check"></i>Onboarding</a>
                 </li>
+                <li class="nav-item" data-target="sec-operacion">
+                    <a href="#operacion"><i class="fa-solid fa-gears"></i>Operación</a>
+                </li>
                 <li class="nav-item" data-target="sec-usuarios">
                     <a href="#usuarios"><i class="fa-solid fa-user-gear"></i>Usuarios</a>
                 </li>
@@ -1013,6 +1016,174 @@
             </div>
         </div>
 
+        <!-- SECTION: Operación Interna -->
+        {% if rol == 'admin' %}
+        <div id="sec-operacion" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-gears"></i>Operación Interna Formalizada</h2>
+                <button class="btn-action" style="background: var(--cyan); color: #0D0D0D;" onclick="ejecutarAuditoriaOperativa()">
+                    <i class="fa-solid fa-shield-halved"></i> Ejecutar Auditoría
+                </button>
+            </div>
+
+            <!-- Auditoría Resultados Panel -->
+            <div id="panel-auditoria-resultados" style="display: none; background: rgba(239, 68, 68, 0.05); border: 1px solid var(--rose); border-radius: 20px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 15px; font-weight: 700; color: var(--rose); margin: 0;"><i class="fa-solid fa-triangle-exclamation"></i> Hallazgos de Auditoría Operativa</h3>
+                    <span id="auditoria-resumen-badge" class="badge badge-open">0 Alertas</span>
+                </div>
+                <div id="auditoria-detalles" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                    <!-- Cargado por JS -->
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start;">
+                <!-- Panel de Tareas -->
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 25px; border-radius: 24px; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0;"><i class="fa-solid fa-list-check"></i> Tareas del Equipo</h3>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <select id="filtro-tarea-estado" style="background: var(--dark); border: 1px solid var(--dark-border); padding: 6px 10px; border-radius: 8px; color: var(--text-main); font-size: 12px;" onchange="cargarTareasFiltradas()">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="en_progreso">En Progreso</option>
+                                <option value="completada">Completada</option>
+                            </select>
+                            <select id="filtro-tarea-responsable" style="background: var(--dark); border: 1px solid var(--dark-border); padding: 6px 10px; border-radius: 8px; color: var(--text-main); font-size: 12px;" onchange="cargarTareasFiltradas()">
+                                <option value="">Todos los responsables</option>
+                                <option value="admin">Admin</option>
+                                <option value="soporte">Soporte</option>
+                                <option value="mark">Mark</option>
+                                <option value="jarvis">Jarvis</option>
+                                <option value="antigravity">Antigravity</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tarea / Descripción</th>
+                                    <th>Responsable</th>
+                                    <th>Prioridad</th>
+                                    <th>Vencimiento</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-tareas-cuerpo">
+                                <!-- Renderizado por JS / Jinja inicial -->
+                                {% for t in tareas %}
+                                <tr data-task-id="{{ t.id }}" data-estado="{{ t.estado }}">
+                                    <td>
+                                        <div class="client-info-cell">
+                                            <span class="client-name-bold">{{ t.titulo }}</span>
+                                            <span class="client-subtext">{{ t.descripcion }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: var(--cyan);">{{ t.responsable }}</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if t.prioridad == 'alta' %}badge-open{% elif t.prioridad == 'media' %}badge-demo{% else %}badge-pro{% endif %}">
+                                            {{ t.prioridad }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="col-fecha-limite" style="font-weight: 600;">{{ t.fecha_limite }}</span>
+                                    </td>
+                                    <td>
+                                        {% if t.estado != 'completada' %}
+                                        <button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: var(--emerald);" onclick="completarTarea('{{ t.id }}')">
+                                            <i class="fa-solid fa-check"></i> Listo
+                                        </button>
+                                        {% else %}
+                                        <span class="badge badge-pro"><i class="fa-solid fa-circle-check"></i> completada</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Formulario de Creación de Tarea -->
+                    <div style="border-top: 1px solid var(--dark-border); padding-top: 20px; margin-top: 10px;">
+                        <h4 style="font-size: 13px; font-weight: 700; color: #FFF; margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> Crear Nueva Tarea Interna</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Título de Tarea</label>
+                                <input type="text" id="nueva-tarea-titulo" placeholder="Ej. Actualizar llaves SSL" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 10px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Responsable</label>
+                                <select id="nueva-tarea-responsable" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 10px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                                    <option value="admin">Admin</option>
+                                    <option value="soporte">Soporte</option>
+                                    <option value="mark">Mark</option>
+                                    <option value="jarvis">Jarvis</option>
+                                    <option value="antigravity">Antigravity</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Prioridad</label>
+                                <select id="nueva-tarea-prioridad" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 10px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                                    <option value="alta">Alta</option>
+                                    <option value="media">Media</option>
+                                    <option value="baja">Baja</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Fecha Límite</label>
+                                <input type="date" id="nueva-tarea-limite" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 10px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Descripción</label>
+                            <textarea id="nueva-tarea-descripcion" rows="2" placeholder="Detalles de la tarea..." style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 10px; border-radius: 8px; color: var(--text-main); font-size: 13px; font-family: inherit; resize: none;"></textarea>
+                        </div>
+                        <button class="btn-action" style="background: var(--emerald);" onclick="crearNuevaTarea()">
+                            <i class="fa-solid fa-circle-plus"></i> Registrar Tarea
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel de Agenda Diaria -->
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 25px; border-radius: 24px; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: #FFF; margin: 0;"><i class="fa-solid fa-clock"></i> Agenda de Hoy</h3>
+                        <button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid var(--cyan);" onclick="verificarAgendaDiaria()">
+                            <i class="fa-solid fa-arrows-spin"></i> Verificar
+                        </button>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 15px;" id="agenda-pasos-container">
+                        {% for a in agenda %}
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--dark-border); padding: 15px; border-radius: 16px; display: flex; gap: 12px; align-items: start;">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--cyan); background: rgba(0, 229, 255, 0.05); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(0, 229, 255, 0.1);">
+                                {{ a.hora }}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                                <span style="font-size: 13px; font-weight: 600; color: #FFF;">{{ a.actividad }}</span>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-user"></i> {{ a.responsable }}</span>
+                                    <span style="font-size: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--dark-border); padding: 1px 5px; border-radius: 4px; color: var(--text-muted);">{{ a.recurrencia }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge badge-pro" style="font-size: 9px; padding: 3px 6px;">activo</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- SECTION: Usuarios -->
         {% if rol == 'admin' %}
         <div id="sec-usuarios" class="content-section">
@@ -1139,6 +1310,7 @@
                     'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
                     'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución'],
                     'sec-onboarding': ['Guía de Onboarding Profundo', 'Seguimiento de activación paso a paso y alertas de estancamiento para clientes'],
+                    'sec-operacion': ['Operación Interna', 'Gestión de tareas internas, agenda diaria programada y auditoría operativa'],
                     'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice'],
                     'sec-integraciones': ['Mapeo de Integraciones', 'Estado de salud y validación de conexiones externas de la plataforma']
                 };
@@ -1510,6 +1682,231 @@
                 }
             } catch (err) {
                 alert('Error de red: ' + err.message);
+            }
+        }
+        async function cargarTareasFiltradas() {
+            const estado = document.getElementById('filtro-tarea-estado').value;
+            const responsable = document.getElementById('filtro-tarea-responsable').value;
+            const tbody = document.getElementById('tabla-tareas-cuerpo');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Filtrando tareas...</td></tr>';
+            
+            try {
+                let url = `/admin/api/tareas?estado=${estado}&responsable=${responsable}`;
+                const res = await fetch(url);
+                const result = await res.json();
+                
+                if (result.ok) {
+                    tbody.innerHTML = '';
+                    if (result.datos.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No se encontraron tareas con los filtros seleccionados.</td></tr>';
+                        return;
+                    }
+                    
+                    result.datos.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('data-task-id', t.id);
+                        tr.setAttribute('data-estado', t.estado);
+                        
+                        const prioClass = t.prioridad === 'alta' ? 'badge-open' : (t.prioridad === 'media' ? 'badge-demo' : 'badge-pro');
+                        
+                        let actionHTML = '';
+                        if (t.estado !== 'completada') {
+                            actionHTML = `<button class="btn-action" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; background: var(--emerald);" onclick="completarTarea('${t.id}')">
+                                <i class="fa-solid fa-check"></i> Listo
+                            </button>`;
+                        } else {
+                            actionHTML = `<span class="badge badge-pro"><i class="fa-solid fa-circle-check"></i> completada</span>`;
+                        }
+                        
+                        tr.innerHTML = `
+                            <td>
+                                <div class="client-info-cell">
+                                    <span class="client-name-bold">${t.titulo}</span>
+                                    <span class="client-subtext">${t.descripcion}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <code style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 12px; color: var(--cyan);">${t.responsable}</code>
+                            </td>
+                            <td>
+                                <span class="badge ${prioClass}">${t.prioridad}</span>
+                            </td>
+                            <td>
+                                <span style="font-weight: 600;">${t.fecha_limite}</span>
+                            </td>
+                            <td>
+                                ${actionHTML}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--rose); padding: 20px;">Error al cargar tareas: ${result.error}</td></tr>`;
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--rose); padding: 20px;">Error de red: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function completarTarea(taskId) {
+            try {
+                const res = await fetch('/admin/api/tareas/completar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: taskId })
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Tarea marcada como completada con éxito!');
+                    cargarTareasFiltradas();
+                } else {
+                    alert('Error completando tarea: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function crearNuevaTarea() {
+            const titulo = document.getElementById('nueva-tarea-titulo').value.trim();
+            const responsable = document.getElementById('nueva-tarea-responsable').value;
+            const prioridad = document.getElementById('nueva-tarea-prioridad').value;
+            const limite = document.getElementById('nueva-tarea-limite').value;
+            const descripcion = document.getElementById('nueva-tarea-descripcion').value.trim();
+            
+            if (!titulo || !limite) {
+                alert('Por favor, ingresa un título y una fecha límite para la tarea.');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/admin/api/tareas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        titulo: titulo,
+                        responsable: responsable,
+                        prioridad: prioridad,
+                        fecha_limite: limite,
+                        descripcion: descripcion,
+                        estado: 'pendiente'
+                    })
+                });
+                
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Nueva tarea registrada exitosamente!');
+                    document.getElementById('nueva-tarea-titulo').value = '';
+                    document.getElementById('nueva-tarea-descripcion').value = '';
+                    document.getElementById('nueva-tarea-limite').value = '';
+                    cargarTareasFiltradas();
+                } else {
+                    alert('Error creando tarea: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function verificarAgendaDiaria() {
+            try {
+                const res = await fetch('/admin/api/agenda/verificar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Agenda diaria verificada! Todas las actividades programadas para hoy se encuentran activas y en curso.');
+                } else {
+                    alert('Error verificando agenda: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        async function ejecutarAuditoriaOperativa() {
+            const panel = document.getElementById('panel-auditoria-resultados');
+            const badge = document.getElementById('auditoria-resumen-badge');
+            const detalles = document.getElementById('auditoria-detalles');
+            
+            panel.style.display = 'block';
+            detalles.innerHTML = '<div style="color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Ejecutando auditoría en caliente...</div>';
+            
+            try {
+                const res = await fetch('/admin/api/auditoria', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await res.json();
+                
+                if (result.ok) {
+                    const data = result.datos;
+                    badge.innerText = `${data.total_alertas} Alertas`;
+                    badge.className = data.total_alertas > 0 ? 'badge badge-open' : 'badge badge-pro';
+                    
+                    detalles.innerHTML = '';
+                    
+                    if (data.total_alertas === 0) {
+                        detalles.innerHTML = '<div style="color: var(--emerald); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Auditoría impecable. No se encontraron tareas vencidas, tickets retrasados ni onboarding estancado.</div>';
+                        return;
+                    }
+                    
+                    if (data.tareas_vencidas.length > 0) {
+                        const div = document.createElement('div');
+                        div.style.marginBottom = '10px';
+                        div.innerHTML = `<strong style="color: var(--rose);"><i class="fa-solid fa-list-check"></i> Tareas Vencidas (${data.tareas_vencidas.length}):</strong>`;
+                        const ul = document.createElement('ul');
+                        ul.style.margin = '5px 0 0 20px';
+                        ul.style.padding = '0';
+                        data.tareas_vencidas.forEach(t => {
+                            const li = document.createElement('li');
+                            li.style.color = '#FFF';
+                            li.innerHTML = `Tarea <code>${t.id}</code>: <strong>${t.titulo}</strong> asignada a <code>${t.responsable}</code> está vencida por <strong>${t.dias_retraso} días</strong>.`;
+                            ul.appendChild(li);
+                        });
+                        div.appendChild(ul);
+                        detalles.appendChild(div);
+                    }
+                    
+                    if (data.tickets_retrasados.length > 0) {
+                        const div = document.createElement('div');
+                        div.style.marginBottom = '10px';
+                        div.innerHTML = `<strong style="color: var(--rose);"><i class="fa-solid fa-ticket"></i> Tickets sin resolver > 48 horas (${data.tickets_retrasados.length}):</strong>`;
+                        const ul = document.createElement('ul');
+                        ul.style.margin = '5px 0 0 20px';
+                        ul.style.padding = '0';
+                        data.tickets_retrasados.forEach(tk => {
+                            const li = document.createElement('li');
+                            li.style.color = '#FFF';
+                            li.innerHTML = `Ticket <code>${tk.id}</code>: <strong>${tk.asunto}</strong> lleva abierto <strong>${tk.dias_abierto} días</strong>.`;
+                            ul.appendChild(li);
+                        });
+                        div.appendChild(ul);
+                        detalles.appendChild(div);
+                    }
+                    
+                    if (data.clientes_estancados.length > 0) {
+                        const div = document.createElement('div');
+                        div.style.marginBottom = '10px';
+                        div.innerHTML = `<strong style="color: var(--rose);"><i class="fa-solid fa-circle-check"></i> Clientes estancados en Onboarding > 7 días (${data.clientes_estancados.length}):</strong>`;
+                        const ul = document.createElement('ul');
+                        ul.style.margin = '5px 0 0 20px';
+                        ul.style.padding = '0';
+                        data.clientes_estancados.forEach(c => {
+                            const li = document.createElement('li');
+                            li.style.color = '#FFF';
+                            li.innerHTML = `Cliente <strong>${c.nombre}</strong> (ID: <code>${c.cliente_id}</code>) está estancado en el paso <code>${c.paso_id}</code> por <strong>${c.dias_estancado} días</strong>.`;
+                            ul.appendChild(li);
+                        });
+                        div.appendChild(ul);
+                        detalles.appendChild(div);
+                    }
+                } else {
+                    detalles.innerHTML = `<div style="color: var(--rose);">Error ejecutando auditoría: ${result.error}</div>`;
+                }
+            } catch (err) {
+                detalles.innerHTML = `<div style="color: var(--rose);">Error de red: ${err.message}</div>`;
             }
         }
     </script>

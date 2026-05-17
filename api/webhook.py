@@ -642,6 +642,10 @@ def admin_panel():
                 modulo_counts[mod] = modulo_counts.get(mod, 0) + 1
         modulos_mas_usados = sorted(modulo_counts.items(), key=lambda x: x[1], reverse=True)[:3]
 
+        # Cargar Tareas y Agenda
+        tareas = load_data("tareas.json", [])
+        agenda = load_data("agenda.json", [])
+
         template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "admin.html")
         with open(template_path, "r", encoding="utf-8") as f:
             template_content = f.read()
@@ -661,7 +665,9 @@ def admin_panel():
             metricas=metricas,
             integraciones=integraciones,
             clientes_onboarding=clientes_onboarding,
-            onboarding_template=onboarding_template
+            onboarding_template=onboarding_template,
+            tareas=tareas,
+            agenda=agenda
         )
     except Exception as e:
         print(f"[admin_panel] Error: {e}")
@@ -1231,6 +1237,239 @@ def admin_api_onboarding_verificar():
         onboarding["progreso"] = progreso
         save_data("onboarding.json", onboarding)
         return jsonify({"ok": True, "datos": progreso, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/tareas", methods=["GET", "POST"])
+@requires_auth
+def admin_api_tareas():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    if request.method == "GET":
+        try:
+            tareas = load_data("tareas.json", [])
+            estado_filter = request.args.get("estado")
+            responsable_filter = request.args.get("responsable")
+            
+            filtradas = []
+            for t in tareas:
+                if estado_filter and t.get("estado") != estado_filter:
+                    continue
+                if responsable_filter and t.get("responsable") != responsable_filter:
+                    continue
+                filtradas.append(t)
+                
+            return jsonify({"ok": True, "datos": filtradas, "error": None}), 200
+        except Exception as e:
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+    elif request.method == "POST":
+        try:
+            data = request.get_json(silent=True) or {}
+            tareas = load_data("tareas.json", [])
+            task_id = data.get("id")
+            
+            if task_id:
+                encontrada = False
+                for t in tareas:
+                    if t.get("id") == task_id:
+                        t["titulo"] = data.get("titulo", t["titulo"])
+                        t["descripcion"] = data.get("descripcion", t["descripcion"])
+                        t["responsable"] = data.get("responsable", t["responsable"])
+                        t["prioridad"] = data.get("prioridad", t["prioridad"])
+                        t["estado"] = data.get("estado", t["estado"])
+                        t["fecha_limite"] = data.get("fecha_limite", t["fecha_limite"])
+                        encontrada = True
+                        break
+                if not encontrada:
+                    return jsonify({"ok": False, "datos": None, "error": "Tarea no encontrada"}), 404
+            else:
+                task_id = f"t{len(tareas) + 1}"
+                new_task = {
+                    "id": task_id,
+                    "titulo": data.get("titulo", "Nueva Tarea"),
+                    "descripcion": data.get("descripcion", ""),
+                    "responsable": data.get("responsable", "admin"),
+                    "prioridad": data.get("prioridad", "media"),
+                    "estado": data.get("estado", "pendiente"),
+                    "fecha_creacion": datetime.now().strftime("%Y-%m-%d"),
+                    "fecha_limite": data.get("fecha_limite", datetime.now().strftime("%Y-%m-%d"))
+                }
+                tareas.append(new_task)
+                
+            save_data("tareas.json", tareas)
+            return jsonify({"ok": True, "datos": tareas, "error": None}), 200
+        except Exception as e:
+            return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/tareas/completar", methods=["POST"])
+@requires_auth
+def admin_api_tareas_completar():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        data = request.get_json(silent=True) or {}
+        task_id = data.get("id")
+        if not task_id:
+            return jsonify({"ok": False, "datos": None, "error": "Falta id de tarea"}), 400
+            
+        tareas = load_data("tareas.json", [])
+        encontrada = False
+        for t in tareas:
+            if t.get("id") == task_id:
+                t["estado"] = "completada"
+                t["fecha_completada"] = datetime.now().strftime("%Y-%m-%d")
+                encontrada = True
+                break
+                
+        if not encontrada:
+            return jsonify({"ok": False, "datos": None, "error": "Tarea no encontrada"}), 404
+            
+        save_data("tareas.json", tareas)
+        return jsonify({"ok": True, "datos": tareas, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/agenda", methods=["GET"])
+@requires_auth
+def admin_api_agenda():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        agenda = load_data("agenda.json", [])
+        activos = [a for a in agenda if a.get("activo")]
+        return jsonify({"ok": True, "datos": activos, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/agenda/verificar", methods=["POST"])
+@requires_auth
+def admin_api_agenda_verificar():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        agenda = load_data("agenda.json", [])
+        hallazgos = []
+        for a in agenda:
+            if a.get("activo"):
+                hallazgos.append({
+                    "actividad": a.get("actividad"),
+                    "responsable": a.get("responsable"),
+                    "verificado": True,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                })
+        return jsonify({"ok": True, "datos": hallazgos, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/auditoria", methods=["POST"])
+@requires_auth
+def admin_api_auditoria():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol != "admin":
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        today = datetime.now()
+        
+        tareas = load_data("tareas.json", [])
+        tareas_vencidas = []
+        for t in tareas:
+            if t.get("estado") != "completada" and t.get("fecha_limite"):
+                try:
+                    limite = datetime.strptime(t["fecha_limite"], "%Y-%m-%d")
+                    if limite < today:
+                        dias = (today - limite).days
+                        tareas_vencidas.append({
+                            "id": t.get("id"),
+                            "titulo": t.get("titulo"),
+                            "responsable": t.get("responsable"),
+                            "dias_retraso": dias
+                        })
+                except:
+                    pass
+                    
+        tickets = load_data("tickets.json", [])
+        tickets_retrasados = []
+        for tk in tickets:
+            if tk.get("estado") in ("abierto", "en_progreso") and tk.get("fecha_creacion"):
+                try:
+                    creacion = datetime.strptime(tk["fecha_creacion"], "%Y-%m-%d")
+                    dias = (today - creacion).days
+                    if dias >= 2:
+                        tickets_retrasados.append({
+                            "id": tk.get("id"),
+                            "asunto": tk.get("asunto"),
+                            "dias_abierto": dias
+                        })
+                except:
+                    pass
+                    
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        progreso = onboarding.get("progreso", {})
+        clientes = load_data("clientes.json", [])
+        clientes_estancados = []
+        
+        for c in clientes:
+            c_id = c.get("id")
+            if c_id in progreso:
+                for cp in progreso[c_id]:
+                    if cp.get("estado") == "pendiente" and cp.get("ultima_actualizacion"):
+                        try:
+                            act = datetime.strptime(cp["ultima_actualizacion"], "%Y-%m-%d")
+                            dias = (today - act).days
+                            if dias > 7:
+                                clientes_estancados.append({
+                                    "cliente_id": c_id,
+                                    "nombre": c.get("nombre", "Cliente"),
+                                    "paso_id": cp.get("id"),
+                                    "dias_estancado": dias
+                                })
+                        except:
+                            pass
+        
+        reporte = {
+            "fecha_auditoria": today.strftime("%Y-%m-%d %H:%M:%S"),
+            "tareas_vencidas": tareas_vencidas,
+            "tickets_retrasados": tickets_retrasados,
+            "clientes_estancados": clientes_estancados,
+            "total_alertas": len(tareas_vencidas) + len(tickets_retrasados) + len(clientes_estancados)
+        }
+        
+        return jsonify({"ok": True, "datos": reporte, "error": None}), 200
     except Exception as e:
         return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 

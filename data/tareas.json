@@ -1,0 +1,52 @@
+[
+  {
+    "id": "t1",
+    "titulo": "Revisar logs de WhatsApp API",
+    "descripcion": "Verificar la latencia y tasa de entrega de mensajes salientes de Cecilia en Meta Graph API.",
+    "responsable": "soporte",
+    "prioridad": "alta",
+    "estado": "en_progreso",
+    "fecha_creacion": "2026-05-10",
+    "fecha_limite": "2026-05-18"
+  },
+  {
+    "id": "t2",
+    "titulo": "Renovación de llaves sandbox Culqi",
+    "descripcion": "Renovar las credenciales de prueba de Culqi para el plan Diamante y pasarela de pruebas.",
+    "responsable": "admin",
+    "prioridad": "media",
+    "estado": "pendiente",
+    "fecha_creacion": "2026-05-12",
+    "fecha_limite": "2026-05-20"
+  },
+  {
+    "id": "t3",
+    "titulo": "Sincronización de base FAQ médica",
+    "descripcion": "Validar y afinar las respuestas automatizadas de Cecilia en el rubro médico y residencial.",
+    "responsable": "antigravity",
+    "prioridad": "alta",
+    "estado": "pendiente",
+    "fecha_creacion": "2026-05-15",
+    "fecha_limite": "2026-05-16"
+  },
+  {
+    "id": "t4",
+    "titulo": "Revisión mensual de base de datos SQLite",
+    "descripcion": "Optimizar índices y limpiar logs de auditoría antiguos en axyntrax.db.",
+    "responsable": "jarvis",
+    "prioridad": "baja",
+    "estado": "pendiente",
+    "fecha_creacion": "2026-05-01",
+    "fecha_limite": "2026-05-14"
+  },
+  {
+    "id": "t5",
+    "titulo": "Configurar proveedor transaccional de Email",
+    "descripcion": "Habilitar plantillas y verificar registros SPF/DKIM para el envío de facturas automáticas.",
+    "responsable": "mark",
+    "prioridad": "media",
+    "estado": "completada",
+    "fecha_creacion": "2026-05-05",
+    "fecha_limite": "2026-05-15"
+  }
+]
