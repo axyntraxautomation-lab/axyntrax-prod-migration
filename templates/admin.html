@@ -195,6 +195,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
             transition: all 0.3s ease;
         }
 
@@ -401,6 +402,9 @@
                 <li class="nav-item active" data-target="sec-resumen">
                     <a href="#resumen"><i class="fa-solid fa-chart-pie"></i>Resumen</a>
                 </li>
+                <li class="nav-item" data-target="sec-metricas">
+                    <a href="#metricas"><i class="fa-solid fa-chart-column"></i>Métricas</a>
+                </li>
                 <li class="nav-item" data-target="sec-clientes">
                     <a href="#clientes"><i class="fa-solid fa-users"></i>Clientes</a>
                 </li>
@@ -539,6 +543,129 @@
                         </li>
                         {% endfor %}
                     </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- SECTION: Métricas (Solo para Admin) -->
+        {% if rol == 'admin' %}
+        <div id="sec-metricas" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-chart-column"></i>Métricas Ejecutivas y Rendimiento</h2>
+            </div>
+
+            <!-- Panel 1: Uso diario de módulos -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--dark-border); border-radius: 20px; padding: 25px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700;"><i class="fa-solid fa-cubes text-cyan"></i> Uso Diario de Módulos (Últimos 7 Días)</h3>
+                    <a href="/admin/api/metricas/exportar?panel=uso_diario" class="btn-action" style="padding: 8px 16px; font-size: 12px; border-radius: 8px;">
+                        <i class="fa-solid fa-download"></i> Exportar CSV
+                    </a>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    {% for i in range(metricas.uso_diario.dias|length) %}
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+                            <span>{{ metricas.uso_diario.dias[i] }}</span>
+                            <span>Cecilia: <strong>{{ metricas.uso_diario.consultas_cecilia[i] }}</strong> | WhatsApp: <strong>{{ metricas.uso_diario.mensajes_whatsapp[i] }}</strong> | Activaciones: <strong>{{ metricas.uso_diario.activaciones_por_dia[i] }}</strong></span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: flex; gap: 2px;">
+                            <div style="width: {{ [metricas.uso_diario.consultas_cecilia[i] * 0.5, 100]|min }}%; background: var(--cyan); height: 100%;"></div>
+                            <div style="width: {{ [metricas.uso_diario.mensajes_whatsapp[i] * 0.2, 100]|min }}%; background: var(--emerald); height: 100%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Panel 2: Funnel de conversión -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--dark-border); border-radius: 20px; padding: 25px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700;"><i class="fa-solid fa-filter text-amber"></i> Funnel de Conversión Comercial</h3>
+                    <a href="/admin/api/metricas/exportar?panel=funnel" class="btn-action" style="padding: 8px 16px; font-size: 12px; border-radius: 8px;">
+                        <i class="fa-solid fa-download"></i> Exportar CSV
+                    </a>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 20px; padding: 10px 0;">
+                    <!-- Visitas -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span><strong>1. Visitas Totales</strong></span>
+                            <span>{{ metricas.funnel.visitas }} (100%)</span>
+                        </div>
+                        <div style="width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden;">
+                            <div style="width: 100%; background: var(--cyan); height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Registros -->
+                    <div>
+                        {% set p_reg = ((metricas.funnel.registros / metricas.funnel.visitas) * 100)|round(1) %}
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span><strong>2. Registros</strong></span>
+                            <span>{{ metricas.funnel.registros }} ({{ p_reg }}%)</span>
+                        </div>
+                        <div style="width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden;">
+                            <div style="width: {{ p_reg }}%; background: var(--emerald); height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Demos -->
+                    <div>
+                        {% set p_demo = ((metricas.funnel.demos / metricas.funnel.registros) * 100)|round(1) %}
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span><strong>3. Demos Iniciadas</strong></span>
+                            <span>{{ metricas.funnel.demos }} ({{ p_demo }}%)</span>
+                        </div>
+                        <div style="width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden;">
+                            <div style="width: {{ p_demo }}%; background: var(--amber); height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Activaciones -->
+                    <div>
+                        {% set p_act = ((metricas.funnel.activaciones / metricas.funnel.demos) * 100)|round(1) %}
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span><strong>4. Módulos Activados</strong></span>
+                            <span>{{ metricas.funnel.activaciones }} ({{ p_act }}%)</span>
+                        </div>
+                        <div style="width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden;">
+                            <div style="width: {{ p_act }}%; background: rgba(139, 92, 246, 0.7); height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Pago -->
+                    <div>
+                        {% set p_pago = ((metricas.funnel.plan_pago / metricas.funnel.activaciones) * 100)|round(1) %}
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span><strong>5. Planes de Pago</strong></span>
+                            <span>{{ metricas.funnel.plan_pago }} ({{ p_pago }}%)</span>
+                        </div>
+                        <div style="width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden;">
+                            <div style="width: {{ p_pago }}%; background: var(--rose); height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: Retención y Churn -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--dark-border); border-radius: 20px; padding: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700;"><i class="fa-solid fa-arrows-spin text-rose"></i> Retención y Cancelaciones</h3>
+                    <a href="/admin/api/metricas/exportar?panel=retencion" class="btn-action" style="padding: 8px 16px; font-size: 12px; border-radius: 8px;">
+                        <i class="fa-solid fa-download"></i> Exportar CSV
+                    </a>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Clientes Activos (Renuevan)</div>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--emerald);">{{ metricas.retencion.renuevan }}</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Clientes Cancelados</div>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--rose);">{{ metricas.retencion.cancelan }}</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Tasa de Churn Mensual</div>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--amber);">{{ metricas.retencion.tasa_churn }}%</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -774,9 +901,10 @@
                 // Header text updates
                 const titleMap = {
                     'sec-resumen': ['Panel de Control', 'Monitoreo y administración general de clientes y activaciones'],
+                    'sec-metricas': ['Métricas Ejecutivas', 'Monitoreo de uso de módulos, retención y funnel comercial'],
                     'sec-clientes': ['Fichas de Clientes', 'Gestión de cartera B2B, planes y renovaciones de licencia'],
                     'sec-facturacion': ['Facturas y Cobranzas', 'Historial de comprobantes de pago y estados de transacciones'],
-                    'sec-activaciones': ['Módulos y Licencias', 'Control de llaves de activación por módulo'],
+                    'sec-activaciones': ['Módulos and Licencias', 'Control de llaves de activación por módulo'],
                     'sec-soporte': ['Mesa de Ayuda', 'Tickets de soporte técnico y estado de resolución'],
                     'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice']
                 };
