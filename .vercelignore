@@ -40,3 +40,5 @@ advanced_integration/
 extracted_dashboard/
 functions/
 scratch/
+dist/
+visual-tests/
