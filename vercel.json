@@ -23,7 +23,7 @@
       }
     },
     { 
-      "src": "/admin/api/data", 
+      "src": "/admin/api/(.*)", 
       "dest": "/api/webhook.py",
       "headers": {
         "Content-Security-Policy": "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https:; font-src 'self' https: data:; frame-ancestors 'none';",
