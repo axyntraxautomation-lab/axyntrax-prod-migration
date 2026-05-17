@@ -1,6 +1,9 @@
 import os
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+
 import requests
+import stripe
 from flask import Flask, request, jsonify, redirect
 
 app = Flask(__name__)
@@ -22,6 +25,30 @@ VERIFY_TOKEN = os.getenv("META_VERIFY_TOKEN") or os.getenv("WH_VERIFY_TOKEN", "A
 ACCESS_TOKEN = os.getenv("WSP_ACCESS_TOKEN") or os.getenv("WHATSAPP_TOKEN")
 PHONE_ID = os.getenv("WSP_PHONE_NUMBER_ID", "1156622220859055")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").rstrip("/")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
+
+PLAN_ALIASES = {
+    "starter": "starter",
+    "pro": "pro",
+    "pro_cloud": "pro",
+    "cloud": "pro",
+    "diamante": "diamante",
+    "diamond": "diamante",
+}
+PLAN_BY_AMOUNT_PEN = {
+    PRICE_STARTER: "starter",
+    PRICE_PRO: "pro",
+    PRICE_DIAMANTE: "diamante",
+    PRICE_STARTER * 100: "starter",
+    PRICE_PRO * 100: "pro",
+    PRICE_DIAMANTE * 100: "diamante",
+}
 
 SYSTEM_PROMPT = f"""Eres Cecilia, la IA orquestadora de AXYNTRAX Automation Suite.
 Vendes automatización B2B para PYMES peruanas. Tono profesional, cálido, orientado a cierre.
@@ -108,6 +135,130 @@ def llamar_deepseek(mensaje_usuario: str) -> str:
         return CECILIA_FALLBACK
 
 
+def supabase_headers(prefer: str = "return=representation") -> Dict[str, str]:
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise RuntimeError("Supabase no configurado")
+    return {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": prefer,
+    }
+
+
+def normalizar_plan(raw: Optional[str], amount: Optional[int] = None) -> str:
+    if raw:
+        key = str(raw).strip().lower().replace(" ", "_")
+        if key in PLAN_ALIASES:
+            return PLAN_ALIASES[key]
+    if amount is not None and amount in PLAN_BY_AMOUNT_PEN:
+        return PLAN_BY_AMOUNT_PEN[amount]
+    return "starter"
+
+
+def registrar_pago_supabase(
+    email: str,
+    whatsapp: Optional[str],
+    plan: str,
+    amount: int,
+    status: str,
+    payment_intent_id: str,
+) -> None:
+    if not email:
+        print("[Supabase] email vacío, se omite registro")
+        return
+
+    demo_expires = (datetime.now(timezone.utc) + timedelta(days=DEMO_DAYS)).isoformat()
+    user_payload = {
+        "email": email.strip().lower(),
+        "whatsapp": whatsapp,
+        "plan": plan,
+        "demo_expires_at": demo_expires,
+    }
+    user_res = requests.post(
+        f"{SUPABASE_URL}/rest/v1/users?on_conflict=email",
+        headers=supabase_headers("resolution=merge-duplicates,return=representation"),
+        json=user_payload,
+        timeout=15,
+    )
+    if user_res.status_code >= 400:
+        print(f"[Supabase/users] {user_res.status_code} {user_res.text}")
+        return
+
+    rows = user_res.json()
+    user_id = rows[0]["id"] if isinstance(rows, list) and rows else None
+    if not user_id:
+        print("[Supabase] no se obtuvo user_id")
+        return
+
+    existing = requests.get(
+        f"{SUPABASE_URL}/rest/v1/payments",
+        headers=supabase_headers(),
+        params={
+            "stripe_payment_intent": f"eq.{payment_intent_id}",
+            "select": "id",
+            "limit": "1",
+        },
+        timeout=15,
+    )
+    if existing.ok and existing.json():
+        print(f"[Supabase] pago ya registrado: {payment_intent_id}")
+        return
+
+    pay_res = requests.post(
+        f"{SUPABASE_URL}/rest/v1/payments",
+        headers=supabase_headers(),
+        json={
+            "user_id": user_id,
+            "amount": amount,
+            "status": status,
+            "stripe_payment_intent": payment_intent_id,
+        },
+        timeout=15,
+    )
+    if pay_res.status_code >= 400:
+        print(f"[Supabase/payments] {pay_res.status_code} {pay_res.text}")
+
+
+def extraer_datos_stripe(event: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    event_type = event.get("type", "")
+    obj = (event.get("data") or {}).get("object") or {}
+    metadata = obj.get("metadata") or {}
+
+    if event_type == "checkout.session.completed":
+        email = (
+            obj.get("customer_email")
+            or (obj.get("customer_details") or {}).get("email")
+            or metadata.get("email")
+        )
+        amount = int(obj.get("amount_total") or 0)
+        payment_intent_id = obj.get("payment_intent") or obj.get("id")
+        return {
+            "email": email,
+            "whatsapp": metadata.get("whatsapp"),
+            "plan": normalizar_plan(metadata.get("plan"), amount),
+            "amount": amount,
+            "status": "paid",
+            "payment_intent_id": str(payment_intent_id),
+        }
+
+    if event_type in ("payment_intent.succeeded", "payment_intent.payment_failed"):
+        charges = (obj.get("charges") or {}).get("data") or []
+        billing = (charges[0].get("billing_details") if charges else {}) or {}
+        email = billing.get("email") or metadata.get("email")
+        amount = int(obj.get("amount") or 0)
+        return {
+            "email": email,
+            "whatsapp": metadata.get("whatsapp"),
+            "plan": normalizar_plan(metadata.get("plan"), amount),
+            "amount": amount,
+            "status": "paid" if event_type == "payment_intent.succeeded" else "failed",
+            "payment_intent_id": str(obj.get("id")),
+        }
+
+    return None
+
+
 def enviar_whatsapp(num: str, texto: str) -> None:
     if not ACCESS_TOKEN:
         print("[WhatsApp] Falta WSP_ACCESS_TOKEN o WHATSAPP_TOKEN")
@@ -159,6 +310,39 @@ def webhook_whatsapp():
     except Exception as e:
         print(f"[webhook POST] {e}")
         return jsonify({"status": "ok"}), 200
+
+
+@app.route("/api/stripe-webhook", methods=["POST"])
+def stripe_webhook():
+    payload = request.get_data()
+    sig_header = request.headers.get("Stripe-Signature", "")
+
+    if not STRIPE_WEBHOOK_SECRET:
+        print("[Stripe] Falta STRIPE_WEBHOOK_SECRET")
+        return jsonify({"error": "webhook no configurado"}), 503
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except ValueError:
+        return jsonify({"error": "payload inválido"}), 400
+    except stripe.SignatureVerificationError:
+        return jsonify({"error": "firma inválida"}), 400
+
+    datos = extraer_datos_stripe(event)
+    if datos and datos.get("email") and datos.get("payment_intent_id"):
+        try:
+            registrar_pago_supabase(
+                email=datos["email"],
+                whatsapp=datos.get("whatsapp"),
+                plan=datos["plan"],
+                amount=datos["amount"],
+                status=datos["status"],
+                payment_intent_id=datos["payment_intent_id"],
+            )
+        except Exception as e:
+            print(f"[Stripe/Supabase] {e}")
+
+    return jsonify({"received": True}), 200
 
 
 @app.route("/api/cecilia/chat", methods=["POST"])

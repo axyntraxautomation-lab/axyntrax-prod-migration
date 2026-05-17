@@ -23,3 +23,5 @@ reportes/
 .vercel/
 .env
 .env.production
+
+.vercel
