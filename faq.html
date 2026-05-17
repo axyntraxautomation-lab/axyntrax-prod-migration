@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -45,6 +45,7 @@
                 <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
                 <a href="faq.html" class="hover:text-cyan transition-colors text-cyan">FAQ</a>
                 <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+                <a href="/dashboard" class="px-3 py-1 border border-cyan/30 rounded-lg text-cyan hover:bg-cyan/10 transition-all"><i class="fa-solid fa-user-gear"></i> Portal</a>
             </div>
             <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">SOLICITAR ACTIVACIÓN</a>
         </div>
@@ -55,70 +56,24 @@
             <h1 class="text-5xl font-bold mb-4">Preguntas <span class="text-cyan">Frecuentes</span></h1>
             <p class="text-gray-400">Todo lo que necesitas saber sobre nuestra suite de automatización.</p>
         </div>
-    </section>
-
-    <section class="pb-32 px-6">
+    </section>    <section class="pb-32 px-6">
         <div class="max-w-3xl mx-auto space-y-12">
-            
             <div>
                 <h3 class="text-xs font-bold text-cyan uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
-                    <span class="w-8 h-[1px] bg-cyan/30"></span> GENERAL
+                    <span class="w-8 h-[1px] bg-cyan/30"></span> PREGUNTAS FRECUENTES (FAQ)
                 </h3>
-                <div class="space-y-4">
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Qué es Axyntrax Automation?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Es un ecosistema de software modular basado en IA diseñado para automatizar los procesos operativos y de atención de PYMES peruanas.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Para qué tipo de empresas es?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Nuestros módulos están especializados en talleres mecánicos, clínicas dentales, retail, inmobiliarias, restaurantes y servicios profesionales.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Necesito conocimientos técnicos?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">No. El sistema es plug-and-play y nuestra IA Cecilia te guía en la configuración inicial en menos de 10 minutos.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Tienen soporte en español?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Sí, el soporte técnico es 100% en español y local desde Perú para garantizar una comunicación fluida.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Funciona sin internet?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Los módulos Windows pueden registrar datos localmente, pero requieren internet para sincronizar reportes, facturar a SUNAT y usar los agentes de IA.</div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-xs font-bold text-cyan uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
-                    <span class="w-8 h-[1px] bg-cyan/30"></span> DEMO Y REGISTRO
-                </h3>
-                <div class="space-y-4">
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Cómo funciona la demo de 30 días?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Te registras, recibes tu KEY y tienes acceso completo a las funciones básicas de hasta 3 módulos durante 30 días sin costo.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Necesito tarjeta de crédito?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">No. La demo es 100% gratuita y no solicitamos datos de pago para probar el sistema.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Puedo probar más de un módulo?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Sí, la demo te permite seleccionar y utilizar hasta 3 módulos simultáneamente para que veas la integración total.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Qué pasa cuando vence la demo?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">El sistema se bloqueará. Podrás elegir un plan para reactivar tu cuenta y conservar todos los datos registrados durante la prueba.</div>
-                    </div>
-                    <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Cómo recibo mi KEY?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">La KEY se genera automáticamente y se envía a tu correo electrónico y por WhatsApp tras completar el registro.</div>
-                    </div>
+                <div id="faq-container" class="space-y-4">
+                    <!-- Loaded dynamically from API -->
+                    <div class="text-center text-gray-500 py-10">Cargando preguntas frecuentes...</div>
                 </div>
             </div>
 
             <div class="text-center pt-10 border-t border-white/5">
                 <p class="text-gray-500 text-sm mb-6">¿No encontraste tu respuesta?</p>
                 <button type="button" onclick="window.cecilia && window.cecilia.toggleWindow()" class="px-8 py-3 cyan-gradient text-dark font-black rounded-xl hover:scale-105 transition-transform">Habla con Cecilia</button>
+            </div>
+        </div>
+    </section>
             </div>
         </div>
     </section>
@@ -167,6 +122,52 @@
             items.forEach(item => { if (item !== element) item.classList.remove('active'); });
             element.classList.toggle('active');
         }
+
+        async function cargarFAQs() {
+            const container = document.getElementById('faq-container');
+            try {
+                const res = await fetch('/api/faq');
+                if (res.ok) {
+                    const payload = await res.json();
+                    const list = payload.datos || payload;
+                    if (Array.isArray(list) && list.length > 0) {
+                        container.innerHTML = '';
+                        list.forEach(faq => {
+                            const div = document.createElement('div');
+                            div.className = 'accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer';
+                            div.onclick = function() { toggleAccordion(this); };
+                            div.innerHTML = `
+                                <div class="flex justify-between items-center font-bold text-sm">
+                                    ${faq.pregunta}
+                                    <i class="fa-solid fa-chevron-down text-cyan text-xs"></i>
+                                </div>
+                                <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">
+                                    ${faq.respuesta}
+                                </div>
+                            `;
+                            container.appendChild(div);
+                        });
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("Error cargando FAQs:", err);
+            }
+            
+            // Fallback en caso de error o static
+            container.innerHTML = `
+                <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
+                    <div class="flex justify-between items-center font-bold text-sm">¿Qué es AXYNTRAX Automation?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
+                    <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">AXYNTRAX is a platform SaaS of automatización empresarial impulsada por IA para PYMES peruanas. Centraliza tu comunicación por WhatsApp Business y automatiza flujos comerciales mediante agentes inteligentes especializados.</div>
+                </div>
+                <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
+                    <div class="flex justify-between items-center font-bold text-sm">¿Cuáles son los planes de precios disponibles?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
+                    <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Ofrecemos tres planes flexibles con IGV incluido: Starter (S/ 199/mes), Pro Cloud (S/ 399/mes) y Diamante (S/ 799/mes). El precio oficial de entrada unificado para campañas y accesos básicos es de S/ 235.</div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarFAQs);
     </script>
 </body>
 </html>

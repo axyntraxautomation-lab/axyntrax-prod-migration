@@ -429,6 +429,9 @@
                 <li class="nav-item" data-target="sec-usuarios">
                     <a href="#usuarios"><i class="fa-solid fa-user-gear"></i>Usuarios</a>
                 </li>
+                <li class="nav-item" data-target="sec-publicidad">
+                    <a href="#publicidad"><i class="fa-solid fa-rectangle-ad"></i>Publicidad</a>
+                </li>
                 {% else %}
                 <li class="nav-item active" data-target="sec-clientes">
                     <a href="#clientes"><i class="fa-solid fa-users"></i>Clientes</a>
@@ -438,6 +441,9 @@
                 </li>
                 <li class="nav-item" data-target="sec-onboarding">
                     <a href="#onboarding"><i class="fa-solid fa-circle-check"></i>Onboarding</a>
+                </li>
+                <li class="nav-item" data-target="sec-publicidad">
+                    <a href="#publicidad"><i class="fa-solid fa-rectangle-ad"></i>Publicidad</a>
                 </li>
                 {% endif %}
             </ul>
@@ -782,7 +788,53 @@
         <div id="sec-facturacion" class="content-section">
             <div class="section-header">
                 <h2 class="section-title"><i class="fa-solid fa-file-invoice-dollar"></i>Facturación y Cobranzas</h2>
+                
+                <div style="display: flex; gap: 10px;">
+                    <select id="filtro-factura-estado" onchange="filtrarFacturasAdmin()" style="background: var(--dark-card); border: 1px solid var(--dark-border); padding: 8px 12px; border-radius: 8px; color: var(--text-main); font-size: 13px;">
+                        <option value="todos">Todos los Estados</option>
+                        <option value="pagado">Pagados</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="fallido">Fallidos</option>
+                    </select>
+                </div>
             </div>
+
+            <!-- Resumen de Ingresos Consolidados -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2);">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; text-transform: uppercase;">Ingresos Consolidados (Soles)</span>
+                        <strong style="font-size: 20px; color: #FFF;" id="consolidado-total-ingresos">
+                            S/ {% set total_pagado = namespace(val=0) %}
+                               {% for f in facturacion %}
+                                   {% if f.estado == 'pagado' %}
+                                       {% set total_pagado.val = total_pagado.val + f.monto %}
+                                   {% endif %}
+                               {% endfor %}
+                               {{ "%.2f"|format(total_pagado.val) }}
+                        </strong>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2);">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; text-transform: uppercase;">Facturas Pendientes</span>
+                        <strong style="font-size: 20px; color: #FFF;" id="consolidado-total-pendientes">
+                            {% set total_pendiente = namespace(val=0) %}
+                            {% for f in facturacion %}
+                                {% if f.estado == 'pendiente' %}{% set total_pendiente.val = total_pendiente.val + 1 %}{% endif %}
+                            {% endfor %}
+                            {{ total_pendiente.val }} pendientes
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-container">
                 <table>
                     <thead>
@@ -796,13 +848,13 @@
                     </thead>
                     <tbody>
                         {% for f in facturacion %}
-                        <tr>
+                        <tr class="fila-factura-admin" data-estado="{{ f.estado }}">
                             <td><strong>{{ f.nro_comprobante }}</strong></td>
                             <td>{{ f.cliente_id }}</td>
                             <td><strong>S/ {{ "%.2f"|format(f.monto) }}</strong></td>
                             <td>{{ f.fecha_emision }}</td>
                             <td>
-                                <span class="badge {% if f.estado == 'pagado' %}badge-paid{% else %}badge-unpaid{% endif %}">
+                                <span class="badge {% if f.estado == 'pagado' %}badge-paid{% elif f.estado == 'pendiente' %}badge-demo{% else %}badge-unpaid{% endif %}">
                                     {{ f.estado }}
                                 </span>
                             </td>
@@ -1237,6 +1289,102 @@
             </div>
         </div>
         {% endif %}
+
+        <!-- SECTION: Publicidad (Admin) -->
+        <div id="sec-publicidad" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fa-solid fa-rectangle-ad"></i>Gestión de Campañas Publicitarias</h2>
+                <div style="display: flex; gap: 10px;">
+                    <select id="filtro-publicidad-cliente" style="background: var(--dark); border: 1px solid var(--dark-border); padding: 8px 12px; border-radius: 8px; color: var(--text-main); font-size: 13px;" onchange="filtrarPublicidadAdmin()">
+                        <option value="todos">Todos los clientes</option>
+                        {% for c in clientes %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="filtro-publicidad-estado" style="background: var(--dark); border: 1px solid var(--dark-border); padding: 8px 12px; border-radius: 8px; color: var(--text-main); font-size: 13px;" onchange="filtrarPublicidadAdmin()">
+                        <option value="todos">Todos los estados</option>
+                        <option value="borrador">Borrador</option>
+                        <option value="activa">Activa</option>
+                        <option value="pausada">Pausada</option>
+                        <option value="finalizada">Finalizada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Campaña</th>
+                            <th>Canal</th>
+                            <th>Presupuesto</th>
+                            <th>Métricas (Imp / Clics / Conv)</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-publicidad-cuerpo">
+                        {% for c in publicidad %}
+                        <tr class="fila-publicidad" data-cliente-id="{{ c.cliente_id }}" data-estado="{{ c.estado }}" data-campana-id="{{ c.id }}">
+                            <td>
+                                {% set cliente_nombre = 'Cliente Desconocido' %}
+                                {% for cl in clientes %}
+                                    {% if cl.id == c.cliente_id %}
+                                        {% set cliente_nombre = cl.nombre %}
+                                    {% endif %}
+                                {% endfor %}
+                                <strong>{{ cliente_nombre }}</strong>
+                                <div style="font-size: 11px; color: var(--text-muted);">ID: {{ c.cliente_id }}</div>
+                            </td>
+                            <td>
+                                <strong>{{ c.nombre }}</strong>
+                                <div style="font-size: 11px; color: var(--text-muted);">Creado: {{ c.fecha_creacion }}</div>
+                            </td>
+                            <td>
+                                <span class="badge" style="text-transform: uppercase; background: rgba(255,255,255,0.05); color: #FFF;">{{ c.canal }}</span>
+                            </td>
+                            <td><strong>S/ {{ "%.2f"|format(c.presupuesto) }}</strong></td>
+                            <td>
+                                <div style="display: flex; gap: 15px; font-size: 13px;">
+                                    <span>👁️ <span class="col-imp">{{ c.impresiones }}</span></span>
+                                    <span>🖱️ <span class="col-clics">{{ c.clics }}</span></span>
+                                    <span>🎯 <span class="col-conv">{{ c.conversiones }}</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-estado-pub {% if c.estado == 'activa' %}badge-paid{% elif c.estado == 'pausada' %}badge-demo{% elif c.estado == 'finalizada' %}badge-unpaid{% else %}badge-resolved{% endif %}">
+                                    {{ c.estado }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    {% if c.estado != 'activa' %}
+                                    <button class="btn-action" style="padding: 6px 10px; font-size: 11px; border-radius: 8px; background: var(--emerald);" onclick="cambiarEstadoCampana('{{ c.id }}', '{{ c.cliente_id }}', 'activa')">
+                                        Activar
+                                    </button>
+                                    {% endif %}
+                                    {% if c.estado == 'activa' %}
+                                    <button class="btn-action" style="padding: 6px 10px; font-size: 11px; border-radius: 8px; background: var(--amber);" onclick="cambiarEstadoCampana('{{ c.id }}', '{{ c.cliente_id }}', 'pausada')">
+                                        Pausar
+                                    </button>
+                                    {% endif %}
+                                    {% if c.estado != 'finalizada' %}
+                                    <button class="btn-action" style="padding: 6px 10px; font-size: 11px; border-radius: 8px; background: var(--rose);" onclick="cambiarEstadoCampana('{{ c.id }}', '{{ c.cliente_id }}', 'finalizada')">
+                                        Finalizar
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn-action" style="padding: 6px 10px; font-size: 11px; border-radius: 8px; background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid var(--cyan);" onclick="abrirModalMetricas('{{ c.id }}', '{{ c.cliente_id }}', '{{ c.impresiones }}', '{{ c.clics }}', '{{ c.conversiones }}')">
+                                        Métricas
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <!-- Modal de Gestión de Tickets -->
@@ -1288,6 +1436,38 @@
         </div>
     </div>
 
+    <!-- Modal de Gestión de Métricas de Publicidad -->
+    <div id="modal-publicidad" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--dark-card); border: 1px solid var(--dark-border); padding: 30px; border-radius: 24px; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px; font-weight: 700;"><i class="fa-solid fa-rectangle-ad"></i> Actualizar Métricas</h3>
+                <button onclick="cerrarModalPublicidad()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="modal-pub-id">
+            <input type="hidden" id="modal-pub-cliente-id">
+            
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Impresiones</label>
+                <input type="number" id="modal-pub-impresiones" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Clics</label>
+                <input type="number" id="modal-pub-clics" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Conversiones</label>
+                <input type="number" id="modal-pub-conversiones" style="width: 100%; background: var(--dark); border: 1px solid var(--dark-border); padding: 12px; border-radius: 12px; color: var(--text-main); font-size: 14px;">
+            </div>
+
+            <button class="btn-action" onclick="guardarMetricasCampana()" style="justify-content: center; background: var(--cyan);">
+                <i class="fa-solid fa-save"></i> Guardar Métricas
+            </button>
+        </div>
+    </div>
+
     <!-- Navigation Handler Script -->
     <script>
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -1312,7 +1492,8 @@
                     'sec-onboarding': ['Guía de Onboarding Profundo', 'Seguimiento de activación paso a paso y alertas de estancamiento para clientes'],
                     'sec-operacion': ['Operación Interna', 'Gestión de tareas internas, agenda diaria programada y auditoría operativa'],
                     'sec-usuarios': ['Gestión de Usuarios', 'Control central de roles, credenciales y accesos del backoffice'],
-                    'sec-integraciones': ['Mapeo de Integraciones', 'Estado de salud y validación de conexiones externas de la plataforma']
+                    'sec-integraciones': ['Mapeo de Integraciones', 'Estado de salud y validación de conexiones externas de la plataforma'],
+                    'sec-publicidad': ['Publicidad y Campañas', 'Planificación, aprobación y monitoreo de pauta publicitaria para clientes Pro/Diamante']
                 };
 
                 if (titleMap[target]) {
@@ -1907,6 +2088,111 @@
                 }
             } catch (err) {
                 detalles.innerHTML = `<div style="color: var(--rose);">Error de red: ${err.message}</div>`;
+            }
+        }
+
+        function filtrarFacturasAdmin() {
+            const estado = document.getElementById('filtro-factura-estado').value;
+            const filas = document.querySelectorAll('.fila-factura-admin');
+            
+            filas.forEach(f => {
+                const estFila = f.getAttribute('data-estado');
+                if (estado === 'todos' || estFila === estado) {
+                    f.style.display = '';
+                } else {
+                    f.style.display = 'none';
+                }
+            });
+        }
+
+        function filtrarPublicidadAdmin() {
+            const clienteId = document.getElementById('filtro-publicidad-cliente').value;
+            const estado = document.getElementById('filtro-publicidad-estado').value;
+            const filas = document.querySelectorAll('.fila-publicidad');
+            
+            filas.forEach(f => {
+                const cliAttr = f.getAttribute('data-cliente-id');
+                const estAttr = f.getAttribute('data-estado');
+                
+                const matchCli = clienteId === 'todos' || cliAttr === clienteId;
+                const matchEst = estado === 'todos' || estAttr === estado;
+                
+                if (matchCli && matchEst) {
+                    f.style.display = '';
+                } else {
+                    f.style.display = 'none';
+                }
+            });
+        }
+
+        async function cambiarEstadoCampana(campanaId, clienteId, nuevoEstado) {
+            if (!confirm(`¿Estás seguro de cambiar el estado de la campaña a "${nuevoEstado}"?`)) {
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/publicidad/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: campanaId,
+                        cliente_id: clienteId,
+                        estado: nuevoEstado
+                    })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    alert('Campaña actualizada con éxito.');
+                    location.reload();
+                } else {
+                    alert('Error actualizando campaña: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        function abrirModalMetricas(campanaId, clienteId, imp, clics, conv) {
+            document.getElementById('modal-pub-id').value = campanaId;
+            document.getElementById('modal-pub-cliente-id').value = clienteId;
+            document.getElementById('modal-pub-impresiones').value = imp;
+            document.getElementById('modal-pub-clics').value = clics;
+            document.getElementById('modal-pub-conversiones').value = conv;
+            document.getElementById('modal-publicidad').style.display = 'flex';
+        }
+
+        function cerrarModalPublicidad() {
+            document.getElementById('modal-publicidad').style.display = 'none';
+        }
+
+        async function guardarMetricasCampana() {
+            const campanaId = document.getElementById('modal-pub-id').value;
+            const clienteId = document.getElementById('modal-pub-cliente-id').value;
+            const imp = parseInt(document.getElementById('modal-pub-impresiones').value) || 0;
+            const clics = parseInt(document.getElementById('modal-pub-clics').value) || 0;
+            const conv = parseInt(document.getElementById('modal-pub-conversiones').value) || 0;
+            
+            try {
+                const res = await fetch('/api/publicidad/actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: campanaId,
+                        cliente_id: clienteId,
+                        impresiones: imp,
+                        clics: clics,
+                        conversiones: conv
+                    })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    alert('Métricas de campaña actualizadas con éxito.');
+                    location.reload();
+                } else {
+                    alert('Error actualizando métricas: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
             }
         }
     </script>

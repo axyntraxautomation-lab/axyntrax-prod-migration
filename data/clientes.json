@@ -6,7 +6,8 @@
     "telefono": "+51991740590",
     "fecha_registro": "2026-05-01",
     "plan": "Pro Cloud S/399",
-    "renovacion": "2026-06-01"
+    "renovacion": "2026-06-01",
+    "acceso_key": "veloz123"
   },
   {
     "id": "c2",
@@ -15,7 +16,8 @@
     "telefono": "+51987654321",
     "fecha_registro": "2026-05-10",
     "plan": "Starter S/199",
-    "renovacion": "2026-06-10"
+    "renovacion": "2026-06-10",
+    "acceso_key": "apollonia123"
   },
   {
     "id": "c3",
@@ -24,6 +26,7 @@
     "telefono": "+51954321098",
     "fecha_registro": "2026-05-15",
     "plan": "demo",
-    "renovacion": "2026-06-14"
+    "renovacion": "2026-06-14",
+    "acceso_key": "picanteria123"
   }
 ]

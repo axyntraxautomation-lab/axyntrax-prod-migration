@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axyntrax | Portal del Cliente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://checkout.culqi.com/js/v4"></script>
+    <style>
+        :root {
+            --dark: #070708;
+            --dark-card: #0F0F12;
+            --dark-border: rgba(255, 255, 255, 0.05);
+            --cyan: #00E5FF;
+            --cyan-dim: rgba(0, 229, 255, 0.1);
+            --emerald: #10B981;
+            --emerald-dim: rgba(16, 185, 129, 0.1);
+            --amber: #F59E0B;
+            --amber-dim: rgba(245, 158, 11, 0.1);
+            --rose: #EF4444;
+            --rose-dim: rgba(239, 68, 68, 0.1);
+            --text-main: #FFFFFF;
+            --text-muted: #8F9199;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* login layout */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, rgba(0,229,255,0.08) 0%, rgba(7,7,8,1) 70%);
+        }
+
+        .login-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .login-logo img {
+            height: 40px;
+        }
+
+        .login-logo h2 {
+            font-weight: 800;
+            font-size: 24px;
+            color: #FFF;
+        }
+
+        .login-logo span {
+            color: var(--cyan);
+        }
+
+        .login-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .input-group {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--dark-border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: #FFF;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+        }
+
+        .btn-login {
+            background: var(--cyan);
+            color: #0D0D0D;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 229, 255, 0.2);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 229, 255, 0.35);
+        }
+
+        /* dashboard layout */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 40px;
+            min-width: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .logo-area img {
+            height: 32px;
+        }
+
+        .logo-title {
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-title span {
+            color: var(--cyan);
+        }
+
+        .client-profile-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .client-avatar {
+            width: 44px;
+            height: 44px;
+            background: var(--cyan-dim);
+            color: var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .client-details {
+            line-height: 1.3;
+            min-width: 0;
+        }
+
+        .client-profile-name {
+            font-weight: 700;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #FFF;
+        }
+
+        .client-profile-plan {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 18px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #FFF;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--cyan);
+            padding-left: 15px;
+            background: rgba(0, 229, 255, 0.05);
+            color: var(--cyan);
+        }
+
+        .logout-box {
+            margin-top: auto;
+        }
+
+        .btn-logout {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--rose);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: var(--rose);
+            color: #FFF;
+        }
+
+        /* content layout */
+        .header-content {
+            margin-bottom: 35px;
+        }
+
+        .header-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-title-box h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #FFF;
+        }
+
+        .header-title-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .content-section {
+            display: none;
+            flex-direction: column;
+            gap: 30px;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .content-section.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* cards and widgets */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card-stat {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .icon-blue { background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.2); }
+        .icon-green { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .icon-amber { background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        .card-stat-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-stat-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .card-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .card-stat-subtext {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* grid layouts */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-box {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .content-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--dark-border);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-box-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-box-header p {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .premium-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .premium-table th {
+            padding: 15px 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .premium-table td {
+            padding: 18px 20px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--dark-border);
+            color: #FFF;
+        }
+
+        .premium-table tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+
+        /* badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-pro { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.2); }
+        .badge-starter { background: var(--emerald-dim); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-demo { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-open { background: var(--rose-dim); color: var(--rose); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        /* buttons */
+        .btn-action {
+            background: var(--cyan);
+            color: #0D0D0D;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.2);
+        }
+
+        .btn-action:disabled {
+            background: rgba(255,255,255,0.05) !important;
+            color: var(--text-muted) !important;
+            border: 1px solid var(--dark-border) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* module grid */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 229, 255, 0.2);
+            background: rgba(0, 229, 255, 0.01);
+        }
+
+        .module-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* onboarding checklist */
+        .onboarding-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .onboarding-step-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .onboarding-step-card.completado {
+            border-color: rgba(16, 185, 129, 0.15);
+            background: rgba(16, 185, 129, 0.02);
+        }
+
+        .step-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: transparent;
+        }
+
+        .completado .step-checkbox {
+            background: var(--emerald);
+            border-color: var(--emerald);
+            color: #0D0D0D;
+        }
+
+        .step-checkbox i {
+            font-size: 12px;
+        }
+
+        .step-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .completado .step-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* onboarding circle bar */
+        .progress-circle-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .circle-svg {
+            transform: rotate(-90deg);
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.03);
+            stroke-width: 8;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: var(--cyan);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.8s ease-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+
+    {% if not client %}
+    <!-- VISTA DE LOGIN -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="/assets/axyntrax-logo.svg" alt="Axyntrax" onerror="this.src='https://assets.axyntrax-automation.com/logo.png'">
+                <h2>Axyntra<span>X</span></h2>
+            </div>
+            <p class="login-title">Ingresa con tus credenciales corporativas para administrar tus integraciones, facturas y tickets de soporte.</p>
+            
+            <form action="/api/dashboard/login" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="input-group">
+                    <label>Email o ID de Cliente</label>
+                    <input type="text" name="email" placeholder="ej. contacto@elveloz.com" required autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label>Clave de Acceso</label>
+                    <input type="password" name="passcode" placeholder="••••••••" required>
+                </div>
+                
+                {% if error %}
+                <div style="color: var(--rose); font-size: 13px; text-align: left; background: rgba(239,68,68,0.08); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(239,68,68,0.15);">
+                    <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn-login">
+                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo-area">
+            <img src="/assets/axyntrax-logo.svg" alt="Axyntrax" onerror="this.src='https://assets.axyntrax-automation.com/logo.png'">
+            <h2 class="logo-title">Axyntra<span>X</span></h2>
+        </div>
+
+        <div class="client-profile-box">
+            <div class="client-avatar">
+                {{ client.nombre[0].upper() }}
+            </div>
+            <div class="client-details">
+                <div class="client-profile-name">{{ client.nombre }}</div>
+                <div class="client-profile-plan">{{ client.plan }}</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item active" data-target="sec-resumen">
+                <i class="fa-solid fa-chart-pie"></i> Mi Cuenta
+            </div>
+            <div class="nav-item" data-target="sec-modulos" onclick="cargarModulos()">
+                <i class="fa-solid fa-cubes"></i> Módulos AI
+            </div>
+            <div class="nav-item" data-target="sec-facturacion" onclick="cargarFacturacion()">
+                <i class="fa-solid fa-receipt"></i> Facturación
+            </div>
+            <div class="nav-item" data-target="sec-tickets" onclick="cargarTickets()">
+                <i class="fa-solid fa-ticket"></i> Tickets
+            </div>
+            <div class="nav-item" data-target="sec-onboarding" onclick="cargarOnboarding()">
+                <i class="fa-solid fa-circle-check"></i> Onboarding
+            </div>
+            {% if 'pro' in client.plan.lower() or 'diamante' in client.plan.lower() or 'diamond' in client.plan.lower() %}
+            <div class="nav-item" data-target="sec-publicidad" onclick="cargarPublicidad()">
+                <i class="fa-solid fa-rectangle-ad"></i> Publicidad
+            </div>
+            {% endif %}
+        </nav>
+
+        <div class="logout-box">
+            <form action="/api/dashboard/logout" method="POST">
+                <button type="submit" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main-content">
+        <header class="header-content">
+            <div class="header-title-row">
+                <div class="header-title-box">
+                    <h1 id="page-title">¡Hola, {{ client.nombre }}! 👋</h1>
+                    <p id="page-subtitle">Monitorea y autogestiona tus licencias, facturas y tickets de soporte en tiempo real.</p>
+                </div>
+                <div class="badge badge-pro">
+                    <i class="fa-solid fa-circle-check"></i> Conectado
+                </div>
+            </div>
+        </header>
+
+        <!-- 1. RESUMEN / MI CUENTA -->
+        <div id="sec-resumen" class="content-section active">
+            <div class="summary-grid">
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-blue">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Tu Plan</span>
+                        <span class="card-stat-value" style="font-size: 16px;">{{ client.plan.upper() }}</span>
+                        <span class="card-stat-subtext">Renovación: {{ client.renovacion }}</span>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-green">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Onboarding</span>
+                        <span class="card-stat-value" id="resumen-onboarding-porcentaje">0%</span>
+                        <span class="card-stat-subtext">Progreso de activación</span>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-amber">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Tickets Activos</span>
+                        <span class="card-stat-value" id="resumen-tickets-count">0</span>
+                        <span class="card-stat-subtext">Tickets sin resolver</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="split-layout">
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <h3><i class="fa-solid fa-shield-halved"></i> Seguridad de la Cuenta</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 15px; font-size: 14px;">
+                        <p style="color: var(--text-muted);">
+                            Tu cuenta se encuentra totalmente protegida. Para solicitudes de cambio de plan o transferencias de dominio, por favor comunícate a través de la mesa de ayuda oficial.
+                        </p>
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); padding: 15px; border-radius: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <span style="font-size: 11px; color: var(--text-muted); display: block;">ID DE CLIENTE</span>
+                                <strong style="font-family: monospace; color: var(--cyan);">{{ client.id }}</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; color: var(--text-muted); display: block;">TELÉFONO REGISTRADO</span>
+                                <strong>{{ client.telefono }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-box" style="display: flex; align-items: center; justify-content: center;">
+                    <div class="progress-circle-box">
+                        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                            <svg class="circle-svg" width="100" height="100">
+                                <circle class="circle-bg" cx="50" cy="50" r="40"></circle>
+                                <circle class="circle-progress" id="circle-bar" cx="50" cy="50" r="40"></circle>
+                            </svg>
+                            <div class="progress-text" id="circle-text">0%</div>
+                        </div>
+                        <strong style="font-size: 14px;">Onboarding Completo</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MÓDULOS AI -->
+        <div id="sec-modulos" class="content-section">
+            <div class="content-box">
+                <div class="content-box-header">
+                    <div>
+                        <h3><i class="fa-solid fa-cubes"></i> Catálogo de Módulos AI</h3>
+                        <p>Solicita y gestiona las licencias de tus asistentes inteligentes integrados.</p>
+                    </div>
+                </div>
+                
+                <div class="module-grid" id="container-modulos">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. FACTURACIÓN -->
+        <div id="sec-facturacion" class="content-section">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--dark-border); border-radius: 24px; padding: 30px; margin-bottom: 30px; display: flex; flex-direction: column; gap: 20px;">
+                <div style="border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;">
+                    <h4 style="font-size: 15px; font-weight: 700; color: var(--cyan); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-credit-card"></i> Renovar o Cambiar Plan</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Selecciona tu plan de Axyntrax y paga de forma 100% segura con Culqi.</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <label style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 15px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s;" id="label-plan-starter">
+                        <input type="radio" name="pago-plan-radio" value="starter" checked style="accent-color: var(--cyan); margin-right: 8px;">
+                        <strong style="font-weight: 800; font-size: 14px;">Starter S/199</strong>
+                        <span style="font-size: 11px; color: var(--text-muted);">1 Módulo AI Básico</span>
+                    </label>
+                    <label style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 15px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s;" id="label-plan-pro">
+                        <input type="radio" name="pago-plan-radio" value="pro" style="accent-color: var(--cyan); margin-right: 8px;">
+                        <strong style="font-weight: 800; font-size: 14px;">Pro Cloud S/399</strong>
+                        <span style="font-size: 11px; color: var(--text-muted);">Hasta 3 Módulos AI Pro</span>
+                    </label>
+                    <label style="background: rgba(255,255,255,0.01); border: 1px solid var(--dark-border); border-radius: 16px; padding: 15px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s;" id="label-plan-diamante">
+                        <input type="radio" name="pago-plan-radio" value="diamante" style="accent-color: var(--cyan); margin-right: 8px;">
+                        <strong style="font-weight: 800; font-size: 14px;">Diamante S/799</strong>
+                        <span style="font-size: 11px; color: var(--text-muted);">SaaS Full Multidispositivo</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.1); padding: 15px; border-radius: 12px;" id="box-pago-realtime">
+                    <div>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; text-transform: uppercase;">Estado de la Transacción</span>
+                        <strong style="color: #FFF;" id="pago-status-text">Listo para pagar</strong>
+                    </div>
+                    <button class="btn-action" style="padding: 12px 25px; font-size: 13px;" id="btn-pagar-ahora" onclick="iniciarPagoCulqi()">
+                        <i class="fa-solid fa-wallet"></i> Pagar Ahora
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <div class="content-box-header">
+                    <div>
+                        <h3><i class="fa-solid fa-receipt"></i> Historial de Facturación</h3>
+                        <p>Consulta tus recibos de pago y los estados de cobranza de tus suscripciones.</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Nro. Comprobante</th>
+                                <th>Fecha de Emisión</th>
+                                <th>Importe</th>
+                                <th>Estado de Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="container-facturacion">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TICKETS -->
+        <div id="sec-tickets" class="content-section">
+            <div class="split-layout">
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <div>
+                            <h3><i class="fa-solid fa-ticket"></i> Mis Tickets de Soporte</h3>
+                            <p>Registro histórico y respuestas de asistencia para tus consultas.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Asunto</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                    <th>F. Creación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="container-tickets">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-box" style="display: flex; flex-direction: column; gap: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #FFF; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;"><i class="fa-solid fa-circle-plus"></i> Crear Nuevo Ticket</h3>
+                    
+                    <div class="input-group">
+                        <label>Asunto / Consulta</label>
+                        <input type="text" id="ticket-asunto" placeholder="ej. Error al conectar WhatsApp">
+                    </div>
+                    <div class="input-group">
+                        <label>Prioridad</label>
+                        <select id="ticket-prioridad" style="background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); padding: 14px; border-radius: 12px; color: #FFF; outline: none;">
+                            <option value="baja" style="background: var(--dark-card);">Baja</option>
+                            <option value="media" style="background: var(--dark-card);" selected>Media</option>
+                            <option value="alta" style="background: var(--dark-card);">Alta</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Detalle del Requerimiento</label>
+                        <textarea id="ticket-mensaje" rows="4" placeholder="Escribe aquí de forma detallada tu consulta o problema..." style="background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); padding: 14px; border-radius: 12px; color: #FFF; font-family: inherit; font-size: 13px; resize: none; outline: none;"></textarea>
+                    </div>
+
+                    <button class="btn-action" style="justify-content: center;" onclick="crearTicketCliente()">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. ONBOARDING -->
+        <div id="sec-onboarding" class="content-section">
+            <div class="split-layout">
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <div>
+                            <h3><i class="fa-solid fa-circle-check"></i> Mi Ruta de Onboarding</h3>
+                            <p>Sigue los pasos y completa la configuración de tu plataforma paso a paso.</p>
+                        </div>
+                    </div>
+
+                    <div class="onboarding-list" id="container-onboarding">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
+                <div class="content-box" style="display: flex; flex-direction: column; gap: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #FFF; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;"><i class="fa-solid fa-compass"></i> Estado General</h3>
+                    
+                    <div style="background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.1); padding: 20px; border-radius: 16px; text-align: center; display: flex; flex-direction: column; gap: 10px;">
+                        <span style="font-size: 12px; color: var(--cyan); text-transform: uppercase; font-weight: 700;">Progreso de Configuración</span>
+                        <div style="font-size: 40px; font-weight: 800; color: #FFF;" id="onboarding-lateral-porcentaje">0%</div>
+                        <p style="font-size: 12px; color: var(--text-muted);">Completa todos los pasos obligatorios para habilitar el asistente en su totalidad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. PUBLICIDAD -->
+        <div id="sec-publicidad" class="content-section">
+            <!-- KPIs de Campañas -->
+            <div class="summary-grid" id="publicidad-stats-grid">
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-blue">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Impresiones Totales</span>
+                        <span class="card-stat-value" id="pub-total-impresiones">0</span>
+                        <span class="card-stat-subtext">Visualizaciones totales</span>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-green">
+                        <i class="fa-solid fa-mouse-pointer"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Clics Totales</span>
+                        <span class="card-stat-value" id="pub-total-clics">0</span>
+                        <span class="card-stat-subtext">Interacciones generadas</span>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-icon icon-amber">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="card-stat-details">
+                        <span class="card-stat-title">Conversiones Totales</span>
+                        <span class="card-stat-value" id="pub-total-conversiones">0</span>
+                        <span class="card-stat-subtext">Leads calificados</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="split-layout">
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <div>
+                            <h3><i class="fa-solid fa-rectangle-ad"></i> Mis Campañas Publicitarias</h3>
+                            <p>Monitoreo en tiempo real de tu pauta publicitaria en múltiples canales.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Campaña</th>
+                                    <th>Canal</th>
+                                    <th>Presupuesto</th>
+                                    <th>Métricas (Imp / Clics / Conv)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="container-publicidad">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-box" style="display: flex; flex-direction: column; gap: 20px;">
+                    <h3 style="font-size: 16px; font-weight: 700; color: #FFF; border-bottom: 1px solid var(--dark-border); padding-bottom: 15px;"><i class="fa-solid fa-circle-plus"></i> Nueva Campaña</h3>
+                    
+                    <div class="input-group">
+                        <label>Nombre de la Campaña</label>
+                        <input type="text" id="pub-nombre" placeholder="ej. Black Friday Veloz">
+                    </div>
+                    <div class="input-group">
+                        <label>Canal Publicitario</label>
+                        <select id="pub-canal" style="background: rgba(255,255,255,0.03); border: 1px solid var(--dark-border); padding: 14px; border-radius: 12px; color: #FFF; outline: none;">
+                            <option value="meta" style="background: var(--dark-card);" selected>Meta Ads (FB/IG)</option>
+                            <option value="google" style="background: var(--dark-card);">Google Search/Display</option>
+                            <option value="whatsapp" style="background: var(--dark-card);">WhatsApp Bulk IA</option>
+                            <option value="email" style="background: var(--dark-card);">Email Marketing Transaccional</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Presupuesto Estimado (S/.)</label>
+                        <input type="number" id="pub-presupuesto" placeholder="ej. 500" min="50">
+                    </div>
+
+                    <button class="btn-action" style="justify-content: center;" onclick="crearCampanaCliente()">
+                        <i class="fa-solid fa-paper-plane"></i> Crear en Borrador
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script>
+        const CLIENTE_ID = "{{ client.id }}";
+
+        // Navigation toggles
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+
+                const titleMap = {
+                    'sec-resumen': ['¡Hola, {{ client.nombre }}! 👋', 'Monitorea y autogestiona tus licencias, facturas y tickets de soporte en tiempo real.'],
+                    'sec-modulos': ['Mis Módulos AI 🤖', 'Solicita y gestiona las licencias y activaciones de tus asistentes inteligentes.'],
+                    'sec-facturacion': ['Mis Facturas y Pagos 💳', 'Consulta tu historial de transacciones e importes de suscripción.'],
+                    'sec-tickets': ['Soporte Técnico 🔧', 'Crea consultas a soporte y chatea con nuestros coordinadores en vivo.'],
+                    'sec-onboarding': ['Progreso de Onboarding 📈', 'Completa los pasos requeridos para activar tu ecosistema completo.'],
+                    'sec-publicidad': ['Módulo de Publicidad 📢', 'Planifica y monitorea tus campañas publicitarias optimizadas por IA.']
+                };
+
+                if (titleMap[target]) {
+                    document.getElementById('page-title').innerText = titleMap[target][0];
+                    document.getElementById('page-subtitle').innerText = titleMap[target][1];
+                }
+            });
+        });
+
+        // Fetch unificado de cliente
+        async function fetchClienteData() {
+            try {
+                const res = await fetch(`/api/dashboard?cliente_id=${CLIENTE_ID}`);
+                const data = await res.json();
+                if (data.ok) {
+                    return data.datos;
+                }
+                return null;
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                return null;
+            }
+        }
+
+        // Cargar Resumen Inicial
+        async function inicializarDashboard() {
+            const data = await fetchClienteData();
+            if (!data) return;
+
+            // Actualizar porcentaje
+            const pct = data.onboarding_porcentaje || 0;
+            document.getElementById('resumen-onboarding-porcentaje').innerText = `${pct}%`;
+            document.getElementById('onboarding-lateral-porcentaje').innerText = `${pct}%`;
+            document.getElementById('circle-text').innerText = `${pct}%`;
+            
+            // Circle dashoffset
+            const circle = document.getElementById('circle-bar');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (pct / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Tickets count
+            const ticketsActivos = data.tickets.filter(t => t.estado !== 'resuelto').length;
+            document.getElementById('resumen-tickets-count').innerText = ticketsActivos;
+        }
+
+        // Cargar Módulos
+        async function cargarModulos() {
+            const data = await fetchClienteData();
+            if (!data) return;
+
+            const container = document.getElementById('container-modulos');
+            container.innerHTML = '';
+
+            const modulosDisponibles = [
+                { id: "m1", name: "Cecilia Whatsapp Chatbot", desc: "IA conversacional para atención automática de clientes por WhatsApp Business las 24 horas." },
+                { id: "m2", name: "Optimizador de Procesos", desc: "Algoritmos avanzados para gestionar agendas, recordatorios de cobro y asignación inteligente." },
+                { id: "m3", name: "Mark (AI Prospección)", desc: "Módulo AI para prospección comercial en redes sociales, envío de leads calificados y cierre de ventas." },
+                { id: "m4", name: "Fidelización de Clientes", desc: "Asistente inteligente que realiza seguimiento post-venta y campañas dinámicas periódicas." }
+            ];
+
+            modulosDisponibles.forEach(m => {
+                const act = data.activaciones.find(a => a.modulo.toLowerCase().includes(m.name.toLowerCase()) || m.name.toLowerCase().includes(a.modulo.toLowerCase()));
+                
+                let badgeHTML = '<span class="badge badge-demo">No Contratado</span>';
+                let btnHTML = `<button class="btn-action" onclick="solicitarActivacion('${m.name}')"><i class="fa-solid fa-circle-plus"></i> Solicitar Activación</button>`;
+
+                if (act) {
+                    if (act.estado === 'activo') {
+                        badgeHTML = '<span class="badge badge-pro"><i class="fa-solid fa-circle-check"></i> Activo</span>';
+                        btnHTML = `<button class="btn-action" disabled><i class="fa-solid fa-check"></i> Módulo Activo</button>`;
+                    } else {
+                        badgeHTML = '<span class="badge badge-demo"><i class="fa-solid fa-clock"></i> Pendiente</span>';
+                        btnHTML = `<button class="btn-action" disabled style="background: rgba(255,255,255,0.05); color: var(--text-muted);"><i class="fa-solid fa-arrows-spin fa-spin"></i> En Proceso</button>`;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = 'module-card';
+                card.innerHTML = `
+                    <div class="module-title">
+                        <span>${m.name}</span>
+                        ${badgeHTML}
+                    </div>
+                    <p class="module-desc">${m.desc}</p>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                        ${btnHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function solicitarActivacion(moduloNombre) {
+            try {
+                const res = await fetch('/api/dashboard/activar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cliente_id: CLIENTE_ID, modulo: moduloNombre })
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Solicitud de activación registrada! Nuestro equipo técnico validará y habilitará el módulo en las próximas horas.');
+                    cargarModulos();
+                } else {
+                    alert('Error en solicitud: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        // Cargar Facturación
+        async function cargarFacturacion() {
+            const data = await fetchClienteData();
+            if (!data) return;
+
+            const tbody = document.getElementById('container-facturacion');
+            tbody.innerHTML = '';
+
+            if (data.facturas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No se encontraron facturas.</td></tr>';
+                return;
+            }
+
+            data.facturas.forEach(f => {
+                const tr = document.createElement('tr');
+                const badgeClass = f.estado === 'pagado' ? 'badge-pro' : (f.estado === 'pendiente' ? 'badge-open' : 'badge-demo');
+                tr.innerHTML = `
+                    <td><strong style="font-family: monospace;">${f.nro_comprobante}</strong></td>
+                    <td>${f.fecha_emision}</td>
+                    <td>S/ ${parseFloat(f.monto).toFixed(2)} PEN</td>
+                    <td><span class="badge ${badgeClass}">${f.estado}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Cargar Tickets
+        async function cargarTickets() {
+            const data = await fetchClienteData();
+            if (!data) return;
+
+            const tbody = document.getElementById('container-tickets');
+            tbody.innerHTML = '';
+
+            if (data.tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No has registrado ningún ticket de soporte aún.</td></tr>';
+                return;
+            }
+
+            data.tickets.forEach(t => {
+                const tr = document.createElement('tr');
+                const pBadge = t.prioridad === 'alta' ? 'badge-open' : (t.prioridad === 'media' ? 'badge-demo' : 'badge-pro');
+                const sBadge = t.estado === 'resuelto' ? 'badge-pro' : (t.estado === 'abierto' ? 'badge-open' : 'badge-demo');
+                
+                tr.innerHTML = `
+                    <td><code style="color: var(--cyan);">${t.id.toUpperCase()}</code></td>
+                    <td>
+                        <div style="font-weight: 600;">${t.asunto}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${t.mensaje}</div>
+                    </td>
+                    <td><span class="badge ${pBadge}">${t.prioridad}</span></td>
+                    <td><span class="badge ${sBadge}">${t.estado}</span></td>
+                    <td>${t.fecha_creacion}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function crearTicketCliente() {
+            const asunto = document.getElementById('ticket-asunto').value.trim();
+            const prioridad = document.getElementById('ticket-prioridad').value;
+            const mensaje = document.getElementById('ticket-mensaje').value.trim();
+
+            if (!asunto || !mensaje) {
+                alert('Por favor, completa el asunto y el detalle de tu consulta.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cliente_id: CLIENTE_ID, asunto, prioridad, mensaje })
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Ticket registrado exitosamente! Ha sido asignado a un agente de soporte.');
+                    document.getElementById('ticket-asunto').value = '';
+                    document.getElementById('ticket-mensaje').value = '';
+                    cargarTickets();
+                    inicializarDashboard();
+                } else {
+                    alert('Error creando ticket: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        // Cargar Onboarding
+        async function cargarOnboarding() {
+            const data = await fetchClienteData();
+            if (!data) return;
+
+            const container = document.getElementById('container-onboarding');
+            container.innerHTML = '';
+
+            data.onboarding_pasos.forEach(step => {
+                const isChecked = step.estado === 'completado';
+                const card = document.createElement('div');
+                card.className = `onboarding-step-card ${isChecked ? 'completado' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="step-left">
+                        <div class="step-checkbox" onclick="togglePasoOnboardingCliente('${step.id}', ${isChecked})">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">Paso ${step.paso_numero}: ${step.titulo}</div>
+                            <div class="step-desc">${step.descripcion}</div>
+                        </div>
+                    </div>
+                    <span class="badge ${step.obligatorio ? 'badge-open' : 'badge-pro'}">
+                        ${step.obligatorio ? 'Obligatorio' : 'Opcional'}
+                    </span>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function togglePasoOnboardingCliente(pasoId, isCurrentlyCompleted) {
+            if (isCurrentlyCompleted) {
+                alert('Este paso ya ha sido completado y validado en el sistema.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/onboarding/${CLIENTE_ID}/completar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: pasoId })
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    cargarOnboarding();
+                    inicializarDashboard();
+                } else {
+                    alert('Error actualizando paso: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red: ' + err.message);
+            }
+        }
+
+        // Configuración e inicio de Culqi
+        let culqiConfig = null;
+        async function loadCulqiConfig() {
+            try {
+                const res = await fetch('/api/pago/config');
+                const result = await res.json();
+                if (result.ok) {
+                    culqiConfig = result.datos;
+                    Culqi.publicKey = culqiConfig.public_key;
+                }
+            } catch (err) {
+                console.error("Error loading Culqi config:", err);
+            }
+        }
+
+        async function iniciarPagoCulqi() {
+            const planRadio = document.querySelector('input[name="pago-plan-radio"]:checked');
+            if (!planRadio) return;
+            const plan = planRadio.value;
+            
+            const planPrices = {
+                "starter": 199.00,
+                "pro": 399.00,
+                "diamante": 799.00
+            };
+
+            const amount = planPrices[plan];
+            
+            document.getElementById('pago-status-text').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Inicializando Culqi Checkout...';
+            document.getElementById('btn-pagar-ahora').disabled = true;
+
+            if (!culqiConfig) {
+                await loadCulqiConfig();
+            }
+
+            try {
+                Culqi.settings({
+                    title: 'Axyntrax Automation',
+                    currency: 'PEN',
+                    description: `Suscripción Plan ${plan.toUpperCase()}`,
+                    amount: amount * 100
+                });
+
+                Culqi.options({
+                    lang: 'auto',
+                    installments: false,
+                    modalConstrained: true,
+                    paymentMethods: {
+                        tarjeta: true,
+                        yape: true,
+                        bancaMovil: true,
+                        agente: true
+                    }
+                });
+
+                Culqi.open();
+            } catch(e) {
+                console.warn("Culqi open error (expected if standalone):", e);
+            }
+            
+            if (!culqiConfig || culqiConfig.public_key.startsWith('pk_test_axyntrax')) {
+                setTimeout(() => {
+                    const confirmSim = confirm("[MODO PRUEBA SANDBOX]\n¿Deseas simular una transacción exitosa para esta renovación?");
+                    if (confirmSim) {
+                        simularPagoExitoso(plan);
+                    } else {
+                        document.getElementById('pago-status-text').innerText = 'Listo para pagar';
+                        document.getElementById('btn-pagar-ahora').disabled = false;
+                    }
+                }, 1500);
+            }
+        }
+
+        window.culqi = async function() {
+            if (Culqi.token) {
+                const token = Culqi.token.id;
+                const planRadio = document.querySelector('input[name="pago-plan-radio"]:checked');
+                const plan = planRadio ? planRadio.value : 'starter';
+
+                document.getElementById('pago-status-text').innerHTML = '<i class="fa-solid fa-arrows-spin fa-spin"></i> Procesando cargo seguro...';
+                
+                try {
+                    const resCrear = await fetch('/api/pago/crear', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cliente_id: CLIENTE_ID, plan: plan, token_id: token })
+                    });
+                    const rCrear = await resCrear.json();
+                    
+                    if (rCrear.ok) {
+                        const chargeId = rCrear.datos.charge_id;
+                        document.getElementById('pago-status-text').innerHTML = '<i class="fa-solid fa-shield-halved fa-beat"></i> Confirmando transacción...';
+
+                        const resConfirmar = await fetch('/api/pago/confirmar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ cliente_id: CLIENTE_ID, charge_id: chargeId })
+                        });
+                        const rConfirmar = await resConfirmar.json();
+
+                        if (rConfirmar.ok) {
+                            document.getElementById('pago-status-text').innerHTML = '<span style="color: var(--emerald); font-weight: bold;"><i class="fa-solid fa-circle-check"></i> ¡Renovación Exitosa!</span>';
+                            alert('¡Plan renovado con éxito! Tu acceso ha sido actualizado.');
+                            location.reload();
+                        } else {
+                            document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Pago Fallido: ${rConfirmar.error}</span>`;
+                        }
+                    } else {
+                        document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Error: ${rCrear.error}</span>`;
+                    }
+                } catch (err) {
+                    document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Error de Red</span>`;
+                }
+                document.getElementById('btn-pagar-ahora').disabled = false;
+            } else {
+                console.log("Culqi token error:", Culqi.error);
+                document.getElementById('pago-status-text').innerText = 'Cancelado por usuario';
+                document.getElementById('btn-pagar-ahora').disabled = false;
+            }
+        };
+
+        async function simularPagoExitoso(plan) {
+            document.getElementById('pago-status-text').innerHTML = '<i class="fa-solid fa-arrows-spin fa-spin"></i> Simulando cargo...';
+            try {
+                const resCrear = await fetch('/api/pago/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cliente_id: CLIENTE_ID, plan: plan, token_id: "tkn_simulado_123" })
+                });
+                const rCrear = await resCrear.json();
+                
+                if (rCrear.ok) {
+                    const chargeId = rCrear.datos.charge_id;
+                    document.getElementById('pago-status-text').innerHTML = '<i class="fa-solid fa-shield-halved fa-beat"></i> Simulando confirmación...';
+
+                    const resConfirmar = await fetch('/api/pago/confirmar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cliente_id: CLIENTE_ID, charge_id: chargeId })
+                    });
+                    const rConfirmar = await resConfirmar.json();
+
+                    if (rConfirmar.ok) {
+                        document.getElementById('pago-status-text').innerHTML = '<span style="color: var(--emerald); font-weight: bold;"><i class="fa-solid fa-circle-check"></i> ¡Renovación Exitosa!</span>';
+                        alert('¡Plan simulado renovado con éxito! Tu acceso ha sido actualizado.');
+                        location.reload();
+                    } else {
+                        document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Pago Fallido: ${rConfirmar.error}</span>`;
+                    }
+                } else {
+                    document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Error: ${rCrear.error}</span>`;
+                }
+            } catch (err) {
+                document.getElementById('pago-status-text').innerHTML = `<span style="color: var(--rose);"><i class="fa-solid fa-circle-xmark"></i> Error de Red</span>`;
+            }
+            document.getElementById('btn-pagar-ahora').disabled = false;
+        }
+
+        async function cargarPublicidad() {
+            try {
+                const res = await fetch(`/api/publicidad?cliente_id=${CLIENTE_ID}`);
+                const data = await res.json();
+                
+                if (data.ok) {
+                    const tbody = document.getElementById('container-publicidad');
+                    tbody.innerHTML = '';
+                    
+                    let totalImp = 0;
+                    let totalClics = 0;
+                    let totalConv = 0;
+                    
+                    if (data.datos.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Aún no tienes campañas publicitarias registradas.</td></tr>';
+                    } else {
+                        data.datos.forEach(c => {
+                            totalImp += c.impresiones || 0;
+                            totalClics += c.clics || 0;
+                            totalConv += c.conversiones || 0;
+                            
+                            let canalBadge = `<span class="badge" style="background: rgba(255,255,255,0.05); color: #FFF;">${c.canal.toUpperCase()}</span>`;
+                            if (c.canal === 'meta') canalBadge = `<span class="badge" style="background: rgba(24, 119, 242, 0.15); color: #1877F2;"><i class="fa-brands fa-facebook"></i> META</span>`;
+                            else if (c.canal === 'google') canalBadge = `<span class="badge" style="background: rgba(234, 67, 53, 0.15); color: #EA4335;"><i class="fa-brands fa-google"></i> GOOGLE</span>`;
+                            else if (c.canal === 'whatsapp') canalBadge = `<span class="badge badge-pro"><i class="fa-brands fa-whatsapp"></i> WSP IA</span>`;
+                            else if (c.canal === 'email') canalBadge = `<span class="badge badge-demo"><i class="fa-solid fa-envelope"></i> EMAIL</span>`;
+                            
+                            let estBadge = `<span class="badge badge-demo">${c.estado}</span>`;
+                            if (c.estado === 'activa') estBadge = `<span class="badge badge-paid"><i class="fa-solid fa-circle-play"></i> Activa</span>`;
+                            else if (c.estado === 'pausada') estBadge = `<span class="badge badge-demo" style="background: rgba(245, 158, 11, 0.1); color: var(--amber);"><i class="fa-solid fa-circle-pause"></i> Pausada</span>`;
+                            else if (c.estado === 'finalizada') estBadge = `<span class="badge badge-unpaid"><i class="fa-solid fa-circle-stop"></i> Finalizada</span>`;
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    <div style="font-weight: 700; color: #FFF;">${c.nombre}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted);">Creado el ${c.fecha_creacion}</div>
+                                </td>
+                                <td>${canalBadge}</td>
+                                <td><strong>S/ ${parseFloat(c.presupuesto).toFixed(2)}</strong></td>
+                                <td>
+                                    <div style="display: flex; gap: 15px; font-size: 13px;">
+                                        <span>👁️ ${c.impresiones}</span>
+                                        <span>🖱️ ${c.clics}</span>
+                                        <span>🎯 ${c.conversiones}</span>
+                                    </div>
+                                </td>
+                                <td>${estBadge}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                    
+                    document.getElementById('pub-total-impresiones').innerText = totalImp.toLocaleString();
+                    document.getElementById('pub-total-clics').innerText = totalClics.toLocaleString();
+                    document.getElementById('pub-total-conversiones').innerText = totalConv.toLocaleString();
+                }
+            } catch (err) {
+                console.error("Error loading ads:", err);
+            }
+        }
+
+        async function crearCampanaCliente() {
+            const nombre = document.getElementById('pub-nombre').value.trim();
+            const canal = document.getElementById('pub-canal').value;
+            const presupuesto = document.getElementById('pub-presupuesto').value.trim();
+            
+            if (!nombre || !presupuesto) {
+                alert('Por favor, ingresa el nombre de la campaña y el presupuesto.');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/publicidad/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cliente_id: CLIENTE_ID,
+                        nombre: nombre,
+                        canal: canal,
+                        presupuesto: presupuesto
+                    })
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    alert('¡Campaña registrada con éxito en estado Borrador! Nuestro equipo la revisará y activará a la brevedad.');
+                    document.getElementById('pub-nombre').value = '';
+                    document.getElementById('pub-presupuesto').value = '';
+                    cargarPublicidad();
+                } else {
+                    alert('Error creando campaña: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error de red al crear campaña: ' + err.message);
+            }
+        }
+
+        // Auto initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            if (CLIENTE_ID) {
+                inicializarDashboard();
+                loadCulqiConfig();
+            }
+        });
+    </script>
+    {% endif %}
+
+</body>
+</html>

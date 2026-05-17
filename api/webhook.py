@@ -42,8 +42,37 @@ def check_admin_rate_limit() -> bool:
     _ADMIN_IP_REQUESTS[ip].append(now)
     return True
 
-# Helper para cargar datos JSON
+# Supabase Integration Core
+try:
+    from supabase import create_client, Client
+except ImportError:
+    Client = Any
+    create_client = None
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+
+supabase_client: Optional[Client] = None
+if create_client and SUPABASE_URL and SUPABASE_KEY and "PENDIENTE" not in SUPABASE_URL and "PENDIENTE" not in SUPABASE_KEY:
+    try:
+        supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception as e:
+        print(f"[Supabase] Error de conexión: {e}")
+
+# Helper para cargar datos (Supabase con fallback a JSON local)
 def load_data(filename: str, default_val: list) -> list:
+    table_name = filename.replace(".json", "")
+    global supabase_client
+    if supabase_client:
+        try:
+            res = supabase_client.table(table_name).select("*").execute()
+            if hasattr(res, "data"):
+                return res.data
+            return res.get("data", default_val)
+        except Exception as e:
+            print(f"[Supabase load_data] Error cargando {table_name}: {e}. Usando fallback local.")
+            
+    # Fallback local a JSON
     path = os.path.join(os.path.dirname(__file__), "..", "data", filename)
     if not os.path.exists(path):
         return default_val
@@ -54,8 +83,31 @@ def load_data(filename: str, default_val: list) -> list:
         print(f"[load_data] Error cargando {filename}: {e}")
         return default_val
 
-# Helper para guardar datos JSON
+# Helper para guardar datos (Supabase con fallback a JSON local)
 def save_data(filename: str, data: list):
+    table_name = filename.replace(".json", "")
+    global supabase_client
+    if supabase_client:
+        try:
+            if isinstance(data, list) and len(data) > 0:
+                # Upsert registros
+                supabase_client.table(table_name).upsert(data).execute()
+                
+                # Sincronizar eliminaciones
+                current_ids = [item.get("id") for item in data if item.get("id")]
+                if current_ids:
+                    res = supabase_client.table(table_name).select("id").execute()
+                    db_ids = [r.get("id") for r in res.data] if hasattr(res, "data") else []
+                    ids_to_delete = [db_id for db_id in db_ids if db_id not in current_ids]
+                    if ids_to_delete:
+                        for chunk in [ids_to_delete[i:i+100] for i in range(0, len(ids_to_delete), 100)]:
+                            supabase_client.table(table_name).delete().in_("id", chunk).execute()
+            elif isinstance(data, list) and len(data) == 0:
+                supabase_client.table(table_name).delete().neq("id", "placeholder_never_matches").execute()
+        except Exception as e:
+            print(f"[Supabase save_data] Error guardando tabla {table_name}: {e}")
+            
+    # Always write to local JSON for absolute durability and seamless local tests
     path = os.path.join(os.path.dirname(__file__), "..", "data", filename)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     try:
@@ -645,6 +697,7 @@ def admin_panel():
         # Cargar Tareas y Agenda
         tareas = load_data("tareas.json", [])
         agenda = load_data("agenda.json", [])
+        publicidad = load_data("publicidad.json", [])
 
         template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "admin.html")
         with open(template_path, "r", encoding="utf-8") as f:
@@ -667,7 +720,8 @@ def admin_panel():
             clientes_onboarding=clientes_onboarding,
             onboarding_template=onboarding_template,
             tareas=tareas,
-            agenda=agenda
+            agenda=agenda,
+            publicidad=publicidad
         )
     except Exception as e:
         print(f"[admin_panel] Error: {e}")
@@ -1470,6 +1524,702 @@ def admin_api_auditoria():
         }
         
         return jsonify({"ok": True, "datos": reporte, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+# -------------------------------------------------------------
+# FASE 10: PORTAL DEL CLIENTE (DASHBOARD)
+# -------------------------------------------------------------
+
+@app.route("/dashboard", methods=["GET"])
+def customer_dashboard():
+    if not check_rate_limit():
+        return "Too Many Requests", 429
+
+    cliente_id = request.cookies.get("cliente_id")
+    clientes = load_data("clientes.json", [])
+    
+    current_client = None
+    if cliente_id:
+        for c in clientes:
+            if c.get("id") == cliente_id:
+                current_client = c
+                break
+                
+    template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "dashboard.html")
+    if not os.path.exists(template_path):
+        return "Portal del Cliente en mantenimiento.", 503
+        
+    try:
+        with open(template_path, "r", encoding="utf-8") as f:
+            template_content = f.read()
+        return render_template_string(template_content, client=current_client, error=None)
+    except Exception as e:
+        return f"Error cargando portal del cliente: {e}", 500
+
+
+@app.route("/api/dashboard/login", methods=["POST"])
+def customer_dashboard_login():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    email = request.form.get("email", "").strip()
+    passcode = request.form.get("passcode", "").strip()
+
+    clientes = load_data("clientes.json", [])
+    matched_client = None
+    for c in clientes:
+        if (c.get("email") == email or c.get("id") == email) and c.get("acceso_key") == passcode:
+            matched_client = c
+            break
+
+    template_path = os.path.join(os.path.dirname(__file__), "..", "templates", "dashboard.html")
+    with open(template_path, "r", encoding="utf-8") as f:
+        template_content = f.read()
+
+    if not matched_client:
+        return render_template_string(template_content, client=None, error="Credenciales corporativas incorrectas.")
+
+    response = make_response(redirect("/dashboard"))
+    response.set_cookie("cliente_id", matched_client["id"], max_age=86400, path="/")
+    return response
+
+
+@app.route("/api/dashboard/logout", methods=["POST"])
+def customer_dashboard_logout():
+    response = make_response(redirect("/dashboard"))
+    response.delete_cookie("cliente_id")
+    return response
+
+
+@app.route("/api/dashboard", methods=["GET"])
+def api_customer_dashboard_data():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    query_id = request.args.get("cliente_id")
+
+    cliente_id = query_id or cookie_id
+    if not cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autenticado"}), 401
+
+    if cookie_id and query_id and cookie_id != query_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado para consultar esta cuenta"}), 403
+
+    try:
+        clientes = load_data("clientes.json", [])
+        client = None
+        for c in clientes:
+            if c.get("id") == cliente_id:
+                client = c
+                break
+
+        if not client:
+            return jsonify({"ok": False, "datos": None, "error": "Cliente no registrado"}), 404
+
+        facturas = [f for f in load_data("facturacion.json", []) if f.get("cliente_id") == cliente_id]
+        activaciones = [a for a in load_data("activaciones.json", []) if a.get("cliente_id") == cliente_id]
+        tickets = [t for t in load_data("tickets.json", []) if t.get("cliente_id") == cliente_id]
+
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        template = onboarding.get("template", [])
+        progreso = onboarding.get("progreso", {})
+
+        if cliente_id not in progreso:
+            c_prog = []
+            for t in template:
+                c_prog.append({
+                    "id": t.get("id"),
+                    "paso_numero": t.get("paso_numero"),
+                    "titulo": t.get("titulo"),
+                    "descripcion": t.get("descripcion"),
+                    "estado": "pendiente",
+                    "ultima_actualizacion": datetime.now().strftime("%Y-%m-%d")
+                })
+            progreso[cliente_id] = c_prog
+            onboarding["progreso"] = progreso
+            save_data("onboarding.json", onboarding)
+
+        cliente_progreso = progreso[cliente_id]
+
+        onboarding_pasos = []
+        completados = 0
+        for t in template:
+            estado_t = "pendiente"
+            for cp in cliente_progreso:
+                if cp.get("id") == t.get("id"):
+                    estado_t = cp.get("estado", "pendiente")
+                    break
+            if estado_t == "completado":
+                completados += 1
+            onboarding_pasos.append({
+                "id": t.get("id"),
+                "paso_numero": t.get("paso_numero"),
+                "titulo": t.get("titulo"),
+                "descripcion": t.get("descripcion"),
+                "obligatorio": t.get("obligatorio"),
+                "estado": estado_t
+            })
+
+        porcentaje = round((completados / len(template)) * 100) if template else 0
+
+        consolidado = {
+            "cliente": client,
+            "facturas": facturas,
+            "activaciones": activaciones,
+            "tickets": tickets,
+            "onboarding_pasos": onboarding_pasos,
+            "onboarding_porcentaje": porcentaje
+        }
+
+        return jsonify({"ok": True, "datos": consolidado, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/dashboard/activar", methods=["POST"])
+def api_customer_dashboard_activar():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    data = request.get_json(silent=True) or {}
+    cliente_id = data.get("cliente_id")
+
+    if not cookie_id or cookie_id != cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "Sesión inválida o no autorizada"}), 403
+
+    modulo = data.get("modulo")
+    if not modulo:
+        return jsonify({"ok": False, "datos": None, "error": "Nombre de módulo faltante"}), 400
+
+    try:
+        activaciones = load_data("activaciones.json", [])
+        
+        existente = False
+        for a in activaciones:
+            if a.get("cliente_id") == cliente_id and a.get("modulo") == modulo:
+                existente = True
+                break
+                
+        if existente:
+            return jsonify({"ok": False, "datos": None, "error": "Activación ya solicitada previamente"}), 400
+
+        nueva_act = {
+            "id": f"a{len(activaciones) + 1}",
+            "cliente_id": cliente_id,
+            "modulo": modulo,
+            "fecha_activacion": datetime.now().strftime("%Y-%m-%d"),
+            "licencia_key": f"AX-PEND-{cliente_id.upper()}-{int(time.time()) % 10000}",
+            "estado": "pendiente"
+        }
+        activaciones.append(nueva_act)
+        save_data("activaciones.json", activaciones)
+        
+        return jsonify({"ok": True, "datos": nueva_act, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/onboarding/<cliente_id>/completar", methods=["POST"])
+def api_onboarding_completar(cliente_id):
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    if not cookie_id or cookie_id != cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado para modificar esta cuenta"}), 403
+
+    data = request.get_json(silent=True) or {}
+    paso_id = data.get("id")
+
+    if not paso_id:
+        return jsonify({"ok": False, "datos": None, "error": "ID del paso faltante"}), 400
+
+    try:
+        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+        template = onboarding.get("template", [])
+        progreso = onboarding.get("progreso", {})
+
+        if cliente_id not in progreso:
+            c_prog = []
+            for t in template:
+                c_prog.append({
+                    "id": t.get("id"),
+                    "paso_numero": t.get("paso_numero"),
+                    "titulo": t.get("titulo"),
+                    "descripcion": t.get("descripcion"),
+                    "estado": "pendiente",
+                    "ultima_actualizacion": datetime.now().strftime("%Y-%m-%d")
+                })
+            progreso[cliente_id] = c_prog
+
+        cliente_progreso = progreso[cliente_id]
+        
+        encontrado = False
+        for cp in cliente_progreso:
+            if cp.get("id") == paso_id:
+                cp["estado"] = "completado"
+                cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
+                cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
+                encontrado = True
+                break
+
+        if not encontrado:
+            return jsonify({"ok": False, "datos": None, "error": "Paso no encontrado en onboarding"}), 404
+
+        onboarding["progreso"] = progreso
+        save_data("onboarding.json", onboarding)
+
+        return jsonify({"ok": True, "datos": cliente_progreso, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+# -------------------------------------------------------------
+# FASE 11: PASARELA DE PAGO REAL (CULQI)
+# -------------------------------------------------------------
+
+_PAYMENT_IP_REQUESTS = defaultdict(list)
+
+def check_payment_rate_limit() -> bool:
+    ip = request.headers.get("x-forwarded-for", request.remote_addr)
+    if ip and "," in ip:
+        ip = ip.split(",")[0].strip()
+    now = time.time()
+    _PAYMENT_IP_REQUESTS[ip] = [t for t in _PAYMENT_IP_REQUESTS[ip] if now - t < 60]
+    if len(_PAYMENT_IP_REQUESTS[ip]) >= 10:
+        return False
+    _PAYMENT_IP_REQUESTS[ip].append(now)
+    return True
+
+
+@app.route("/api/pago/config", methods=["GET"])
+def api_pago_config():
+    return jsonify({
+        "ok": True,
+        "datos": {
+            "public_key": os.getenv("CULQI_PUBLIC_KEY", "pk_test_axyntrax123"),
+            "environment": os.getenv("CULQI_ENVIRONMENT", "sandbox")
+        },
+        "error": None
+    }), 200
+
+
+@app.route("/api/pago/crear", methods=["POST"])
+def api_pago_crear():
+    if not check_payment_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    data = request.get_json(silent=True) or {}
+    cliente_id = data.get("cliente_id")
+
+    if not cookie_id or cookie_id != cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "Sesión no autorizada"}), 403
+
+    plan = data.get("plan", "").lower()
+    token_id = data.get("token_id")
+    
+    plan_prices = {
+        "starter": 199.00,
+        "pro": 399.00,
+        "pro cloud": 399.00,
+        "diamante": 799.00
+    }
+
+    clean_plan = None
+    for k in plan_prices.keys():
+        if k in plan:
+            clean_plan = k
+            break
+
+    if not clean_plan:
+        return jsonify({"ok": False, "datos": None, "error": "Plan inválido"}), 400
+
+    monto = plan_prices[clean_plan]
+    monto_cents = int(monto * 100)
+
+    try:
+        clientes = load_data("clientes.json", [])
+        client = None
+        for c in clientes:
+            if c.get("id") == cliente_id:
+                client = c
+                break
+
+        if not client:
+            return jsonify({"ok": False, "datos": None, "error": "Cliente no encontrado"}), 404
+
+        email = client.get("email", "ventas@axyntrax-automation.com")
+        charge_id = f"chg_test_{int(time.time())}"
+        
+        sk = os.getenv("CULQI_SECRET_KEY", "sk_test_axyntrax456")
+        if sk and sk != "PENDIENTE_POR_ADMIN" and not sk.startswith("sk_test_axyntrax") and token_id:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {sk}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "amount": monto_cents,
+                    "currency_code": "PEN",
+                    "email": email,
+                    "source_id": token_id,
+                    "metadata": {
+                        "cliente_id": cliente_id,
+                        "plan": clean_plan
+                    }
+                }
+                r = requests.post("https://api.culqi.com/v2/charges", json=payload, headers=headers, timeout=10)
+                if r.ok:
+                    res_json = r.json()
+                    charge_id = res_json.get("id", charge_id)
+                else:
+                    return jsonify({"ok": False, "datos": None, "error": f"Error de Culqi: {r.text}"}), 400
+            except Exception as ex:
+                print(f"[api_pago_crear] Culqi request error: {ex}")
+
+        facturacion = load_data("facturacion.json", [])
+        new_invoice = {
+            "id": f"f{len(facturacion) + 1}",
+            "cliente_id": cliente_id,
+            "monto": monto,
+            "fecha_emision": datetime.now().strftime("%Y-%m-%d"),
+            "estado": "pendiente",
+            "nro_comprobante": f"PE-{charge_id.split('_')[-1]}",
+            "charge_id": charge_id,
+            "plan_solicitado": clean_plan.capitalize()
+        }
+        facturacion.append(new_invoice)
+        save_data("facturacion.json", facturacion)
+
+        return jsonify({
+            "ok": True,
+            "datos": {
+                "charge_id": charge_id,
+                "monto": monto,
+                "moneda": "PEN",
+                "estado": "pendiente"
+            },
+            "error": None
+        }), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/pago/confirmar", methods=["POST"])
+def api_pago_confirmar():
+    if not check_payment_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    data = request.get_json(silent=True) or {}
+    cliente_id = data.get("cliente_id")
+    charge_id = data.get("charge_id")
+
+    if not cookie_id or cookie_id != cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "Sesión no autorizada"}), 403
+
+    if not charge_id:
+        return jsonify({"ok": False, "datos": None, "error": "Falta el ID de cargo (charge_id)"}), 400
+
+    try:
+        facturacion = load_data("facturacion.json", [])
+        target_invoice = None
+        for f in facturacion:
+            if f.get("charge_id") == charge_id and f.get("cliente_id") == cliente_id:
+                target_invoice = f
+                break
+
+        if not target_invoice:
+            return jsonify({"ok": False, "datos": None, "error": "Transacción no encontrada"}), 404
+
+        pago_exitoso = True
+        sk = os.getenv("CULQI_SECRET_KEY", "sk_test_axyntrax456")
+        if sk and sk != "PENDIENTE_POR_ADMIN" and not sk.startswith("sk_test_axyntrax") and not charge_id.startswith("chg_test_"):
+            try:
+                headers = {"Authorization": f"Bearer {sk}"}
+                r = requests.get(f"https://api.culqi.com/v2/charges/{charge_id}", headers=headers, timeout=10)
+                if r.ok:
+                    res_json = r.json()
+                    pago_exitoso = res_json.get("outcome", {}).get("type") == "venta_exitosa" or res_json.get("state") == "captured"
+                else:
+                    pago_exitoso = False
+            except Exception as ex:
+                print(f"[api_pago_confirmar] Culqi verify error: {ex}")
+                pago_exitoso = False
+
+        if pago_exitoso:
+            target_invoice["estado"] = "pagado"
+            save_data("facturacion.json", facturacion)
+
+            clientes = load_data("clientes.json", [])
+            for c in clientes:
+                if c.get("id") == cliente_id:
+                    plan_solicitado = target_invoice.get("plan_solicitado", "Starter").capitalize()
+                    if "starter" in plan_solicitado.lower():
+                        c["plan"] = "Starter S/199"
+                    elif "pro" in plan_solicitado.lower():
+                        c["plan"] = "Pro Cloud S/399"
+                    elif "diamante" in plan_solicitado.lower():
+                        c["plan"] = "Diamante S/799"
+                    else:
+                        c["plan"] = plan_solicitado
+                        
+                    nueva_renovacion = datetime.now() + timedelta(days=30)
+                    c["renovacion"] = nueva_renovacion.strftime("%Y-%m-%d")
+                    break
+            save_data("clientes.json", clientes)
+
+            # Confirmar onboarding
+            onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
+            progreso = onboarding.get("progreso", {})
+            if cliente_id in progreso:
+                for cp in progreso[cliente_id]:
+                    if cp.get("id") == "paso10" and cp.get("estado") == "pendiente":
+                        cp["estado"] = "completado"
+                        cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
+                        cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
+                onboarding["progreso"] = progreso
+                save_data("onboarding.json", onboarding)
+
+            return jsonify({
+                "ok": True,
+                "datos": {
+                    "estado": "pagado",
+                    "plan": target_invoice.get("plan_solicitado"),
+                    "mensaje": "¡Pago confirmado con éxito! Tu plan ha sido renovado."
+                },
+                "error": None
+            }), 200
+        else:
+            target_invoice["estado"] = "fallido"
+            save_data("facturacion.json", facturacion)
+            return jsonify({
+                "ok": False,
+                "datos": {"estado": "fallido"},
+                "error": "El cargo no pudo ser procesado o fue rechazado por la entidad bancaria."
+            }), 400
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/pago/historial", methods=["GET"])
+def api_pago_historial():
+    if not check_payment_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+
+    cookie_id = request.cookies.get("cliente_id")
+    query_id = request.args.get("cliente_id")
+
+    cliente_id = query_id or cookie_id
+    if not cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autenticado"}), 401
+
+    if cookie_id and query_id and cookie_id != query_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+
+    try:
+        facturacion = load_data("facturacion.json", [])
+        cliente_facturas = [f for f in facturacion if f.get("cliente_id") == cliente_id]
+        return jsonify({"ok": True, "datos": cliente_facturas, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/webhook/culqi", methods=["POST"])
+def api_webhook_culqi():
+    try:
+        data = request.get_json(silent=True) or {}
+        event_type = data.get("type")
+        
+        if event_type == "charge.creation.successful":
+            object_data = data.get("data", {})
+            charge_id = object_data.get("id")
+            metadata = object_data.get("metadata", {})
+            cliente_id = metadata.get("cliente_id")
+            plan = metadata.get("plan")
+
+            if charge_id and cliente_id:
+                facturacion = load_data("facturacion.json", [])
+                invoice_found = False
+                for f in facturacion:
+                    if f.get("charge_id") == charge_id:
+                        f["estado"] = "pagado"
+                        invoice_found = True
+                        break
+                
+                if not invoice_found:
+                    monto = float(object_data.get("amount", 0)) / 100.0
+                    facturacion.append({
+                        "id": f"f{len(facturacion) + 1}",
+                        "cliente_id": cliente_id,
+                        "monto": monto,
+                        "fecha_emision": datetime.now().strftime("%Y-%m-%d"),
+                        "estado": "pagado",
+                        "nro_comprobante": f"PE-{charge_id.split('_')[-1]}",
+                        "charge_id": charge_id,
+                        "plan_solicitado": plan
+                    })
+                save_data("facturacion.json", facturacion)
+
+                clientes = load_data("clientes.json", [])
+                for c in clientes:
+                    if c.get("id") == cliente_id:
+                        if "starter" in str(plan).lower():
+                            c["plan"] = "Starter S/199"
+                        elif "pro" in str(plan).lower():
+                            c["plan"] = "Pro Cloud S/399"
+                        elif "diamante" in str(plan).lower():
+                            c["plan"] = "Diamante S/799"
+                        else:
+                            c["plan"] = plan
+                            
+                        nueva_renovacion = datetime.now() + timedelta(days=30)
+                        c["renovacion"] = nueva_renovacion.strftime("%Y-%m-%d")
+                        break
+                save_data("clientes.json", clientes)
+
+        return jsonify({"ok": True, "message": "Webhook procesado"}), 200
+    except Exception as e:
+        print(f"[api_webhook_culqi] Webhook error: {e}")
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+# -------------------------------------------------------------
+# FASE 12: MÓDULO DE PUBLICIDAD
+# -------------------------------------------------------------
+
+@app.route("/api/publicidad", methods=["GET"])
+def api_publicidad_list():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+    
+    cookie_id = request.cookies.get("cliente_id")
+    query_id = request.args.get("cliente_id")
+    cliente_id = query_id or cookie_id
+    
+    if not cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autenticado"}), 401
+        
+    if cookie_id and query_id and cookie_id != query_id:
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+        
+    try:
+        publicidad = load_data("publicidad.json", [])
+        campanas = [c for c in publicidad if c.get("cliente_id") == cliente_id]
+        return jsonify({"ok": True, "datos": campanas, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/publicidad/crear", methods=["POST"])
+def api_publicidad_crear():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+        
+    cookie_id = request.cookies.get("cliente_id")
+    data = request.get_json(silent=True) or {}
+    cliente_id = data.get("cliente_id")
+    
+    if not cookie_id or cookie_id != cliente_id:
+        return jsonify({"ok": False, "datos": None, "error": "Sesión no autorizada"}), 403
+        
+    nombre = data.get("nombre")
+    canal = data.get("canal")
+    presupuesto = data.get("presupuesto", 0.0)
+    
+    if not nombre or not canal:
+        return jsonify({"ok": False, "datos": None, "error": "Faltan parámetros obligatorios"}), 400
+        
+    try:
+        publicidad = load_data("publicidad.json", [])
+        new_campana = {
+            "id": f"pub{len(publicidad) + 1}",
+            "cliente_id": cliente_id,
+            "nombre": nombre,
+            "canal": canal,
+            "presupuesto": float(presupuesto),
+            "estado": "borrador",
+            "clics": 0,
+            "impresiones": 0,
+            "conversiones": 0,
+            "fecha_creacion": datetime.now().strftime("%Y-%m-%d")
+        }
+        publicidad.append(new_campana)
+        save_data("publicidad.json", publicidad)
+        return jsonify({"ok": True, "datos": new_campana, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/api/publicidad/actualizar", methods=["POST"])
+def api_publicidad_actualizar():
+    if not check_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+        
+    cookie_id = request.cookies.get("cliente_id")
+    data = request.get_json(silent=True) or {}
+    cliente_id = data.get("cliente_id")
+    campana_id = data.get("id")
+    
+    # También permitir a un admin/soporte autenticado actualizar desde admin panel
+    es_admin = False
+    auth = request.authorization
+    if auth and check_auth(auth.username, auth.password):
+        es_admin = True
+        
+    if not es_admin and (not cookie_id or cookie_id != cliente_id):
+        return jsonify({"ok": False, "datos": None, "error": "Sesión no autorizada"}), 403
+            
+    if not campana_id:
+        return jsonify({"ok": False, "datos": None, "error": "Falta ID de campaña"}), 400
+        
+    try:
+        publicidad = load_data("publicidad.json", [])
+        target = None
+        for c in publicidad:
+            if c.get("id") == campana_id:
+                target = c
+                break
+                
+        if not target:
+            return jsonify({"ok": False, "datos": None, "error": "Campaña no encontrada"}), 404
+            
+        if "estado" in data:
+            target["estado"] = data["estado"]
+        if "clics" in data:
+            target["clics"] = int(data["clics"])
+        if "impresiones" in data:
+            target["impresiones"] = int(data["impresiones"])
+        if "conversiones" in data:
+            target["conversiones"] = int(data["conversiones"])
+        if "presupuesto" in data:
+            target["presupuesto"] = float(data["presupuesto"])
+            
+        save_data("publicidad.json", publicidad)
+        return jsonify({"ok": True, "datos": target, "error": None}), 200
+    except Exception as e:
+        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+
+
+@app.route("/admin/api/publicidad", methods=["GET"])
+@requires_auth
+def admin_api_publicidad():
+    if not check_admin_rate_limit():
+        return jsonify({"ok": False, "datos": None, "error": "Too Many Requests"}), 429
+        
+    username = request.authorization.username
+    rol = get_auth_user_role(username)
+    if rol not in ("admin", "soporte"):
+        return jsonify({"ok": False, "datos": None, "error": "No autorizado"}), 403
+        
+    try:
+        publicidad = load_data("publicidad.json", [])
+        return jsonify({"ok": True, "datos": publicidad, "error": None}), 200
     except Exception as e:
         return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 

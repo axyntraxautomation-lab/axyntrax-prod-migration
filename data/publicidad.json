@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pub1",
+    "cliente_id": "c1",
+    "nombre": "Campaña Diagnóstico Completo Primavera",
+    "canal": "meta",
+    "presupuesto": 450.00,
+    "estado": "activa",
+    "clics": 124,
+    "impresiones": 3200,
+    "conversiones": 18,
+    "fecha_creacion": "2026-05-02"
+  },
+  {
+    "id": "pub2",
+    "cliente_id": "c1",
+    "nombre": "Oferta Cambio de Aceite Semanal",
+    "canal": "whatsapp",
+    "presupuesto": 150.00,
+    "estado": "pausada",
+    "clics": 89,
+    "impresiones": 650,
+    "conversiones": 12,
+    "fecha_creacion": "2026-05-10"
+  }
+]

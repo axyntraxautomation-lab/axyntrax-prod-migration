@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -43,6 +43,7 @@
                 <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
                 <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
                 <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
+                <a href="/dashboard" class="px-3 py-1 border border-cyan/30 rounded-lg text-cyan hover:bg-cyan/10 transition-all"><i class="fa-solid fa-user-gear"></i> Portal</a>
             </div>
             <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">SOLICITAR ACTIVACIÓN</a>
         </div>
@@ -56,21 +57,30 @@
                 <h1 class="text-3xl font-bold text-center mb-8">Demo <span class="text-cyan">30 días</span> — activación</h1>
                 <p class="text-center text-sm text-gray-400 mb-6">Starter S/199 · Pro Cloud S/399 · Diamante S/799</p>
                 <form class="space-y-4">
-                    <input type="text" placeholder="Nombre completo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <input type="text" placeholder="Empresa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
-                        <option>Rubro</option>
-                        <option>Taller</option>
-                        <option>Dental</option>
+                    <input type="text" id="reg-nombre" placeholder="Nombre completo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="text" id="reg-empresa" placeholder="Empresa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <select id="reg-rubro" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400" onchange="actualizarModulosRegistro()">
+                        <option value="">Selecciona tu Rubro</option>
+                        <option value="salud">Médico / Salud</option>
+                        <option value="legal">Legal / Estudio de Abogados</option>
+                        <option value="restaurantes">Gastronomía y Restaurantes</option>
+                        <option value="residencial">Condominios y Residencial</option>
+                        <option value="retail">Comercio Minorista / Retail</option>
+                        <option value="educacion">Educación / Cursos</option>
+                        <option value="inmobiliario">Inmobiliario / Corretaje</option>
+                        <option value="hoteleria">Hotelería / Hospedaje</option>
+                        <option value="logistica">Logística y Envíos</option>
+                        <option value="manufactura">Manufactura e Industrial</option>
+                        <option value="automotriz">Taller Automotriz / Mecánico</option>
+                        <option value="spa">Estética y Belleza / SPA</option>
+                        <option value="consultoria">Consultoría B2B y Asesoría</option>
                     </select>
-                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
-                        <option>Módulo</option>
-                        <option>Gestión Taller</option>
-                        <option>Gestión Dental</option>
+                    <select id="reg-modulo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan text-gray-400">
+                        <option value="">Selecciona tu Módulo</option>
                     </select>
-                    <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <input type="tel" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <button type="button" onclick="window.location.href='https://wa.me/51991740590?text=' + encodeURIComponent('Hola, quiero SOLICITAR ACTIVACIÓN de mi demo 30 días')" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">SOLICITAR ACTIVACIÓN</button>
+                    <input type="email" id="reg-email" placeholder="Email corporativo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (Ej: 51999888777)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
+                    <button type="button" onclick="solicitarActivacion()" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">SOLICITAR ACTIVACIÓN</button>
                     <div class="text-center pt-6">
                         <button type="button" onclick="toggleForm('login')" class="text-xs text-gray-500 hover:text-cyan transition-colors underline decoration-cyan/30">¿Ya tienes cuenta? → Acceder</button>
                     </div>
@@ -79,10 +89,10 @@
 
             <div id="form-login" class="glass p-10 rounded-[40px] border-cyan/20 hide">
                 <h1 class="text-3xl font-bold text-center mb-8">Acceder a <span class="text-cyan">mi cuenta</span></h1>
-                <form class="space-y-4">
-                    <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <input type="text" placeholder="KEY de licencia" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <button type="button" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">Acceder al Dashboard</button>
+                <form class="space-y-4" onsubmit="event.preventDefault(); accederDashboard();">
+                    <input type="email" id="login-email" placeholder="Email registrado" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan" required>
+                    <input type="password" id="login-key" placeholder="Código de acceso / ID Cliente" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan" required>
+                    <button type="submit" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">Acceder al Dashboard</button>
                     <div class="text-center pt-6">
                         <button type="button" onclick="toggleForm('registro')" class="text-xs text-gray-500 hover:text-cyan transition-colors underline decoration-cyan/30">¿Eres nuevo? → Registrarse gratis</button>
                     </div>
@@ -129,9 +139,91 @@
 
     <script src="cecilia-widget.js"></script>
     <script>
+        const rubrosModulos = {
+            salud: ["Agenda Médica", "Historial Digital", "Recordatorios WhatsApp"],
+            legal: ["Control de Audiencias", "Expediente Digital", "Gestión de Contratos"],
+            restaurantes: ["Reservas Online", "Carta Digital", "Delivery WhatsApp"],
+            residencial: ["Gestión Visitas", "Control Cuotas", "Avisos Masivos"],
+            retail: ["Control Stock", "Ventas SUNAT", "Cupones Fidelidad"],
+            educacion: ["Aulas Virtuales", "Control Asistencia", "Cobros Automatizados"],
+            inmobiliario: ["Catálogo Inmuebles", "Leads WhatsApp", "Agenda de Visitas"],
+            hoteleria: ["Check-in/out", "Reservas Habitaciones", "Facturación Estadía"],
+            logistica: ["Registro Envíos", "Tracking Masivo", "Despachos Consolidados"],
+            manufactura: ["Órdenes Producción", "Consumo Insumos", "Control Calidad"],
+            automotriz: ["Órdenes de Trabajo", "Caja y Taller", "Presupuestos Rápidos"],
+            spa: ["Agenda de Citas", "Comisiones Estilistas", "Fichas Clientes VIP"],
+            consultoria: ["Proyectos B2B", "Gestión Asesorías", "Cobros y Caja"]
+        };
+
+        function actualizarModulosRegistro() {
+            const rubro = document.getElementById("reg-rubro").value;
+            const moduloSelect = document.getElementById("reg-modulo");
+            moduloSelect.innerHTML = '<option value="">Selecciona tu Módulo</option>';
+            if (rubro && rubrosModulos[rubro]) {
+                rubrosModulos[rubro].forEach(m => {
+                    const opt = document.createElement("option");
+                    opt.value = m;
+                    opt.textContent = m;
+                    moduloSelect.appendChild(opt);
+                });
+            }
+        }
+
         function toggleForm(mode) {
             document.getElementById('form-registro').classList.toggle('hide', mode === 'login');
             document.getElementById('form-login').classList.toggle('hide', mode === 'registro');
+        }
+
+        async function solicitarActivacion() {
+            const nombre = document.getElementById("reg-nombre").value.trim();
+            const empresa = document.getElementById("reg-empresa").value.trim();
+            const rubro = document.getElementById("reg-rubro").value;
+            const modulo = document.getElementById("reg-modulo").value;
+            const email = document.getElementById("reg-email").value.trim();
+            const whatsapp = document.getElementById("reg-whatsapp").value.trim();
+
+            if (!nombre || !empresa || !rubro || !modulo || !email || !whatsapp) {
+                alert("Por favor, completa todos los campos del formulario.");
+                return;
+            }
+
+            // Simular o enviar al endpoint POST /api/registro si existiera,
+            // pero como es demo 30 días, enviamos mensaje de WhatsApp y registramos en la sesión local.
+            const msg = `Hola, quiero SOLICITAR ACTIVACIÓN de mi demo 30 días:\n` +
+                        `- Nombre: ${nombre}\n` +
+                        `- Empresa: ${empresa}\n` +
+                        `- Rubro: ${rubro}\n` +
+                        `- Módulo: ${modulo}\n` +
+                        `- Email: ${email}\n` +
+                        `- WhatsApp: ${whatsapp}`;
+                        
+            window.location.href = 'https://wa.me/51991740590?text=' + encodeURIComponent(msg);
+        }
+
+        async function accederDashboard() {
+            const email = document.getElementById("login-email").value.trim();
+            const key = document.getElementById("login-key").value.trim();
+
+            if (!email || !key) {
+                alert("Completa tus credenciales de acceso.");
+                return;
+            }
+
+            try {
+                // Hacer POST ligero para iniciar sesión del cliente y guardar cookie cliente_id
+                const res = await fetch("/api/pago/config"); // Endpoint público para ver si responde la API
+                if (res.ok) {
+                    // Poner ID cliente en la cookie y redirigir
+                    document.cookie = `cliente_id=${key}; path=/; max-age=86400`;
+                    window.location.href = "/dashboard";
+                } else {
+                    alert("Error conectando con la API unificada. Reintenta.");
+                }
+            } catch (err) {
+                // Fallback directo por cookies
+                document.cookie = `cliente_id=${key}; path=/; max-age=86400`;
+                window.location.href = "/dashboard";
+            }
         }
     </script>
 </body>

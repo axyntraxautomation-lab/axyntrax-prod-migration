@@ -326,6 +326,9 @@ class CeciliaAssistant {
         const input = userInput.toLowerCase();
         const registro = this.config?.cta?.registro_path || '/registro.html';
         const installer = this.config?.cta?.installer_url || 'https://www.axyntrax-automation.net/api/installer';
+        if (input.includes('dashboard') || input.includes('portal') || input.includes('mi cuenta') || input.includes('mi plan') || input.includes('mis facturas') || input.includes('onboarding')) {
+            return '¡Por supuesto! Puedes autogestionar tu plan, ver tus facturas, registrar tickets y revisar tu onboarding en tu Portal del Cliente oficial: /dashboard';
+        }
         if (input.includes('precio') || input.includes('costo') || input.includes('cuanto')) {
             return `Planes: Starter S/199, Pro Cloud S/399, Diamante S/799. En ${registro} pulsa SOLICITAR ACTIVACIÓN.`;
         }
