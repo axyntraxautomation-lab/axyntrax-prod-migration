@@ -1186,39 +1186,7 @@ def api_onboarding_get(cliente_id):
         return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
 
 
-@app.route("/api/onboarding/<cliente_id>/completar", methods=["POST"])
-def api_onboarding_completar(cliente_id):
-    try:
-        data = request.get_json(silent=True) or {}
-        paso_id = data.get("id")
-        if not paso_id:
-            return jsonify({"ok": False, "datos": None, "error": "Falta parámetro 'id'"}), 400
-            
-        onboarding = load_data("onboarding.json", {"template": [], "progreso": {}})
-        progreso = onboarding.get("progreso", {})
-        
-        if cliente_id not in progreso:
-            return jsonify({"ok": False, "datos": None, "error": "Cliente no encontrado"}), 404
-            
-        cliente_progreso = progreso[cliente_id]
-        encontrado = False
-        for cp in cliente_progreso:
-            if cp.get("id") == paso_id:
-                cp["estado"] = "completado"
-                cp["fecha_completado"] = datetime.now().strftime("%Y-%m-%d")
-                cp["ultima_actualizacion"] = datetime.now().strftime("%Y-%m-%d")
-                encontrado = True
-                break
-                
-        if not encontrado:
-            return jsonify({"ok": False, "datos": None, "error": "Paso no encontrado"}), 404
-            
-        onboarding["progreso"] = progreso
-        save_data("onboarding.json", onboarding)
-        
-        return jsonify({"ok": True, "datos": {"cliente_id": cliente_id, "paso_id": paso_id, "estado": "completado"}, "error": None}), 200
-    except Exception as e:
-        return jsonify({"ok": False, "datos": None, "error": str(e)}), 500
+# First occurrence of api_onboarding_completar removed because it is defined later at line 1726 with proper rate limits and auth validation.
 
 
 @app.route("/api/onboarding/<cliente_id>/siguiente", methods=["GET"])
