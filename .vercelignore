@@ -22,7 +22,10 @@ axia-core/
 keygen/
 scripts/
 node_modules/
+**/node_modules/
 .git/
+**/.git/
+axyntrax-home/**
 project_state_light.json
 mark_history.json
 backend/
