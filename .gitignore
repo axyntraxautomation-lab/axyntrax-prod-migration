@@ -21,3 +21,5 @@ reportes/
 .agents/
 .netlify/
 .vercel/
+.env
+.env.production

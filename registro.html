@@ -44,18 +44,17 @@
                 <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
                 <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
             </div>
-            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">SOLICITAR ACTIVACIÓN</a>
         </div>
     </nav>
 
-    <!-- CONTENT -->
     <main class="flex-grow flex items-center justify-center pt-32 pb-20 px-6">
         <div class="max-w-md w-full relative">
             <div class="absolute -top-20 -left-20 w-64 h-64 bg-cyan/5 blur-[100px] rounded-full -z-10"></div>
             
-            <!-- REGISTRO -->
             <div id="form-registro" class="glass p-10 rounded-[40px] border-cyan/20">
-                <h1 class="text-3xl font-bold text-center mb-8">Empieza tu <span class="text-cyan">Demo Gratis</span></h1>
+                <h1 class="text-3xl font-bold text-center mb-8">Demo <span class="text-cyan">45 días</span> — activación</h1>
+                <p class="text-center text-sm text-gray-400 mb-6">Starter S/199 · Pro Cloud S/399 · Diamante S/799</p>
                 <form class="space-y-4">
                     <input type="text" placeholder="Nombre completo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
                     <input type="text" placeholder="Empresa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
@@ -71,14 +70,13 @@
                     </select>
                     <input type="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
                     <input type="tel" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan">
-                    <button type="button" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">Crear cuenta y recibir KEY</button>
+                    <button type="button" onclick="window.location.href='https://wa.me/51991740590?text=' + encodeURIComponent('Hola, quiero SOLICITAR ACTIVACIÓN de mi demo 45 días')" class="w-full py-4 cyan-gradient text-dark font-black rounded-xl text-lg mt-4">SOLICITAR ACTIVACIÓN</button>
                     <div class="text-center pt-6">
                         <button type="button" onclick="toggleForm('login')" class="text-xs text-gray-500 hover:text-cyan transition-colors underline decoration-cyan/30">¿Ya tienes cuenta? → Acceder</button>
                     </div>
                 </form>
             </div>
 
-            <!-- LOGIN -->
             <div id="form-login" class="glass p-10 rounded-[40px] border-cyan/20 hide">
                 <h1 class="text-3xl font-bold text-center mb-8">Acceder a <span class="text-cyan">mi cuenta</span></h1>
                 <form class="space-y-4">
@@ -130,18 +128,6 @@
     </footer>
 
     <script src="cecilia-widget.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="email-sistema.js"></script>
-
-    <!-- SCRIPTS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="email-sistema.js"></script>
-    <script>
-        (function() {
-            emailjs.init("TU_PUBLIC_KEY");
-        })();
-    </script>
-
     <script>
         function toggleForm(mode) {
             document.getElementById('form-registro').classList.toggle('hide', mode === 'login');

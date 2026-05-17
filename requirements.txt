@@ -1,10 +1,2 @@
-fastapi==0.110.0
-uvicorn==0.29.0
-python-dotenv==1.0.1
-aiofiles==23.2.1
-firebase-admin==6.5.0
-PyJWT==2.8.0
 flask==3.0.3
-flask-cors==4.0.0
-google-generativeai
-requests
+requests>=2.31.0

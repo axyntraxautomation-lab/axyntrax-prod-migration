@@ -33,13 +33,6 @@
 </head>
 <body class="antialiased">
 
-    <!-- NAVBAR -->
-    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2">
-                <div class="w-8 h-8 cyan-gradient rounded-lg flex items-center justify-center font-bold text-dark text-xl">A</div>
-                <span class="text-2xl font-bold tracking-tighter uppercase">AXYNTRAX</span>
-            </a>
     <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-2">
@@ -50,17 +43,13 @@
                 <a href="index.html#modulos" class="hover:text-cyan transition-colors">Módulos</a>
                 <a href="index.html#planes" class="hover:text-cyan transition-colors">Planes</a>
                 <a href="index.html#como-funciona" class="hover:text-cyan transition-colors">Cómo Funciona</a>
-                <a href="faq.html" class="hover:text-cyan transition-colors">FAQ</a>
+                <a href="faq.html" class="hover:text-cyan transition-colors text-cyan">FAQ</a>
                 <a href="nosotros.html" class="hover:text-cyan transition-colors">Nosotros</a>
             </div>
-            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">Demo 30 días gratis</a>
-        </div>
-    </nav>
-            <a href="/registro" class="hidden lg:block px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm">Demo 30 días</a>
+            <a href="registro.html" class="px-6 py-2.5 cyan-gradient text-dark font-bold rounded-full text-sm hover:scale-105 transition-transform">SOLICITAR ACTIVACIÓN</a>
         </div>
     </nav>
 
-    <!-- HERO -->
     <section class="pt-40 pb-20 relative">
         <div class="max-w-3xl mx-auto px-6 text-center">
             <h1 class="text-5xl font-bold mb-4">Preguntas <span class="text-cyan">Frecuentes</span></h1>
@@ -68,11 +57,9 @@
         </div>
     </section>
 
-    <!-- FAQ -->
     <section class="pb-32 px-6">
         <div class="max-w-3xl mx-auto space-y-12">
             
-            <!-- Category: GENERAL -->
             <div>
                 <h3 class="text-xs font-bold text-cyan uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
                     <span class="w-8 h-[1px] bg-cyan/30"></span> GENERAL
@@ -101,15 +88,14 @@
                 </div>
             </div>
 
-            <!-- Category: DEMO -->
             <div>
                 <h3 class="text-xs font-bold text-cyan uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
                     <span class="w-8 h-[1px] bg-cyan/30"></span> DEMO Y REGISTRO
                 </h3>
                 <div class="space-y-4">
                     <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
-                        <div class="flex justify-between items-center font-bold text-sm">¿Cómo funciona la demo de 30 días?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
-                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Te registras, recibes tu KEY y tienes acceso completo a las funciones básicas de hasta 3 módulos durante un mes sin costo.</div>
+                        <div class="flex justify-between items-center font-bold text-sm">¿Cómo funciona la demo de 45 días?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
+                        <div class="accordion-content text-gray-400 text-xs mt-4 leading-relaxed">Te registras, recibes tu KEY y tienes acceso completo a las funciones básicas de hasta 3 módulos durante 45 días sin costo.</div>
                     </div>
                     <div class="accordion-item glass border border-white/5 rounded-2xl p-6 cursor-pointer" onclick="toggleAccordion(this)">
                         <div class="flex justify-between items-center font-bold text-sm">¿Necesito tarjeta de crédito?<i class="fa-solid fa-chevron-down text-cyan text-xs"></i></div>
@@ -130,15 +116,13 @@
                 </div>
             </div>
 
-            <!-- More categories (PLANES, TÉCNICO) follow same pattern -->
             <div class="text-center pt-10 border-t border-white/5">
                 <p class="text-gray-500 text-sm mb-6">¿No encontraste tu respuesta?</p>
-                <button onclick="document.getElementById('chat-window').classList.remove('hidden')" class="px-8 py-3 cyan-gradient text-dark font-black rounded-xl hover:scale-105 transition-transform">Habla con Cecilia</button>
+                <button type="button" onclick="window.cecilia && window.cecilia.toggleWindow()" class="px-8 py-3 cyan-gradient text-dark font-black rounded-xl hover:scale-105 transition-transform">Habla con Cecilia</button>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="pt-20 pb-10 border-t border-white/5 mt-auto">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
@@ -171,35 +155,11 @@
                 <span>Hosting Vercel</span>
                 <span>Pagos Culqi</span>
                 <span>Facturación SUNAT</span>
-                <script src="cecilia-widget.js"></script>
             </div>
         </div>
     </footer>
 
-    <!-- BOTÓN WHATSAPP -->
-    <a href="https://wa.me/51991740590" target="_blank" class="fixed bottom-28 right-8 z-[100] w-14 h-14 bg-[#25D366] rounded-full shadow-2xl flex items-center justify-center text-white text-2xl hover:scale-110 transition-transform">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-
-    <!-- WIDGET CECILIA -->
-    <div class="fixed bottom-8 right-8 z-[100]">
-        <button onclick="document.getElementById('chat-window').classList.toggle('hidden')" class="w-16 h-16 cyan-gradient rounded-full shadow-2xl flex items-center justify-center text-dark text-3xl hover:scale-110 transition-transform relative">
-            <i class="fa-solid fa-robot"></i><span class="absolute top-0 right-0 w-4 h-4 bg-green-500 border-2 border-dark rounded-full"></span>
-        </button>
-        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 glass rounded-[32px] overflow-hidden shadow-2xl border-cyan/20">
-            <div class="bg-cyan p-4 flex items-center gap-3">
-                <div class="w-10 h-10 bg-dark rounded-full flex items-center justify-center text-xl">🤖</div>
-                <div class="text-dark font-bold text-sm">Cecilia AI</div>
-            </div>
-            <div class="p-4 h-64 overflow-y-auto text-xs space-y-4 bg-dark/20">
-                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none max-w-[80%]">Hola, soy Cecilia 👋 ¿En qué te ayudo?</div>
-            </div>
-            <div class="p-4 border-t border-white/5 flex gap-2">
-                <input type="text" placeholder="Escribe aquí..." class="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] outline-none">
-                <button class="text-cyan text-lg"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+    <script src="cecilia-widget.js"></script>
 
     <script>
         function toggleAccordion(element) {

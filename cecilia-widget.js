@@ -3,20 +3,31 @@
  * Repaired from scratch v2.0
  */
 
+const CECILIA_FALLBACK =
+    '✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer';
+
+const TECHNICAL_REPLY_RE =
+    /error en mi cerebro|dificultades técnicas|problema técnico|error 500|error 404|traceback|exception/i;
+
 class CeciliaAssistant {
     constructor() {
         this.isOpen = false;
+        this.config = null;
         this.messages = [
             { role: 'bot', text: '¡Hola! Soy Cecilia, tu asistente virtual de AxyntraX. 🤖' },
-            { role: 'bot', text: '¿Te gustaría agendar una demo gratuita de 30 días o tienes alguna duda sobre nuestros módulos?' }
+            { role: 'bot', text: '¿Listo para SOLICITAR ACTIVACIÓN? Demo 45 días · planes desde S/199. Escríbeme.' }
         ];
         this.init();
     }
 
-    init() {
+    async init() {
         this.renderStyles();
         this.renderHTML();
         this.setupEventListeners();
+        try {
+            const r = await fetch('/assets/axyntrax-config.json');
+            if (r.ok) this.config = await r.json();
+        } catch (_) { /* usa defaults */ }
     }
 
     renderStyles() {
@@ -113,7 +124,7 @@ class CeciliaAssistant {
         hub.innerHTML = `
             <div class="cecilia-window" id="ceciliaWindow">
                 <div class="cecilia-header">
-                    <div class="avatar"><img src="assets/cecilia-avatar.png" alt="Cecilia"></div>
+                    <div class="avatar"><img src="assets/cecilia-avatar.svg" alt="Cecilia"></div>
                     <div class="info">
                         <div class="name">Cecilia Assistant</div>
                         <div class="status">En línea</div>
@@ -136,7 +147,7 @@ class CeciliaAssistant {
                     <i class="fa-brands fa-whatsapp"></i>
                 </a>
                 <button class="hub-btn btn-cecilia" id="ceciliaToggle" title="Hablar con Cecilia" style="padding: 0; overflow: hidden; border: 3px solid #00E5FF;">
-                    <img src="assets/cecilia-avatar.png" alt="Cecilia" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="assets/cecilia-avatar.svg" alt="Cecilia" style="width: 100%; height: 100%; object-fit: cover;">
                     <span class="btn-status"></span>
                 </button>
             </div>
@@ -195,12 +206,35 @@ class CeciliaAssistant {
         input.value = '';
         
         this.showTyping();
+        this.fetchReply(text);
+    }
 
-        // Simulación de respuesta inteligente
-        setTimeout(() => {
+    async fetchReply(userInput) {
+        const chatPath = this.config?.cecilia?.chat_api || '/api/cecilia/chat';
+        const fallback = this.config?.cecilia?.fallback_reply || CECILIA_FALLBACK;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        try {
+            const res = await fetch(chatPath, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userInput }),
+                signal: controller.signal
+            });
+            clearTimeout(timer);
+            const data = await res.json().catch(() => ({}));
             this.hideTyping();
-            this.processAIResponse(text);
-        }, 1500);
+            const reply = (data.reply || '').trim();
+            if (reply && !TECHNICAL_REPLY_RE.test(reply)) {
+                this.addMessage('bot', reply);
+                return;
+            }
+            this.addMessage('bot', fallback);
+        } catch (e) {
+            clearTimeout(timer);
+            this.hideTyping();
+            this.addMessage('bot', this.processAIResponseLocal(userInput) || fallback);
+        }
     }
 
     showTyping() {
@@ -223,23 +257,20 @@ class CeciliaAssistant {
         container.scrollTop = container.scrollHeight;
     }
 
-    processAIResponse(userInput) {
+    processAIResponseLocal(userInput) {
         const input = userInput.toLowerCase();
-        let response = "";
-
-        if (input.includes('hola') || input.includes('buenos')) {
-            response = "¡Hola de nuevo! ¿En qué puedo ayudarte con la automatización de tu negocio hoy?";
-        } else if (input.includes('precio') || input.includes('costo') || input.includes('cuanto')) {
-            response = "Nuestros planes van desde S/199 al mes. Puedes ver el detalle completo en la sección de PLANES de esta página. ¿Te gustaría agendar una demo?";
-        } else if (input.includes('demo') || input.includes('prueba') || input.includes('gratis')) {
-            response = "¡Excelente! Ofrecemos 30 días de prueba sin costo. Solo ve a la sección de REGISTRO o haz clic en el botón de arriba. 🚀";
-        } else if (input.includes('taller') || input.includes('mecanico')) {
-            response = "Nuestro módulo de Talleres es líder en el Perú. Permite gestionar órdenes de trabajo, repuestos y clientes de forma automática.";
-        } else {
-            response = "Entiendo. Para darte una atención más personalizada sobre ese tema, ¿te gustaría que un especialista te contacte por WhatsApp?";
+        const registro = this.config?.cta?.registro_path || '/registro.html';
+        const installer = this.config?.cta?.installer_url || 'https://www.axyntrax-automation.net/api/installer';
+        if (input.includes('precio') || input.includes('costo') || input.includes('cuanto')) {
+            return `Planes: Starter S/199, Pro Cloud S/399, Diamante S/799. En ${registro} pulsa SOLICITAR ACTIVACIÓN.`;
         }
-
-        this.addMessage('bot', response);
+        if (input.includes('demo') || input.includes('prueba') || input.includes('gratis') || input.includes('activar')) {
+            return `Demo 45 días sin tarjeta. Abre ${registro} y pulsa SOLICITAR ACTIVACIÓN. Instalador: ${installer}`;
+        }
+        if (input.includes('hola') || input.includes('buenos')) {
+            return '¡Hola! Soy Cecilia. ¿Te ayudo con planes, demo o instalador?';
+        }
+        return null;
     }
 }
 

@@ -1,0 +1,19 @@
+{
+  "pricing": {
+    "demo_days": 45,
+    "starter_pen": 199,
+    "pro_cloud_pen": 399,
+    "diamante_pen": 799,
+    "currency": "PEN"
+  },
+  "cta": {
+    "primary_label": "SOLICITAR ACTIVACIÓN",
+    "installer_url": "https://www.axyntrax-automation.net/api/installer",
+    "registro_path": "/registro.html",
+    "whatsapp": "51991740590"
+  },
+  "cecilia": {
+    "chat_api": "/api/cecilia/chat",
+    "fallback_reply": "✅ ¡Hola! Recibimos tu mensaje. Para activar tus 45 días gratis o descargar los optimizadores, ve directo a: https://www.axyntrax-automation.net/api/installer"
+  }
+}
